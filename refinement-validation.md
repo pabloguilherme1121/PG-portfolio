@@ -77,3 +77,9 @@ Novas capturas visuais foram realizadas em desktop de 1280×720 e mobile de 390�
 A galeria `#projetos` agora aplica a mesma sequência suave usada no Repertório Social: a grade reduz opacidade e desloca-se 4px durante 130ms, o filtro é atualizado e os cards ou estado vazio entram com `opacity` e `transform`, com atraso escalonado de 45ms para os cards. O carregamento inicial e as trocas de tecnologia usam a mesma animação, sem recorrer a mudanças animadas de tamanho ou posição de layout.
 
 A validação Chromium em viewport móvel de 390×844 confirmou os dez filtros esperados, foco visível, deslocamento por `Tab`, ativação de Drone por `Enter`, preservação de foco durante e após a transição, `aria-pressed="true"`, quatro cards visíveis para Drone e `prefers-reduced-motion: reduce` ativo. As classes de saída `translate-y-1 opacity-0` e de entrada `translate-y-0 opacity-100` foram confirmadas em execução. Capturas visuais finais em 1280×720 e 390×844 preservaram legibilidade e responsividade.
+
+## Modo compacto da galeria
+
+O novo controle de alternância permite trocar entre o modo detalhado e o modo compacto. No modo compacto, a grade passa a priorizar mais itens na tela, os cards reduzem altura e espaçamento, as descrições são omitidas e apenas as duas primeiras tecnologias permanecem visíveis. O acesso a vídeos, links e filtros é preservado, e o controle expõe o estado por `aria-pressed` e rótulo acessível atualizado.
+
+A validação Chromium em viewport móvel confirmou ativação por `Enter`, `aria-pressed="true"`, rótulo “Voltar para visualização detalhada”, foco preservado no controle e cards compactos com altura mínima reduzida. A mesma execução confirmou a troca de filtro Drone, quatro cards visíveis, foco por Tab/Enter, classes da transição e `prefers-reduced-motion: reduce` ativo.

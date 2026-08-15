@@ -26,7 +26,16 @@ const transitionClassAfterChange = await page.locator("#projetos .project-galler
 const focusPreservedAfterTransition = await page.evaluate(() => document.activeElement?.textContent?.trim() === "Drone");
 const selectedState = await droneButton.getAttribute("aria-pressed");
 const visibleCards = await page.locator("#projetos .project-gallery-card").count();
+const compactToggle = page.locator('#projetos button[aria-label*="visualização"]').first();
+await compactToggle.focus();
+await page.keyboard.press("Enter");
+const compactState = await compactToggle.getAttribute("aria-pressed");
+const compactToggleLabel = await compactToggle.getAttribute("aria-label");
+const compactCardClass = await page.locator("#projetos .project-gallery-card").first().getAttribute("class");
+const compactFocusPreserved = await page.evaluate(() => document.activeElement?.textContent?.includes("modo compacto") ?? false);
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
+await page.screenshot({ path: "/home/ubuntu/pablo-guilherme-portfolio/compact-gallery-validation.png", fullPage: true });
+
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();

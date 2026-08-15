@@ -166,3 +166,11 @@
 - [x] Preservar navegação por teclado, foco visível e `prefers-reduced-motion` na troca de tecnologia.
 - [x] Validar a transição em Chromium, desktop e mobile.
 - [x] Salvar checkpoint após a validação final.
+
+## Modo compacto da galeria
+
+- [x] Definir a interação e a hierarquia visual do modo compacto.
+- [x] Implementar o botão de alternância com semântica acessível e layout de navegação rápida.
+- [x] Preservar filtros, abertura de vídeos, transições e reduced motion nos dois modos.
+- [x] Validar desktop, mobile e teclado no modo compacto.
+- [x] Salvar checkpoint após a validação final.

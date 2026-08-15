@@ -251,6 +251,7 @@ export default function Home() {
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
+  const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
@@ -654,7 +655,8 @@ export default function Home() {
               <p className="max-w-sm font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2" aria-label="Filtrar repositórios por tecnologia">
+            <div className="mt-8 flex flex-col gap-4 border-y border-white/[0.1] py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-2" aria-label="Filtrar repositórios por tecnologia">
               {technologyFilters.map((technology) => (
                 <button
                   type="button"
@@ -671,37 +673,47 @@ export default function Home() {
                   {technology}
                 </button>
               ))}
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCompactGallery((current) => !current)}
+                aria-pressed={isCompactGallery}
+                aria-label={isCompactGallery ? "Voltar para visualização detalhada" : "Ativar visualização compacta"}
+                className={`inline-flex shrink-0 items-center justify-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${isCompactGallery ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/60 hover:text-white"}`}
+              >
+                <Layers2 className="h-3.5 w-3.5" /> {isCompactGallery ? "modo compacto" : "modo detalhado"}
+              </button>
             </div>
 
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {visibleRepositories.length > 0 ? (
-              <div className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
+              <div className={`grid gap-px bg-white/[0.1] ${isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`}>
                 {visibleRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
                       {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
                       {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
                       <span className="relative flex items-start justify-between gap-4">
-                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span><span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8b9cb4]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span></span>
+                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span>{!isCompactGallery && <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8b9cb4]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span>}</span>
                         {repository.kind === "video" ? <span className="grid h-9 w-9 place-items-center border border-[#8bb4ff]/50 bg-[#3b82f6]/25 text-[#f3f8ff] transition-all duration-200 group-hover:scale-110 group-hover:bg-[#3b82f6]"><Play className="h-4 w-4 fill-current" /></span> : <ArrowUpRight className="h-4 w-4 text-[#6fa4ff] transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1" />}
                       </span>
                       <span className="relative mt-auto block">
-                        <span className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#a4b1c6]">{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> registro de campo / assistir</> : "repositório"}</span>
-                        <span className="block font-display text-3xl font-medium leading-[1.02] tracking-[-0.04em] text-white">{repository.name}</span>
-                        <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>
-                        <span className="mt-6 flex flex-wrap gap-2">
-                          {repository.technologies.map((technology) => <span key={technology} className="border border-white/15 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#abb9ce]">{technology}</span>)}
+                        <span className={`${isCompactGallery ? "mb-3" : "mb-5"} flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#a4b1c6]`}>{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> registro de campo / assistir</> : "repositório"}</span>
+                        <span className={`block font-display font-medium leading-[1.02] tracking-[-0.04em] text-white ${isCompactGallery ? "text-xl" : "text-3xl"}`}>{repository.name}</span>
+                        {!isCompactGallery && <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>}
+                        <span className={`${isCompactGallery ? "mt-4" : "mt-6"} flex flex-wrap gap-2`}>
+                          {(isCompactGallery ? repository.technologies.slice(0, 2) : repository.technologies).map((technology) => <span key={technology} className="border border-white/15 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#abb9ce]">{technology}</span>)}
                         </span>
                       </span>
                     </>
                   );
 
                   return repository.kind === "video" ? (
-                    <button key={`${activeTechnology}-${repository.id}`} type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] p-6 text-left transition-colors hover:bg-[#0d1523] sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}>
+                    <button key={`${activeTechnology}-${repository.id}`} type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
                       {cardContent}
                     </button>
                   ) : (
-                    <a key={`${activeTechnology}-${repository.id}`} href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className="project-gallery-card group relative flex min-h-[380px] flex-col overflow-hidden bg-[#0a0f18] p-6 transition-colors hover:bg-[#0d1523] sm:p-8">
+                    <a key={`${activeTechnology}-${repository.id}`} href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
                       {cardContent}
                     </a>
                   );
