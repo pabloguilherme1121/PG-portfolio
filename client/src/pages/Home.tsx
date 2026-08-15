@@ -11,6 +11,7 @@ import {
   Braces,
   Check,
   Code2,
+  Download,
   Menu,
   Send,
   Terminal,
@@ -21,6 +22,8 @@ import { FormEvent, useState } from "react";
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
+const portraitUrl = "/manus-storage/pablo-guilherme-retrato-principal_c719478f.jpg";
+const resumeUrl = "/manus-storage/curriculo-pablo-guilherme_be777d0a.pdf";
 
 const skillTracks = [
   {
@@ -201,8 +204,30 @@ export default function Home() {
                     <p>Escolhi a área de TI porque gosto da combinação entre lógica, criação e descoberta. Para mim, aprender tecnologia não é apenas memorizar ferramentas: é desenvolver uma forma mais clara de pensar, resolver e comunicar.</p>
                     <p>Este portfólio é um registro honesto desse processo. Aqui ficam meus estudos, experiências e os projetos que vou usar para transformar curiosidade em prática.</p>
                   </div>
+                  <a
+                    href={resumeUrl}
+                    download="curriculo-pablo-guilherme.pdf"
+                    className="group mt-9 inline-flex w-full max-w-md items-center justify-between border border-[#3b82f6]/45 bg-[#0b1220] px-4 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#3b82f6] hover:bg-[#0e1930] hover:shadow-[0_12px_30px_rgba(0,0,0,0.24)] sm:w-auto sm:min-w-[320px]"
+                  >
+                    <span className="flex items-center gap-3">
+                      <span className="grid h-9 w-9 place-items-center bg-[#3b82f6] text-white transition-transform duration-200 group-hover:scale-105"><Download className="h-4 w-4" /></span>
+                      <span className="text-left">
+                        <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white">Baixar currículo</span>
+                        <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.11em] text-[#7691b8]">PDF · perfil profissional</span>
+                      </span>
+                    </span>
+                    <ArrowDownRight className="h-4 w-4 text-[#70a6ff] transition-transform duration-200 group-hover:translate-y-1" />
+                  </a>
                 </div>
                 <div className="border-l border-white/10 pl-6 xl:mt-4">
+                  <figure className="relative mb-8 overflow-hidden border border-white/10 bg-[#0d1523]">
+                    <img src={portraitUrl} alt="Pablo Guilherme" className="h-64 w-full object-cover object-center saturate-[0.8] contrast-110 transition-transform duration-700 hover:scale-[1.03] sm:h-72" />
+                    <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(6,8,13,0.92)_100%)]" />
+                    <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between px-4 py-3">
+                      <span className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#d9e8ff]">Pablo Guilherme</span>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6fa4ff]">perfil / 2026</span>
+                    </figcaption>
+                  </figure>
                   <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#7d94b8]">coordenadas atuais</p>
                   <dl className="mt-5 space-y-5">
                     <div>
