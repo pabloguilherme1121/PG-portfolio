@@ -17,6 +17,7 @@ import {
   Instagram,
   Layers2,
   Loader2,
+  MapPin,
   Menu,
   Plane,
   Play,
@@ -349,7 +350,8 @@ export default function Home() {
             <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
               <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4]">
                 STATUS: aprendendo na prática<br />
-                FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL
+                FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL<br />
+                ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
               </p>
               <a href="#sobre" className="mt-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] sm:mt-0">
                 descer para o capítulo 02 <ArrowDown className="h-4 w-4" />
@@ -656,6 +658,16 @@ export default function Home() {
                 </a>
               </div>
               <a href="https://ig.me/m/pablogui000" target="_blank" rel="noreferrer" className="group mt-5 inline-flex items-center gap-3 border border-[#38bdf8]/45 bg-[#071b39] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#e4faff] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0a2b57] hover:shadow-[0_10px_24px_rgba(56,189,248,0.16)]"><Instagram className="h-4 w-4 text-[#67e8f9]" /> mensagem rápida no Instagram <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
+              <div className="mt-5 max-w-md border border-cyan-100/[0.16] bg-[#06172f]/70 px-5 py-4">
+                <div className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#67e8f9]" />
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">área de atendimento</p>
+                    <p className="mt-2 font-body text-sm leading-6 text-[#d3edf8]">Águas Lindas de Goiás, Planaltina (GO/DF) e Entorno.</p>
+                    <p className="mt-1 font-body text-xs leading-5 text-[#8eb4c8]">Outras regiões podem ser avaliadas conforme o projeto.</p>
+                  </div>
+                </div>
+              </div>
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
                 <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>
                 <ol className="mt-4 space-y-3 font-body text-sm leading-6 text-[#cbe8f6]">
@@ -711,7 +723,7 @@ export default function Home() {
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local do projeto *</span>
-                      <input required name="location" placeholder="Cidade ou endereço aproximado" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>

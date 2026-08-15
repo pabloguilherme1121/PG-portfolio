@@ -89,4 +89,10 @@
 - [x] Melhorar metadados, compartilhamento e acessibilidade base.
 - [x] Validar todos os fluxos principais em desktop e dispositivos móveis.
 - [x] Notificar o proprietário após armazenar uma nova solicitação de orçamento.
-- [ ] Configurar descoberta local após definir cidade e área de atendimento.
+- [x] Configurar descoberta local após definir cidade e área de atendimento.
+
+## Descoberta local
+
+- [x] Destacar atendimento em Águas Lindas de Goiás, Planaltina (GO/DF) e Entorno.
+- [x] Atualizar metadados estruturados com a área de cobertura.
+- [x] Validar apresentação e indexação local no portfólio.
