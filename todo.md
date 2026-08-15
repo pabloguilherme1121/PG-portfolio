@@ -277,3 +277,12 @@
 - [x] Implementar controle de ordenação ao lado dos filtros de categoria.
 - [x] Integrar ordenação com categorias, tecnologias, busca, transições e modo compacto.
 - [x] Validar acessibilidade, responsividade, testes, build e salvar checkpoint.
+
+
+## Pré-visualização dos cartões de projeto
+
+- [x] Auditar a marcação atual dos cartões e definir a hierarquia do resumo rápido.
+- [x] Implementar overlay com resumo e tecnologias reais no hover e foco.
+- [x] Adaptar o efeito para teclado, mobile, toque e reduced motion.
+- [x] Validar visualização, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

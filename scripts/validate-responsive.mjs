@@ -17,6 +17,15 @@ for (const width of viewports) {
     menuKeyboardClosed = !(await page.locator("#mobile-navigation").count());
   }
   await page.locator("#projetos").scrollIntoViewIfNeeded();
+  const firstProjectCard = page.locator('#projetos .project-gallery-card').first();
+  const previewOverlay = firstProjectCard.locator('[aria-hidden="true"]').filter({ hasText: "resumo rápido" }).first();
+  await firstProjectCard.hover();
+  const overlayHoverVisible = Number.parseFloat(await previewOverlay.evaluate((element) => getComputedStyle(element).opacity)) > 0;
+  const overlayHasTechnologies = (await previewOverlay.locator("span").count()) >= 3;
+  await firstProjectCard.focus();
+  const overlayFocusVisible = Number.parseFloat(await previewOverlay.evaluate((element) => getComputedStyle(element).opacity)) > 0;
+  const overlayTransitionDuration = await previewOverlay.evaluate((element) => getComputedStyle(element).transitionDuration);
+  const overlayReducedMotionSafe = (await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches)) ? overlayTransitionDuration === "0s" : true;
   const filters = page.locator('#projetos button[data-filter-scope="category"]');
   const filterContainerWidth = await filters.first().locator("..")?.evaluate((element) => ({ scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }));
   const firstFilter = filters.first();
@@ -76,7 +85,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 
