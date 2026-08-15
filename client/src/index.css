@@ -235,6 +235,27 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
   box-shadow: inset 3px 0 0 #67e8f9, 0 16px 34px rgba(0, 0, 0, 0.22), 0 0 42px rgba(56, 189, 248, 0.22);
 }
 
+.whatsapp-float {
+  border: 1px solid rgba(187, 255, 208, 0.7);
+  border-radius: 999px;
+  color: #052c16;
+  background: linear-gradient(135deg, #5cf58a, #25d366);
+  box-shadow: 0 14px 32px rgba(5, 30, 14, 0.42), 0 0 0 5px rgba(37, 211, 102, 0.1);
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), filter 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.whatsapp-float:focus-visible { outline: 3px solid #d8ffe5; outline-offset: 4px; }
+
+@media (hover: hover) {
+  .whatsapp-float:hover {
+    transform: translateY(-4px) scale(1.02);
+    filter: brightness(1.08);
+    box-shadow: 0 19px 38px rgba(5, 30, 14, 0.52), 0 0 0 7px rgba(37, 211, 102, 0.15);
+  }
+}
+
+.whatsapp-float:active { transform: scale(0.97); }
+
 .human-note {
   position: relative;
   overflow: hidden;

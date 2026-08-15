@@ -19,6 +19,7 @@ import {
   Loader2,
   MapPin,
   Menu,
+  MessageCircle,
   Plane,
   Play,
   Send,
@@ -32,6 +33,7 @@ const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
 const portraitUrl = "/manus-storage/pablo-guilherme-retrato-principal_c719478f.jpg";
 const resumeUrl = "/manus-storage/curriculo-pablo-guilherme_be777d0a.pdf";
+const whatsAppUrl = "https://wa.me/5561992903029?text=Olá%2C%20Pablo%21%20Vim%20pelo%20seu%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.";
 
 const skillTracks = [
   {
@@ -796,6 +798,12 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" className="whatsapp-float fixed bottom-5 right-5 z-[60] inline-flex items-center gap-3 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
+        <MessageCircle className="h-5 w-5 fill-current" />
+        <span className="hidden sm:inline">WhatsApp</span>
+        <span className="hidden max-w-0 overflow-hidden whitespace-nowrap text-[9px] font-medium tracking-[0.08em] opacity-0 transition-all duration-200 group-hover:max-w-[180px] group-hover:opacity-100 lg:inline">falar sobre orçamento</span>
+      </a>
 
       {selectedProject?.kind === "video" && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Vídeo: ${selectedProject.name}`}>

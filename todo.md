@@ -96,3 +96,9 @@
 - [x] Destacar atendimento em Águas Lindas de Goiás, Planaltina (GO/DF) e Entorno.
 - [x] Atualizar metadados estruturados com a área de cobertura.
 - [x] Validar apresentação e indexação local no portfólio.
+
+## Atalho de WhatsApp
+
+- [x] Adicionar botão flutuante com contato direto para +55 61 99290-3029.
+- [x] Configurar mensagem pré-preenchida de solicitação de orçamento.
+- [x] Validar acesso, foco e apresentação em desktop e dispositivos móveis.
