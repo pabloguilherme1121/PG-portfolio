@@ -256,6 +256,14 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
 
 .whatsapp-float:active { transform: scale(0.97); }
 
+.availability-calendar button:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid #e6fbff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.28);
+}
+
 .human-note {
   position: relative;
   overflow: hidden;

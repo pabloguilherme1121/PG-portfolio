@@ -9,7 +9,10 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Camera,
+  CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clapperboard,
   Download,
   FolderGit2,
@@ -26,6 +29,13 @@ import {
   X,
 } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import {
+  availableTimes,
+  buildAvailabilityWhatsAppUrl,
+  calendarWeekdays,
+  formatAvailabilityDate,
+  isSelectableAvailabilityDate,
+} from "@/lib/availability";
 import { trpc } from "@/lib/trpc";
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
@@ -33,7 +43,8 @@ const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
 const portraitUrl = "/manus-storage/pablo-guilherme-retrato-principal_c719478f.jpg";
 const resumeUrl = "/manus-storage/curriculo-pablo-guilherme_be777d0a.pdf";
-const whatsAppUrl = "https://wa.me/5561992903029?text=Olá%2C%20Pablo%21%20Vim%20pelo%20seu%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.";
+const whatsAppNumber = "5561992903029";
+const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20seu%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 
 const skillTracks = [
   {
@@ -212,11 +223,24 @@ export default function Home() {
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
+  const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
+  const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
+  const today = new Date();
+  const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
 
   const visibleRepositories = repositories.filter((repository) =>
     activeTechnology === "Todos" ? true : repository.technologies.includes(activeTechnology),
   );
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
+  const leadingDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay();
+  const calendarDays = Array.from({ length: leadingDays + daysInMonth }, (_, index) => index < leadingDays ? null : new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - leadingDays + 1));
+  const selectedDateLabel = availabilityDate ? formatAvailabilityDate(availabilityDate) : "";
+  const selectedDateKey = availabilityDate ? `${availabilityDate.getFullYear()}-${availabilityDate.getMonth()}-${availabilityDate.getDate()}` : "";
+  const availabilityWhatsAppUrl = availabilityDate && availabilityTime
+    ? buildAvailabilityWhatsAppUrl(whatsAppNumber, availabilityDate, availabilityTime)
+    : "";
 
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
@@ -669,6 +693,35 @@ export default function Home() {
                     <p className="mt-1 font-body text-xs leading-5 text-[#8eb4c8]">Outras regiões podem ser avaliadas conforme o projeto.</p>
                   </div>
                 </div>
+              </div>
+              <div className="availability-calendar mt-5 max-w-md border border-cyan-100/[0.16] bg-[#06172f]/80 p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">consulta de disponibilidade</p><p className="mt-1 font-body text-xs leading-5 text-[#a6c7d8]">Segunda a sexta, das 08:00 às 18:00.</p></div>
+                  <span className="grid h-9 w-9 place-items-center border border-cyan-100/[0.2] text-[#67e8f9]"><CalendarDays className="h-4 w-4" /></span>
+                </div>
+                <div className="mt-5 flex items-center justify-between border-y border-cyan-100/[0.12] py-3">
+                  <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))} aria-label="Mês anterior" className="grid h-8 w-8 place-items-center text-[#b9dfef] transition-colors hover:bg-cyan-100/10 hover:text-[#67e8f9]"><ChevronLeft className="h-4 w-4" /></button>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#e2f7ff]">{calendarMonth.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}</p>
+                  <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 1))} aria-label="Próximo mês" className="grid h-8 w-8 place-items-center text-[#b9dfef] transition-colors hover:bg-cyan-100/10 hover:text-[#67e8f9]"><ChevronRight className="h-4 w-4" /></button>
+                </div>
+                <div className="mt-4 grid grid-cols-7 gap-1 text-center">
+                  {calendarWeekdays.map((day, index) => <span key={`${day}-${index}`} className="py-1 font-mono text-[9px] text-[#63849a]">{day}</span>)}
+                  {calendarDays.map((day, index) => {
+                    if (!day) return <span key={`blank-${index}`} />;
+                    const isAvailableDate = isSelectableAvailabilityDate(day, todayStart);
+                    const dateKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+                    const isSelected = selectedDateKey === dateKey;
+                    return <button key={dateKey} type="button" disabled={!isAvailableDate} onClick={() => { setAvailabilityDate(day); setAvailabilityTime(null); }} aria-label={day.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })} className={`mx-auto grid h-8 w-8 place-items-center rounded-full font-mono text-[10px] transition-all ${isSelected ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]" : isAvailableDate ? "text-[#d7eff9] hover:bg-cyan-100/15 hover:text-[#67e8f9]" : "cursor-not-allowed text-[#385367] line-through"}`}>{day.getDate()}</button>;
+                  })}
+                </div>
+                <div className="mt-5 border-t border-cyan-100/[0.12] pt-4">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad]">{selectedDateLabel ? `horário desejado · ${selectedDateLabel}` : "escolha uma data útil"}</p>
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate} onClick={() => setAvailabilityTime(time)} className={`border py-2 font-mono text-[10px] transition-colors ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
+                  </div>
+                </div>
+                <button type="button" disabled={!availabilityDate || !availabilityTime} onClick={() => window.open(availabilityWhatsAppUrl, "_blank", "noopener,noreferrer")} className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:bg-[#16304c] disabled:text-[#6f91a8]"><MessageCircle className="h-4 w-4 fill-current" /> consultar no WhatsApp</button>
+                <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A confirmação final da data e do horário é feita diretamente com Pablo.</p>
               </div>
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
                 <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>

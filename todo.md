@@ -102,3 +102,10 @@
 - [x] Adicionar botão flutuante com contato direto para +55 61 99290-3029.
 - [x] Configurar mensagem pré-preenchida de solicitação de orçamento.
 - [x] Validar acesso, foco e apresentação em desktop e dispositivos móveis.
+
+## Consulta de disponibilidade
+
+- [x] Criar calendário interativo com atendimento de segunda a sexta, das 08:00 às 18:00.
+- [x] Encaminhar a data e o horário selecionados ao WhatsApp.
+- [x] Validar seleção, acessibilidade e apresentação em desktop e dispositivos móveis.
+- [x] Cobrir as regras de dias úteis, horários e mensagem de WhatsApp com testes automatizados.
