@@ -1,10 +1,10 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
-import { createQuoteRequest } from "./db";
+import { blockAvailabilityDate, createQuoteRequest, listBlockedDates, unblockAvailabilityDate } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
-import { publicProcedure, router } from "./_core/trpc";
+import { adminProcedure, publicProcedure, router } from "./_core/trpc";
 
 export const quoteRequestInputSchema = z.object({
   name: z.string().trim().min(2).max(160),
@@ -16,6 +16,20 @@ export const quoteRequestInputSchema = z.object({
   delivery: z.string().trim().max(160).optional(),
   budget: z.string().trim().max(120).optional(),
   briefing: z.string().trim().min(12).max(5000),
+});
+
+export function isValidDateKey(value: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+
+const blockedDateKeySchema = z.string().refine(isValidDateKey, "Informe uma data válida");
+
+export const blockedDateInputSchema = z.object({
+  dateKey: blockedDateKeySchema,
+  note: z.string().trim().max(180).optional(),
 });
 
 export const appRouter = router({
@@ -49,6 +63,17 @@ export const appRouter = router({
         console.warn("[QuoteRequest] Pedido salvo, mas a notificação não foi entregue:", error);
       }
       return { success: true, requestId: result.id, ownerNotified };
+    }),
+  }),
+  availability: router({
+    listBlocked: publicProcedure.query(() => listBlockedDates()),
+    block: adminProcedure.input(blockedDateInputSchema).mutation(async ({ input }) => {
+      await blockAvailabilityDate(input.dateKey, input.note);
+      return { success: true };
+    }),
+    unblock: adminProcedure.input(z.object({ dateKey: blockedDateKeySchema })).mutation(async ({ input }) => {
+      await unblockAvailabilityDate(input.dateKey);
+      return { success: true };
     }),
   }),
 });

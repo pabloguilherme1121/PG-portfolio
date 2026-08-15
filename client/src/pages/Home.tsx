@@ -28,14 +28,16 @@ import {
   Send,
   X,
 } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import {
   availableTimes,
   buildAvailabilityWhatsAppUrl,
   calendarWeekdays,
   formatAvailabilityDate,
   getAvailabilityButtonLabel,
+  isAvailabilityConsultationReady,
   isSelectableAvailabilityDate,
+  toDateKey,
 } from "@/lib/availability";
 import { trpc } from "@/lib/trpc";
 
@@ -230,23 +232,37 @@ export default function Home() {
   const today = new Date();
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
+  const {
+    data: blockedDates = [],
+    isError: isBlockedDatesError,
+    refetch: refetchBlockedDates,
+  } = trpc.availability.listBlocked.useQuery();
 
   const visibleRepositories = repositories.filter((repository) =>
     activeTechnology === "Todos" ? true : repository.technologies.includes(activeTechnology),
   );
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
   const leadingDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay();
   const calendarDays = Array.from({ length: leadingDays + daysInMonth }, (_, index) => index < leadingDays ? null : new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), index - leadingDays + 1));
   const selectedDateLabel = availabilityDate ? formatAvailabilityDate(availabilityDate) : "";
-  const selectedDateKey = availabilityDate ? `${availabilityDate.getFullYear()}-${availabilityDate.getMonth()}-${availabilityDate.getDate()}` : "";
+  const selectedDateKey = availabilityDate ? toDateKey(availabilityDate) : "";
   const availabilityWhatsAppUrl = availabilityDate && availabilityTime
     ? buildAvailabilityWhatsAppUrl(whatsAppNumber, availabilityDate, availabilityTime)
     : "";
+  const isAvailabilityConsultationReadyForUser = isAvailabilityConsultationReady(availabilityDate, availabilityTime, isBlockedDatesError);
 
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
+
+  useEffect(() => {
+    if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
+      setAvailabilityDate(null);
+      setAvailabilityTime(null);
+    }
+  }, [availabilityDate, blockedDateKeys, isBlockedDatesError]);
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
     onSuccess: () => setFormSent(true),
@@ -258,7 +274,7 @@ export default function Home() {
   }
 
   function consultAvailabilityOnWhatsApp() {
-    if (!availabilityWhatsAppUrl || isAvailabilityRedirecting) return;
+    if (!availabilityWhatsAppUrl || isAvailabilityRedirecting || isBlockedDatesError) return;
 
     setIsAvailabilityRedirecting(true);
     window.setTimeout(() => {
@@ -723,20 +739,23 @@ export default function Home() {
                   {calendarWeekdays.map((day, index) => <span key={`${day}-${index}`} className="py-1 font-mono text-[9px] text-[#63849a]">{day}</span>)}
                   {calendarDays.map((day, index) => {
                     if (!day) return <span key={`blank-${index}`} />;
-                    const isAvailableDate = isSelectableAvailabilityDate(day, todayStart);
-                    const dateKey = `${day.getFullYear()}-${day.getMonth()}-${day.getDate()}`;
+                    const dateKey = toDateKey(day);
+                    const isBlockedDate = blockedDateKeys.has(dateKey);
+                    const isAvailableDate = !isBlockedDatesError && isSelectableAvailabilityDate(day, todayStart, blockedDateKeys);
                     const isSelected = selectedDateKey === dateKey;
-                    return <button key={dateKey} type="button" disabled={!isAvailableDate} onClick={() => { setAvailabilityDate(day); setAvailabilityTime(null); }} aria-label={day.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })} className={`mx-auto grid h-8 w-8 place-items-center rounded-full font-mono text-[10px] transition-all ${isSelected ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]" : isAvailableDate ? "text-[#d7eff9] hover:bg-cyan-100/15 hover:text-[#67e8f9]" : "cursor-not-allowed text-[#385367] line-through"}`}>{day.getDate()}</button>;
+                    const dayLabel = day.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+                    return <button key={dateKey} type="button" disabled={!isAvailableDate} onClick={() => { setAvailabilityDate(day); setAvailabilityTime(null); }} aria-label={isBlockedDate ? `${dayLabel}, indisponível` : dayLabel} title={isBlockedDate ? "Data indisponível" : undefined} className={`mx-auto grid h-8 w-8 place-items-center rounded-full font-mono text-[10px] transition-all ${isSelected ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]" : isBlockedDate ? "cursor-not-allowed border border-rose-400/55 bg-rose-400/10 text-rose-300 line-through" : isAvailableDate ? "text-[#d7eff9] hover:bg-cyan-100/15 hover:text-[#67e8f9]" : "cursor-not-allowed text-[#385367] line-through"}`}>{day.getDate()}</button>;
                   })}
                 </div>
+                {isBlockedDatesError ? <div role="alert" className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-[11px] leading-5 text-amber-100">Não foi possível verificar as datas indisponíveis. A consulta está temporariamente desativada. <button type="button" onClick={() => void refetchBlockedDates()} className="font-semibold underline decoration-amber-200/60 underline-offset-2 hover:text-white">Tentar novamente</button></div> : blockedDates.length > 0 && <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-[11px] leading-5 text-rose-200">Datas riscadas em rosa estão indisponíveis para consulta.</p>}
                 <div className="mt-5 border-t border-cyan-100/[0.12] pt-4">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad]">{selectedDateLabel ? `horário desejado · ${selectedDateLabel}` : "escolha uma data útil"}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
-                    {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate} onClick={() => setAvailabilityTime(time)} className={`border py-2 font-mono text-[10px] transition-colors ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
+                    {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate || isBlockedDatesError} onClick={() => setAvailabilityTime(time)} className={`border py-2 font-mono text-[10px] transition-colors ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate && !isBlockedDatesError ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
-                <button type="button" disabled={!availabilityDate || !availabilityTime || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8]">
-                  {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
+                <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8]">
+                  {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>
                 <span id="availability-feedback" role="status" aria-live="polite" className="sr-only">{isAvailabilityRedirecting ? "Abrindo o WhatsApp com sua data e horário selecionados." : ""}</span>
                 <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A confirmação final da data e do horário é feita diretamente com Pablo.</p>

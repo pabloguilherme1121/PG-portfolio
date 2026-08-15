@@ -110,3 +110,8 @@
 - [x] Validar seleção, acessibilidade e apresentação em desktop e dispositivos móveis.
 - [x] Cobrir as regras de dias úteis, horários e mensagem de WhatsApp com testes automatizados.
 - [x] Exibir carregamento acessível ao consultar disponibilidade pelo WhatsApp.
+- [x] Permitir configurar datas específicas como indisponíveis e impedir sua seleção no calendário.
+- [x] Exibir estados de erro seguros quando a lista de datas bloqueadas não puder ser consultada.
+- [x] Cobrir as operações administrativas de bloqueio e liberação com testes de autorização.
+- [x] Validar a persistência da estrutura de bloqueios sem inserir dados artificiais na agenda.
+- [x] Desabilitar horários e consulta de WhatsApp durante falhas na verificação de datas bloqueadas.

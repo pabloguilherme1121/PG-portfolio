@@ -42,3 +42,13 @@ export const quoteRequests = mysqlTable("quote_requests", {
 
 export type QuoteRequest = typeof quoteRequests.$inferSelect;
 export type InsertQuoteRequest = typeof quoteRequests.$inferInsert;
+
+export const blockedDates = mysqlTable("availability_blocked_dates", {
+  id: int("id").autoincrement().primaryKey(),
+  dateKey: varchar("date_key", { length: 10 }).notNull().unique(),
+  note: varchar("note", { length: 180 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export type BlockedDate = typeof blockedDates.$inferSelect;
+export type InsertBlockedDate = typeof blockedDates.$inferInsert;

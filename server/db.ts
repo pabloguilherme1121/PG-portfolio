@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
+import { blockedDates, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -102,4 +102,30 @@ export async function createQuoteRequest(request: InsertQuoteRequest) {
     console.error("[QuoteRequest] Failed to persist request:", error);
     throw error;
   }
+}
+
+export async function listBlockedDates() {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para consultar a agenda");
+
+  return db.select().from(blockedDates).orderBy(asc(blockedDates.dateKey));
+}
+
+export async function blockAvailabilityDate(dateKey: string, note?: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para atualizar a agenda");
+
+  await db.insert(blockedDates).values({
+    dateKey,
+    note: note || null,
+  }).onDuplicateKeyUpdate({
+    set: { note: note || null },
+  });
+}
+
+export async function unblockAvailabilityDate(dateKey: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para atualizar a agenda");
+
+  await db.delete(blockedDates).where(eq(blockedDates.dateKey, dateKey));
 }
