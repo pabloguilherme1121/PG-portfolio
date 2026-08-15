@@ -8,13 +8,17 @@ import {
   ArrowDown,
   ArrowDownRight,
   ArrowUpRight,
-  Braces,
+  Camera,
   Check,
-  Code2,
+  Clapperboard,
   Download,
+  FolderGit2,
+  Github,
+  Layers2,
   Menu,
+  Plane,
+  Play,
   Send,
-  Terminal,
   X,
 } from "lucide-react";
 import { FormEvent, useState } from "react";
@@ -28,48 +32,113 @@ const resumeUrl = "/manus-storage/curriculo-pablo-guilherme_be777d0a.pdf";
 const skillTracks = [
   {
     number: "01",
-    title: "Fundamentos",
+    title: "Tecnologia da Informação",
     text: "Lógica, pensamento estruturado e a disciplina de entender o problema antes de procurar a ferramenta.",
   },
   {
     number: "02",
-    title: "Web em construção",
-    text: "Interfaces responsivas, HTML, CSS e JavaScript como ponto de partida para experiências úteis e claras.",
+    title: "Criação de conteúdo",
+    text: "Narrativas visuais pensadas para registrar momentos, comunicar ideias e dar forma a histórias que merecem ser vistas.",
   },
   {
     number: "03",
-    title: "Próximo sistema",
-    text: "Cada estudo vira terreno para testar, errar, melhorar e registrar o que aprendi no caminho.",
+    title: "Captação de imagens",
+    text: "Filmagens terrestres e imagens aéreas com drone, unindo perspectiva, ritmo e atenção aos detalhes de cada evento.",
   },
 ];
 
-const projectNotes = [
+type Repository = {
+  id: string;
+  name: string;
+  description: string;
+  technologies: string[];
+  url: string;
+  kind: "repository" | "video";
+  cover?: string;
+  featured?: boolean;
+};
+
+/**
+ * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
+ * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
+ */
+const repositories: Repository[] = [
   {
-    id: "ARQ.01",
-    type: "LABORATÓRIO",
-    title: "Interfaces que explicam",
-    text: "Um espaço para transformar referências de design e código em páginas simples, responsivas e legíveis.",
-    tag: "Front-end",
+    id: "AUD.01",
+    name: "Chá da Eloise",
+    description: "Registro audiovisual de evento social, com imagens amplas do ambiente e momentos da celebração.",
+    technologies: ["Vídeo", "Drone", "Conteúdo"],
+    url: "/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4",
+    kind: "video",
+    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
+    featured: true,
   },
   {
-    id: "ARQ.02",
-    type: "EM EVOLUÇÃO",
-    title: "Lógica em prática",
-    text: "Exercícios, algoritmos e pequenos desafios que ajudam a criar repertório antes de construir algo maior.",
-    tag: "Fundamentos",
+    id: "CNT.02",
+    name: "RHAM — Serviços no app",
+    description: "Vídeo vertical de navegação por serviços em uma interface móvel da RHAM Águas Lindas.",
+    technologies: ["Vídeo", "Conteúdo", "Interface"],
+    url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
+    kind: "video",
+    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
   },
   {
-    id: "ARQ.03",
-    type: "PRÓXIMO CAPÍTULO",
-    title: "Repositório aberto",
-    text: "O lugar reservado para projetos que ainda vão nascer de uma boa pergunta, uma ideia e muito estudo.",
-    tag: "Processo",
+    id: "CNT.03",
+    name: "RHAM — Mensagem em vídeo",
+    description: "Registro vertical com apresentação diante da câmera para comunicação institucional.",
+    technologies: ["Vídeo", "Conteúdo"],
+    url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
+    kind: "video",
+    cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
+  },
+  {
+    id: "AUD.04",
+    name: "Captação noturna — visão aérea",
+    description: "Registro vertical noturno com perspectiva elevada sobre o espaço e seus arredores.",
+    technologies: ["Vídeo", "Drone", "Noturno"],
+    url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
+    kind: "video",
+    cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
+  },
+  {
+    id: "AUD.05",
+    name: "Campo iluminado — vista aérea",
+    description: "Captação horizontal de campo esportivo à noite, valorizando escala, luz e movimento.",
+    technologies: ["Vídeo", "Drone", "Noturno"],
+    url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
+    kind: "video",
+    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+  },
+  {
+    id: "CNT.06",
+    name: "RHAM — Navegação de serviços",
+    description: "Segundo recorte vertical de interface móvel, focado na jornada de serviços do aplicativo.",
+    technologies: ["Vídeo", "Conteúdo", "Interface"],
+    url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
+    kind: "video",
+    cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
+  },
+  {
+    id: "AUD.07",
+    name: "Campo iluminado — sequência aérea",
+    description: "Novo enquadramento horizontal do campo, explorando a perspectiva de voo e a atmosfera noturna.",
+    technologies: ["Vídeo", "Drone", "Noturno"],
+    url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
+    kind: "video",
+    cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
   },
 ];
+const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formSent, setFormSent] = useState(false);
+  const [activeTechnology, setActiveTechnology] = useState("Todos");
+  const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
+
+  const visibleRepositories = repositories.filter((repository) =>
+    activeTechnology === "Todos" ? true : repository.technologies.includes(activeTechnology),
+  );
 
   function closeMenu() {
     setMenuOpen(false);
@@ -96,9 +165,9 @@ export default function Home() {
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
             {[
-              ["manifesto", "#sobre"],
-              ["trajetória", "#trilha"],
-              ["arquivo", "#projetos"],
+                ["manifesto", "#sobre"],
+                ["atuação", "#trilha"],
+                ["trabalhos", "#projetos"],
             ].map(([label, href]) => (
               <a key={label} href={href} className="nav-link text-[11px] font-mono uppercase tracking-[0.14em] text-[#90a3c3] transition-colors hover:text-white">
                 {label}
@@ -124,8 +193,8 @@ export default function Home() {
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
                 ["01 / manifesto", "#sobre"],
-                ["02 / trajetória", "#trilha"],
-                ["03 / arquivo", "#projetos"],
+                ["02 / atuação", "#trilha"],
+                ["03 / trabalhos", "#projetos"],
                 ["04 / contato", "#contato"],
               ].map(([label, href]) => (
                 <a key={label} href={href} onClick={closeMenu} className="border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1]">
@@ -137,7 +206,8 @@ export default function Home() {
         )}
       </header>
 
-      <main>
+      <main className="relative">
+        <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
         <section id="inicio" className="relative isolate min-h-[810px] overflow-hidden pt-[76px] sm:min-h-[850px]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-cover bg-center opacity-70 lg:w-[72%]" style={{ backgroundImage: `url(${heroUrl})` }} />
@@ -159,7 +229,7 @@ export default function Home() {
               </h1>
               <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
                 <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-                  Sou <strong className="font-semibold text-white">Pablo Guilherme</strong>, estudante de Tecnologia da Informação. Ainda estou no começo da trajetória — e é exatamente por isso que aprendo com intenção, testando ideias e registrando cada avanço.
+                  Sou <strong className="font-semibold text-white">Pablo Guilherme</strong>, estudante de Tecnologia da Informação e criador de conteúdo. Entre código, câmera e drone, transformo estudo e olhar criativo em projetos que registram o que importa.
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
                   <a href="#sobre" className="group inline-flex items-center gap-3 bg-[#3b82f6] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#5b9aff] hover:shadow-[0_10px_30px_rgba(59,130,246,0.24)] active:scale-[0.97]">
@@ -175,7 +245,7 @@ export default function Home() {
             <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
               <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4]">
                 STATUS: em evolução<br />
-                CAMPO: tecnologia da informação
+                CAMPOS: TI · CONTEÚDO · AUDIOVISUAL
               </p>
               <a href="#sobre" className="mt-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] sm:mt-0">
                 descer para o capítulo 02 <ArrowDown className="h-4 w-4" />
@@ -198,11 +268,11 @@ export default function Home() {
               <div className="grid gap-12 xl:grid-cols-[1.5fr_0.7fr] xl:gap-16">
                 <div>
                   <p className="font-display text-[clamp(2.3rem,4.6vw,4.75rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f4f8ff]">
-                    Não estou tentando parecer pronto. Estou me preparando para ser <span className="text-[#4e8df8]">consistente.</span>
+                    Não sigo uma única rota. Estou construindo repertório entre <span className="text-[#4e8df8]">tecnologia, conteúdo e imagem.</span>
                   </p>
                   <div className="mt-9 max-w-2xl space-y-5 font-body text-base leading-8 text-[#b8c8df]">
                     <p>Escolhi a área de TI porque gosto da combinação entre lógica, criação e descoberta. Para mim, aprender tecnologia não é apenas memorizar ferramentas: é desenvolver uma forma mais clara de pensar, resolver e comunicar.</p>
-                    <p>Este portfólio é um registro honesto desse processo. Aqui ficam meus estudos, experiências e os projetos que vou usar para transformar curiosidade em prática.</p>
+                    <p>Essa vontade de comunicar também está presente na criação de conteúdo. Trabalho com filmagens terrestres e captação aérea com drone para registrar eventos, ambientes e momentos de um jeito próprio.</p>
                   </div>
                   <a
                     href={resumeUrl}
@@ -236,11 +306,11 @@ export default function Home() {
                     </div>
                     <div>
                       <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">interesse</dt>
-                      <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Desenvolvimento, interfaces e resolução de problemas</dd>
+                      <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Tecnologia, conteúdo e audiovisual</dd>
                     </div>
                     <div>
                       <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">modo de trabalho</dt>
-                      <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Curiosidade, prática e melhoria contínua</dd>
+                      <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Criatividade, prática e melhoria contínua</dd>
                     </div>
                   </dl>
                 </div>
@@ -254,9 +324,9 @@ export default function Home() {
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / trilha de estudo</p>
-                <h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Onde quero colocar energia.</h2>
-                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#9fb2ce]">Minha base está em formação. Cada frente abaixo é um compromisso de estudo, prática e documentação do que aprendo.</p>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
+                <h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Onde coloco energia.</h2>
+                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#9fb2ce]">Tecnologia e audiovisual se encontram no mesmo processo: aprender, observar e transformar uma ideia em algo que as pessoas possam usar ou sentir.</p>
               </div>
               <div className="border-t border-white/[0.1]">
                 {skillTracks.map((skill) => (
@@ -280,30 +350,93 @@ export default function Home() {
           <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / arquivo de projetos</p>
-                <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">O que estou<br className="hidden sm:block" /> preparando.</h2>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / trabalhos selecionados</p>
+                <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">O que já<br className="hidden sm:block" /> estou fazendo.</h2>
+                <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
-              <p className="max-w-sm font-body text-sm leading-7 text-[#9fb2ce]">Nada aqui tenta fingir uma trajetória pronta. Estes são os espaços de prática que vou transformar em projetos consistentes.</p>
+              <p className="max-w-sm font-body text-sm leading-7 text-[#9fb2ce]">Uma galeria para reunir repositórios, vídeos e registros reais — cada projeto com seu contexto, tecnologias e acesso direto.</p>
             </div>
 
-            <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
-              {projectNotes.map((project, index) => (
-                <article key={project.id} className="group relative min-h-[350px] bg-[#0a0f18] p-6 sm:p-8">
-                  <div className="flex items-start justify-between gap-4">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6580aa]">{project.id}</span>
-                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#3b82f6]">{project.type}</span>
-                  </div>
-                  <div className="absolute right-6 top-16 grid h-12 w-12 place-items-center border border-[#3b82f6]/25 text-[#3b82f6] transition-all duration-300 group-hover:scale-110 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white">
-                    {index === 0 ? <Code2 className="h-5 w-5" /> : index === 1 ? <Braces className="h-5 w-5" /> : <Terminal className="h-5 w-5" />}
-                  </div>
-                  <div className="absolute bottom-7 left-6 right-6 sm:bottom-8 sm:left-8 sm:right-8">
-                    <p className="mb-5 font-mono text-[10px] uppercase tracking-[0.13em] text-[#78aaff]">{project.tag}</p>
-                    <h3 className="font-display text-3xl font-medium leading-[1.02] tracking-[-0.04em] text-white">{project.title}</h3>
-                    <p className="mt-4 font-body text-sm leading-6 text-[#95a8c3]">{project.text}</p>
-                  </div>
-                </article>
+            <div className="mt-8 flex flex-wrap gap-2" aria-label="Filtrar repositórios por tecnologia">
+              {technologyFilters.map((technology) => (
+                <button
+                  type="button"
+                  key={technology}
+                  onClick={() => setActiveTechnology(technology)}
+                  aria-pressed={activeTechnology === technology}
+                  className={`border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] ${
+                    activeTechnology === technology
+                      ? "border-[#3b82f6] bg-[#3b82f6] text-white"
+                      : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
+                  }`}
+                >
+                  {technology}
+                </button>
               ))}
             </div>
+
+            {visibleRepositories.length > 0 ? (
+              <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
+                {visibleRepositories.map((repository) => {
+                  const cardContent = (
+                    <>
+                      {repository.cover && <img src={repository.cover} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
+                      {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
+                      <span className="relative flex items-start justify-between gap-4">
+                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span>
+                        {repository.kind === "video" ? <span className="grid h-9 w-9 place-items-center border border-[#8bb4ff]/50 bg-[#3b82f6]/25 text-[#f3f8ff] transition-all duration-200 group-hover:scale-110 group-hover:bg-[#3b82f6]"><Play className="h-4 w-4 fill-current" /></span> : <ArrowUpRight className="h-4 w-4 text-[#6fa4ff] transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1" />}
+                      </span>
+                      <span className="relative mt-auto block">
+                        <span className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#83b0fc]">{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> assistir trabalho</> : "repositório"}</span>
+                        <span className="block font-display text-3xl font-medium leading-[1.02] tracking-[-0.04em] text-white">{repository.name}</span>
+                        <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>
+                        <span className="mt-6 flex flex-wrap gap-2">
+                          {repository.technologies.map((technology) => <span key={technology} className="border border-[#8eb7ff]/40 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#b6d0ff]">{technology}</span>)}
+                        </span>
+                      </span>
+                    </>
+                  );
+
+                  return repository.kind === "video" ? (
+                    <button key={repository.id} type="button" onClick={() => setSelectedProject(repository)} className={`group relative flex flex-col overflow-hidden bg-[#0a0f18] p-6 text-left transition-colors hover:bg-[#0d1523] sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}>
+                      {cardContent}
+                    </button>
+                  ) : (
+                    <a key={repository.id} href={repository.url} target="_blank" rel="noreferrer" className="group relative flex min-h-[380px] flex-col overflow-hidden bg-[#0a0f18] p-6 transition-colors hover:bg-[#0d1523] sm:p-8">
+                      {cardContent}
+                    </a>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-8 grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
+                <div className="relative overflow-hidden p-7 sm:p-10">
+                  <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
+                  <div className="relative">
+                    <span className="grid h-12 w-12 place-items-center border border-[#3b82f6]/40 bg-[#3b82f6]/10 text-[#70a6ff]"><FolderGit2 className="h-5 w-5" /></span>
+                    <p className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#72a7fb]">arquivo em preparo / novos trabalhos</p>
+                    <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Seu próximo trabalho vai aparecer aqui.</h3>
+                    <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
+                      {activeTechnology === "Todos"
+                        ? "Quando você tiver um link do GitHub, um vídeo ou uma nova filmagem, eu posso adicioná-lo com descrição, tecnologias e acesso direto."
+                        : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
+                    </p>
+                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar um repositório quando estiver pronto <ArrowUpRight className="h-3.5 w-3.5" /></a>
+                  </div>
+                </div>
+                <div className="border-t border-white/[0.1] bg-[#070b13] p-7 sm:p-10 lg:border-l lg:border-t-0">
+                  <Layers2 className="h-5 w-5 text-[#3b82f6]" />
+                  <p className="mt-7 font-mono text-[10px] uppercase tracking-[0.14em] text-[#7189ae]">ficha de inclusão</p>
+                  <div className="mt-5 space-y-3 font-mono text-[11px] leading-5 text-[#c8d8ef]">
+                    <p><span className="text-[#3b82f6]">01</span> nome do trabalho</p>
+                    <p><span className="text-[#3b82f6]">02</span> descrição objetiva</p>
+                    <p><span className="text-[#3b82f6]">03</span> tecnologias ou formato</p>
+                    <p><span className="text-[#3b82f6]">04</span> link ou arquivo</p>
+                  </div>
+                  <div className="mt-8 flex items-center gap-2 border-t border-white/[0.1] pt-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#60789d]"><Github className="h-3.5 w-3.5" /> pronto para conectar</div>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
@@ -313,8 +446,8 @@ export default function Home() {
             <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">05 / canal aberto</p>
               <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Uma boa pergunta pode ser o começo.</h2>
-              <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Se você quer trocar uma ideia sobre estudos, tecnologia ou um projeto em que eu possa aprender, deixe uma mensagem.</p>
-              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para aprender</div>
+              <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Se você quer conversar sobre tecnologia, criação de conteúdo ou uma cobertura audiovisual, deixe uma mensagem.</p>
+              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para novas ideias</div>
             </div>
 
             <div className="px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
@@ -354,11 +487,24 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <div className="flex items-center gap-3">
             <img src={markUrl} alt="" className="h-6 w-6 object-contain" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3]">Pablo Guilherme · estudante de TI</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3]">Pablo Guilherme · TI · conteúdo · audiovisual</p>
           </div>
           <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p>
         </div>
       </footer>
+
+      {selectedProject?.kind === "video" && (
+        <div className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Vídeo: ${selectedProject.name}`}>
+          <div className="relative w-full max-w-5xl border border-white/15 bg-[#080d16] shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
+            <button type="button" onClick={() => setSelectedProject(null)} aria-label="Fechar vídeo" className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center border border-white/15 bg-[#060a10]/90 text-white transition-colors hover:border-[#3b82f6] hover:text-[#8db8ff]"><X className="h-5 w-5" /></button>
+            <video className="max-h-[72vh] w-full bg-black" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay preload="metadata">Seu navegador não oferece suporte à reprodução de vídeo.</video>
+            <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div><p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#75a7fb]">projeto audiovisual</p><p className="mt-1 font-display text-xl text-white">{selectedProject.name}</p></div>
+              <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.11em] text-[#9cb3d4]"><Camera className="h-3.5 w-3.5 text-[#3b82f6]" /> conteúdo · evento <Plane className="ml-2 h-3.5 w-3.5 text-[#3b82f6]" /> imagem aérea</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
