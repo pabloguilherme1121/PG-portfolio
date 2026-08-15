@@ -16,10 +16,10 @@
 
 ### Princípios centrais
 
-1. A página conta uma história em primeira pessoa: cada seção continua o monólogo de Pablo e revela uma camada de sua formação.
+1. A página organiza um repertório em construção: cada seção mostra como habilidades, contexto e execução se combinam para resolver um projeto.
 2. Contraste, hierarquia e vazio são ferramentas de orientação; o azul aparece como sinal de progresso e não como decoração constante.
 3. Blocos assimétricos, linhas de sistema e pequenos metadados substituem cartões repetitivos e layouts excessivamente centralizados.
-4. A linguagem visual valoriza processo e potencial: o site comunica estudo ativo, curiosidade e evolução concreta.
+4. A linguagem visual valoriza processo e utilidade: o site comunica repertório, clareza de execução e espaço para colaboração.
 
 ### Filosofia de cor
 
@@ -55,7 +55,7 @@ Personalidade: **curioso, metódico, em evolução**.
 
 ### Voz da marca
 
-Headlines soam francas e direcionadas; CTAs convidam à conversa sem prometer mais do que o estágio atual do percurso. A microcopy deve privilegiar evidência e intenção, não frases prontas.
+Headlines soam francas e direcionadas; CTAs mostram o próximo passo sem prometer mais do que a evidência disponível. A microcopy deve privilegiar clareza, utilidade e intenção.
 
 Exemplos: “Ainda estou aprendendo. É exatamente por isso que continuo construindo.”
 
@@ -73,5 +73,5 @@ O wordmark une as iniciais **PG** em dois traços angulares que se conectam como
 
 1. **Cobalto de compilação** deve funcionar como sinal de progresso e decisão: rota vertical, estado ativo, CTA principal, números-chave e metadados importantes. Não é cor decorativa para títulos completos.
 2. Trabalhos são **entradas de arquivo**: cada item privilegia contexto, evidência e processo antes de qualquer tratamento de galeria convencional.
-3. A voz é sempre de Pablo em primeira pessoa: curiosa, metódica e honesta sobre aprender em público. O audiovisual aparece como evidência do seu repertório técnico e criativo, não como linguagem de agência.
+3. A voz parte de Pablo, mas prioriza o conjunto: contexto, problema, skill aplicada e resultado. O audiovisual aparece como evidência prática do repertório técnico e criativo.
 4. A tipografia atual usa **Sora** nos títulos, **DM Sans** na narrativa e **IBM Plex Mono** nos metadados, mantendo um contraste claro entre pessoa, ideia e sistema.

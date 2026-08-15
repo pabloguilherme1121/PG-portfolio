@@ -25,3 +25,19 @@ Antes do code-splitting, o chunk principal tinha aproximadamente 595,87 kB. Depo
 ## Próximo checkpoint
 
 Salvar um checkpoint após revisar este registro e atualizar o TODO com as validações comprovadas.
+
+
+## Reformulação natural e profissional
+
+A validação CDP executada em 15 de agosto de 2026 percorreu dez avanços reais por Tab na página pública. O foco ativo terminou no controle “Baixar currículo”, com `outline-style: solid`, espessura de 2px, deslocamento de 3px e cor ciano visível. A execução confirmou `prefers-reduced-motion: reduce`, transição de calendário reduzida para `0.000001s` e preservação do carregamento da página após a reformulação de conteúdo, skills e repertório visual.
+
+A inspeção visual confirmou a leitura da nova composição em desktop e mobile. O filtro HTML não apresentou o estado vazio esperado nesta execução, portanto essa mensagem específica não foi considerada evidência positiva; os demais controles e a sequência de foco foram validados.
+
+## Validação final da reformulação
+
+A execução CDP mais recente percorreu 90 passos de Tab e encontrou 26 controles dentro do calendário e do formulário. Todos os alvos reportaram foco visível por outline ou box-shadow, incluindo o campo de data nativo, que recebeu um fallback inline para garantir a indicação em Chromium. A mídia emulada confirmou `prefers-reduced-motion: reduce` durante toda a execução. Testes, typecheck e build também foram executados com sucesso, com 13 testes aprovados.
+
+
+## Movimento reduzido nos novos blocos
+
+Com `prefers-reduced-motion: reduce` emulado no Chromium, foram inspecionados o hero com reveal, as linhas de skills, as imagens do repertório aplicado, o retrato e as linhas de serviços. Todos reportaram `animation-name: none`, duração de animação e transição de `0.000001s`, além de transformações neutralizadas. As imagens mantiveram sua utilidade visual, sem movimento não essencial. A execução confirmou a preferência reduzida ativa em todos os elementos encontrados.

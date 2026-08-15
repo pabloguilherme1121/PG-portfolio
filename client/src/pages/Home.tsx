@@ -52,18 +52,21 @@ const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20V
 const skillTracks = [
   {
     number: "01",
-    title: "Tecnologia da Informação",
-    text: "Código, lógica e curiosidade para transformar ideias complexas em algo claro, útil e possível.",
+    title: "Tecnologia e produto",
+    text: "Lógica, interfaces e organização para transformar uma ideia em uma experiência clara e utilizável.",
+    tools: "HTML · CSS · JavaScript · Python",
   },
   {
     number: "02",
-    title: "Criação de conteúdo",
-    text: "Vídeos com ritmo, intenção e presença para ideias que merecem sair da tela e ganhar alcance.",
+    title: "Conteúdo e narrativa",
+    text: "Roteiro, ritmo e edição para comunicar uma mensagem sem excesso e com intenção.",
+    tools: "Roteiro · edição · vídeo vertical · direção",
   },
   {
     number: "03",
-    title: "Captação de imagens",
-    text: "Imagem no chão e no ar para mostrar ângulos, energia e detalhes que normalmente passam despercebidos.",
+    title: "Imagem aérea e terrestre",
+    text: "Enquadramento, movimento e leitura de espaço para registrar o que precisa ser percebido.",
+    tools: "Drone · câmera · composição · captação",
   },
 ];
 
@@ -103,18 +106,18 @@ const serviceOffers = [
 const processSteps = [
   {
     number: "01",
-    title: "Escuto a ideia",
-    text: "Você me conta o contexto, o que precisa registrar e o que espera sentir quando assistir ao resultado.",
+    title: "Alinhamos o objetivo",
+    text: "Contexto, público e resultado esperado entram na conversa antes de qualquer produção.",
   },
   {
     number: "02",
-    title: "Desenho o caminho",
-    text: "Definimos juntos formato, referências, data e o tipo de imagem que faz sentido para o projeto.",
+    title: "Escolhemos o formato",
+    text: "Referências, linguagem, data e entrega são definidos de forma simples e transparente.",
   },
   {
     number: "03",
-    title: "Registro e entrego",
-    text: "Transformo o plano em material organizado para ser visto, compartilhado e lembrado.",
+    title: "Produzimos com clareza",
+    text: "O material é captado, organizado e entregue pronto para o próximo uso do projeto.",
   },
 ];
 
@@ -122,17 +125,17 @@ const caseStudies = [
   {
     id: "ARQ.01",
     title: "Chá da Eloise",
-    context: "Um encontro social que pedia leveza, detalhes e uma leitura mais afetiva do ambiente.",
-    method: "Alternar planos abertos, aproximações e momentos espontâneos da celebração.",
-    learning: "Uma história funciona melhor quando o espaço e as pessoas têm tempo para aparecer.",
-    tags: ["Evento", "Vídeo", "Drone"],
+    context: "Evento social com foco em atmosfera, pessoas e detalhes que ajudam a memória do dia.",
+    method: "Planos abertos, aproximações e movimentos suaves para equilibrar espaço e presença.",
+    learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
+    tags: ["Evento", "Vídeo", "Aéreo"],
   },
   {
     id: "ARQ.02",
     title: "RHAM — serviços no app",
-    context: "Um conteúdo vertical para mostrar uma jornada de serviços em uma interface de forma objetiva.",
-    method: "Organizar a navegação em uma sequência curta, com foco na clareza de cada etapa da tela.",
-    learning: "Em conteúdo digital, ritmo e legibilidade são parte da experiência, não só acabamento.",
+    context: "Conteúdo vertical para apresentar uma jornada de serviços com rapidez e clareza.",
+    method: "Sequência curta, leitura de tela e ritmo guiando cada etapa da experiência.",
+    learning: "Legibilidade e ritmo também são parte do produto final.",
     tags: ["Interface", "Conteúdo", "Vertical"],
   },
 ];
@@ -218,6 +221,27 @@ const repositories: Repository[] = [
     cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
   },
 ];
+const repertoireSignals = [
+  {
+    label: "escala e perspectiva",
+    title: "Imagem aérea",
+    text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
+    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+  },
+  {
+    label: "clareza e ritmo",
+    title: "Interface em movimento",
+    text: "Registro de produto e serviço com foco no que a pessoa precisa entender primeiro.",
+    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
+  },
+  {
+    label: "presença e detalhe",
+    title: "Registro de evento",
+    text: "Captação que aproxima o público da atmosfera, das pessoas e dos pequenos momentos.",
+    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
+  },
+];
+
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 
 export default function Home() {
@@ -383,22 +407,22 @@ export default function Home() {
                 01 / portfólio em movimento
               </div>
               <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(3.4rem,8.8vw,8.8rem)] font-semibold leading-[0.82] tracking-[-0.075em] text-white">
-                Eu aprendo,
+                Ideias que ganham forma.
                 <br />
-                registro e
+                Projetos que
                 <br />
-                construo meu caminho.
+                seguem em movimento.
               </h1>
               <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
                 <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-                  Sou <strong className="font-semibold text-white">Pablo Guilherme</strong>. Sou estudante de TI e criador de conteúdo. Uso código, câmera e drone como formas diferentes de aprender, testar e mostrar o que estou construindo.
+                  Um repertório que combina tecnologia, conteúdo e imagem para transformar uma boa ideia em algo claro, útil e pronto para circular.
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
                   <a href="#sobre" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
-                    conhecer quem eu sou <ArrowDownRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
+                    ver como podemos trabalhar <ArrowDownRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
                   <a href="#contato" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
-                    me chama para conversar <ArrowUpRight className="h-3.5 w-3.5" />
+                    conversar sobre o projeto <ArrowUpRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
               </div>
@@ -411,7 +435,7 @@ export default function Home() {
                 ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
               </p>
               <a href="#sobre" className="mt-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] sm:mt-0">
-                descer para o capítulo 02 <ArrowDown className="h-4 w-4" />
+                ver repertório e skills <ArrowDown className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -422,7 +446,7 @@ export default function Home() {
             <aside className="relative border-b border-white/[0.07] px-5 py-10 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-20">
               <div className="sticky top-28">
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">02 / manifesto</p>
-                <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Um pouco sobre mim.</p>
+                <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Um repertório em construção.</p>
                 <div className="mt-12 hidden h-40 w-px bg-[linear-gradient(#3b82f6,transparent)] lg:block" />
               </div>
             </aside>
@@ -431,16 +455,16 @@ export default function Home() {
               <div className="grid gap-12 xl:grid-cols-[1.5fr_0.7fr] xl:gap-16">
                 <div>
                   <p className="font-display text-[clamp(2.3rem,4.6vw,4.75rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f4f8ff]">
-                      Eu junto <span className="text-[#67e8f9]">tecnologia, conteúdo e imagem</span> porque é assim que consigo mostrar um pouco de quem eu sou.
+                      Tecnologia, conteúdo e imagem se encontram para dar forma a projetos que precisam ser entendidos, vistos e lembrados.
                   </p>
                   <div className="mt-9 max-w-2xl space-y-5 font-body text-base leading-8 text-[#b8c8df]">
-                    <p>Na TI, encontrei a liberdade de construir, testar e resolver. Mais do que aprender ferramentas, gosto de entender como uma boa ideia pode virar algo concreto.</p>
-                    <p>Na criação de conteúdo, levo esse mesmo olhar para a câmera. Filmo no chão, voo com drone e procuro o ângulo que faz cada momento continuar vivo depois que ele passa.</p>
+                    <p>O ponto de partida é sempre o mesmo: entender o problema, organizar a ideia e escolher a linguagem que faz sentido para quem vai receber.</p>
+                    <p>O repertório reúne interfaces, conteúdo vertical, captação terrestre e imagens aéreas — frentes diferentes que se fortalecem quando trabalham juntas.</p>
                   </div>
                   <aside className="human-note mt-9 max-w-2xl p-5 sm:p-6">
-                    <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">uma nota pessoal</p>
-                    <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">“Eu ainda estou aprendendo, e isso faz parte do que quero mostrar por aqui: vontade de criar, espaço para evoluir e trabalho feito de verdade.”</p>
-                    <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd]">— Pablo Guilherme</p>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">nota de direção</p>
+                    <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">“Um bom projeto não precisa começar pronto. Precisa de clareza para dar o próximo passo.”</p>
+                    <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd]">— direção e processo</p>
                   </aside>
                   <a
                     href={resumeUrl}
@@ -493,8 +517,8 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
-                <h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que eu gosto de fazer.</h2>
-                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">Não vejo tecnologia e audiovisual como caminhos separados. São duas formas de observar, aprender e dar vida a uma ideia.</p>
+                <h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Skills para tirar ideias do lugar.</h2>
+                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: estratégia e execução, tela e presença, detalhe e visão geral.</p>
               </div>
               <div className="border-t border-white/[0.1]">
                 {skillTracks.map((skill) => (
@@ -503,10 +527,33 @@ export default function Home() {
                     <div>
                       <h3 className="font-display text-2xl font-medium text-[#eff6ff] transition-colors group-hover:text-[#69a1ff]">{skill.title}</h3>
                       <p className="mt-3 max-w-lg font-body text-sm leading-7 text-[#9eb0cc]">{skill.text}</p>
+                      <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f91b7]">{skill.tools}</p>
                     </div>
                     <span className="flex h-8 w-8 items-center justify-center border border-white/10 text-[#7daafa] transition-all duration-200 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white">
                       <ArrowUpRight className="h-4 w-4" />
                     </span>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div className="mt-12 border-t border-white/[0.1] pt-8">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                <div>
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">repertório aplicado</p>
+                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.4rem)] font-medium leading-none tracking-[-0.05em] text-white">Três formas de pensar a imagem.</h3>
+                </div>
+                <p className="max-w-sm font-body text-sm leading-7 text-[#9eb0cc]">As imagens entram como referência prática: o que foi observado, para que serviu e como pode ajudar um novo projeto.</p>
+              </div>
+              <div className="mt-7 grid gap-px bg-white/[0.1] md:grid-cols-3">
+                {repertoireSignals.map((signal) => (
+                  <article key={signal.title} className="group relative min-h-[270px] overflow-hidden bg-[#07101c] p-5 sm:p-6">
+                    <img src={signal.cover} alt={`Referência visual: ${signal.title}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 saturate-[0.75] transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#030b1e] via-[#030b1e]/65 to-transparent" />
+                    <div className="relative flex h-full flex-col justify-end">
+                      <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">{signal.label}</p>
+                      <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{signal.title}</h3>
+                      <p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#c2d9e7]">{signal.text}</p>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -520,11 +567,11 @@ export default function Home() {
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
-                <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Seu momento merece<br />ser bem contado.</h2>
-                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // direção de imagem</div>
+                <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do briefing à entrega,<br />com clareza.</h2>
+                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // direção e imagem</div>
               </div>
               <div className="lg:pb-2">
-                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">Trabalho com imagem porque gosto de observar e resolver. Cada filmagem é também uma chance de testar repertório, organizar uma ideia e aprender com um projeto real.</p>
+                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">Cada projeto recebe uma combinação de direção, captação e organização para que a entrega seja clara antes, durante e depois da produção.</p>
                 <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3eeff] transition-colors hover:text-[#76aaff]">falar sobre um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
               </div>
             </div>
@@ -559,9 +606,9 @@ export default function Home() {
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
           <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.82fr_1.18fr] lg:px-12 lg:py-28">
             <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">05 / como eu trabalho</p>
-              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do primeiro “e se?”<br />ao registro final.</h2>
-              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Meu processo começa em conversa. A ideia é entender o que importa antes de decidir qualquer enquadramento.</p>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">05 / como o trabalho acontece</p>
+              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Da primeira conversa<br />à entrega final.</h2>
+              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um processo simples ajuda a decidir melhor: contexto, formato, produção e próximos usos.</p>
               <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">contar sua ideia <ArrowUpRight className="h-3.5 w-3.5" /></a>
             </div>
             <div className="divide-y divide-cyan-100/[0.12] border-y border-cyan-100/[0.12]">
@@ -583,10 +630,10 @@ export default function Home() {
             <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / trabalhos selecionados</p>
-                <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Trabalhos que<br className="hidden sm:block" /> já ganharam vida.</h2>
+                <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Repertório em uso,<br className="hidden sm:block" /> não só na vitrine.</h2>
                 <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
-              <p className="max-w-sm font-body text-sm leading-7 text-[#b6d7eb]">Este é meu arquivo em andamento. Cada registro marca uma fase: uma referência que testei, uma solução que encontrei ou um olhar que aprimorei na prática.</p>
+              <p className="max-w-sm font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
             </div>
 
             <div className="mt-8 flex flex-wrap gap-2" aria-label="Filtrar repositórios por tecnologia">
@@ -650,10 +697,10 @@ export default function Home() {
                     <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Quando você quiser, a próxima história começa aqui.</h3>
                     <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
                       {activeTechnology === "Todos"
-                        ? "Quando você tiver um link do GitHub, um vídeo ou uma nova filmagem, eu posso adicioná-lo com descrição, tecnologias e acesso direto."
+                        ? "Quando houver um link do GitHub, um vídeo ou uma nova filmagem, o registro pode entrar aqui com descrição, tecnologias e acesso direto."
                         : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
                     </p>
-                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">me manda um link quando quiser <ArrowUpRight className="h-3.5 w-3.5" /></a>
+                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar material para incluir <ArrowUpRight className="h-3.5 w-3.5" /></a>
                   </div>
                 </div>
                 <div className="border-t border-white/[0.1] bg-[#070b13] p-7 sm:p-10 lg:border-l lg:border-t-0">
@@ -674,9 +721,9 @@ export default function Home() {
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
                   <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">por trás dos trabalhos</p>
-                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.5rem)] font-medium leading-none tracking-[-0.05em] text-white">O que cada registro me ensinou.</h3>
+                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.5rem)] font-medium leading-none tracking-[-0.05em] text-white">Contexto, escolha e resultado.</h3>
                 </div>
-                <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Mais do que mostrar uma entrega, eu quero registrar as decisões que fizeram cada projeto avançar.</p>
+                <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Cada estudo resume o que precisava ser resolvido, qual caminho foi escolhido e o que a entrega comprova.</p>
               </div>
               <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2">
                 {caseStudies.map((study) => (
@@ -701,9 +748,9 @@ export default function Home() {
           <div className="relative mx-auto grid max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
             <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">07 / solicitação de orçamento</p>
-                <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem uma ideia? Vamos conversar.</h2>
-                <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Você não precisa chegar com tudo pronto. Me conta o que imagina e, juntos, a gente encontra o ritmo, o enquadramento e o formato para isso ganhar vida.</p>
-              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> novos projetos em análise — me conta o que você está imaginando</div>
+                <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem um projeto? Vamos dar forma.</h2>
+                <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Não precisa chegar com tudo pronto. Compartilhe o contexto e, juntos, definimos o formato mais útil para o projeto.</p>
+              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> agenda aberta para novos projetos — vamos começar pelo contexto</div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
                 <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" className="social-channel group flex items-center gap-3 bg-[#070a10] px-4 py-4">
                   <span className="social-icon-mark grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc]"><Instagram className="h-4 w-4" /></span>
@@ -763,9 +810,9 @@ export default function Home() {
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
                 <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>
                 <ol className="mt-4 space-y-3 font-body text-sm leading-6 text-[#cbe8f6]">
-                  <li><span className="mr-2 font-mono text-[#67e8f9]">01</span>Eu leio sua ideia e entendo o que faz sentido registrar.</li>
-                  <li><span className="mr-2 font-mono text-[#67e8f9]">02</span>Voltamos a conversar sobre formato, data e detalhes.</li>
-                  <li><span className="mr-2 font-mono text-[#67e8f9]">03</span>Você recebe uma proposta feita para o seu projeto.</li>
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">01</span>O contexto é organizado para definir o que realmente precisa ser produzido.</li>
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">02</span>Formato, data e detalhes são alinhados com transparência.</li>
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">03</span>A proposta chega com escopo, entrega e próximos passos claros.</li>
                 </ol>
               </div>
             </div>
@@ -780,17 +827,17 @@ export default function Home() {
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
-                      <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
-                      <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                   </div>
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                      <select required name="service" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                      <select required name="service" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="" disabled>Selecione um serviço</option>
                         <option>Filmagem aérea com drone</option>
                         <option>Captação terrestre</option>
@@ -801,7 +848,7 @@ export default function Home() {
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                      <select required name="projectType" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                      <select required name="projectType" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="" disabled>Selecione uma opção</option>
                         <option>Evento social</option>
                         <option>Evento corporativo</option>
@@ -815,17 +862,17 @@ export default function Home() {
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local do projeto *</span>
-                      <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
-                      <input type="date" name="date" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
+                      <input type="date" name="date" onFocus={(event) => { event.currentTarget.style.outline = "2px solid #a5f3fc"; event.currentTarget.style.outlineOffset = "3px"; event.currentTarget.style.boxShadow = "0 0 0 4px rgba(165, 243, 252, 0.28)"; }} onBlur={(event) => { event.currentTarget.style.outline = ""; event.currentTarget.style.outlineOffset = ""; event.currentTarget.style.boxShadow = ""; }} className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
                     </label>
                   </div>
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                      <select name="delivery" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                      <select name="delivery" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="">A definir</option>
                         <option>Vertical 9:16 para Reels</option>
                         <option>Horizontal 16:9</option>
@@ -835,7 +882,7 @@ export default function Home() {
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                      <select name="budget" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                      <select name="budget" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="">Prefiro conversar</option>
                         <option>Até R$ 500</option>
                         <option>R$ 500 a R$ 1.000</option>
@@ -846,18 +893,18 @@ export default function Home() {
                   </div>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">briefing do projeto *</span>
-                    <textarea required name="briefing" rows={5} placeholder="Conte o objetivo, referências, o que precisa ser registrado e qualquer detalhe importante." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <textarea required name="briefing" rows={5} placeholder="Conte o objetivo, referências, o que precisa ser registrado e qualquer detalhe importante." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                 </div>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <Button disabled={quoteRequestMutation.isPending} type="submit" className="h-auto w-fit rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70">
-                    {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre meu projeto <Send className="h-4 w-4" /></>}
+                    {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
                   </Button>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">seus dados ficam apenas neste pedido</p>
                 </div>
                 {formError && <p role="alert" className="mt-6 border-l-2 border-rose-400 bg-rose-400/10 px-4 py-3 font-body text-sm text-rose-100">{formError}</p>}
                 {formSent && (
-                  <div ref={successMessageRef} tabIndex={-1} role="status" aria-live="polite" className="quote-success mt-7 border border-[#3b82f6]/45 bg-[#0a1730] p-5 outline-none">
+                  <div ref={successMessageRef} tabIndex={-1} role="status" aria-live="polite" className="quote-success mt-7 border border-[#3b82f6]/45 bg-[#0a1730] p-5">
                     <div className="flex gap-4">
                       <span className="quote-success-icon grid h-11 w-11 shrink-0 place-items-center border border-[#3b82f6] bg-[#3b82f6] text-white"><CheckCircle2 className="h-5 w-5" /></span>
                       <div>

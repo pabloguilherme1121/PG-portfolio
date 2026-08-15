@@ -72,8 +72,8 @@ body {
   margin: 0;
   min-width: 320px;
   background:
-    radial-gradient(circle at 84% -8%, rgba(56, 189, 248, 0.34), transparent 30rem),
-    radial-gradient(circle at 8% 30%, rgba(14, 165, 233, 0.17), transparent 34rem),
+    radial-gradient(circle at 86% -10%, rgba(56, 189, 248, 0.20), transparent 28rem),
+    radial-gradient(circle at 8% 30%, rgba(14, 165, 233, 0.08), transparent 30rem),
     #030b1e;
   color: #eef5ff;
   font-family: var(--font-body);
@@ -102,10 +102,17 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 10px 28px rgba(56, 189, 248, 0.22);
 }
 
+input[type="date"]:focus,
+input[type="date"]:focus-visible {
+  outline: 2px solid #a5f3fc !important;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(165, 243, 252, 0.28) !important;
+}
+
 button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cursor: pointer; }
 
 .blueprint-grid {
-  background-image: linear-gradient(rgba(103, 232, 249, 0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(103, 232, 249, 0.16) 1px, transparent 1px);
+  background-image: linear-gradient(rgba(103, 232, 249, 0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(103, 232, 249, 0.10) 1px, transparent 1px);
   background-size: 46px 46px;
   mask-image: linear-gradient(90deg, transparent, black 20%, black 80%, transparent);
 }
@@ -115,7 +122,7 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
   width: 2px;
   opacity: 0.86;
   background: linear-gradient(to bottom, transparent 0%, #a5f3fc 5%, #38bdf8 22%, rgba(56, 189, 248, 0.4) 75%, transparent 100%);
-  box-shadow: 0 0 28px rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 22px rgba(56, 189, 248, 0.32);
 }
 
 .archive-spine::before {
