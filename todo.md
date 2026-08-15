@@ -268,3 +268,12 @@
 - [x] Integrar categoria com busca, transições e modo compacto existentes.
 - [x] Validar filtros em mobile, desktop, teclado, reduced motion, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Ordenação da galeria por data e relevância
+
+- [x] Auditar os dados atuais e definir critérios verificáveis de data e relevância.
+- [x] Adicionar metadados editoriais documentados de ordem de adição e relevância aos projetos.
+- [x] Implementar controle de ordenação ao lado dos filtros de categoria.
+- [x] Integrar ordenação com categorias, tecnologias, busca, transições e modo compacto.
+- [x] Validar acessibilidade, responsividade, testes, build e salvar checkpoint.

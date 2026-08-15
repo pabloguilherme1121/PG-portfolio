@@ -153,6 +153,10 @@ type Repository = {
   kind: "repository" | "video";
   cover?: string;
   featured?: boolean;
+  /** Ordem de entrada no arquivo visual, preservada pela sequência de cadastro dos projetos. */
+  addedOrder: number;
+  /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
+  relevance: number;
 };
 
 type SearchSuggestion = {
@@ -212,6 +216,8 @@ const repositories: Repository[] = [
     kind: "video",
     cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
     featured: true,
+    addedOrder: 7,
+    relevance: 100,
   },
   {
     id: "CNT.02",
@@ -221,6 +227,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
     kind: "video",
     cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
+    addedOrder: 6,
+    relevance: 88,
   },
   {
     id: "CNT.03",
@@ -230,6 +238,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
     kind: "video",
     cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
+    addedOrder: 5,
+    relevance: 76,
   },
   {
     id: "AUD.04",
@@ -239,6 +249,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
     kind: "video",
     cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
+    addedOrder: 4,
+    relevance: 82,
   },
   {
     id: "AUD.05",
@@ -248,6 +260,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
     kind: "video",
     cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+    addedOrder: 3,
+    relevance: 84,
   },
   {
     id: "CNT.06",
@@ -257,6 +271,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
     kind: "video",
     cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
+    addedOrder: 2,
+    relevance: 80,
   },
   {
     id: "AUD.07",
@@ -266,6 +282,8 @@ const repositories: Repository[] = [
     url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
     kind: "video",
     cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
+    addedOrder: 1,
+    relevance: 79,
   },
 ];
 const repertoireSignals = [
@@ -291,6 +309,10 @@ const repertoireSignals = [
 
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
+const sortOptions = [
+  { value: "relevance", label: "relevância editorial" },
+  { value: "added", label: "ordem de adição" },
+] as const;
 function getRepositoryCategories(repository: Repository) {
   const categories = new Set<string>();
   if (repository.description.toLocaleLowerCase("pt-BR").includes("evento") || repository.name.toLocaleLowerCase("pt-BR").includes("eloise")) categories.add("Eventos");
@@ -316,6 +338,7 @@ export default function Home() {
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
@@ -363,13 +386,15 @@ export default function Home() {
       .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
       .slice(0, 6)
     : [];
-  const visibleRepositories = repositories.filter((repository) => {
-    const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
-    const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
-    const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
-    const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
-    return matchesTechnology && matchesCategory && matchesSearch;
-  });
+  const visibleRepositories = repositories
+    .filter((repository) => {
+      const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
+      const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
+      const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
+      const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
+      return matchesTechnology && matchesCategory && matchesSearch;
+    })
+    .sort((first, second) => sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -447,6 +472,16 @@ export default function Home() {
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => {
       setActiveCategory(category);
+      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+    }, 130);
+  }
+
+  function selectSort(mode: (typeof sortOptions)[number]["value"]) {
+    if (mode === sortMode || isProjectFilterTransitioning) return;
+    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    setIsProjectFilterTransitioning(true);
+    projectFilterTimerRef.current = window.setTimeout(() => {
+      setSortMode(mode);
       projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
     }, 130);
   }
@@ -840,9 +875,17 @@ export default function Home() {
             </div>
 
             <div className="mt-8 border-y border-white/[0.1] py-4">
-              <div className="mb-4 flex items-center justify-between gap-4">
-                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
-                <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
+              <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center justify-between gap-4">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
+                </div>
+                <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
+                  <span>ordenar por</span>
+                  <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">
+                    {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                  </select>
+                </label>
               </div>
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {

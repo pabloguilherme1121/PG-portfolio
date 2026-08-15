@@ -36,6 +36,25 @@ for (const width of viewports) {
   const categoryTodosFilter = page.locator('#projetos button[data-filter-scope="category"]', { hasText: "Todos" }).first();
   await categoryTodosFilter.click();
   await page.waitForTimeout(280);
+  const initialProjectOrder = await page.locator('#projetos .project-gallery-card .font-display').allTextContents();
+  const sortControl = page.locator('#projetos select[data-sort-control="projects"]');
+  await sortControl.focus();
+  const sortFocusVisible = await sortControl.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  await page.keyboard.press("ArrowDown");
+  await page.waitForTimeout(280);
+  const sortKeyboardChanged = (await sortControl.inputValue()) === "added";
+  await page.keyboard.press("ArrowUp");
+  await page.waitForTimeout(280);
+  await sortControl.selectOption("added");
+  await page.waitForTimeout(280);
+  const addedProjectOrder = await page.locator('#projetos .project-gallery-card .font-display').allTextContents();
+  const sortAddedChangedOrder = initialProjectOrder.join("|") !== addedProjectOrder.join("|");
+  await sortControl.selectOption("relevance");
+  await page.waitForTimeout(280);
+  const relevanceSortRestored = (await sortControl.inputValue()) === "relevance";
   const droneFilter = page.locator('#projetos button[data-filter-scope="technology"]', { hasText: "Drone" }).first();
   await droneFilter.click();
   await page.waitForTimeout(280);
@@ -57,7 +76,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 
