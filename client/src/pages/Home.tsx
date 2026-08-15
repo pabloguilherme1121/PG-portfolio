@@ -315,7 +315,7 @@ export default function Home() {
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#inicio" aria-label="Ir ao início" className="group flex items-center gap-3" onClick={closeMenu}>
             <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
-              <img src={markUrl} alt="Símbolo PG" className="h-7 w-7 object-contain" />
+              <img src={markUrl} alt="Símbolo PG" width="28" height="28" decoding="async" className="h-7 w-7 object-contain" />
             </span>
             <span className="font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-[#b7cdf1]">
               Pablo <span className="text-[#67e8f9]">/</span> Guilherme
@@ -374,7 +374,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-cover bg-center opacity-70 lg:w-[72%]" style={{ backgroundImage: `url(${heroUrl})` }} />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-[linear-gradient(90deg,#030b1e_5%,rgba(3,11,30,0.94)_30%,rgba(3,11,30,0.30)_68%,rgba(3,11,30,0.62)_100%)] lg:w-[80%]" />
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-52 bg-[linear-gradient(0deg,#030b1e,transparent)]" />
-          <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block"><img src={markUrl} alt="" className="w-full" /></div>
+          <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block"><img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" /></div>
 
           <div className="relative mx-auto flex min-h-[734px] max-w-[1440px] flex-col justify-between px-5 pb-8 pt-16 sm:px-8 sm:pt-24 lg:min-h-[774px] lg:px-12">
             <div className="max-w-4xl">
@@ -398,7 +398,7 @@ export default function Home() {
                     conhecer quem eu sou <ArrowDownRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
                   <a href="#contato" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
-                    iniciar conversa <ArrowUpRight className="h-3.5 w-3.5" />
+                    me chama para conversar <ArrowUpRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
               </div>
@@ -459,7 +459,7 @@ export default function Home() {
                 </div>
                 <div className="border-l border-white/10 pl-6 xl:mt-4">
                   <figure className="relative mb-8 overflow-hidden border border-white/10 bg-[#0d1523]">
-                    <img src={portraitUrl} alt="Pablo Guilherme" className="h-64 w-full object-cover object-center saturate-[0.8] contrast-110 transition-transform duration-700 hover:scale-[1.03] sm:h-72" />
+                    <img src={portraitUrl} alt="Pablo Guilherme" width="720" height="860" loading="lazy" decoding="async" className="h-64 w-full object-cover object-center saturate-[0.8] contrast-110 transition-transform duration-700 hover:scale-[1.03] sm:h-72" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(6,8,13,0.92)_100%)]" />
                     <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between px-4 py-3">
                       <span className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#d9e8ff]">Pablo Guilherme</span>
@@ -612,7 +612,7 @@ export default function Home() {
                 {visibleRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
-                      {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
+                      {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
                       {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
                       <span className="relative flex items-start justify-between gap-4">
                         <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span><span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8b9cb4]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span></span>
@@ -647,13 +647,13 @@ export default function Home() {
                   <div className="relative">
                     <span className="grid h-12 w-12 place-items-center border border-[#3b82f6]/40 bg-[#3b82f6]/10 text-[#70a6ff]"><FolderGit2 className="h-5 w-5" /></span>
                     <p className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#72a7fb]">arquivo em preparo / novos trabalhos</p>
-                    <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Seu próximo trabalho vai aparecer aqui.</h3>
+                    <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Quando você quiser, a próxima história começa aqui.</h3>
                     <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
                       {activeTechnology === "Todos"
                         ? "Quando você tiver um link do GitHub, um vídeo ou uma nova filmagem, eu posso adicioná-lo com descrição, tecnologias e acesso direto."
                         : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
                     </p>
-                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar um repositório quando estiver pronto <ArrowUpRight className="h-3.5 w-3.5" /></a>
+                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">me manda um link quando quiser <ArrowUpRight className="h-3.5 w-3.5" /></a>
                   </div>
                 </div>
                 <div className="border-t border-white/[0.1] bg-[#070b13] p-7 sm:p-10 lg:border-l lg:border-t-0">
@@ -703,7 +703,7 @@ export default function Home() {
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">07 / solicitação de orçamento</p>
                 <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem uma ideia? Vamos conversar.</h2>
                 <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Você não precisa chegar com tudo pronto. Me conta o que imagina e, juntos, a gente encontra o ritmo, o enquadramento e o formato para isso ganhar vida.</p>
-              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> novos projetos em análise</div>
+              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> novos projetos em análise — me conta o que você está imaginando</div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
                 <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" className="social-channel group flex items-center gap-3 bg-[#070a10] px-4 py-4">
                   <span className="social-icon-mark grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc]"><Instagram className="h-4 w-4" /></span>
@@ -758,7 +758,7 @@ export default function Home() {
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>
                 <span id="availability-feedback" role="status" aria-live="polite" className="sr-only">{isAvailabilityRedirecting ? "Abrindo o WhatsApp com sua data e horário selecionados." : ""}</span>
-                <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A confirmação final da data e do horário é feita diretamente com Pablo.</p>
+                <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A gente confirma a data e o horário diretamente com você, sem compromisso.</p>
               </div>
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
                 <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>
@@ -851,7 +851,7 @@ export default function Home() {
                 </div>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <Button disabled={quoteRequestMutation.isPending} type="submit" className="h-auto w-fit rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70">
-                    {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>solicitar orçamento <Send className="h-4 w-4" /></>}
+                    {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre meu projeto <Send className="h-4 w-4" /></>}
                   </Button>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">seus dados ficam apenas neste pedido</p>
                 </div>
@@ -864,7 +864,7 @@ export default function Home() {
                         <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">briefing recebido</p>
                         <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Tudo certo: seu pedido chegou.</h3>
                         <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">Obrigado por compartilhar sua ideia. Vou analisar as informações e retorno pelo e-mail informado para conversar sobre os próximos passos.</p>
-                        <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">preencher outro briefing <ArrowUpRight className="h-3 w-3" /></button>
+                        <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">quero contar outra ideia <ArrowUpRight className="h-3 w-3" /></button>
                       </div>
                     </div>
                   </div>
@@ -878,7 +878,7 @@ export default function Home() {
       <footer className="border-t border-white/[0.07] bg-[#06080d]">
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <div className="flex items-center gap-3">
-            <img src={markUrl} alt="" className="h-6 w-6 object-contain" />
+            <img src={markUrl} alt="" width="24" height="24" decoding="async" className="h-6 w-6 object-contain" />
             <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3]">Pablo Guilherme · TI · conteúdo · audiovisual</p>
           </div>
           <div className="flex items-center gap-3">
@@ -899,7 +899,7 @@ export default function Home() {
         <div className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Vídeo: ${selectedProject.name}`}>
           <div className="relative w-full max-w-5xl border border-white/15 bg-[#080d16] shadow-[0_20px_80px_rgba(0,0,0,0.55)]">
             <button type="button" onClick={() => setSelectedProject(null)} aria-label="Fechar vídeo" className="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center border border-white/15 bg-[#060a10]/90 text-white transition-colors hover:border-[#3b82f6] hover:text-[#8db8ff]"><X className="h-5 w-5" /></button>
-            <video className="max-h-[72vh] w-full bg-black" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay preload="metadata">Seu navegador não oferece suporte à reprodução de vídeo.</video>
+            <video className="max-h-[72vh] w-full bg-black" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata">Seu navegador não oferece suporte à reprodução de vídeo.</video>
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div><p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#75a7fb]">projeto audiovisual</p><p className="mt-1 font-display text-xl text-white">{selectedProject.name}</p></div>
               <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.11em] text-[#9cb3d4]"><Camera className="h-3.5 w-3.5 text-[#3b82f6]" /> conteúdo · evento <Plane className="ml-2 h-3.5 w-3.5 text-[#3b82f6]" /> imagem aérea</div>
