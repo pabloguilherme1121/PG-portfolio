@@ -1,5 +1,9 @@
 import { ArrowUpRight, Instagram } from "lucide-react";
+import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+
+const formatFilters = ["todos", "drone", "eventos", "bastidores"] as const;
+type FormatFilter = (typeof formatFilters)[number];
 
 const profiles = [
   {
@@ -9,6 +13,7 @@ const profiles = [
     url: "https://www.instagram.com/pablogui000/",
     cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
     position: "object-[center_35%]",
+    formats: ["bastidores"],
   },
   {
     handle: "@mpjstoryworks",
@@ -17,6 +22,7 @@ const profiles = [
     url: "https://www.instagram.com/mpjstoryworks/",
     cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
     position: "object-center",
+    formats: ["eventos", "bastidores"],
   },
   {
     handle: "ver projetos",
@@ -25,14 +31,17 @@ const profiles = [
     url: "https://www.instagram.com/mpjstoryworks/",
     cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
     position: "object-[center_58%]",
+    formats: ["drone"],
   },
 ];
 
 export default function InstagramRepertoire() {
+  const [activeFormat, setActiveFormat] = useState<FormatFilter>("todos");
   const feedStatus = trpc.instagramFeed.status.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
   const feedState = feedStatus.isLoading ? "loading" : feedStatus.isError ? "query_error" : (feedStatus.data?.status ?? "error");
   const liveItems = feedStatus.data?.status === "available" ? feedStatus.data.items : [];
   const hasLiveItems = liveItems.length > 0;
+  const visibleProfiles = activeFormat === "todos" ? profiles : profiles.filter((profile) => profile.formats.includes(activeFormat));
 
   return (
     <section id="social" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#050c18]">
@@ -56,8 +65,33 @@ export default function InstagramRepertoire() {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-px bg-cyan-100/[0.1] md:grid-cols-3">
-          {profiles.map((profile, index) => (
+        <div className="mt-8 border-y border-white/[0.1] py-4" role="group" aria-label="Filtrar repertório social por formato">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7899ae]">filtrar por formato</p>
+            <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Formatos disponíveis">
+              {formatFilters.map((format) => {
+                const isActive = activeFormat === format;
+                const label = format === "todos" ? "todos" : format;
+                return (
+                  <button
+                    key={format}
+                    type="button"
+                    onClick={() => setActiveFormat(format)}
+                    aria-pressed={isActive}
+                    className={`border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050c18] ${isActive ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-transparent text-[#88a6bd] hover:border-[#67e8f9]/60 hover:text-[#dffaff]"}`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#5f7e9a]" role="status" aria-live="polite">{visibleProfiles.length} {visibleProfiles.length === 1 ? "referência" : "referências"} visível{visibleProfiles.length === 1 ? "" : "eis"}</p>
+        </div>
+
+        {visibleProfiles.length > 0 ? (
+          <div className="mt-4 grid gap-px bg-cyan-100/[0.1] md:grid-cols-3">
+          {visibleProfiles.map((profile, index) => (
             <a
               key={profile.handle}
               href={profile.url}
@@ -85,7 +119,13 @@ export default function InstagramRepertoire() {
               </span>
             </a>
           ))}
-        </div>
+          </div>
+        ) : (
+          <div className="mt-4 border border-dashed border-[#67e8f9]/25 bg-[#06172f]/60 px-5 py-8 text-center" role="status" aria-live="polite">
+            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#a5f3fc]">nenhuma referência neste filtro</p>
+            <p className="mt-2 font-body text-sm leading-6 text-[#9fc4d4]">Escolha outro formato para continuar explorando o repertório disponível.</p>
+          </div>
+        )}
 
         {feedState === "available" && hasLiveItems && (
           <div className="mt-6 border border-[#67e8f9]/20 bg-[#06172f]/70 p-5">

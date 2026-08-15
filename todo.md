@@ -140,3 +140,12 @@
 - [x] Adicionar contrato público de estado do feed, sem expor credenciais, distinguindo disponível, vazio, erro e credenciais ausentes.
 - [x] Refletir esses estados explicitamente na seção social, mantendo fallback visual honesto.
 - [x] Cobrir o contrato de estado com teste automatizado e atualizar o relatório de validação.
+
+
+## Filtros do Repertório Social
+
+- [x] Definir categorias de formato para os cards sociais, incluindo drone, eventos e bastidores.
+- [x] Implementar seleção de filtro com estado ativo, contagem e estado vazio acessível.
+- [x] Associar cada card às categorias reais sem inventar publicações do Instagram.
+- [x] Validar filtros em desktop e mobile, incluindo teclado e reduced motion. Evidência Chromium registrada em refinement-validation.md.
+- [x] Salvar checkpoint após a validação final.

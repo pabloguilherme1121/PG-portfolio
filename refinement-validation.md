@@ -50,3 +50,10 @@ A seção `#social` foi criada como um bloco independente e carregado sob demand
 A seção consulta o contrato público `instagramFeed.status` via tRPC. O contrato não expõe tokens e distingue os estados `loading`, `query_error`, `credentials_required`, `empty`, `error` e `available`. No estado atual, o servidor retorna `credentials_required`, pois uma conta profissional e uma autorização Meta ainda não foram fornecidas. O fallback visual permanece acionável e direciona o visitante aos perfis reais.
 
 A cobertura automatizada inclui `server/instagramFeed.test.ts`, que verifica que o estado de credenciais ausentes retorna lista vazia e nenhuma publicação inventada. A suíte completa passou com 14 testes; TypeScript e build de produção também passaram. A validação visual foi executada em viewport desktop de 1280×720 e móvel de 390×844, confirmando a leitura da grade, o contraste azul celeste/preto, os links externos e a adaptação para uma coluna em telas estreitas.
+
+
+## Filtros do Repertório Social
+
+A seção social agora possui os filtros `todos`, `drone`, `eventos` e `bastidores`. Cada card está associado somente a formatos presentes no repertório real já disponível no projeto; os filtros não simulam publicações do Instagram. O botão ativo usa `aria-pressed`, há contagem de referências visíveis e existe um estado vazio acessível para categorias sem correspondência.
+
+A validação prática em Chromium, com viewport móvel de 390×844 e `prefers-reduced-motion: reduce`, encontrou os quatro rótulos esperados, confirmou foco visível no primeiro filtro, acionou o filtro `drone`, verificou `aria-pressed="true"`, confirmou a mensagem `1 referência visível` e registrou `matchMedia('(prefers-reduced-motion: reduce)').matches === true`. As validações visuais desktop/mobile e a suíte de 14 testes continuam aprovadas.
