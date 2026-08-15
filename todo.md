@@ -115,3 +115,12 @@
 ## Auditoria documentada
 
 - [x] Documentar prioridades de conteúdo, conversão, repertório, usabilidade, identidade e performance em interface-review.md.
+
+
+## Links clicáveis no currículo
+
+- [x] Inserir links clicáveis para @pablogui000 e @mpjstoryworks.
+- [x] Inserir link clicável para WhatsApp +55 61 99290-3029.
+- [x] Compilar e verificar as anotações de link no PDF.
+- [x] Publicar o PDF atualizado e atualizar o ativo do site.
+- [ ] Salvar checkpoint da nova versão.

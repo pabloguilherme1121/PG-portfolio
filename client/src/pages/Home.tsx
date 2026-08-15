@@ -45,7 +45,7 @@ const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
 const portraitUrl = "/manus-storage/pablo-guilherme-retrato-principal_c719478f.jpg";
-const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-visual_7ea163b7.pdf";
+const resumeUrl = "/manus-storage/main_e88f8102.pdf";
 const whatsAppNumber = "5561992903029";
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 
