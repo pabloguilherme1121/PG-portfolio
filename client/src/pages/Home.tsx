@@ -250,6 +250,7 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
+  const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
@@ -257,6 +258,7 @@ export default function Home() {
   const today = new Date();
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
+  const projectFilterTimerRef = useRef<number | null>(null);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
@@ -289,6 +291,10 @@ export default function Home() {
     }
   }, [availabilityDate, blockedDateKeys, isBlockedDatesError]);
 
+  useEffect(() => () => {
+    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+  }, []);
+
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
     onSuccess: () => setFormSent(true),
     onError: () => setFormError("Não foi possível enviar agora. Confira sua conexão e tente novamente."),
@@ -296,6 +302,16 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function selectTechnology(technology: string) {
+    if (technology === activeTechnology || isProjectFilterTransitioning) return;
+    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    setIsProjectFilterTransitioning(true);
+    projectFilterTimerRef.current = window.setTimeout(() => {
+      setActiveTechnology(technology);
+      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+    }, 130);
   }
 
   function consultAvailabilityOnWhatsApp() {
@@ -643,7 +659,8 @@ export default function Home() {
                 <button
                   type="button"
                   key={technology}
-                  onClick={() => setActiveTechnology(technology)}
+                  onClick={() => selectTechnology(technology)}
+                  aria-busy={isProjectFilterTransitioning}
                   aria-pressed={activeTechnology === technology}
                   className={`border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] ${
                     activeTechnology === technology
@@ -656,8 +673,9 @@ export default function Home() {
               ))}
             </div>
 
+            <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {visibleRepositories.length > 0 ? (
-              <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
+              <div className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
                 {visibleRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
@@ -679,18 +697,18 @@ export default function Home() {
                   );
 
                   return repository.kind === "video" ? (
-                    <button key={repository.id} type="button" onClick={() => setSelectedProject(repository)} className={`group relative flex flex-col overflow-hidden bg-[#0a0f18] p-6 text-left transition-colors hover:bg-[#0d1523] sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}>
+                    <button key={`${activeTechnology}-${repository.id}`} type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] p-6 text-left transition-colors hover:bg-[#0d1523] sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}>
                       {cardContent}
                     </button>
                   ) : (
-                    <a key={repository.id} href={repository.url} target="_blank" rel="noreferrer" className="group relative flex min-h-[380px] flex-col overflow-hidden bg-[#0a0f18] p-6 transition-colors hover:bg-[#0d1523] sm:p-8">
+                    <a key={`${activeTechnology}-${repository.id}`} href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className="project-gallery-card group relative flex min-h-[380px] flex-col overflow-hidden bg-[#0a0f18] p-6 transition-colors hover:bg-[#0d1523] sm:p-8">
                       {cardContent}
                     </a>
                   );
                 })}
               </div>
             ) : (
-              <div className="mt-8 grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
+              <div key={`empty-${activeTechnology}`} className="project-gallery-empty grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
                 <div className="relative overflow-hidden p-7 sm:p-10">
                   <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
                   <div className="relative">
@@ -718,6 +736,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+            </div>
 
             <div className="mt-16 border-t border-cyan-100/[0.12] pt-8 sm:pt-10">
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">

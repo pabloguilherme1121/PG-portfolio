@@ -71,3 +71,9 @@ A validação Chromium confirmou foco visível nos filtros, `aria-pressed="true"
 A validação Chromium foi repetida após a implementação da animação em viewport móvel de 390×844. O roteiro deslocou o foco por `Tab` do filtro “todos” para “drone”, acionou a seleção por `Enter` e confirmou que o foco permaneceu no botão durante e após a transição. O estado `aria-pressed="true"`, a contagem `1 referência visível` e `prefers-reduced-motion: reduce` ativo foram confirmados. Durante a troca, a grade exibiu `translate-y-1 opacity-0`; após 260ms, retornou a `translate-y-0 opacity-100`.
 
 Novas capturas visuais foram realizadas em desktop de 1280×720 e mobile de 390×844 depois da implementação. A composição dos botões, a grade filtrável e o fallback visual permaneceram responsivos e legíveis nos dois tamanhos.
+
+## Transição da galeria principal de trabalhos
+
+A galeria `#projetos` agora aplica a mesma sequência suave usada no Repertório Social: a grade reduz opacidade e desloca-se 4px durante 130ms, o filtro é atualizado e os cards ou estado vazio entram com `opacity` e `transform`, com atraso escalonado de 45ms para os cards. O carregamento inicial e as trocas de tecnologia usam a mesma animação, sem recorrer a mudanças animadas de tamanho ou posição de layout.
+
+A validação Chromium em viewport móvel de 390×844 confirmou os dez filtros esperados, foco visível, deslocamento por `Tab`, ativação de Drone por `Enter`, preservação de foco durante e após a transição, `aria-pressed="true"`, quatro cards visíveis para Drone e `prefers-reduced-motion: reduce` ativo. As classes de saída `translate-y-1 opacity-0` e de entrada `translate-y-0 opacity-100` foram confirmadas em execução. Capturas visuais finais em 1280×720 e 390×844 preservaram legibilidade e responsividade.

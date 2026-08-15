@@ -158,3 +158,11 @@
 - [x] Preservar foco, teclado e `prefers-reduced-motion` durante a troca de filtros. Evidência Chromium registrada em refinement-validation.md.
 - [x] Validar visualmente, com Chromium e em mobile/desktop após a animação.
 - [x] Salvar checkpoint após a validação final.
+
+## Transição da galeria principal
+
+- [x] Definir a sequência de saída, troca e entrada dos trabalhos filtrados.
+- [x] Aplicar a animação aos cards e ao estado vazio da galeria sem usar transições de layout custosas.
+- [x] Preservar navegação por teclado, foco visível e `prefers-reduced-motion` na troca de tecnologia.
+- [x] Validar a transição em Chromium, desktop e mobile.
+- [x] Salvar checkpoint após a validação final.
