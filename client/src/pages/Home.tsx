@@ -271,7 +271,8 @@ export default function Home() {
   const normalizedProjectSearch = projectSearch.trim().toLocaleLowerCase("pt-BR");
   const visibleRepositories = repositories.filter((repository) => {
     const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
-    const matchesSearch = !normalizedProjectSearch || repository.name.toLocaleLowerCase("pt-BR").includes(normalizedProjectSearch);
+    const searchableProjectText = [repository.name, repository.description, ...repository.technologies].join(" ").toLocaleLowerCase("pt-BR");
+    const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
     return matchesTechnology && matchesSearch;
   });
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -692,13 +693,13 @@ export default function Home() {
 
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label className="relative block w-full sm:max-w-md">
-                <span className="sr-only">Buscar trabalho pelo nome</span>
+                <span className="sr-only">Buscar trabalho por nome, tecnologia ou descrição</span>
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />
                 <input
                   type="search"
                   value={projectSearch}
                   onChange={(event) => setProjectSearch(event.target.value)}
-                  placeholder="buscar trabalho pelo nome"
+                  placeholder="buscar por nome, tecnologia ou descrição"
                   aria-describedby="project-search-feedback"
                   className="w-full border border-white/[0.12] bg-[#07101e] py-3 pl-10 pr-10 font-mono text-[10px] uppercase tracking-[0.1em] text-white placeholder:text-[#59718f] transition-colors focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc] focus:ring-offset-2 focus:ring-offset-[#0a0f18]"
                 />
@@ -755,7 +756,7 @@ export default function Home() {
                     <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Quando você quiser, a próxima história começa aqui.</h3>
                     <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
                       {projectSearch.trim()
-                        ? `Nenhum trabalho real com o nome “${projectSearch.trim()}” corresponde ao filtro ${activeTechnology}. Tente outro termo ou limpe a busca.`
+                        ? `Nenhum trabalho real com “${projectSearch.trim()}” no nome, tecnologia ou descrição corresponde ao filtro ${activeTechnology}. Tente outro termo ou limpe a busca.`
                         : activeTechnology === "Todos"
                         ? "Quando houver um link do GitHub, um vídeo ou uma nova filmagem, o registro pode entrar aqui com descrição, tecnologias e acesso direto."
                         : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}

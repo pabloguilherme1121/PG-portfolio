@@ -89,3 +89,9 @@ A validação Chromium em viewport móvel confirmou ativação por `Enter`, `ari
 A galeria recebeu uma busca por nome, combinada ao filtro de tecnologia já selecionado. O campo possui rótulo acessível, ícone de busca, atalho de limpeza, contagem anunciada por região de status e estado vazio que informa tanto o termo buscado quanto a tecnologia ativa. A busca preserva os modos detalhado e compacto, os cards com transição e a abertura de vídeos.
 
 A validação Chromium confirmou que, com Drone selecionado e o modo compacto ativo, a busca por “Eloise” retorna um trabalho e anuncia `1 trabalho encontrado para “Eloise”`. Uma busca sem correspondência mostrou o estado vazio com termo e filtro contextualizados; o botão de limpeza restaurou o campo vazio e quatro trabalhos do filtro Drone. Capturas recentes em 1280×720 e 390×844 confirmaram o encaixe da barra de busca aos controles existentes.
+
+## Busca expandida por tecnologia e descrição
+
+A busca da galeria agora consulta, além do nome, a descrição e as tecnologias declaradas em cada trabalho. A microcopy do campo e a mensagem de estado vazio foram atualizadas para explicitar os três campos pesquisáveis, mantendo a combinação com filtros de tecnologia, os modos de visualização e os controles de limpeza.
+
+A validação Chromium confirmou duas correspondências para “Interface”, localizado como tecnologia, e uma correspondência para “celebração”, localizado na descrição de um projeto. A busca por nome, o estado vazio, a limpeza, a seleção por teclado e reduced motion continuaram aprovados. Capturas atualizadas em 1280×720 e 390×844 preservaram a legibilidade e o arranjo dos controles.

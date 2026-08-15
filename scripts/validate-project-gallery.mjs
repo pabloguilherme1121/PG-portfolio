@@ -42,7 +42,14 @@ const emptySearchMessage = await page.locator("#projetos .project-gallery-empty"
 await page.getByRole("button", { name: "Limpar busca de trabalhos" }).click();
 const clearedSearchValue = await searchInput.inputValue();
 const clearedSearchCount = await page.locator("#projetos .project-gallery-card").count();
+const todosFilter = page.getByRole("button", { name: "Todos", exact: true }).first();
+await todosFilter.click();
+await page.waitForTimeout(260);
+await searchInput.fill("Interface");
+const technologySearchCount = await page.locator("#projetos .project-gallery-card").count();
+await searchInput.fill("celebração");
+const descriptionSearchCount = await page.locator("#projetos .project-gallery-card").count();
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, searchResultCount, searchFeedback, emptySearchMessage, clearedSearchValue, clearedSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, searchResultCount, searchFeedback, emptySearchMessage, clearedSearchValue, clearedSearchCount, technologySearchCount, descriptionSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();

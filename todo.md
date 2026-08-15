@@ -182,3 +182,10 @@
 - [x] Preservar os modos detalhado e compacto, transições e abertura de vídeos com busca ativa.
 - [x] Validar combinação de busca, filtro, teclado, reduced motion e responsividade.
 - [x] Salvar checkpoint após a validação final.
+
+## Busca expandida da galeria
+
+- [x] Incluir tecnologias e descrições na correspondência textual da busca.
+- [x] Atualizar a microcopy da busca para comunicar os novos campos pesquisáveis.
+- [x] Validar resultados por nome, tecnologia e descrição junto dos filtros e modos de visualização.
+- [x] Salvar checkpoint após a validação final.
