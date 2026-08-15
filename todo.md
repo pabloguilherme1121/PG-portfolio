@@ -33,3 +33,8 @@
 
 - [x] Adicionar links de Instagram para @pablogui000 e @mpjstoryworks.
 - [x] Validar ícones, links externos e apresentação em tela móvel.
+
+## Interações sociais
+
+- [x] Aplicar destaque animado aos ícones e atalhos de Instagram.
+- [x] Validar hover, foco por teclado e redução de movimento.
