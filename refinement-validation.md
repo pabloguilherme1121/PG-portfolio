@@ -95,3 +95,9 @@ A validação Chromium confirmou que, com Drone selecionado e o modo compacto at
 A busca da galeria agora consulta, além do nome, a descrição e as tecnologias declaradas em cada trabalho. A microcopy do campo e a mensagem de estado vazio foram atualizadas para explicitar os três campos pesquisáveis, mantendo a combinação com filtros de tecnologia, os modos de visualização e os controles de limpeza.
 
 A validação Chromium confirmou duas correspondências para “Interface”, localizado como tecnologia, e uma correspondência para “celebração”, localizado na descrição de um projeto. A busca por nome, o estado vazio, a limpeza, a seleção por teclado e reduced motion continuaram aprovados. Capturas atualizadas em 1280×720 e 390×844 preservaram a legibilidade e o arranjo dos controles.
+
+## Sugestões de preenchimento automático
+
+O campo de busca agora apresenta sugestões reais derivadas dos nomes de projetos, tecnologias e termos relevantes das descrições. As sugestões respeitam o filtro de tecnologia ativo, são limitadas a seis opções, identificam a origem de cada termo e não introduzem conteúdo simulado. O campo usa semântica de combobox, com `aria-expanded`, `aria-controls`, `aria-activedescendant` e opções em `listbox`.
+
+A validação Chromium confirmou uma sugestão contextual ao digitar “cha” com Drone ativo; a seleção por seta para baixo e Enter preencheu “Chá da Eloise” e retornou um card. A seleção por clique de “celebração” também retornou um resultado. Após selecionar Todos, a sugestão “Interface” foi escolhida por teclado e retornou dois trabalhos. O foco, filtros, modo compacto, reduced motion e as capturas em 1280×720 e 390×844 permaneceram adequados.

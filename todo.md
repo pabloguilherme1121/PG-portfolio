@@ -189,3 +189,11 @@
 - [x] Atualizar a microcopy da busca para comunicar os novos campos pesquisáveis.
 - [x] Validar resultados por nome, tecnologia e descrição junto dos filtros e modos de visualização.
 - [x] Salvar checkpoint após a validação final.
+
+## Sugestões da busca da galeria
+
+- [x] Derivar sugestões somente a partir de nomes, tecnologias e descrições de projetos reais.
+- [x] Implementar lista de preenchimento automático com seleção por clique e teclado.
+- [x] Preservar filtros, modos de visualização, busca expandida e reduced motion durante a seleção.
+- [x] Validar sugestões, teclado, estado vazio e responsividade.
+- [x] Salvar checkpoint após a validação final.

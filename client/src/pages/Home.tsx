@@ -153,6 +153,23 @@ type Repository = {
   featured?: boolean;
 };
 
+type SearchSuggestion = {
+  value: string;
+  source: "projeto" | "tecnologia" | "descrição";
+};
+
+const descriptionStopWords = new Set([
+  "a", "ao", "as", "com", "da", "de", "do", "dos", "e", "em", "na", "nas", "no", "nos", "o", "os", "ou", "para", "por", "que", "uma", "um",
+]);
+
+function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("pt-BR")
+    .trim();
+}
+
 /**
  * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
  * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
@@ -254,6 +271,8 @@ export default function Home() {
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
+  const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
+  const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
@@ -262,16 +281,43 @@ export default function Home() {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
+  const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
     refetch: refetchBlockedDates,
   } = trpc.availability.listBlocked.useQuery();
 
-  const normalizedProjectSearch = projectSearch.trim().toLocaleLowerCase("pt-BR");
+  const normalizedProjectSearch = normalizeSearchText(projectSearch);
+  const projectSearchSuggestions = useMemo<SearchSuggestion[]>(() => {
+    const candidates = new Map<string, SearchSuggestion>();
+    const addCandidate = (value: string, source: SearchSuggestion["source"]) => {
+      const normalizedValue = normalizeSearchText(value);
+      if (!normalizedValue || candidates.has(normalizedValue)) return;
+      candidates.set(normalizedValue, { value, source });
+    };
+
+    repositories
+      .filter((repository) => activeTechnology === "Todos" || repository.technologies.includes(activeTechnology))
+      .forEach((repository) => {
+      addCandidate(repository.name, "projeto");
+      repository.technologies.forEach((technology) => addCandidate(technology, "tecnologia"));
+      repository.description
+        .split(/[^A-Za-zÀ-ÿ0-9]+/)
+        .filter((word) => word.length >= 4 && !descriptionStopWords.has(normalizeSearchText(word)))
+        .forEach((word) => addCandidate(word, "descrição"));
+    });
+
+    return Array.from(candidates.values());
+  }, [activeTechnology]);
+  const visibleSearchSuggestions = normalizedProjectSearch.length >= 2
+    ? projectSearchSuggestions
+      .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
+      .slice(0, 6)
+    : [];
   const visibleRepositories = repositories.filter((repository) => {
     const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
-    const searchableProjectText = [repository.name, repository.description, ...repository.technologies].join(" ").toLocaleLowerCase("pt-BR");
+    const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies].join(" "));
     const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
     return matchesTechnology && matchesSearch;
   });
@@ -319,6 +365,34 @@ export default function Home() {
       setActiveTechnology(technology);
       projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
     }, 130);
+  }
+
+  function applyProjectSearchSuggestion(suggestion: SearchSuggestion) {
+    setProjectSearch(suggestion.value);
+    setActiveSearchSuggestionIndex(-1);
+    setIsProjectSearchFocused(false);
+    window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
+  }
+
+  function handleProjectSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      setActiveSearchSuggestionIndex(-1);
+      setIsProjectSearchFocused(false);
+      return;
+    }
+    if (!visibleSearchSuggestions.length) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveSearchSuggestionIndex((current) => (current + 1) % visibleSearchSuggestions.length);
+    }
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveSearchSuggestionIndex((current) => current <= 0 ? visibleSearchSuggestions.length - 1 : current - 1);
+    }
+    if (event.key === "Enter" && activeSearchSuggestionIndex >= 0) {
+      event.preventDefault();
+      applyProjectSearchSuggestion(visibleSearchSuggestions[activeSearchSuggestionIndex]);
+    }
   }
 
   function consultAvailabilityOnWhatsApp() {
@@ -696,15 +770,46 @@ export default function Home() {
                 <span className="sr-only">Buscar trabalho por nome, tecnologia ou descrição</span>
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />
                 <input
+                  ref={projectSearchInputRef}
                   type="search"
+                  role="combobox"
                   value={projectSearch}
-                  onChange={(event) => setProjectSearch(event.target.value)}
+                  onChange={(event) => {
+                    setProjectSearch(event.target.value);
+                    setActiveSearchSuggestionIndex(-1);
+                    setIsProjectSearchFocused(true);
+                  }}
+                  onFocus={() => setIsProjectSearchFocused(true)}
+                  onBlur={() => setIsProjectSearchFocused(false)}
+                  onKeyDown={handleProjectSearchKeyDown}
                   placeholder="buscar por nome, tecnologia ou descrição"
                   aria-describedby="project-search-feedback"
+                  aria-autocomplete="list"
+                  aria-controls="project-search-suggestions"
+                  aria-expanded={isProjectSearchFocused && visibleSearchSuggestions.length > 0}
+                  aria-activedescendant={activeSearchSuggestionIndex >= 0 ? `project-search-suggestion-${activeSearchSuggestionIndex}` : undefined}
                   className="w-full border border-white/[0.12] bg-[#07101e] py-3 pl-10 pr-10 font-mono text-[10px] uppercase tracking-[0.1em] text-white placeholder:text-[#59718f] transition-colors focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc] focus:ring-offset-2 focus:ring-offset-[#0a0f18]"
                 />
+                {isProjectSearchFocused && visibleSearchSuggestions.length > 0 && (
+                  <ul id="project-search-suggestions" role="listbox" aria-label="Sugestões de busca" className="absolute z-20 mt-2 w-full overflow-hidden border border-[#67e8f9]/35 bg-[#061226] shadow-[0_18px_40px_rgba(0,0,0,0.36)]">
+                    {visibleSearchSuggestions.map((suggestion, index) => (
+                      <li
+                        key={`${suggestion.source}-${suggestion.value}`}
+                        id={`project-search-suggestion-${index}`}
+                        role="option"
+                        aria-selected={activeSearchSuggestionIndex === index}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onClick={() => applyProjectSearchSuggestion(suggestion)}
+                        className={`flex cursor-pointer items-center justify-between gap-4 border-b border-white/[0.08] px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] last:border-b-0 ${activeSearchSuggestionIndex === index ? "bg-[#38bdf8] text-[#02111f]" : "text-[#d6ecf8] hover:bg-[#0a2446]"}`}
+                      >
+                        <span className="truncate">{suggestion.value}</span>
+                        <span className={`shrink-0 text-[8px] tracking-[0.12em] ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#6f9cbd]"}`}>{suggestion.source}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {projectSearch && (
-                  <button type="button" onClick={() => setProjectSearch("")} aria-label="Limpar busca de trabalhos" className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-[#91acd0] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                  <button type="button" onClick={() => { setProjectSearch(""); setActiveSearchSuggestionIndex(-1); }} aria-label="Limpar busca de trabalhos" className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-[#91acd0] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
                     <X className="h-4 w-4" aria-hidden="true" />
                   </button>
                 )}
