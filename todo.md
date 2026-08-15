@@ -66,3 +66,9 @@
 - [x] Intensificar a paleta azul e elevar o contraste da interface.
 - [x] Reforçar estados de ação, destaques e detalhes visuais da navegação.
 - [x] Validar legibilidade e equilíbrio em desktop e dispositivos móveis.
+
+## Repaginação editorial
+
+- [x] Atualizar tipografia e paleta para um azul mais claro e vibrante.
+- [x] Reescrever os principais textos com uma voz mais direta e contemporânea.
+- [x] Validar contraste, leitura e composição em desktop e dispositivos móveis.
