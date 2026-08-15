@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   availableTimes,
   buildAvailabilityWhatsAppUrl,
+  getAvailabilityButtonLabel,
   isSelectableAvailabilityDate,
   isWeekday,
 } from "../client/src/lib/availability";
@@ -22,5 +23,10 @@ describe("regras de disponibilidade", () => {
     const url = buildAvailabilityWhatsAppUrl("5561992903029", new Date(2026, 7, 17), "14:00");
     expect(url).toContain("https://wa.me/5561992903029?text=");
     expect(decodeURIComponent(url)).toContain("segunda-feira, 17 de agosto, às 14:00");
+  });
+
+  it("descreve o estado de carregamento antes do redirecionamento", () => {
+    expect(getAvailabilityButtonLabel(false)).toBe("consultar no WhatsApp");
+    expect(getAvailabilityButtonLabel(true)).toBe("abrindo WhatsApp");
   });
 });

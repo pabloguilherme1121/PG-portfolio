@@ -34,6 +34,7 @@ import {
   buildAvailabilityWhatsAppUrl,
   calendarWeekdays,
   formatAvailabilityDate,
+  getAvailabilityButtonLabel,
   isSelectableAvailabilityDate,
 } from "@/lib/availability";
 import { trpc } from "@/lib/trpc";
@@ -225,6 +226,7 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
+  const [isAvailabilityRedirecting, setIsAvailabilityRedirecting] = useState(false);
   const today = new Date();
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
@@ -253,6 +255,19 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function consultAvailabilityOnWhatsApp() {
+    if (!availabilityWhatsAppUrl || isAvailabilityRedirecting) return;
+
+    setIsAvailabilityRedirecting(true);
+    window.setTimeout(() => {
+      const whatsappWindow = window.open(availabilityWhatsAppUrl, "_blank", "noopener,noreferrer");
+      if (!whatsappWindow) {
+        window.location.assign(availabilityWhatsAppUrl);
+      }
+      setIsAvailabilityRedirecting(false);
+    }, 240);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -720,7 +735,10 @@ export default function Home() {
                     {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate} onClick={() => setAvailabilityTime(time)} className={`border py-2 font-mono text-[10px] transition-colors ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
-                <button type="button" disabled={!availabilityDate || !availabilityTime} onClick={() => window.open(availabilityWhatsAppUrl, "_blank", "noopener,noreferrer")} className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:bg-[#16304c] disabled:text-[#6f91a8]"><MessageCircle className="h-4 w-4 fill-current" /> consultar no WhatsApp</button>
+                <button type="button" disabled={!availabilityDate || !availabilityTime || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8]">
+                  {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
+                </button>
+                <span id="availability-feedback" role="status" aria-live="polite" className="sr-only">{isAvailabilityRedirecting ? "Abrindo o WhatsApp com sua data e horário selecionados." : ""}</span>
                 <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A confirmação final da data e do horário é feita diretamente com Pablo.</p>
               </div>
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">

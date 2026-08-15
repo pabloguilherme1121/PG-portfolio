@@ -25,3 +25,7 @@ export function buildAvailabilityWhatsAppUrl(phone: string, date: Date, time: st
   const message = `Olá, Pablo! Vim pelo seu portfólio e gostaria de consultar a disponibilidade para ${dateLabel}, às ${time}.`;
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
+
+export function getAvailabilityButtonLabel(isRedirecting: boolean) {
+  return isRedirecting ? "abrindo WhatsApp" : "consultar no WhatsApp";
+}

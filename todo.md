@@ -109,3 +109,4 @@
 - [x] Encaminhar a data e o horário selecionados ao WhatsApp.
 - [x] Validar seleção, acessibilidade e apresentação em desktop e dispositivos móveis.
 - [x] Cobrir as regras de dias úteis, horários e mensagem de WhatsApp com testes automatizados.
+- [x] Exibir carregamento acessível ao consultar disponibilidade pelo WhatsApp.
