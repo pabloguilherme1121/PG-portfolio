@@ -28,3 +28,8 @@
 - [x] Analisar os seis vídeos recebidos e selecionar capas representativas.
 - [x] Integrar os trabalhos à galeria com títulos e marcadores de formato.
 - [x] Validar a navegação entre projetos, reprodução e responsividade.
+
+## Canais audiovisuais
+
+- [x] Adicionar links de Instagram para @pablogui000 e @mpjstoryworks.
+- [x] Validar ícones, links externos e apresentação em tela móvel.

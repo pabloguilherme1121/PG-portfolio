@@ -14,6 +14,7 @@ import {
   Download,
   FolderGit2,
   Github,
+  Instagram,
   Layers2,
   Menu,
   Plane,
@@ -448,6 +449,16 @@ export default function Home() {
               <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Uma boa pergunta pode ser o começo.</h2>
               <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Se você quer conversar sobre tecnologia, criação de conteúdo ou uma cobertura audiovisual, deixe uma mensagem.</p>
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para novas ideias</div>
+              <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
+                <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" className="group flex items-center gap-3 bg-[#070a10] px-4 py-4 transition-colors hover:bg-[#0d1930]">
+                  <span className="grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc] transition-all duration-200 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Instagram className="h-4 w-4" /></span>
+                  <span className="min-w-0"><span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f87ad]">Instagram</span><span className="mt-1 block truncate font-mono text-[11px] text-[#e7f0ff]">@pablogui000</span></span>
+                </a>
+                <a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" className="group flex items-center gap-3 bg-[#070a10] px-4 py-4 transition-colors hover:bg-[#0d1930]">
+                  <span className="grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc] transition-all duration-200 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Instagram className="h-4 w-4" /></span>
+                  <span className="min-w-0"><span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f87ad]">Instagram</span><span className="mt-1 block truncate font-mono text-[11px] text-[#e7f0ff]">@mpjstoryworks</span></span>
+                </a>
+              </div>
             </div>
 
             <div className="px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
@@ -489,7 +500,11 @@ export default function Home() {
             <img src={markUrl} alt="" className="h-6 w-6 object-contain" />
             <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3]">Pablo Guilherme · TI · conteúdo · audiovisual</p>
           </div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p>
+          <div className="flex items-center gap-3">
+            <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Instagram @pablogui000" className="text-[#6e85a8] transition-colors hover:text-[#6fa4ff]"><Instagram className="h-4 w-4" /></a>
+            <a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" aria-label="Instagram @mpjstoryworks" className="text-[#6e85a8] transition-colors hover:text-[#6fa4ff]"><Instagram className="h-4 w-4" /></a>
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p>
+          </div>
         </div>
       </footer>
 
