@@ -38,3 +38,9 @@
 
 - [x] Aplicar destaque animado aos ícones e atalhos de Instagram.
 - [x] Validar hover, foco por teclado e redução de movimento.
+
+## Serviços audiovisuais
+
+- [x] Criar uma seção para filmagem aérea, captação terrestre e criação de conteúdo.
+- [x] Integrar os serviços à navegação e ao contato comercial.
+- [x] Validar a seção em desktop e dispositivos móveis.

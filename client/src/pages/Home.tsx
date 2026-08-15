@@ -48,6 +48,33 @@ const skillTracks = [
   },
 ];
 
+const serviceOffers = [
+  {
+    number: "01",
+    label: "drone / perspectiva aérea",
+    title: "Filmagem aérea",
+    text: "Imagens com drone para apresentar espaços, eventos e movimentos sob uma perspectiva mais ampla.",
+    detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
+    Icon: Plane,
+  },
+  {
+    number: "02",
+    label: "câmera / registro em solo",
+    title: "Captação terrestre",
+    text: "Registros em solo para acompanhar detalhes, pessoas e a energia que acontece dentro de cada momento.",
+    detail: "PRESENÇA · RITMO · DETALHE",
+    Icon: Camera,
+  },
+  {
+    number: "03",
+    label: "narrativa / presença digital",
+    title: "Criação de conteúdo",
+    text: "Conteúdo visual pensado para documentar, comunicar e dar continuidade às histórias de pessoas e marcas.",
+    detail: "IDEIA · REGISTRO · CONEXÃO",
+    Icon: Clapperboard,
+  },
+];
+
 type Repository = {
   id: string;
   name: string;
@@ -168,6 +195,7 @@ export default function Home() {
             {[
                 ["manifesto", "#sobre"],
                 ["atuação", "#trilha"],
+                ["serviços", "#servicos"],
                 ["trabalhos", "#projetos"],
             ].map(([label, href]) => (
               <a key={label} href={href} className="nav-link text-[11px] font-mono uppercase tracking-[0.14em] text-[#90a3c3] transition-colors hover:text-white">
@@ -195,8 +223,9 @@ export default function Home() {
               {[
                 ["01 / manifesto", "#sobre"],
                 ["02 / atuação", "#trilha"],
-                ["03 / trabalhos", "#projetos"],
-                ["04 / contato", "#contato"],
+                ["03 / serviços", "#servicos"],
+                ["04 / trabalhos", "#projetos"],
+                ["05 / contato", "#contato"],
               ].map(([label, href]) => (
                 <a key={label} href={href} onClick={closeMenu} className="border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1]">
                   {label}
@@ -347,11 +376,45 @@ export default function Home() {
           </div>
         </section>
 
+        <section id="servicos" className="relative overflow-hidden border-t border-white/[0.07] bg-[#09101a]">
+          <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
+          <div className="relative mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+            <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
+              <div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
+                <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Da ideia<br />ao enquadramento.</h2>
+              </div>
+              <div className="lg:pb-2">
+                <p className="max-w-2xl font-body text-base leading-8 text-[#adc0db]">Serviços de imagem para registrar o que acontece no chão, no ar e no espaço digital. Cada entrega começa com uma boa leitura do momento que precisa ser contado.</p>
+                <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3eeff] transition-colors hover:text-[#76aaff]">falar sobre um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
+              </div>
+            </div>
+
+            <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
+              {serviceOffers.map(({ number, label, title, text, detail, Icon }) => (
+                <article key={number} className="group relative min-h-[360px] overflow-hidden bg-[#09101a] p-7 sm:p-9">
+                  <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border border-[#3b82f6]/15 transition-transform duration-500 group-hover:scale-[1.55]" />
+                  <div className="relative flex items-start justify-between">
+                    <span className="font-mono text-[11px] text-[#5c84c1]">{number}</span>
+                    <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
+                  </div>
+                  <div className="relative mt-16">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7190bd]">{label}</p>
+                    <h3 className="mt-4 font-display text-[clamp(2rem,3vw,3.2rem)] font-medium leading-[0.96] tracking-[-0.05em] text-white">{title}</h3>
+                    <p className="mt-5 max-w-sm font-body text-sm leading-7 text-[#a4b5cf]">{text}</p>
+                  </div>
+                  <p className="absolute bottom-8 left-7 right-7 border-t border-white/[0.1] pt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8] sm:left-9 sm:right-9">{detail}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="projetos" className="border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / trabalhos selecionados</p>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">05 / trabalhos selecionados</p>
                 <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">O que já<br className="hidden sm:block" /> estou fazendo.</h2>
                 <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
@@ -445,7 +508,7 @@ export default function Home() {
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
           <div className="relative mx-auto grid max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
             <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">05 / canal aberto</p>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / canal aberto</p>
               <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Uma boa pergunta pode ser o começo.</h2>
               <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Se você quer conversar sobre tecnologia, criação de conteúdo ou uma cobertura audiovisual, deixe uma mensagem.</p>
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para novas ideias</div>
