@@ -368,10 +368,27 @@ export default function Home() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
-    const handleViewportChange = () => setIsDesktopViewport(mediaQuery.matches);
+    const handleViewportChange = () => {
+      setIsDesktopViewport(mediaQuery.matches);
+      if (mediaQuery.matches) setMenuOpen(false);
+    };
     mediaQuery.addEventListener("change", handleViewportChange);
     return () => mediaQuery.removeEventListener("change", handleViewportChange);
   }, []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handleMenuKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", handleMenuKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleMenuKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [menuOpen]);
 
   useEffect(() => {
     if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
@@ -515,12 +532,13 @@ export default function Home() {
             className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] md:hidden"
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
         {menuOpen && (
-          <nav className="border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
+          <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
                 ["01 / manifesto", "#sobre"],
@@ -529,7 +547,7 @@ export default function Home() {
                 ["04 / trabalhos", "#projetos"],
                 ["05 / contato", "#contato"],
               ].map(([label, href]) => (
-                <a key={label} href={href} onClick={closeMenu} className="border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1]">
+                <a key={label} href={href} onClick={closeMenu} className="min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white">
                   {label}
                 </a>
               ))}
@@ -784,7 +802,7 @@ export default function Home() {
             </div>
 
             <div className="mt-8 flex flex-col gap-4 border-y border-white/[0.1] py-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex flex-wrap gap-2" aria-label="Filtrar repositórios por tecnologia">
+              <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar repositórios por tecnologia">
               {technologyFilters.map((technology) => (
                 <button
                   type="button"
@@ -792,7 +810,7 @@ export default function Home() {
                   onClick={() => selectTechnology(technology)}
                   aria-busy={isProjectFilterTransitioning}
                   aria-pressed={activeTechnology === technology}
-                  className={`inline-flex items-center gap-1.5 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
                     activeTechnology === technology
                       ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                       : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"

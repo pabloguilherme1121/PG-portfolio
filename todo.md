@@ -241,3 +241,12 @@
 - [x] Otimizar carregamento inicial e velocidade percebida.
 - [x] Validar mobile, performance, acessibilidade e regressões.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Responsividade e interatividade avançadas
+
+- [x] Auditar navegação mobile, breakpoints e pontos de toque atuais.
+- [x] Melhorar menu mobile, feedbacks de interação e navegação por âncoras.
+- [x] Refinar galeria, busca, filtros e calendário para toque e telas estreitas.
+- [x] Validar teclado, toque, reduced motion e larguras de 320px, 390px, 768px e desktop.
+- [x] Salvar checkpoint após a validação final.

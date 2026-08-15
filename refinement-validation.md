@@ -148,3 +148,13 @@ Para a velocidade percebida, a pintura de capítulos fora da viewport foi adiada
 
 
 A medição final em build de produção (viewport 390px) registrou `documentWidth: 390`, sem overflow visual real; os dois itens restantes são apenas spans `sr-only` esperados. O carregamento passou de 21 para 20 recursos após impedir a textura decorativa no mobile, e a versão final manteve o hero, o retrato e os chunks essenciais sem carregar a textura de skills em telas menores. As fontes foram movidas do `@import` para um `<link rel="stylesheet">` no HTML, reduzindo uma etapa de cascata no carregamento inicial. A validação final de teclado, filtros, sugestões, reduced motion, testes, TypeScript, build e captura mobile foi aprovada.
+
+
+## Responsividade e interatividade avançadas
+
+O menu mobile ganhou fechamento por `Escape`, bloqueio de rolagem do documento enquanto aberto, navegação interna rolável, áreas de toque maiores, `aria-controls` e estados visuais de hover/foco. Os filtros da galeria passaram a usar rolagem horizontal no mobile, evitando uma coluna excessivamente alta, e receberam foco visível consistente.
+
+A validação automatizada cobriu 320px, 390px, 768px e 1280px: todas as larguras registraram `documentWidth` igual à viewport, sem overflow horizontal; o menu fechou por `Escape`; e os filtros mantiveram foco visível. Testes, TypeScript, build e capturas mobile/desktop foram concluídos.
+
+
+A validação ampliada confirmou em 320px, 390px, 768px e 1280px: `documentWidth` igual à viewport, filtro Drone acionável, busca por Interface com resultado, calendário com seleção de data e horário, foco visível nos filtros, menu mobile fechando por Escape e `prefers-reduced-motion` ativo. Os filtros móveis mantêm conteúdo horizontal rolável sem provocar overflow do documento.
