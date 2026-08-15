@@ -384,3 +384,10 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
   .archive-chapter::before { left: 0.45rem; }
   .archive-chapter::after { left: 0.3rem; }
 }
+
+
+/* A busca usa um controle X próprio, consistente com o sistema visual do portfólio. */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+}

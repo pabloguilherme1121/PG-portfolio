@@ -124,3 +124,17 @@ O botão X agora permanece dentro da barra com área de toque de 32px, borda e f
 A validação Chromium confirmou `tabindex="0"`, foco visível, limpeza por Enter, campo vazio e retorno do foco ao input. O comportamento de sugestões, filtros, modo compacto e `prefers-reduced-motion` permaneceu estável. Capturas finais em 1280×720 e 390×844 confirmaram o encaixe da barra e a legibilidade dos controles em desktop e mobile.
 
 A rodada final também validou a ação por clique: ao preencher “Eloise”, o botão X foi acionado com mouse/tap, esvaziou o campo e devolveu o foco ao input. Em seguida, com “inexistente”, a navegação real por Tab alcançou o botão (`tabindex="0"`) com foco visível, e Enter executou a mesma limpeza. O reduced motion permaneceu ativo sem regressões.
+
+
+## Revisão ampla profissional
+
+A revisão ampla preservou os sinais mais fortes do Arquivo Profundo — tipografia editorial de alto impacto, linha vertical azul, metadados em mono e apresentação de trabalhos como evidência — e concentrou a melhoria em pontos de uso recorrente. A busca recebeu limpeza por Escape, retorno automático de foco e remoção do botão nativo duplicado do navegador, mantendo um único controle X visualmente consistente. A microinteração também foi refinada para hover, active, focus-visible e reduced motion.
+
+A execução Chromium confirmou limpeza por clique e Escape, retorno do foco ao campo, foco visível por Tab, filtros, sugestões, modo compacto e `prefers-reduced-motion`. Testes, TypeScript e build foram aprovados. Capturas finais em 1280×720 e 390×844 confirmaram que a hierarquia visual, a barra de busca, a galeria e os controles continuam coerentes e legíveis nas duas larguras.
+
+
+## Auditoria ampla e refinamento de descoberta
+
+A auditoria priorizou cinco pontos de maior impacto: descoberta de trabalhos, entendimento dos filtros, limpeza da busca, continuidade da navegação por teclado e consistência em telas menores. Além da busca refinada, os filtros da galeria agora exibem contagens reais de trabalhos por tecnologia, mantendo o estado ativo, a área de toque e os nomes acessíveis dos controles. Isso transforma a filtragem em uma leitura rápida de repertório, sem introduzir dados fictícios.
+
+A revisão de navegação preservou a hierarquia editorial, os links de contato, os cards acionáveis e os estados de vídeo. A validação Chromium confirmou busca por clique, Enter e Escape, foco visível e retorno ao campo; filtros e sugestões continuaram funcionais. O build de produção concluiu com `Home` em aproximadamente 146 kB e CSS em aproximadamente 158 kB antes de gzip, enquanto os testes e TypeScript permaneceram aprovados. Capturas finais em 1280×720 e 390×844 confirmaram coerência visual e responsividade.

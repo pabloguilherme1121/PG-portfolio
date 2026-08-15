@@ -60,6 +60,10 @@ const clickClearButton = page.getByRole("button", { name: "Limpar busca de traba
 await clickClearButton.click();
 const clickClearedSearchValue = await searchInput.inputValue();
 const focusReturnedAfterClickClear = await page.evaluate(() => document.activeElement?.matches('#projetos input[type="search"]') ?? false);
+await searchInput.fill("Eloise");
+await searchInput.press("Escape");
+const escapeClearedSearchValue = await searchInput.inputValue();
+const focusReturnedAfterEscape = await page.evaluate(() => document.activeElement?.matches('#projetos input[type="search"]') ?? false);
 await searchInput.fill("inexistente");
 const emptySearchMessage = await page.locator("#projetos .project-gallery-empty").textContent();
 const clearSearchButton = page.getByRole("button", { name: "Limpar busca de trabalhos" });
@@ -91,5 +95,5 @@ await searchInput.fill("celebração");
 const descriptionSearchCount = await page.locator("#projetos .project-gallery-card").count();
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, suggestionCount, projectIconCount, highlightedMatchText, highlightedMatchWeight, suggestionsExpanded, activeSuggestionId, keyboardSuggestionValue, keyboardSuggestionResultCount, descriptionIconCount, descriptionHighlightedText, descriptionHighlightedWeight, clickSuggestionValue, clickSuggestionResultCount, searchResultCount, searchFeedback, clickClearedSearchValue, focusReturnedAfterClickClear, emptySearchMessage, clearButtonReceivedTabFocus, clearButtonTabIndex, clearButtonFocusVisible, clearedSearchValue, focusReturnedAfterClear, clearedSearchCount, technologySuggestionCount, technologyIconCount, technologyHighlightedText, technologyHighlightedWeight, technologySuggestionValue, technologySearchCount, descriptionSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, suggestionCount, projectIconCount, highlightedMatchText, highlightedMatchWeight, suggestionsExpanded, activeSuggestionId, keyboardSuggestionValue, keyboardSuggestionResultCount, descriptionIconCount, descriptionHighlightedText, descriptionHighlightedWeight, clickSuggestionValue, clickSuggestionResultCount, searchResultCount, searchFeedback, clickClearedSearchValue, focusReturnedAfterClickClear, escapeClearedSearchValue, focusReturnedAfterEscape, emptySearchMessage, clearButtonReceivedTabFocus, clearButtonTabIndex, clearButtonFocusVisible, clearedSearchValue, focusReturnedAfterClear, clearedSearchCount, technologySuggestionCount, technologyIconCount, technologyHighlightedText, technologyHighlightedWeight, technologySuggestionValue, technologySearchCount, descriptionSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();

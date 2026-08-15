@@ -411,8 +411,13 @@ export default function Home() {
 
   function handleProjectSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
-      setActiveSearchSuggestionIndex(-1);
-      setIsProjectSearchFocused(false);
+      if (projectSearch) {
+        event.preventDefault();
+        clearProjectSearch();
+      } else {
+        setActiveSearchSuggestionIndex(-1);
+        setIsProjectSearchFocused(false);
+      }
       return;
     }
     if (!visibleSearchSuggestions.length) return;
@@ -779,13 +784,16 @@ export default function Home() {
                   onClick={() => selectTechnology(technology)}
                   aria-busy={isProjectFilterTransitioning}
                   aria-pressed={activeTechnology === technology}
-                  className={`border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] ${
+                  className={`inline-flex items-center gap-1.5 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] ${
                     activeTechnology === technology
                       ? "border-[#3b82f6] bg-[#3b82f6] text-white"
                       : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
                   }`}
                 >
-                  {technology}
+                  <span>{technology}</span>
+                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#dffbff]" : "text-[#5e789d]"}`}>
+                    {technology === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(technology)).length}
+                  </span>
                 </button>
               ))}
               </div>
@@ -819,6 +827,8 @@ export default function Home() {
                   onKeyDown={handleProjectSearchKeyDown}
                   placeholder="buscar por nome, tecnologia ou descrição"
                   aria-describedby="project-search-feedback"
+                  aria-keyshortcuts="Escape"
+                  enterKeyHint="search"
                   aria-autocomplete="list"
                   aria-controls="project-search-suggestions"
                   aria-expanded={isProjectSearchFocused && visibleSearchSuggestions.length > 0}
