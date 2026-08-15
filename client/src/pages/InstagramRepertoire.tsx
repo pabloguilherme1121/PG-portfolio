@@ -1,5 +1,5 @@
 import { ArrowUpRight, Instagram } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { trpc } from "@/lib/trpc";
 
 const formatFilters = ["todos", "drone", "eventos", "bastidores"] as const;
@@ -37,11 +37,27 @@ const profiles = [
 
 export default function InstagramRepertoire() {
   const [activeFormat, setActiveFormat] = useState<FormatFilter>("todos");
+  const [isFilterTransitioning, setIsFilterTransitioning] = useState(false);
+  const transitionTimerRef = useRef<number | null>(null);
   const feedStatus = trpc.instagramFeed.status.useQuery(undefined, { staleTime: 5 * 60 * 1000 });
   const feedState = feedStatus.isLoading ? "loading" : feedStatus.isError ? "query_error" : (feedStatus.data?.status ?? "error");
   const liveItems = feedStatus.data?.status === "available" ? feedStatus.data.items : [];
   const hasLiveItems = liveItems.length > 0;
   const visibleProfiles = activeFormat === "todos" ? profiles : profiles.filter((profile) => profile.formats.includes(activeFormat));
+
+  useEffect(() => () => {
+    if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current);
+  }, []);
+
+  function selectFormat(format: FormatFilter) {
+    if (format === activeFormat || isFilterTransitioning) return;
+    if (transitionTimerRef.current) window.clearTimeout(transitionTimerRef.current);
+    setIsFilterTransitioning(true);
+    transitionTimerRef.current = window.setTimeout(() => {
+      setActiveFormat(format);
+      transitionTimerRef.current = window.setTimeout(() => setIsFilterTransitioning(false), 40);
+    }, 130);
+  }
 
   return (
     <section id="social" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#050c18]">
@@ -76,7 +92,8 @@ export default function InstagramRepertoire() {
                   <button
                     key={format}
                     type="button"
-                    onClick={() => setActiveFormat(format)}
+                    onClick={() => selectFormat(format)}
+                    aria-busy={isFilterTransitioning}
                     aria-pressed={isActive}
                     className={`border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050c18] ${isActive ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-transparent text-[#88a6bd] hover:border-[#67e8f9]/60 hover:text-[#dffaff]"}`}
                   >
@@ -90,14 +107,15 @@ export default function InstagramRepertoire() {
         </div>
 
         {visibleProfiles.length > 0 ? (
-          <div className="mt-4 grid gap-px bg-cyan-100/[0.1] md:grid-cols-3">
+          <div aria-busy={isFilterTransitioning} className={`social-filter-grid mt-4 grid gap-px bg-cyan-100/[0.1] transition-[opacity,transform] duration-200 ${isFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"} md:grid-cols-3`}>
           {visibleProfiles.map((profile, index) => (
             <a
-              key={profile.handle}
+              key={`${activeFormat}-${profile.handle}`}
               href={profile.url}
               target="_blank"
               rel="noreferrer"
-              className="group relative isolate flex min-h-[310px] flex-col overflow-hidden bg-[#071326] p-5 transition-colors duration-300 hover:bg-[#0a1a31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050c18] sm:p-6"
+              style={{ animationDelay: `${index * 45}ms` }}
+              className="social-filter-card group relative isolate flex min-h-[310px] flex-col overflow-hidden bg-[#071326] p-5 transition-colors duration-300 hover:bg-[#0a1a31] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#050c18] sm:p-6"
               aria-label={`${profile.handle}, abrir no Instagram`}
             >
               <img

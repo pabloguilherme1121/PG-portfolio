@@ -149,3 +149,12 @@
 - [x] Associar cada card às categorias reais sem inventar publicações do Instagram.
 - [x] Validar filtros em desktop e mobile, incluindo teclado e reduced motion. Evidência Chromium registrada em refinement-validation.md.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Transição dos filtros sociais
+
+- [x] Definir uma animação curta e discreta para entrada dos cards filtrados.
+- [x] Implementar transição suave sem animar propriedades de layout de forma custosa.
+- [x] Preservar foco, teclado e `prefers-reduced-motion` durante a troca de filtros. Evidência Chromium registrada em refinement-validation.md.
+- [x] Validar visualmente, com Chromium e em mobile/desktop após a animação.
+- [x] Salvar checkpoint após a validação final.

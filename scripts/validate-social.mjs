@@ -16,10 +16,19 @@ const focusVisible = await firstButton.evaluate((element) => {
 });
 
 const droneButton = page.getByRole("button", { name: "drone", exact: true }).last();
-await droneButton.click();
+const todosButton = buttons.first();
+await todosButton.focus();
+await page.keyboard.press("Tab");
+const focusMovedByTab = await page.evaluate(() => document.activeElement?.textContent?.trim() === "drone");
+await page.keyboard.press("Enter");
+const transitionClassDuringChange = await page.locator("#social .social-filter-grid").getAttribute("class");
+const focusedDuringTransition = await page.evaluate(() => document.activeElement?.textContent?.trim() === "drone");
+await page.waitForTimeout(260);
+const transitionClassAfterChange = await page.locator("#social .social-filter-grid").getAttribute("class");
+const focusPreservedAfterTransition = await page.evaluate(() => document.activeElement?.textContent?.trim() === "drone");
 const droneCount = await page.locator('#social [role="status"]').filter({ hasText: "referência" }).last().textContent();
 const selectedState = await droneButton.getAttribute("aria-pressed");
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-console.log(JSON.stringify({ labels, focusVisible, selectedState, droneCount, reducedMotion }));
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, droneCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();

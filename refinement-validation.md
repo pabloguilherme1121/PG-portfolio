@@ -57,3 +57,17 @@ A cobertura automatizada inclui `server/instagramFeed.test.ts`, que verifica que
 A seção social agora possui os filtros `todos`, `drone`, `eventos` e `bastidores`. Cada card está associado somente a formatos presentes no repertório real já disponível no projeto; os filtros não simulam publicações do Instagram. O botão ativo usa `aria-pressed`, há contagem de referências visíveis e existe um estado vazio acessível para categorias sem correspondência.
 
 A validação prática em Chromium, com viewport móvel de 390×844 e `prefers-reduced-motion: reduce`, encontrou os quatro rótulos esperados, confirmou foco visível no primeiro filtro, acionou o filtro `drone`, verificou `aria-pressed="true"`, confirmou a mensagem `1 referência visível` e registrou `matchMedia('(prefers-reduced-motion: reduce)').matches === true`. As validações visuais desktop/mobile e a suíte de 14 testes continuam aprovadas.
+
+
+## Transição suave dos filtros sociais
+
+A troca de formato usa uma sequência curta de saída e entrada: a grade atual reduz opacidade e desloca-se 4px para baixo durante a troca; após 130ms, o filtro é atualizado e os novos cards entram com `opacity` e `transform`, com atraso escalonado de 45ms por card. A animação usa somente `opacity` e `transform`, sem alterar propriedades de layout durante o movimento.
+
+A validação Chromium confirmou foco visível nos filtros, `aria-pressed="true"` após selecionar Drone, contagem de `1 referência visível`, `prefers-reduced-motion: reduce` ativo e as classes `translate-y-1 opacity-0` durante a troca, seguidas de `translate-y-0 opacity-100` após 260ms. A regra global de reduced motion reduz a duração da transição para aproximadamente zero, preservando a troca de conteúdo sem movimento obrigatório.
+
+
+## Validação final da animação dos filtros
+
+A validação Chromium foi repetida após a implementação da animação em viewport móvel de 390×844. O roteiro deslocou o foco por `Tab` do filtro “todos” para “drone”, acionou a seleção por `Enter` e confirmou que o foco permaneceu no botão durante e após a transição. O estado `aria-pressed="true"`, a contagem `1 referência visível` e `prefers-reduced-motion: reduce` ativo foram confirmados. Durante a troca, a grade exibiu `translate-y-1 opacity-0`; após 260ms, retornou a `translate-y-0 opacity-100`.
+
+Novas capturas visuais foram realizadas em desktop de 1280×720 e mobile de 390×844 depois da implementação. A composição dos botões, a grade filtrável e o fallback visual permaneceram responsivos e legíveis nos dois tamanhos.
