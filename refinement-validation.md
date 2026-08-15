@@ -83,3 +83,9 @@ A validação Chromium em viewport móvel de 390×844 confirmou os dez filtros e
 O novo controle de alternância permite trocar entre o modo detalhado e o modo compacto. No modo compacto, a grade passa a priorizar mais itens na tela, os cards reduzem altura e espaçamento, as descrições são omitidas e apenas as duas primeiras tecnologias permanecem visíveis. O acesso a vídeos, links e filtros é preservado, e o controle expõe o estado por `aria-pressed` e rótulo acessível atualizado.
 
 A validação Chromium em viewport móvel confirmou ativação por `Enter`, `aria-pressed="true"`, rótulo “Voltar para visualização detalhada”, foco preservado no controle e cards compactos com altura mínima reduzida. A mesma execução confirmou a troca de filtro Drone, quatro cards visíveis, foco por Tab/Enter, classes da transição e `prefers-reduced-motion: reduce` ativo.
+
+## Busca rápida da galeria
+
+A galeria recebeu uma busca por nome, combinada ao filtro de tecnologia já selecionado. O campo possui rótulo acessível, ícone de busca, atalho de limpeza, contagem anunciada por região de status e estado vazio que informa tanto o termo buscado quanto a tecnologia ativa. A busca preserva os modos detalhado e compacto, os cards com transição e a abertura de vídeos.
+
+A validação Chromium confirmou que, com Drone selecionado e o modo compacto ativo, a busca por “Eloise” retorna um trabalho e anuncia `1 trabalho encontrado para “Eloise”`. Uma busca sem correspondência mostrou o estado vazio com termo e filtro contextualizados; o botão de limpeza restaurou o campo vazio e quatro trabalhos do filtro Drone. Capturas recentes em 1280×720 e 390×844 confirmaram o encaixe da barra de busca aos controles existentes.

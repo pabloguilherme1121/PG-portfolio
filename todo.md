@@ -174,3 +174,11 @@
 - [x] Preservar filtros, abertura de vídeos, transições e reduced motion nos dois modos.
 - [x] Validar desktop, mobile e teclado no modo compacto.
 - [x] Salvar checkpoint após a validação final.
+
+## Busca rápida da galeria
+
+- [x] Definir a busca por nome em conjunto com os filtros de tecnologia.
+- [x] Implementar campo de busca, atalho de limpeza e estado de resultado acessível.
+- [x] Preservar os modos detalhado e compacto, transições e abertura de vídeos com busca ativa.
+- [x] Validar combinação de busca, filtro, teclado, reduced motion e responsividade.
+- [x] Salvar checkpoint após a validação final.

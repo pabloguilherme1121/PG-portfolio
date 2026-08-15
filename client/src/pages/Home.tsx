@@ -25,6 +25,7 @@ import {
   MessageCircle,
   Plane,
   Play,
+  Search,
   Send,
   X,
 } from "lucide-react";
@@ -252,6 +253,7 @@ export default function Home() {
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
+  const [projectSearch, setProjectSearch] = useState("");
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
@@ -266,9 +268,12 @@ export default function Home() {
     refetch: refetchBlockedDates,
   } = trpc.availability.listBlocked.useQuery();
 
-  const visibleRepositories = repositories.filter((repository) =>
-    activeTechnology === "Todos" ? true : repository.technologies.includes(activeTechnology),
-  );
+  const normalizedProjectSearch = projectSearch.trim().toLocaleLowerCase("pt-BR");
+  const visibleRepositories = repositories.filter((repository) => {
+    const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
+    const matchesSearch = !normalizedProjectSearch || repository.name.toLocaleLowerCase("pt-BR").includes(normalizedProjectSearch);
+    return matchesTechnology && matchesSearch;
+  });
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -685,6 +690,27 @@ export default function Home() {
               </button>
             </div>
 
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <label className="relative block w-full sm:max-w-md">
+                <span className="sr-only">Buscar trabalho pelo nome</span>
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />
+                <input
+                  type="search"
+                  value={projectSearch}
+                  onChange={(event) => setProjectSearch(event.target.value)}
+                  placeholder="buscar trabalho pelo nome"
+                  aria-describedby="project-search-feedback"
+                  className="w-full border border-white/[0.12] bg-[#07101e] py-3 pl-10 pr-10 font-mono text-[10px] uppercase tracking-[0.1em] text-white placeholder:text-[#59718f] transition-colors focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc] focus:ring-offset-2 focus:ring-offset-[#0a0f18]"
+                />
+                {projectSearch && (
+                  <button type="button" onClick={() => setProjectSearch("")} aria-label="Limpar busca de trabalhos" className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-[#91acd0] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                    <X className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                )}
+              </label>
+              <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
+            </div>
+
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {visibleRepositories.length > 0 ? (
               <div className={`grid gap-px bg-white/[0.1] ${isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`}>
@@ -728,7 +754,9 @@ export default function Home() {
                     <p className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#72a7fb]">arquivo em preparo / novos trabalhos</p>
                     <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Quando você quiser, a próxima história começa aqui.</h3>
                     <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
-                      {activeTechnology === "Todos"
+                      {projectSearch.trim()
+                        ? `Nenhum trabalho real com o nome “${projectSearch.trim()}” corresponde ao filtro ${activeTechnology}. Tente outro termo ou limpe a busca.`
+                        : activeTechnology === "Todos"
                         ? "Quando houver um link do GitHub, um vídeo ou uma nova filmagem, o registro pode entrar aqui com descrição, tecnologias e acesso direto."
                         : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
                     </p>

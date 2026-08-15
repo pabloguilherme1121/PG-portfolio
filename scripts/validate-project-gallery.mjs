@@ -33,9 +33,16 @@ const compactState = await compactToggle.getAttribute("aria-pressed");
 const compactToggleLabel = await compactToggle.getAttribute("aria-label");
 const compactCardClass = await page.locator("#projetos .project-gallery-card").first().getAttribute("class");
 const compactFocusPreserved = await page.evaluate(() => document.activeElement?.textContent?.includes("modo compacto") ?? false);
+const searchInput = page.locator('#projetos input[type="search"]');
+await searchInput.fill("Eloise");
+const searchResultCount = await page.locator("#projetos .project-gallery-card").count();
+const searchFeedback = await page.locator("#project-search-feedback").textContent();
+await searchInput.fill("inexistente");
+const emptySearchMessage = await page.locator("#projetos .project-gallery-empty").textContent();
+await page.getByRole("button", { name: "Limpar busca de trabalhos" }).click();
+const clearedSearchValue = await searchInput.inputValue();
+const clearedSearchCount = await page.locator("#projetos .project-gallery-card").count();
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-await page.screenshot({ path: "/home/ubuntu/pablo-guilherme-portfolio/compact-gallery-validation.png", fullPage: true });
-
-console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, searchResultCount, searchFeedback, emptySearchMessage, clearedSearchValue, clearedSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();
