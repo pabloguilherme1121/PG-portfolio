@@ -72,3 +72,11 @@
 - [x] Atualizar tipografia e paleta para um azul mais claro e vibrante.
 - [x] Reescrever os principais textos com uma voz mais direta e contemporânea.
 - [x] Validar contraste, leitura e composição em desktop e dispositivos móveis.
+
+## Humanização do portfólio
+
+- [x] Adicionar uma apresentação pessoal mais acolhedora e honesta.
+- [x] Inserir detalhes visuais que aproximem o visitante da trajetória de Pablo.
+- [x] Validar autenticidade, clareza e leitura em desktop e dispositivos móveis.
+- [x] Reequilibrar a narrativa para destacar TI, curiosidade e evolução pessoal.
+- [x] Dar mais presença à assinatura PG nos pontos de transição da página.

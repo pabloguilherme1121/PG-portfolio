@@ -68,3 +68,10 @@ O wordmark une as iniciais **PG** em dois traços angulares que se conectam como
 ### Cor de assinatura
 
 **Cobalto de compilação — #3B82F6.**
+
+## Style Decisions
+
+1. **Cobalto de compilação** deve funcionar como sinal de progresso e decisão: rota vertical, estado ativo, CTA principal, números-chave e metadados importantes. Não é cor decorativa para títulos completos.
+2. Trabalhos são **entradas de arquivo**: cada item privilegia contexto, evidência e processo antes de qualquer tratamento de galeria convencional.
+3. A voz é sempre de Pablo em primeira pessoa: curiosa, metódica e honesta sobre aprender em público. O audiovisual aparece como evidência do seu repertório técnico e criativo, não como linguagem de agência.
+4. A tipografia atual usa **Sora** nos títulos, **DM Sans** na narrativa e **IBM Plex Mono** nos metadados, mantendo um contraste claro entre pessoa, ideia e sistema.
