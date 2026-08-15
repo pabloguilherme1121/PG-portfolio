@@ -32,6 +32,16 @@ export const blockedDateInputSchema = z.object({
   note: z.string().trim().max(180).optional(),
 });
 
+export type InstagramFeedItem = {
+  id: string;
+  permalink: string;
+  caption?: string;
+};
+
+export type InstagramFeedResponse =
+  | { status: "available"; items: InstagramFeedItem[]; message?: string }
+  | { status: "empty" | "credentials_required" | "error"; items: []; message: string };
+
 export const appRouter = router({
     // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
@@ -64,6 +74,13 @@ export const appRouter = router({
       }
       return { success: true, requestId: result.id, ownerNotified };
     }),
+  }),
+  instagramFeed: router({
+    status: publicProcedure.query((): InstagramFeedResponse => ({
+      status: "credentials_required",
+      items: [],
+      message: "A conexão com a API da Meta ainda depende de uma conta profissional e autorização válida.",
+    })),
   }),
   availability: router({
     listBlocked: publicProcedure.query(() => listBlockedDates()),

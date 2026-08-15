@@ -41,3 +41,12 @@ A execução CDP mais recente percorreu 90 passos de Tab e encontrou 26 controle
 ## Movimento reduzido nos novos blocos
 
 Com `prefers-reduced-motion: reduce` emulado no Chromium, foram inspecionados o hero com reveal, as linhas de skills, as imagens do repertório aplicado, o retrato e as linhas de serviços. Todos reportaram `animation-name: none`, duração de animação e transição de `0.000001s`, além de transformações neutralizadas. As imagens mantiveram sua utilidade visual, sem movimento não essencial. A execução confirmou a preferência reduzida ativa em todos os elementos encontrados.
+
+
+## Repertório Social / Instagram
+
+A seção `#social` foi criada como um bloco independente e carregado sob demanda por `lazy` + `Suspense`, mantendo o code-splitting já adotado na página pública. Os dois links reais são `@pablogui000` e `@mpjstoryworks`; as imagens exibidas vêm do arquivo audiovisual existente do projeto e não representam postagens simuladas.
+
+A seção consulta o contrato público `instagramFeed.status` via tRPC. O contrato não expõe tokens e distingue os estados `loading`, `query_error`, `credentials_required`, `empty`, `error` e `available`. No estado atual, o servidor retorna `credentials_required`, pois uma conta profissional e uma autorização Meta ainda não foram fornecidas. O fallback visual permanece acionável e direciona o visitante aos perfis reais.
+
+A cobertura automatizada inclui `server/instagramFeed.test.ts`, que verifica que o estado de credenciais ausentes retorna lista vazia e nenhuma publicação inventada. A suíte completa passou com 14 testes; TypeScript e build de produção também passaram. A validação visual foi executada em viewport desktop de 1280×720 e móvel de 390×844, confirmando a leitura da grade, o contraste azul celeste/preto, os links externos e a adaptação para uma coluna em telas estreitas.

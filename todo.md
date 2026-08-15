@@ -123,4 +123,20 @@
 - [x] Inserir link clicável para WhatsApp +55 61 99290-3029.
 - [x] Compilar e verificar as anotações de link no PDF.
 - [x] Publicar o PDF atualizado e atualizar o ativo do site.
-- [ ] Salvar checkpoint da nova versão.
+- [x] Salvar checkpoint da nova versão.
+
+
+## Feed dinâmico de Instagram
+
+- [x] Definir integração segura para @pablogui000 e @mpjstoryworks sem inventar postagens.
+- [x] Implementar seção dinâmica com carregamento sob demanda e fallback quando o feed não estiver disponível.
+- [x] Preservar privacidade, acessibilidade e desempenho no carregamento de mídia externa.
+- [x] Validar estados de carregamento, erro, vazio, responsividade e links para os perfis.
+- [x] Salvar checkpoint após a validação final.
+
+
+## Fechamento técnico do feed social
+
+- [x] Adicionar contrato público de estado do feed, sem expor credenciais, distinguindo disponível, vazio, erro e credenciais ausentes.
+- [x] Refletir esses estados explicitamente na seção social, mantendo fallback visual honesto.
+- [x] Cobrir o contrato de estado com teste automatizado e atualizar o relatório de validação.
