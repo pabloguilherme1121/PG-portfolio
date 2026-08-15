@@ -86,10 +86,47 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
 
 .archive-spine {
   left: max(0.8rem, calc((100vw - 1440px) / 2 + 0.8rem));
-  width: 1px;
-  opacity: 0.5;
-  background: linear-gradient(to bottom, transparent 0%, #3b82f6 5%, rgba(59, 130, 246, 0.28) 22%, rgba(59, 130, 246, 0.14) 75%, transparent 100%);
-  box-shadow: 0 0 16px rgba(59, 130, 246, 0.2);
+  width: 2px;
+  opacity: 0.68;
+  background: linear-gradient(to bottom, transparent 0%, #3b82f6 5%, rgba(59, 130, 246, 0.42) 22%, rgba(59, 130, 246, 0.2) 75%, transparent 100%);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.26);
+}
+
+.archive-spine::before {
+  position: absolute;
+  top: 2.5rem;
+  right: -4px;
+  bottom: 2.5rem;
+  width: 8px;
+  content: "";
+  background-image: radial-gradient(circle, rgba(103, 159, 255, 0.8) 1px, transparent 1.5px);
+  background-size: 8px 92px;
+  background-position: center top;
+}
+
+.archive-chapter::before {
+  position: absolute;
+  top: -1px;
+  left: max(0.8rem, calc((100vw - 1440px) / 2 + 0.8rem));
+  z-index: 2;
+  width: 28px;
+  height: 1px;
+  content: "";
+  background: #3b82f6;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.45);
+}
+
+.archive-chapter::after {
+  position: absolute;
+  top: -5px;
+  left: max(0.65rem, calc((100vw - 1440px) / 2 + 0.65rem));
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  content: "";
+  border: 2px solid #3b82f6;
+  border-radius: 999px;
+  background: #070a10;
 }
 
 .nav-link { position: relative; }
@@ -188,5 +225,7 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
 
 @media (max-width: 640px) {
   .blueprint-grid { background-size: 34px 34px; }
-  .archive-spine { left: 0.45rem; opacity: 0.34; }
+  .archive-spine { left: 0.45rem; opacity: 0.48; }
+  .archive-chapter::before { left: 0.45rem; }
+  .archive-chapter::after { left: 0.3rem; }
 }

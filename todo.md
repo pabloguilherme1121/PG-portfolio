@@ -49,3 +49,9 @@
 
 - [x] Acrescentar referências de entrega e duração a cada serviço audiovisual.
 - [x] Validar a leitura das informações em desktop e dispositivos móveis.
+
+## Solicitação de orçamento
+
+- [x] Criar campos para serviço, objetivo, prazo, formato e briefing.
+- [x] Integrar validação e confirmação visual de solicitação.
+- [x] Validar o formulário detalhado em desktop e dispositivos móveis.

@@ -355,7 +355,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="trilha" className="relative overflow-hidden border-t border-white/[0.07] bg-[#070a10] py-16 sm:py-24 lg:py-32">
+        <section id="trilha" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#070a10] py-16 sm:py-24 lg:py-32">
           <div className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.13] mix-blend-screen" style={{ backgroundImage: `url(${textureUrl})` }} />
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
@@ -382,7 +382,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="servicos" className="relative overflow-hidden border-t border-white/[0.07] bg-[#09101a]">
+        <section id="servicos" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#09101a]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
           <div className="relative mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
@@ -423,7 +423,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="projetos" className="border-y border-white/[0.07] bg-[#0a0f18]">
+        <section id="projetos" className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
               <div>
@@ -460,15 +460,15 @@ export default function Home() {
                       {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
                       {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
                       <span className="relative flex items-start justify-between gap-4">
-                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span><span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f8db8]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span></span>
+                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span><span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8b9cb4]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span></span>
                         {repository.kind === "video" ? <span className="grid h-9 w-9 place-items-center border border-[#8bb4ff]/50 bg-[#3b82f6]/25 text-[#f3f8ff] transition-all duration-200 group-hover:scale-110 group-hover:bg-[#3b82f6]"><Play className="h-4 w-4 fill-current" /></span> : <ArrowUpRight className="h-4 w-4 text-[#6fa4ff] transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1" />}
                       </span>
                       <span className="relative mt-auto block">
-                        <span className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#83b0fc]">{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> assistir trabalho</> : "repositório"}</span>
+                        <span className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#a4b1c6]">{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> registro de campo / assistir</> : "repositório"}</span>
                         <span className="block font-display text-3xl font-medium leading-[1.02] tracking-[-0.04em] text-white">{repository.name}</span>
                         <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>
                         <span className="mt-6 flex flex-wrap gap-2">
-                          {repository.technologies.map((technology) => <span key={technology} className="border border-[#8eb7ff]/40 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#b6d0ff]">{technology}</span>)}
+                          {repository.technologies.map((technology) => <span key={technology} className="border border-white/15 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#abb9ce]">{technology}</span>)}
                         </span>
                       </span>
                     </>
@@ -517,14 +517,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contato" className="relative overflow-hidden bg-[#070a10]">
+        <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
           <div className="relative mx-auto grid max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
             <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / canal aberto</p>
-              <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Uma boa pergunta pode ser o começo.</h2>
-              <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Se você quer conversar sobre tecnologia, criação de conteúdo ou uma cobertura audiovisual, deixe uma mensagem.</p>
-              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para novas ideias</div>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / solicitação de orçamento</p>
+              <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Seu projeto pode ser meu próximo estudo de campo.</h2>
+              <p className="mt-8 max-w-md font-body text-base leading-8 text-[#aec1dc]">Conte o que você precisa registrar. Com algumas informações, consigo estudar o contexto e construir uma proposta coerente com seu evento, ideia ou marca.</p>
+              <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> novos projetos em análise</div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
                 <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" className="social-channel group flex items-center gap-3 bg-[#070a10] px-4 py-4">
                   <span className="social-icon-mark grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc]"><Instagram className="h-4 w-4" /></span>
@@ -538,30 +538,93 @@ export default function Home() {
             </div>
 
             <div className="px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form onSubmit={handleSubmit} className="max-w-xl" noValidate>
+              <form onSubmit={handleSubmit} className="max-w-xl">
+                <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5]">* campos obrigatórios</p>
+                </div>
                 <div className="grid gap-7">
+                  <div className="grid gap-7 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
+                      <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    </label>
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
+                      <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    </label>
+                  </div>
+                  <div className="grid gap-7 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
+                      <select required name="service" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                        <option value="" disabled>Selecione um serviço</option>
+                        <option>Filmagem aérea com drone</option>
+                        <option>Captação terrestre</option>
+                        <option>Criação de conteúdo</option>
+                        <option>Pacote combinado</option>
+                        <option>Outro projeto</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
+                      <select required name="projectType" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                        <option value="" disabled>Selecione uma opção</option>
+                        <option>Evento social</option>
+                        <option>Evento corporativo</option>
+                        <option>Marca ou negócio</option>
+                        <option>Imóvel ou espaço</option>
+                        <option>Esporte ou atividade externa</option>
+                        <option>Outro</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div className="grid gap-7 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local do projeto *</span>
+                      <input required name="location" placeholder="Cidade ou endereço aproximado" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    </label>
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
+                      <input type="date" name="date" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
+                    </label>
+                  </div>
+                  <div className="grid gap-7 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
+                      <select name="delivery" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                        <option value="">A definir</option>
+                        <option>Vertical 9:16 para Reels</option>
+                        <option>Horizontal 16:9</option>
+                        <option>Vertical e horizontal</option>
+                        <option>Fotos e vídeos</option>
+                      </select>
+                    </label>
+                    <label className="block">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
+                      <select name="budget" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white outline-none transition-colors focus:border-[#3b82f6]">
+                        <option value="">Prefiro conversar</option>
+                        <option>Até R$ 500</option>
+                        <option>R$ 500 a R$ 1.000</option>
+                        <option>R$ 1.000 a R$ 2.000</option>
+                        <option>Acima de R$ 2.000</option>
+                      </select>
+                    </label>
+                  </div>
                   <label className="block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">seu nome</span>
-                    <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                  </label>
-                  <label className="block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">seu e-mail</span>
-                    <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                  </label>
-                  <label className="block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">mensagem</span>
-                    <textarea required name="message" rows={4} placeholder="O que você gostaria de conversar?" className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">briefing do projeto *</span>
+                    <textarea required name="briefing" rows={5} placeholder="Conte o objetivo, referências, o que precisa ser registrado e qualquer detalhe importante." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white outline-none transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                 </div>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <Button type="submit" className="h-auto w-fit rounded-none bg-[#3b82f6] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#5b9aff] hover:shadow-[0_12px_30px_rgba(59,130,246,0.25)] active:scale-[0.97]">
-                    enviar mensagem <Send className="h-4 w-4" />
+                    solicitar orçamento <Send className="h-4 w-4" />
                   </Button>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">resposta por e-mail a configurar</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">retorno e disponibilidade a combinar</p>
                 </div>
                 {formSent && (
                   <p role="status" className="mt-6 flex items-center gap-2 border-l-2 border-[#3b82f6] bg-[#3b82f6]/10 px-4 py-3 font-body text-sm text-[#dceaff]">
-                    <Check className="h-4 w-4 text-[#65a0ff]" /> Mensagem preparada. Conecte um endereço de e-mail para ativar o envio real.
+                    <Check className="h-4 w-4 text-[#65a0ff]" /> Solicitação preparada. Conecte um e-mail ou painel de pedidos para receber os envios reais.
                   </p>
                 )}
               </form>
