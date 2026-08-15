@@ -57,7 +57,7 @@
 - [x] Reestruturar o uso das imagens como evidência prática de trabalhos e capacidades.
 - [x] Analisar e, se necessário, ajustar paleta, contraste, tipografia e hierarquia visual.
 - [x] Validar responsividade, acessibilidade, performance e qualidade visual após a reformulação.
-- [ ] Salvar checkpoint da nova versão e entregar o resultado ao proprietário.
+- [x] Salvar checkpoint da nova versão e entregar o resultado ao proprietário.
 
 ## Auditoria de interface
 
@@ -69,7 +69,7 @@
 
 - [x] Marcar apenas alterações comprovadamente implementadas como concluídas.
 - [x] Executar testes, typecheck e build antes do checkpoint.
-- [ ] Entregar a versão reformulada com resumo das decisões tomadas.
+- [x] Entregar a versão reformulada com resumo das decisões tomadas.
 
 
 ## Acessibilidade após a reformulação
@@ -91,3 +91,27 @@
 
 - [x] Inspecionar os novos blocos visuais e imagens animadas da reformulação com `prefers-reduced-motion: reduce` ativo.
 - [x] Registrar quais animações e transições foram reduzidas ou desativadas no relatório.
+
+
+## Currículo e melhoria do portfólio
+
+- [x] Auditar o currículo PDF atual e identificar problemas de conteúdo, hierarquia e impacto visual.
+- [x] Definir uma narrativa profissional mais viva, objetiva e coerente com o portfólio.
+- [x] Produzir uma nova versão do currículo em PDF com design profissional e conteúdo verificável.
+- [x] Substituir no site o link pelo novo currículo publicado.
+- [x] Analisar a interface atual e registrar melhorias prioritárias de conteúdo, conversão, repertório e usabilidade.
+- [x] Implementar melhorias de maior impacto no portfólio. (integração do novo currículo e alinhamento de CTA)
+- [x] Validar currículo, site, responsividade e compilação antes da entrega.
+
+
+## Currículo visual de portfólio
+
+- [x] Usar o retrato real de forma estratégica, sem transformar o documento em cartão social.
+- [x] Destacar skills, repertório audiovisual e projetos reais em uma hierarquia visual profissional.
+- [x] Manter uma página objetiva, legível e útil para contatos profissionais.
+- [x] Integrar o novo PDF ao botão de currículo do site.
+
+
+## Auditoria documentada
+
+- [x] Documentar prioridades de conteúdo, conversão, repertório, usabilidade, identidade e performance em interface-review.md.
