@@ -10,6 +10,7 @@ import {
   ArrowUpRight,
   Camera,
   Check,
+  CheckCircle2,
   Clapperboard,
   Download,
   FolderGit2,
@@ -22,7 +23,7 @@ import {
   Send,
   X,
 } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
@@ -169,10 +170,15 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
+  const successMessageRef = useRef<HTMLDivElement>(null);
 
   const visibleRepositories = repositories.filter((repository) =>
     activeTechnology === "Todos" ? true : repository.technologies.includes(activeTechnology),
   );
+
+  useEffect(() => {
+    if (formSent) successMessageRef.current?.focus();
+  }, [formSent]);
 
   function closeMenu() {
     setMenuOpen(false);
@@ -623,9 +629,17 @@ export default function Home() {
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">retorno e disponibilidade a combinar</p>
                 </div>
                 {formSent && (
-                  <p role="status" className="mt-6 flex items-center gap-2 border-l-2 border-[#3b82f6] bg-[#3b82f6]/10 px-4 py-3 font-body text-sm text-[#dceaff]">
-                    <Check className="h-4 w-4 text-[#65a0ff]" /> Solicitação preparada. Conecte um e-mail ou painel de pedidos para receber os envios reais.
-                  </p>
+                  <div ref={successMessageRef} tabIndex={-1} role="status" aria-live="polite" className="quote-success mt-7 border border-[#3b82f6]/45 bg-[#0a1730] p-5 outline-none">
+                    <div className="flex gap-4">
+                      <span className="quote-success-icon grid h-11 w-11 shrink-0 place-items-center border border-[#3b82f6] bg-[#3b82f6] text-white"><CheckCircle2 className="h-5 w-5" /></span>
+                      <div>
+                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#80afff]">briefing concluído</p>
+                        <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Tudo certo: seu pedido está preparado.</h3>
+                        <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#bed0ea]">As informações do orçamento foram organizadas. Quando o canal de recebimento estiver conectado, elas poderão seguir diretamente para o atendimento.</p>
+                        <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">preencher outro briefing <ArrowUpRight className="h-3 w-3" /></button>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </form>
             </div>

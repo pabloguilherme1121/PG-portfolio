@@ -55,3 +55,8 @@
 - [x] Criar campos para serviço, objetivo, prazo, formato e briefing.
 - [x] Integrar validação e confirmação visual de solicitação.
 - [x] Validar o formulário detalhado em desktop e dispositivos móveis.
+
+## Confirmação de envio
+
+- [x] Criar uma mensagem de sucesso animada após o envio do orçamento.
+- [x] Validar a clareza, foco acessível e redução de movimento.
