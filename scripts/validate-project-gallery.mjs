@@ -56,10 +56,24 @@ const clickSuggestionResultCount = await page.locator("#projetos .project-galler
 await searchInput.fill("Eloise");
 const searchResultCount = await page.locator("#projetos .project-gallery-card").count();
 const searchFeedback = await page.locator("#project-search-feedback").textContent();
+const clickClearButton = page.getByRole("button", { name: "Limpar busca de trabalhos" });
+await clickClearButton.click();
+const clickClearedSearchValue = await searchInput.inputValue();
+const focusReturnedAfterClickClear = await page.evaluate(() => document.activeElement?.matches('#projetos input[type="search"]') ?? false);
 await searchInput.fill("inexistente");
 const emptySearchMessage = await page.locator("#projetos .project-gallery-empty").textContent();
-await page.getByRole("button", { name: "Limpar busca de trabalhos" }).click();
+const clearSearchButton = page.getByRole("button", { name: "Limpar busca de trabalhos" });
+await searchInput.focus();
+await page.keyboard.press("Tab");
+const clearButtonReceivedTabFocus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label") === "Limpar busca de trabalhos");
+const clearButtonTabIndex = await clearSearchButton.getAttribute("tabindex");
+const clearButtonFocusVisible = await clearSearchButton.evaluate((element) => {
+  const style = getComputedStyle(element);
+  return style.outlineStyle !== "none" || style.boxShadow !== "none";
+});
+await clearSearchButton.press("Enter");
 const clearedSearchValue = await searchInput.inputValue();
+const focusReturnedAfterClear = await page.evaluate(() => document.activeElement?.matches('#projetos input[type="search"]') ?? false);
 const clearedSearchCount = await page.locator("#projetos .project-gallery-card").count();
 const todosFilter = page.getByRole("button", { name: "Todos", exact: true }).first();
 await todosFilter.click();
@@ -77,5 +91,5 @@ await searchInput.fill("celebração");
 const descriptionSearchCount = await page.locator("#projetos .project-gallery-card").count();
 const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
-console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, suggestionCount, projectIconCount, highlightedMatchText, highlightedMatchWeight, suggestionsExpanded, activeSuggestionId, keyboardSuggestionValue, keyboardSuggestionResultCount, descriptionIconCount, descriptionHighlightedText, descriptionHighlightedWeight, clickSuggestionValue, clickSuggestionResultCount, searchResultCount, searchFeedback, emptySearchMessage, clearedSearchValue, clearedSearchCount, technologySuggestionCount, technologyIconCount, technologyHighlightedText, technologyHighlightedWeight, technologySuggestionValue, technologySearchCount, descriptionSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
+console.log(JSON.stringify({ labels, focusVisible, focusMovedByTab, focusedDuringTransition, focusPreservedAfterTransition, selectedState, visibleCards, compactState, compactToggleLabel, compactCardClass, compactFocusPreserved, suggestionCount, projectIconCount, highlightedMatchText, highlightedMatchWeight, suggestionsExpanded, activeSuggestionId, keyboardSuggestionValue, keyboardSuggestionResultCount, descriptionIconCount, descriptionHighlightedText, descriptionHighlightedWeight, clickSuggestionValue, clickSuggestionResultCount, searchResultCount, searchFeedback, clickClearedSearchValue, focusReturnedAfterClickClear, emptySearchMessage, clearButtonReceivedTabFocus, clearButtonTabIndex, clearButtonFocusVisible, clearedSearchValue, focusReturnedAfterClear, clearedSearchCount, technologySuggestionCount, technologyIconCount, technologyHighlightedText, technologyHighlightedWeight, technologySuggestionValue, technologySearchCount, descriptionSearchCount, reducedMotion, transitionClassDuringChange, transitionClassAfterChange }));
 await browser.close();

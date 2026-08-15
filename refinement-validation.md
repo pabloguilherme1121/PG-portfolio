@@ -115,3 +115,12 @@ O trecho encontrado em cada sugestão agora é renderizado em negrito. A corresp
 A validação Chromium confirmou que, ao digitar “cha”, a sugestão “Chá da Eloise” apresenta “Chá” no elemento de destaque, com peso computado `700`. A mesma verificação encontrou “cele” em negrito na sugestão de descrição “celebração” e “Inte” em negrito na sugestão de tecnologia “Interface”, ambos também com peso `700`. A seleção por teclado, as sugestões por tecnologia e descrição, os filtros, o modo compacto e reduced motion continuaram funcionais; testes, TypeScript e build foram aprovados.
 
 As capturas finais em desktop de 1280×720 e mobile de 390×844 confirmaram que a barra de busca, filtros, modo de visualização e a grade permanecem legíveis e responsivos após o novo tratamento tipográfico.
+
+
+## Refinamento profissional do botão de limpar busca
+
+O botão X agora permanece dentro da barra com área de toque de 32px, borda e fundo sutis no hover, foco visível com anel ciano, estado ativo com redução de escala e transição combinando opacidade, transformação, cor e borda. Quando não há texto, fica oculto visualmente e fora da ordem de Tab; quando a busca está preenchida, torna-se um controle acessível com `aria-label`, tooltip nativo e acionamento por clique ou Enter. Após a limpeza, o foco retorna automaticamente ao campo de busca.
+
+A validação Chromium confirmou `tabindex="0"`, foco visível, limpeza por Enter, campo vazio e retorno do foco ao input. O comportamento de sugestões, filtros, modo compacto e `prefers-reduced-motion` permaneceu estável. Capturas finais em 1280×720 e 390×844 confirmaram o encaixe da barra e a legibilidade dos controles em desktop e mobile.
+
+A rodada final também validou a ação por clique: ao preencher “Eloise”, o botão X foi acionado com mouse/tap, esvaziou o campo e devolveu o foco ao input. Em seguida, com “inexistente”, a navegação real por Tab alcançou o botão (`tabindex="0"`) com foco visível, e Enter executou a mesma limpeza. O reduced motion permaneceu ativo sem regressões.

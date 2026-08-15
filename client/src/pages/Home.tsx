@@ -402,6 +402,13 @@ export default function Home() {
     window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
   }
 
+  function clearProjectSearch() {
+    setProjectSearch("");
+    setActiveSearchSuggestionIndex(-1);
+    setIsProjectSearchFocused(false);
+    window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
+  }
+
   function handleProjectSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Escape") {
       setActiveSearchSuggestionIndex(-1);
@@ -839,11 +846,17 @@ export default function Home() {
                     ))}
                   </ul>
                 )}
-                {projectSearch && (
-                  <button type="button" onClick={() => { setProjectSearch(""); setActiveSearchSuggestionIndex(-1); }} aria-label="Limpar busca de trabalhos" className="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center text-[#91acd0] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
-                    <X className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={clearProjectSearch}
+                  aria-label="Limpar busca de trabalhos"
+                  title="Limpar busca"
+                  tabIndex={projectSearch ? 0 : -1}
+                  className={`absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center border border-transparent text-[#91acd0] transition-[opacity,transform,background-color,border-color,color] duration-200 focus-visible:border-[#67e8f9]/60 focus-visible:bg-[#0b2746] focus-visible:text-[#eaffff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101e] active:scale-95 ${projectSearch ? "scale-100 opacity-100 hover:border-[#67e8f9]/35 hover:bg-[#0b2746] hover:text-white" : "pointer-events-none scale-95 opacity-0"}`}
+                >
+                  <X className="h-4 w-4 transition-transform duration-200 hover:rotate-90" aria-hidden="true" />
+                  <span className="sr-only">Limpar busca de trabalhos</span>
+                </button>
               </label>
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>

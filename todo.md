@@ -212,3 +212,13 @@
 - [x] Preservar ícones, contraste, teclado e leitores de tela com o destaque ativo.
 - [x] Validar destaque por nome, tecnologia e descrição em desktop e mobile.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Refinamento do botão de limpar busca
+
+- [x] Aprimorar o contraste, tamanho e alinhamento do botão X dentro da barra.
+- [x] Adicionar transição suave de opacidade e escala ao aparecer/desaparecer.
+- [x] Melhorar o feedback visual de hover, active e focus-visible.
+- [x] Garantir que o foco retorne ao campo de busca após a limpeza.
+- [x] Validar teclado, clique, reduced motion e responsividade.
+- [x] Salvar checkpoint após a validação final.
