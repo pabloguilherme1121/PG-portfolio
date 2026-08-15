@@ -107,3 +107,11 @@ A validação Chromium confirmou uma sugestão contextual ao digitar “cha” c
 Cada sugestão agora exibe um ícone visual associado à origem: pasta para projeto, chaves para tecnologia e documento para descrição. As três variações usam cores distintas no estado padrão e se tornam azul-escuro no estado ativo, mantendo contraste com o fundo azul celeste. Os ícones são decorativos para leitores de tela; o rótulo textual de origem continua disponível ao lado do termo.
 
 A validação Chromium confirmou a presença de um ícone de projeto para “Chá da Eloise”, um ícone de descrição para “celebração” e um ícone de tecnologia para “Interface”, preservando a escolha por teclado e clique. A captura de inspeção em viewport móvel confirmou o posicionamento do ícone antes do termo e a continuidade da leitura da lista.
+
+## Destaque da correspondência nas sugestões
+
+O trecho encontrado em cada sugestão agora é renderizado em negrito. A correspondência usa normalização sem distinção entre maiúsculas/minúsculas e acentos, mantendo a grafia original exibida no resultado. Ícones, rótulos de origem, estados ativos e a semântica de combobox permanecem inalterados.
+
+A validação Chromium confirmou que, ao digitar “cha”, a sugestão “Chá da Eloise” apresenta “Chá” no elemento de destaque, com peso computado `700`. A mesma verificação encontrou “cele” em negrito na sugestão de descrição “celebração” e “Inte” em negrito na sugestão de tecnologia “Interface”, ambos também com peso `700`. A seleção por teclado, as sugestões por tecnologia e descrição, os filtros, o modo compacto e reduced motion continuaram funcionais; testes, TypeScript e build foram aprovados.
+
+As capturas finais em desktop de 1280×720 e mobile de 390×844 confirmaram que a barra de busca, filtros, modo de visualização e a grade permanecem legíveis e responsivos após o novo tratamento tipográfico.

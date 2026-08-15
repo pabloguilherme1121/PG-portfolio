@@ -172,6 +172,32 @@ function normalizeSearchText(value: string) {
     .trim();
 }
 
+function renderSuggestionMatch(value: string, query: string, isActive: boolean) {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return value;
+
+  const characters = Array.from(value);
+  const normalizedCharacters = characters.map((character) => normalizeSearchText(character));
+  const normalizedValue = normalizedCharacters.join("");
+  const matchStart = normalizedValue.indexOf(normalizedQuery);
+  if (matchStart < 0) return value;
+
+  let characterStart = 0;
+  let characterEnd = characters.length;
+  let normalizedOffset = 0;
+  for (let index = 0; index < normalizedCharacters.length; index += 1) {
+    const nextOffset = normalizedOffset + normalizedCharacters[index].length;
+    if (normalizedOffset <= matchStart && matchStart < nextOffset) characterStart = index;
+    if (normalizedOffset < matchStart + normalizedQuery.length && matchStart + normalizedQuery.length <= nextOffset) {
+      characterEnd = index + 1;
+      break;
+    }
+    normalizedOffset = nextOffset;
+  }
+
+  return <>{characters.slice(0, characterStart).join("")}<strong data-suggestion-match="true" className={`font-bold ${isActive ? "text-[#02111f]" : "text-white"}`}>{characters.slice(characterStart, characterEnd).join("")}</strong>{characters.slice(characterEnd).join("")}</>;
+}
+
 /**
  * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
  * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
@@ -806,7 +832,7 @@ export default function Home() {
                       >
                         <span className="flex min-w-0 items-center gap-2">
                           {suggestion.source === "projeto" ? <FolderGit2 data-suggestion-icon="projeto" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#60a5fa]"}`} aria-hidden="true" /> : suggestion.source === "tecnologia" ? <Braces data-suggestion-icon="tecnologia" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#67e8f9]"}`} aria-hidden="true" /> : <FileText data-suggestion-icon="descrição" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#a5b4fc]"}`} aria-hidden="true" />}
-                          <span className="truncate">{suggestion.value}</span>
+                          <span className="truncate">{renderSuggestionMatch(suggestion.value, projectSearch, activeSearchSuggestionIndex === index)}</span>
                         </span>
                         <span className={`shrink-0 text-[8px] tracking-[0.12em] ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#6f9cbd]"}`}>{suggestion.source}</span>
                       </li>

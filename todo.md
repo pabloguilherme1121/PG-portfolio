@@ -204,3 +204,11 @@
 - [x] Implementar ícones semânticos preservando o contraste dos estados padrão e ativo.
 - [x] Validar seleção por teclado, leitura visual e responsividade dos ícones.
 - [x] Salvar checkpoint após a validação final.
+
+## Destaque da correspondência nas sugestões
+
+- [x] Definir correspondência textual segura entre termo digitado e sugestão, incluindo acentos.
+- [x] Renderizar em negrito a parte correspondente nas sugestões de busca.
+- [x] Preservar ícones, contraste, teclado e leitores de tela com o destaque ativo.
+- [x] Validar destaque por nome, tecnologia e descrição em desktop e mobile.
+- [x] Salvar checkpoint após a validação final.
