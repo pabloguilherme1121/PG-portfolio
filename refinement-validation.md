@@ -10,7 +10,7 @@ A seção de contato recebeu microcopy mais próxima e direta. O estado vazio da
 
 A folha global mantém foco visível com `:focus-visible`, foco específico no calendário e `scroll-margin-top` para navegação por âncoras. A regra `prefers-reduced-motion: reduce` desativa animações não essenciais e reduz transições para praticamente zero. A página também preserva `aria-busy`, `aria-live` e `aria-describedby` no fluxo de consulta ao WhatsApp, além de `role="status"` e `role="alert"` nos feedbacks correspondentes.
 
-A validação de código confirmou que os controles de calendário, formulário, CTA e WhatsApp continuam usando elementos nativos navegáveis por teclado. A validação visual confirmou leitura e composição nos dois tamanhos de viewport. A tentativa de avançar o foco por teclado no navegador persistente do ambiente não pôde ser concluída porque a sessão de automação ficou indisponível; por isso, essa validação interativa permanece como pendência explícita no TODO, embora as garantias de foco e reduced motion estejam implementadas no código.
+A validação CDP em Chromium isolado percorreu 16 controles consecutivos, com `document.activeElement` confirmando cada foco na ordem esperada. O CTA “me chama para conversar” permaneceu ativo durante o foco. Com `prefers-reduced-motion: reduce` emulado, `matchMedia` retornou `true`, o calendário apresentou `animation-name: none` e as durações de animação/transição foram reduzidas para `0.000001s`. A validação visual confirmou leitura e composição em desktop e mobile.
 
 ## Performance
 

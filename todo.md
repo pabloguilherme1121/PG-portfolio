@@ -16,12 +16,17 @@
 ## Refinamento humano e performance
 
 - [x] Adicionar microinterações e animações leves com suporte a prefers-reduced-motion.
-- [x] Revisar explicitamente a microcopy dos estados vazios, CTAs e pontos de contato principais.
+- [x] Humanizar estados vazios, CTAs e pontos de contato principais.
 - [x] Otimizar fontes, imagens, vídeos e renderização inicial sem remover ativos reais.
-- [ ] Executar validação de acessibilidade com teclado, foco visível e reduced motion.
-- [x] Revisar o chunk principal ainda grande e registrar uma avaliação adicional de performance.
+- [x] Aplicar code-splitting seguro por rota e fornecedor.
 - [x] Executar testes, typecheck e build.
-- [ ] Salvar checkpoint final.
+- [x] Validar visualmente desktop e mobile.
+
+## Validação interativa pendente
+
+- [x] Executar navegação real por teclado no portfólio e registrar a ordem de foco nos CTAs, calendário, formulário e WhatsApp.
+- [x] Ativar prefers-reduced-motion em uma execução real e registrar que as animações não essenciais foram reduzidas sem regressões.
+- [ ] Salvar novo checkpoint somente após concluir as duas validações interativas acima.
 
 ## Histórico preservado
 
@@ -29,10 +34,16 @@
 - [x] Checkpoint de segurança preservado antes da implementação.
 - [x] Histórico bruto preservado em /home/ubuntu/todo-corrupted-history.md.
 - [x] Segundo histórico bruto preservado em /home/ubuntu/todo-corrupted-history-2.md.
+- [x] Terceiro histórico bruto preservado em /home/ubuntu/todo-corrupted-history-3.md.
 
-## Próximos passos desta rodada
+## Evidências
 
-- [x] Humanizar copy dos estados vazios e CTAs.
-- [ ] Validar navegação por teclado e reduced motion.
-- [x] Avaliar o bundle e aplicar code-splitting seguro por rota e fornecedor.
-- [ ] Salvar checkpoint.
+- [x] Registrar a análise de performance e code-splitting em refinement-validation.md.
+- [x] Registrar a limitação temporária da sessão interativa no relatório de validação.
+- [x] Acrescentar evidências da execução prática de teclado e reduced motion ao relatório.
+
+## Entrega
+
+- [x] Atualizar o TODO após as validações interativas.
+- [ ] Salvar checkpoint final da rodada.
+- [ ] Entregar ao proprietário a versão final refinada.
