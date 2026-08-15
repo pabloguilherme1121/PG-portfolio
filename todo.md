@@ -197,3 +197,10 @@
 - [x] Preservar filtros, modos de visualização, busca expandida e reduced motion durante a seleção.
 - [x] Validar sugestões, teclado, estado vazio e responsividade.
 - [x] Salvar checkpoint após a validação final.
+
+## Ícones das sugestões de busca
+
+- [x] Associar ícones claros aos tipos projeto, tecnologia e descrição.
+- [x] Implementar ícones semânticos preservando o contraste dos estados padrão e ativo.
+- [x] Validar seleção por teclado, leitura visual e responsividade dos ícones.
+- [x] Salvar checkpoint após a validação final.

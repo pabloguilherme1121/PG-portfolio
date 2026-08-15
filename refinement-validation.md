@@ -101,3 +101,9 @@ A validação Chromium confirmou duas correspondências para “Interface”, lo
 O campo de busca agora apresenta sugestões reais derivadas dos nomes de projetos, tecnologias e termos relevantes das descrições. As sugestões respeitam o filtro de tecnologia ativo, são limitadas a seis opções, identificam a origem de cada termo e não introduzem conteúdo simulado. O campo usa semântica de combobox, com `aria-expanded`, `aria-controls`, `aria-activedescendant` e opções em `listbox`.
 
 A validação Chromium confirmou uma sugestão contextual ao digitar “cha” com Drone ativo; a seleção por seta para baixo e Enter preencheu “Chá da Eloise” e retornou um card. A seleção por clique de “celebração” também retornou um resultado. Após selecionar Todos, a sugestão “Interface” foi escolhida por teclado e retornou dois trabalhos. O foco, filtros, modo compacto, reduced motion e as capturas em 1280×720 e 390×844 permaneceram adequados.
+
+## Ícones semânticos das sugestões
+
+Cada sugestão agora exibe um ícone visual associado à origem: pasta para projeto, chaves para tecnologia e documento para descrição. As três variações usam cores distintas no estado padrão e se tornam azul-escuro no estado ativo, mantendo contraste com o fundo azul celeste. Os ícones são decorativos para leitores de tela; o rótulo textual de origem continua disponível ao lado do termo.
+
+A validação Chromium confirmou a presença de um ícone de projeto para “Chá da Eloise”, um ícone de descrição para “celebração” e um ícone de tecnologia para “Interface”, preservando a escolha por teclado e clique. A captura de inspeção em viewport móvel confirmou o posicionamento do ícone antes do termo e a continuidade da leitura da lista.

@@ -14,7 +14,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Clapperboard,
+  Braces,
   Download,
+  FileText,
   FolderGit2,
   Github,
   Instagram,
@@ -802,7 +804,10 @@ export default function Home() {
                         onClick={() => applyProjectSearchSuggestion(suggestion)}
                         className={`flex cursor-pointer items-center justify-between gap-4 border-b border-white/[0.08] px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] last:border-b-0 ${activeSearchSuggestionIndex === index ? "bg-[#38bdf8] text-[#02111f]" : "text-[#d6ecf8] hover:bg-[#0a2446]"}`}
                       >
-                        <span className="truncate">{suggestion.value}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          {suggestion.source === "projeto" ? <FolderGit2 data-suggestion-icon="projeto" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#60a5fa]"}`} aria-hidden="true" /> : suggestion.source === "tecnologia" ? <Braces data-suggestion-icon="tecnologia" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#67e8f9]"}`} aria-hidden="true" /> : <FileText data-suggestion-icon="descrição" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#a5b4fc]"}`} aria-hidden="true" />}
+                          <span className="truncate">{suggestion.value}</span>
+                        </span>
                         <span className={`shrink-0 text-[8px] tracking-[0.12em] ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#6f9cbd]"}`}>{suggestion.source}</span>
                       </li>
                     ))}
