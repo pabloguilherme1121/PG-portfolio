@@ -293,6 +293,7 @@ const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface",
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
@@ -364,6 +365,13 @@ export default function Home() {
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 768px)");
+    const handleViewportChange = () => setIsDesktopViewport(mediaQuery.matches);
+    mediaQuery.addEventListener("change", handleViewportChange);
+    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
 
   useEffect(() => {
     if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
@@ -651,7 +659,7 @@ export default function Home() {
         </section>
 
         <section id="trilha" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#070a10] py-16 sm:py-24 lg:py-32">
-          <div className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.13] mix-blend-screen" style={{ backgroundImage: `url(${textureUrl})` }} />
+          {isDesktopViewport && <img src={textureUrl} alt="" loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.13] mix-blend-screen" />}
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
@@ -968,10 +976,10 @@ export default function Home() {
 
         <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
-          <div className="relative mx-auto grid max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
-            <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
+          <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
+            <div className="min-w-0 border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">08 / solicitação de orçamento</p>
-                <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem um projeto? Vamos dar forma.</h2>
+                <h2 className="mt-6 max-w-full break-words font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem um projeto? Vamos dar forma.</h2>
                 <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Não precisa chegar com tudo pronto. Compartilhe o contexto e, juntos, definimos o formato mais útil para o projeto.</p>
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> agenda aberta para novos projetos — vamos começar pelo contexto</div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
@@ -1040,7 +1048,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
+            <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
               <form onSubmit={handleSubmit} className="max-w-xl">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>

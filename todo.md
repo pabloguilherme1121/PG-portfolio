@@ -231,3 +231,13 @@
 - [x] Melhorar hierarquia visual, ritmo de espaçamento, responsividade e microinterações.
 - [x] Validar acessibilidade, teclado, reduced motion, performance e desktop/mobile.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Responsividade mobile e performance
+
+- [x] Diagnosticar cortes de palavras e overflow em viewport móvel.
+- [x] Medir gargalos de carregamento, mídia, fontes e JavaScript.
+- [x] Corrigir tipografia, quebra de palavras e espaçamento sem degradar o desktop.
+- [x] Otimizar carregamento inicial e velocidade percebida.
+- [x] Validar mobile, performance, acessibilidade e regressões.
+- [x] Salvar checkpoint após a validação final.
