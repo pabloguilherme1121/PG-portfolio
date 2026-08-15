@@ -286,3 +286,12 @@
 - [x] Adaptar o efeito para teclado, mobile, toque e reduced motion.
 - [x] Validar visualização, acessibilidade, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Favoritos nos cartões de projeto
+
+- [x] Auditar a estrutura dos cartões e definir a persistência local dos favoritos.
+- [x] Implementar estado de favoritos persistente no navegador.
+- [x] Adicionar botão acessível e filtro de referências favoritas.
+- [x] Integrar favoritos com overlay, busca, ordenação, modo compacto e responsividade.
+- [x] Validar persistência, acessibilidade, testes, build e salvar checkpoint.

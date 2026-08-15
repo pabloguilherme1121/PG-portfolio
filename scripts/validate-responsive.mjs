@@ -26,10 +26,36 @@ for (const width of viewports) {
   const overlayFocusVisible = Number.parseFloat(await previewOverlay.evaluate((element) => getComputedStyle(element).opacity)) > 0;
   const overlayTransitionDuration = await previewOverlay.evaluate((element) => getComputedStyle(element).transitionDuration);
   const overlayReducedMotionSafe = (await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches)) ? overlayTransitionDuration === "0s" : true;
+  const favoriteControl = firstProjectCard.locator('xpath=..').locator('[data-favorite-control="true"]').first();
+  await favoriteControl.click();
+  const favoriteActivated = (await favoriteControl.getAttribute("aria-pressed")) === "true";
+  const favoritesStored = await page.evaluate(() => {
+    try { return JSON.parse(window.localStorage.getItem("pablo-portfolio-favorites") || "[]").length === 1; } catch { return false; }
+  });
+  await page.reload({ waitUntil: "networkidle" });
+  await page.locator("#projetos").scrollIntoViewIfNeeded();
+  const persistedFavoriteControl = page.locator('#projetos .project-gallery-card').first().locator('xpath=..').locator('[data-favorite-control="true"]').first();
+  const favoritePersisted = await persistedFavoriteControl.count() > 0;
+  await persistedFavoriteControl.focus();
+  const favoriteFocusVisible = await persistedFavoriteControl.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  await page.keyboard.press("Enter");
+  const favoriteKeyboardRemoved = (await persistedFavoriteControl.getAttribute("aria-pressed")) === "false";
+  await page.keyboard.press("Enter");
+  const favoriteKeyboardRestored = (await persistedFavoriteControl.getAttribute("aria-pressed")) === "true";
+  const savedFilter = page.getByRole("button", { name: /salvos/ }).first();
+  await savedFilter.click();
+  await page.waitForTimeout(280);
+  const favoritesFilterActivated = (await savedFilter.getAttribute("aria-pressed")) === "true";
+  const savedCardCount = await page.locator("#projetos .project-gallery-card").count();
+  await savedFilter.click();
   const filters = page.locator('#projetos button[data-filter-scope="category"]');
   const filterContainerWidth = await filters.first().locator("..")?.evaluate((element) => ({ scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }));
   const firstFilter = filters.first();
   await firstFilter.focus();
+  await page.keyboard.press("Enter");
   const filterFocusVisible = await firstFilter.evaluate((element) => {
     const style = getComputedStyle(element);
     return style.outlineStyle !== "none" || style.boxShadow !== "none";
@@ -85,7 +111,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

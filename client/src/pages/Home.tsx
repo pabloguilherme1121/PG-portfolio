@@ -19,6 +19,7 @@ import {
   FileText,
   FolderGit2,
   Github,
+  Heart,
   Instagram,
   Layers2,
   Loader2,
@@ -341,6 +342,16 @@ export default function Home() {
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
+  const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = window.localStorage.getItem("pablo-portfolio-favorites");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -353,6 +364,7 @@ export default function Home() {
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
+  const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
@@ -392,7 +404,8 @@ export default function Home() {
       const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
       const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
       const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
-      return matchesTechnology && matchesCategory && matchesSearch;
+      const matchesFavorites = !favoritesOnly || favoriteProjectIdSet.has(repository.id);
+      return matchesTechnology && matchesCategory && matchesSearch && matchesFavorites;
     })
     .sort((first, second) => sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -406,6 +419,14 @@ export default function Home() {
     ? buildAvailabilityWhatsAppUrl(whatsAppNumber, availabilityDate, availabilityTime)
     : "";
   const isAvailabilityConsultationReadyForUser = isAvailabilityConsultationReady(availabilityDate, availabilityTime, isBlockedDatesError);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
+    } catch {
+      // A preferência continua válida durante a sessão mesmo quando o armazenamento está indisponível.
+    }
+  }, [favoriteProjectIds]);
 
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
@@ -464,6 +485,12 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
   }
 
   function selectCategory(category: string) {
@@ -880,12 +907,15 @@ export default function Home() {
                   <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
                 </div>
-                <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
+                  <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
                   <span>ordenar por</span>
                   <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">
                     {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
-                </label>
+                  </label>
+                </div>
               </div>
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
@@ -1019,14 +1049,21 @@ export default function Home() {
                     </>
                   );
 
+                  const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-5 top-5 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button>;
                   return repository.kind === "video" ? (
-                    <button key={`${activeTechnology}-${repository.id}`} type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
-                      {cardContent}
-                    </button>
+                    <div key={`${activeTechnology}-${repository.id}`} className="relative">
+                      {favoriteButton}
+                      <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
+                        {cardContent}
+                      </button>
+                    </div>
                   ) : (
-                    <a key={`${activeTechnology}-${repository.id}`} href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
-                      {cardContent}
-                    </a>
+                    <div key={`${activeTechnology}-${repository.id}`} className="relative">
+                      {favoriteButton}
+                      <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
+                        {cardContent}
+                      </a>
+                    </div>
                   );
                 })}
               </div>
