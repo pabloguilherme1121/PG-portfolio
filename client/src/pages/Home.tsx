@@ -9,7 +9,6 @@ import {
   ArrowDownRight,
   ArrowUpRight,
   Camera,
-  Check,
   CheckCircle2,
   Clapperboard,
   Download,
@@ -17,6 +16,7 @@ import {
   Github,
   Instagram,
   Layers2,
+  Loader2,
   Menu,
   Plane,
   Play,
@@ -24,6 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { trpc } from "@/lib/trpc";
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
@@ -79,6 +80,43 @@ const serviceOffers = [
     delivery: "3–5 vídeos verticais",
     duration: "15–60 s por peça",
     Icon: Clapperboard,
+  },
+];
+
+const processSteps = [
+  {
+    number: "01",
+    title: "Escuto a ideia",
+    text: "Você me conta o contexto, o que precisa registrar e o que espera sentir quando assistir ao resultado.",
+  },
+  {
+    number: "02",
+    title: "Desenho o caminho",
+    text: "Definimos juntos formato, referências, data e o tipo de imagem que faz sentido para o projeto.",
+  },
+  {
+    number: "03",
+    title: "Registro e entrego",
+    text: "Transformo o plano em material organizado para ser visto, compartilhado e lembrado.",
+  },
+];
+
+const caseStudies = [
+  {
+    id: "ARQ.01",
+    title: "Chá da Eloise",
+    context: "Um encontro social que pedia leveza, detalhes e uma leitura mais afetiva do ambiente.",
+    method: "Alternar planos abertos, aproximações e momentos espontâneos da celebração.",
+    learning: "Uma história funciona melhor quando o espaço e as pessoas têm tempo para aparecer.",
+    tags: ["Evento", "Vídeo", "Drone"],
+  },
+  {
+    id: "ARQ.02",
+    title: "RHAM — serviços no app",
+    context: "Um conteúdo vertical para mostrar uma jornada de serviços em uma interface de forma objetiva.",
+    method: "Organizar a navegação em uma sequência curta, com foco na clareza de cada etapa da tela.",
+    learning: "Em conteúdo digital, ritmo e legibilidade são parte da experiência, não só acabamento.",
+    tags: ["Interface", "Conteúdo", "Vertical"],
   },
 ];
 
@@ -168,6 +206,7 @@ const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface",
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [formSent, setFormSent] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const successMessageRef = useRef<HTMLDivElement>(null);
@@ -180,14 +219,36 @@ export default function Home() {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
 
+  const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
+    onSuccess: () => setFormSent(true),
+    onError: () => setFormError("Não foi possível enviar agora. Confira sua conexão e tente novamente."),
+  });
+
   function closeMenu() {
     setMenuOpen(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setFormSent(true);
-    event.currentTarget.reset();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const eventDate = String(data.get("date") || "");
+    setFormError(null);
+    setFormSent(false);
+    quoteRequestMutation.mutate(
+      {
+        name: String(data.get("name") || ""),
+        email: String(data.get("email") || ""),
+        service: String(data.get("service") || ""),
+        projectType: String(data.get("projectType") || ""),
+        location: String(data.get("location") || ""),
+        eventDate: eventDate || undefined,
+        delivery: String(data.get("delivery") || "") || undefined,
+        budget: String(data.get("budget") || "") || undefined,
+        briefing: String(data.get("briefing") || ""),
+      },
+      { onSuccess: () => form.reset() },
+    );
   }
 
   return (
@@ -435,11 +496,34 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#061226]">
+          <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
+          <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.82fr_1.18fr] lg:px-12 lg:py-28">
+            <div>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">05 / como eu trabalho</p>
+              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do primeiro “e se?”<br />ao registro final.</h2>
+              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Meu processo começa em conversa. A ideia é entender o que importa antes de decidir qualquer enquadramento.</p>
+              <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">contar sua ideia <ArrowUpRight className="h-3.5 w-3.5" /></a>
+            </div>
+            <div className="divide-y divide-cyan-100/[0.12] border-y border-cyan-100/[0.12]">
+              {processSteps.map((step) => (
+                <article key={step.number} className="grid gap-5 py-7 sm:grid-cols-[80px_1fr] sm:py-9">
+                  <span className="font-mono text-xl text-[#67e8f9]">{step.number}</span>
+                  <div>
+                    <h3 className="font-display text-2xl font-medium text-white">{step.title}</h3>
+                    <p className="mt-3 max-w-xl font-body text-sm leading-7 text-[#b9d8e8]">{step.text}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section id="projetos" className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">05 / trabalhos selecionados</p>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / trabalhos selecionados</p>
                 <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Trabalhos que<br className="hidden sm:block" /> já ganharam vida.</h2>
                 <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
@@ -526,6 +610,30 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            <div className="mt-16 border-t border-cyan-100/[0.12] pt-8 sm:pt-10">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+                <div>
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">por trás dos trabalhos</p>
+                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.5rem)] font-medium leading-none tracking-[-0.05em] text-white">O que cada registro me ensinou.</h3>
+                </div>
+                <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Mais do que mostrar uma entrega, eu quero registrar as decisões que fizeram cada projeto avançar.</p>
+              </div>
+              <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2">
+                {caseStudies.map((study) => (
+                  <article key={study.id} className="relative bg-[#071326] p-6 sm:p-8">
+                    <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
+                    <h4 className="mt-7 font-display text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
+                    <dl className="mt-6 grid gap-5 font-body text-sm leading-7 text-[#bcd9e7]">
+                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">contexto</dt><dd className="mt-1">{study.context}</dd></div>
+                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">como resolvi</dt><dd className="mt-1">{study.method}</dd></div>
+                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">o que aprendi</dt><dd className="mt-1 text-[#d9f4ff]">{study.learning}</dd></div>
+                    </dl>
+                    <div className="mt-7 flex flex-wrap gap-2">{study.tags.map((tag) => <span key={tag} className="border border-cyan-100/[0.16] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5dff4]">{tag}</span>)}</div>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
@@ -533,7 +641,7 @@ export default function Home() {
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
           <div className="relative mx-auto grid max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
             <div className="border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / solicitação de orçamento</p>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">07 / solicitação de orçamento</p>
                 <h2 className="mt-6 max-w-xl font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem uma ideia? Vamos conversar.</h2>
                 <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Você não precisa chegar com tudo pronto. Me conta o que imagina e, juntos, a gente encontra o ritmo, o enquadramento e o formato para isso ganhar vida.</p>
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> novos projetos em análise</div>
@@ -546,6 +654,15 @@ export default function Home() {
                   <span className="social-icon-mark grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc]"><Instagram className="h-4 w-4" /></span>
                   <span className="min-w-0"><span className="block font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f87ad]">Instagram</span><span className="mt-1 block truncate font-mono text-[11px] text-[#e7f0ff]">@mpjstoryworks</span></span>
                 </a>
+              </div>
+              <a href="https://ig.me/m/pablogui000" target="_blank" rel="noreferrer" className="group mt-5 inline-flex items-center gap-3 border border-[#38bdf8]/45 bg-[#071b39] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[#e4faff] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0a2b57] hover:shadow-[0_10px_24px_rgba(56,189,248,0.16)]"><Instagram className="h-4 w-4 text-[#67e8f9]" /> mensagem rápida no Instagram <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
+              <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
+                <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>
+                <ol className="mt-4 space-y-3 font-body text-sm leading-6 text-[#cbe8f6]">
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">01</span>Eu leio sua ideia e entendo o que faz sentido registrar.</li>
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">02</span>Voltamos a conversar sobre formato, data e detalhes.</li>
+                  <li><span className="mr-2 font-mono text-[#67e8f9]">03</span>Você recebe uma proposta feita para o seu projeto.</li>
+                </ol>
               </div>
             </div>
 
@@ -629,19 +746,20 @@ export default function Home() {
                   </label>
                 </div>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <Button type="submit" className="h-auto w-fit rounded-none bg-[#3b82f6] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#5b9aff] hover:shadow-[0_12px_30px_rgba(59,130,246,0.25)] active:scale-[0.97]">
-                    solicitar orçamento <Send className="h-4 w-4" />
+                  <Button disabled={quoteRequestMutation.isPending} type="submit" className="h-auto w-fit rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70">
+                    {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>solicitar orçamento <Send className="h-4 w-4" /></>}
                   </Button>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">retorno e disponibilidade a combinar</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">seus dados ficam apenas neste pedido</p>
                 </div>
+                {formError && <p role="alert" className="mt-6 border-l-2 border-rose-400 bg-rose-400/10 px-4 py-3 font-body text-sm text-rose-100">{formError}</p>}
                 {formSent && (
                   <div ref={successMessageRef} tabIndex={-1} role="status" aria-live="polite" className="quote-success mt-7 border border-[#3b82f6]/45 bg-[#0a1730] p-5 outline-none">
                     <div className="flex gap-4">
                       <span className="quote-success-icon grid h-11 w-11 shrink-0 place-items-center border border-[#3b82f6] bg-[#3b82f6] text-white"><CheckCircle2 className="h-5 w-5" /></span>
                       <div>
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#80afff]">briefing concluído</p>
-                        <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Tudo certo: seu pedido está preparado.</h3>
-                        <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#bed0ea]">As informações do orçamento foram organizadas. Quando o canal de recebimento estiver conectado, elas poderão seguir diretamente para o atendimento.</p>
+                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">briefing recebido</p>
+                        <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Tudo certo: seu pedido chegou.</h3>
+                        <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">Obrigado por compartilhar sua ideia. Vou analisar as informações e retorno pelo e-mail informado para conversar sobre os próximos passos.</p>
                         <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">preencher outro briefing <ArrowUpRight className="h-3 w-3" /></button>
                       </div>
                     </div>

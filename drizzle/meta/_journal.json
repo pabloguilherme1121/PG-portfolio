@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1786803589160,
+      "tag": "0000_blushing_firestar",
+      "breakpoints": true
+    }
+  ]
+}
