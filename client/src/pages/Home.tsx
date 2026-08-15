@@ -493,6 +493,33 @@ export default function Home() {
     setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
   }
 
+  function exportFavorites(format: "csv" | "json") {
+    const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
+    if (!favoriteProjects.length) return;
+    const exportRows = favoriteProjects.map((repository) => ({
+      id: repository.id,
+      nome: repository.name,
+      resumo: repository.description,
+      tecnologias: repository.technologies,
+      categorias: Array.from(getRepositoryCategories(repository)),
+      tipo: repository.kind,
+      link: repository.url,
+    }));
+    const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
+    const content = format === "json"
+      ? JSON.stringify(exportRows, null, 2)
+      : ["id,nome,resumo,tecnologias,categorias,tipo,link", ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(","))].join("\n");
+    const blob = new Blob([format === "csv" ? `\uFEFF${content}` : content], { type: format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" });
+    const downloadUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = downloadUrl;
+    anchor.download = `pablo-guilherme-favoritos.${format}`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+  }
+
   function selectCategory(category: string) {
     if (category === activeCategory || isProjectFilterTransitioning) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
@@ -909,6 +936,11 @@ export default function Home() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
+                  <span className="hidden h-5 w-px bg-white/10 sm:block" aria-hidden="true" />
+                  <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
+                    <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em CSV"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>CSV</span></button>
+                    <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
+                  </span>
                   <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
                   <span>ordenar por</span>
                   <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">

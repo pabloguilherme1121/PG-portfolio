@@ -295,3 +295,18 @@
 - [x] Adicionar botão acessível e filtro de referências favoritas.
 - [x] Integrar favoritos com overlay, busca, ordenação, modo compacto e responsividade.
 - [x] Validar persistência, acessibilidade, testes, build e salvar checkpoint.
+
+
+## Exportação de projetos favoritos
+
+- [x] Auditar os campos reais dos projetos favoritos e definir a estrutura CSV/JSON.
+- [x] Implementar geração local dos arquivos CSV e JSON.
+- [x] Adicionar controles de exportação acessíveis junto ao filtro de salvos.
+- [x] Validar conteúdo, downloads, teclado, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
+
+
+## Fechamento da exportação de favoritos
+
+- [x] Validar foco, Tab, Enter e Espaço nos botões CSV e JSON.
+- [x] Salvar checkpoint após a validação final da exportação.

@@ -1,4 +1,5 @@
 import { chromium } from "playwright";
+import { readFile } from "node:fs/promises";
 
 const browser = await chromium.launch({ headless: true });
 const viewports = [320, 390, 768, 1280];
@@ -51,6 +52,31 @@ for (const width of viewports) {
   const favoritesFilterActivated = (await savedFilter.getAttribute("aria-pressed")) === "true";
   const savedCardCount = await page.locator("#projetos .project-gallery-card").count();
   await savedFilter.click();
+  const csvExportButton = page.getByRole("button", { name: "CSV" });
+  await savedFilter.focus();
+  await page.keyboard.press("Tab");
+  const csvFocusVisible = await csvExportButton.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  const csvDownloadPromise = page.waitForEvent("download");
+  await page.keyboard.press("Enter");
+  const csvDownload = await csvDownloadPromise;
+  const csvPath = await csvDownload.path();
+  const csvContent = csvPath ? await readFile(csvPath, "utf8") : "";
+  const csvExportValid = csvDownload.suggestedFilename() === "pablo-guilherme-favoritos.csv" && csvContent.includes("id,nome,resumo") && csvContent.includes("AUD.01");
+  const jsonExportButton = page.getByRole("button", { name: "JSON" });
+  await page.keyboard.press("Tab");
+  const jsonFocusVisible = await jsonExportButton.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  const jsonDownloadPromise = page.waitForEvent("download");
+  await page.keyboard.press(" ");
+  const jsonDownload = await jsonDownloadPromise;
+  const jsonPath = await jsonDownload.path();
+  const jsonContent = jsonPath ? await readFile(jsonPath, "utf8") : "";
+  const jsonExportValid = jsonDownload.suggestedFilename() === "pablo-guilherme-favoritos.json" && JSON.parse(jsonContent)[0]?.id === "AUD.01";
   const filters = page.locator('#projetos button[data-filter-scope="category"]');
   const filterContainerWidth = await filters.first().locator("..")?.evaluate((element) => ({ scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }));
   const firstFilter = filters.first();
@@ -111,7 +137,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 
