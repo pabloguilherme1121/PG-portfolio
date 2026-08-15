@@ -250,3 +250,12 @@
 - [x] Refinar galeria, busca, filtros e calendário para toque e telas estreitas.
 - [x] Validar teclado, toque, reduced motion e larguras de 320px, 390px, 768px e desktop.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Reformulação estrutural do layout
+
+- [x] Auditar a composição atual e definir uma nova sequência editorial mais clara.
+- [x] Reformular hero, navegação e hierarquia das seções principais.
+- [x] Melhorar galeria, serviços, contato e pontos de conversão sem alterar dados reais.
+- [x] Validar layout em 320px, 390px, 768px e desktop, incluindo acessibilidade e performance.
+- [x] Salvar checkpoint após a validação final.

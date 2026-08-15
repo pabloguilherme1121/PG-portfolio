@@ -290,9 +290,17 @@ const repertoireSignals = [
 ];
 
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
+const navigationItems = [
+  ["manifesto", "#sobre", "sobre"],
+  ["atuação", "#trilha", "trilha"],
+  ["serviços", "#servicos", "servicos"],
+  ["trabalhos", "#projetos", "projetos"],
+  ["social", "#social", "social"],
+] as const;
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -374,6 +382,17 @@ export default function Home() {
     };
     mediaQuery.addEventListener("change", handleViewportChange);
     return () => mediaQuery.removeEventListener("change", handleViewportChange);
+  }, []);
+
+  useEffect(() => {
+    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
+    const sections = sectionIds.map((id) => document.getElementById(id)).filter((section): section is HTMLElement => Boolean(section));
+    const observer = new IntersectionObserver((entries) => {
+      const visibleEntry = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visibleEntry?.target.id) setActiveSection(visibleEntry.target.id);
+    }, { rootMargin: "-18% 0px -68% 0px", threshold: [0.1, 0.3, 0.6] });
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -510,14 +529,8 @@ export default function Home() {
           </a>
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
-            {[
-                ["manifesto", "#sobre"],
-                ["atuação", "#trilha"],
-                ["serviços", "#servicos"],
-                ["trabalhos", "#projetos"],
-                ["social", "#social"],
-            ].map(([label, href]) => (
-              <a key={label} href={href} className="nav-link text-[11px] font-mono uppercase tracking-[0.14em] text-[#90a3c3] transition-colors hover:text-white">
+            {navigationItems.map(([label, href, id]) => (
+              <a key={label} href={href} aria-current={activeSection === id ? "location" : undefined} className={`nav-link text-[11px] font-mono uppercase tracking-[0.14em] transition-colors hover:text-white ${activeSection === id ? "text-[#67e8f9]" : "text-[#90a3c3]"}`}>
                 {label}
               </a>
             ))}
@@ -541,13 +554,13 @@ export default function Home() {
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
-                ["01 / manifesto", "#sobre"],
-                ["02 / atuação", "#trilha"],
-                ["03 / serviços", "#servicos"],
-                ["04 / trabalhos", "#projetos"],
-                ["05 / contato", "#contato"],
-              ].map(([label, href]) => (
-                <a key={label} href={href} onClick={closeMenu} className="min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white">
+                ["01 / manifesto", "#sobre", "sobre"],
+                ["02 / atuação", "#trilha", "trilha"],
+                ["03 / serviços", "#servicos", "servicos"],
+                ["04 / trabalhos", "#projetos", "projetos"],
+                ["05 / contato", "#contato", "contato"],
+              ].map(([label, href, id]) => (
+                <a key={label} href={href} onClick={closeMenu} aria-current={activeSection === id ? "location" : undefined} className={`min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white ${activeSection === id ? "bg-[#0b2746] text-[#67e8f9]" : "text-[#b7cdf1]"}`}>
                   {label}
                 </a>
               ))}
@@ -558,20 +571,20 @@ export default function Home() {
 
       <main className="relative">
         <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
-        <section id="inicio" className="relative isolate min-h-[810px] overflow-hidden pt-[76px] sm:min-h-[850px]">
+        <section id="inicio" className="relative isolate min-h-[680px] overflow-hidden pt-[76px] sm:min-h-[850px]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-cover bg-center opacity-70 lg:w-[72%]" style={{ backgroundImage: `url(${heroUrl})` }} />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-[linear-gradient(90deg,#030b1e_5%,rgba(3,11,30,0.94)_30%,rgba(3,11,30,0.30)_68%,rgba(3,11,30,0.62)_100%)] lg:w-[80%]" />
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-52 bg-[linear-gradient(0deg,#030b1e,transparent)]" />
           <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block"><img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" /></div>
 
-          <div className="relative mx-auto flex min-h-[734px] max-w-[1440px] flex-col justify-between px-5 pb-8 pt-16 sm:px-8 sm:pt-24 lg:min-h-[774px] lg:px-12">
+          <div className="relative mx-auto flex min-h-[604px] max-w-[1440px] flex-col justify-between px-5 pb-8 pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
             <div className="max-w-4xl">
               <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
                 <span className="h-px w-10 bg-[#38bdf8]" />
                 01 / portfólio em movimento
               </div>
-              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(3.4rem,8.8vw,8.8rem)] font-semibold leading-[0.82] tracking-[-0.075em] text-white">
+              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.85rem,8.8vw,8.8rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white">
                 Ideias que ganham forma.
                 <br />
                 Projetos que
@@ -743,7 +756,7 @@ export default function Home() {
 
             <div className="mt-8 divide-y divide-white/[0.1] border-y border-white/[0.1]">
               {serviceOffers.map(({ number, label, title, text, detail, delivery, duration, Icon }, index) => (
-                <article key={number} className={`group relative grid gap-7 py-9 sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
+                <article key={number} className={`group relative grid gap-7 overflow-hidden py-9 transition-colors duration-200 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
                   <div className="flex items-start justify-between gap-4 lg:pr-8">
                     <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1]">PG / SVC.{number}</p></div>
                     <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
@@ -798,7 +811,10 @@ export default function Home() {
                 <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Repertório em uso,<br className="hidden sm:block" /> não só na vitrine.</h2>
                 <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
-              <p className="max-w-sm font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
+              <div className="max-w-sm">
+                <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
+                <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
+              </div>
             </div>
 
             <div className="mt-8 flex flex-col gap-4 border-y border-white/[0.1] py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1000,6 +1016,10 @@ export default function Home() {
                 <h2 className="mt-6 max-w-full break-words font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Tem um projeto? Vamos dar forma.</h2>
                 <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Não precisa chegar com tudo pronto. Compartilhe o contexto e, juntos, definimos o formato mais útil para o projeto.</p>
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> agenda aberta para novos projetos — vamos começar pelo contexto</div>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+                <a href="#contato-briefing" className="inline-flex items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97]">preencher briefing <ArrowDown className="h-3.5 w-3.5" /></a>
+                <a href={whatsAppUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746]">abrir WhatsApp <MessageCircle className="h-3.5 w-3.5" /></a>
+              </div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
                 <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" className="social-channel group flex items-center gap-3 bg-[#070a10] px-4 py-4">
                   <span className="social-icon-mark grid h-8 w-8 place-items-center border border-[#3b82f6]/35 text-[#77a9fc]"><Instagram className="h-4 w-4" /></span>
@@ -1067,7 +1087,7 @@ export default function Home() {
             </div>
 
             <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form onSubmit={handleSubmit} className="max-w-xl">
+              <form id="contato-briefing" onSubmit={handleSubmit} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5]">* campos obrigatórios</p>

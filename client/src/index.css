@@ -399,3 +399,12 @@ input[type="search"]::-webkit-search-cancel-button {
     contain-intrinsic-size: 760px;
   }
 }
+
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 92px;
+}
