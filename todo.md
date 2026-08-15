@@ -60,3 +60,9 @@
 
 - [x] Criar uma mensagem de sucesso animada após o envio do orçamento.
 - [x] Validar a clareza, foco acessível e redução de movimento.
+
+## Refinamento visual
+
+- [x] Intensificar a paleta azul e elevar o contraste da interface.
+- [x] Reforçar estados de ação, destaques e detalhes visuais da navegação.
+- [x] Validar legibilidade e equilíbrio em desktop e dispositivos móveis.
