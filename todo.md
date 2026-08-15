@@ -44,3 +44,8 @@
 - [x] Criar uma seção para filmagem aérea, captação terrestre e criação de conteúdo.
 - [x] Integrar os serviços à navegação e ao contato comercial.
 - [x] Validar a seção em desktop e dispositivos móveis.
+
+## Formatos e durações
+
+- [x] Acrescentar referências de entrega e duração a cada serviço audiovisual.
+- [x] Validar a leitura das informações em desktop e dispositivos móveis.

@@ -55,6 +55,8 @@ const serviceOffers = [
     title: "Filmagem aérea",
     text: "Imagens com drone para apresentar espaços, eventos e movimentos sob uma perspectiva mais ampla.",
     detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
+    delivery: "9:16 · 16:9",
+    duration: "15–60 s / 1–2 min",
     Icon: Plane,
   },
   {
@@ -63,6 +65,8 @@ const serviceOffers = [
     title: "Captação terrestre",
     text: "Registros em solo para acompanhar detalhes, pessoas e a energia que acontece dentro de cada momento.",
     detail: "PRESENÇA · RITMO · DETALHE",
+    delivery: "Reels · aftermovie",
+    duration: "30–90 s / 1–3 min",
     Icon: Camera,
   },
   {
@@ -71,6 +75,8 @@ const serviceOffers = [
     title: "Criação de conteúdo",
     text: "Conteúdo visual pensado para documentar, comunicar e dar continuidade às histórias de pessoas e marcas.",
     detail: "IDEIA · REGISTRO · CONEXÃO",
+    delivery: "3–5 vídeos verticais",
+    duration: "15–60 s por peça",
     Icon: Clapperboard,
   },
 ];
@@ -383,6 +389,7 @@ export default function Home() {
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
                 <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Da ideia<br />ao enquadramento.</h2>
+                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // direção de imagem</div>
               </div>
               <div className="lg:pb-2">
                 <p className="max-w-2xl font-body text-base leading-8 text-[#adc0db]">Serviços de imagem para registrar o que acontece no chão, no ar e no espaço digital. Cada entrega começa com uma boa leitura do momento que precisa ser contado.</p>
@@ -390,23 +397,29 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
-              {serviceOffers.map(({ number, label, title, text, detail, Icon }) => (
-                <article key={number} className="group relative min-h-[360px] overflow-hidden bg-[#09101a] p-7 sm:p-9">
-                  <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full border border-[#3b82f6]/15 transition-transform duration-500 group-hover:scale-[1.55]" />
-                  <div className="relative flex items-start justify-between">
-                    <span className="font-mono text-[11px] text-[#5c84c1]">{number}</span>
+            <div className="mt-8 divide-y divide-white/[0.1] border-y border-white/[0.1]">
+              {serviceOffers.map(({ number, label, title, text, detail, delivery, duration, Icon }, index) => (
+                <article key={number} className={`group relative grid gap-7 py-9 sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
+                  <div className="flex items-start justify-between gap-4 lg:pr-8">
+                    <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1]">PG / SVC.{number}</p></div>
                     <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
                   </div>
-                  <div className="relative mt-16">
+                  <div className="lg:border-l lg:border-white/[0.1] lg:pl-8">
                     <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7190bd]">{label}</p>
                     <h3 className="mt-4 font-display text-[clamp(2rem,3vw,3.2rem)] font-medium leading-[0.96] tracking-[-0.05em] text-white">{title}</h3>
-                    <p className="mt-5 max-w-sm font-body text-sm leading-7 text-[#a4b5cf]">{text}</p>
+                    <p className="mt-5 max-w-lg font-body text-sm leading-7 text-[#a4b5cf]">{text}</p>
                   </div>
-                  <p className="absolute bottom-8 left-7 right-7 border-t border-white/[0.1] pt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8] sm:left-9 sm:right-9">{detail}</p>
+                  <div className="border-t border-white/[0.1] pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+                    <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8]">{detail}</p>
+                    <div className="mt-5 grid grid-cols-2 gap-4">
+                      <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">entrega</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{delivery}</p></div>
+                      <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">duração típica</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{duration}</p></div>
+                    </div>
+                  </div>
                 </article>
               ))}
             </div>
+            <p className="mt-5 max-w-3xl font-mono text-[9px] uppercase leading-5 tracking-[0.11em] text-[#637da5]">REFERÊNCIAS INICIAIS DE MERCADO. FORMATOS, QUANTIDADE DE PEÇAS E DURAÇÃO PODEM SER AJUSTADOS CONFORME O OBJETIVO DE CADA PROJETO.</p>
           </div>
         </section>
 
@@ -441,13 +454,13 @@ export default function Home() {
 
             {visibleRepositories.length > 0 ? (
               <div className="mt-8 grid gap-px bg-white/[0.1] lg:grid-cols-3">
-                {visibleRepositories.map((repository) => {
+                {visibleRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
-                      {repository.cover && <img src={repository.cover} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
+                      {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
                       {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
                       <span className="relative flex items-start justify-between gap-4">
-                        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span>
+                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span><span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f8db8]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span></span>
                         {repository.kind === "video" ? <span className="grid h-9 w-9 place-items-center border border-[#8bb4ff]/50 bg-[#3b82f6]/25 text-[#f3f8ff] transition-all duration-200 group-hover:scale-110 group-hover:bg-[#3b82f6]"><Play className="h-4 w-4 fill-current" /></span> : <ArrowUpRight className="h-4 w-4 text-[#6fa4ff] transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1" />}
                       </span>
                       <span className="relative mt-auto block">
