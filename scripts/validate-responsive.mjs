@@ -17,7 +17,7 @@ for (const width of viewports) {
     menuKeyboardClosed = !(await page.locator("#mobile-navigation").count());
   }
   await page.locator("#projetos").scrollIntoViewIfNeeded();
-  const filters = page.locator('#projetos button[aria-pressed]');
+  const filters = page.locator('#projetos button[data-filter-scope="category"]');
   const filterContainerWidth = await filters.first().locator("..")?.evaluate((element) => ({ scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }));
   const firstFilter = filters.first();
   await firstFilter.focus();
@@ -25,11 +25,22 @@ for (const width of viewports) {
     const style = getComputedStyle(element);
     return style.outlineStyle !== "none" || style.boxShadow !== "none";
   });
-  const droneFilter = page.locator('#projetos button[aria-pressed]', { hasText: "Drone" }).first();
+  const categoryKeyboardFilter = page.locator('#projetos button[data-filter-scope="category"]', { hasText: "Eventos" }).first();
+  await categoryKeyboardFilter.focus();
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(280);
+  const categoryEnterActivated = (await categoryKeyboardFilter.getAttribute("aria-pressed")) === "true";
+  await page.keyboard.press("Space");
+  await page.waitForTimeout(280);
+  const categorySpacePreserved = (await categoryKeyboardFilter.getAttribute("aria-pressed")) === "true";
+  const categoryTodosFilter = page.locator('#projetos button[data-filter-scope="category"]', { hasText: "Todos" }).first();
+  await categoryTodosFilter.click();
+  await page.waitForTimeout(280);
+  const droneFilter = page.locator('#projetos button[data-filter-scope="technology"]', { hasText: "Drone" }).first();
   await droneFilter.click();
   await page.waitForTimeout(280);
   const filterClicked = (await droneFilter.getAttribute("aria-pressed")) === "true";
-  const todosFilter = page.locator('#projetos button[aria-pressed]', { hasText: "Todos" }).first();
+  const todosFilter = page.locator('#projetos button[data-filter-scope="technology"]', { hasText: "Todos" }).first();
   await todosFilter.click();
   await page.waitForTimeout(280);
   const searchInput = page.locator('#projetos input[type="search"]');
@@ -46,7 +57,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, filterContainerWidth, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

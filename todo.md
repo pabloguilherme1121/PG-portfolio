@@ -259,3 +259,12 @@
 - [x] Melhorar galeria, serviços, contato e pontos de conversão sem alterar dados reais.
 - [x] Validar layout em 320px, 390px, 768px e desktop, incluindo acessibilidade e performance.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Filtros por categoria na galeria de referências
+
+- [x] Auditar categorias reais disponíveis nos projetos da galeria.
+- [x] Implementar seleção de categoria com contagens e estado ativo acessível.
+- [x] Integrar categoria com busca, transições e modo compacto existentes.
+- [x] Validar filtros em mobile, desktop, teclado, reduced motion, testes e build.
+- [x] Salvar checkpoint após a validação final.

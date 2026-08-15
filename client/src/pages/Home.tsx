@@ -290,6 +290,16 @@ const repertoireSignals = [
 ];
 
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
+const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
+function getRepositoryCategories(repository: Repository) {
+  const categories = new Set<string>();
+  if (repository.description.toLocaleLowerCase("pt-BR").includes("evento") || repository.name.toLocaleLowerCase("pt-BR").includes("eloise")) categories.add("Eventos");
+  if (repository.technologies.includes("Drone")) categories.add("Aéreo");
+  if (repository.technologies.includes("Interface")) categories.add("Interface");
+  if (repository.technologies.includes("Conteúdo")) categories.add("Conteúdo");
+  if (repository.technologies.includes("Noturno")) categories.add("Noturno");
+  return categories;
+}
 const navigationItems = [
   ["manifesto", "#sobre", "sobre"],
   ["atuação", "#trilha", "trilha"],
@@ -305,6 +315,7 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
+  const [activeCategory, setActiveCategory] = useState("Todos");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
@@ -335,7 +346,7 @@ export default function Home() {
     };
 
     repositories
-      .filter((repository) => activeTechnology === "Todos" || repository.technologies.includes(activeTechnology))
+      .filter((repository) => (activeTechnology === "Todos" || repository.technologies.includes(activeTechnology)) && (activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory)))
       .forEach((repository) => {
       addCandidate(repository.name, "projeto");
       repository.technologies.forEach((technology) => addCandidate(technology, "tecnologia"));
@@ -346,7 +357,7 @@ export default function Home() {
     });
 
     return Array.from(candidates.values());
-  }, [activeTechnology]);
+  }, [activeTechnology, activeCategory]);
   const visibleSearchSuggestions = normalizedProjectSearch.length >= 2
     ? projectSearchSuggestions
       .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
@@ -354,9 +365,10 @@ export default function Home() {
     : [];
   const visibleRepositories = repositories.filter((repository) => {
     const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
-    const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies].join(" "));
+    const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
+    const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
     const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
-    return matchesTechnology && matchesSearch;
+    return matchesTechnology && matchesCategory && matchesSearch;
   });
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
@@ -427,6 +439,16 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function selectCategory(category: string) {
+    if (category === activeCategory || isProjectFilterTransitioning) return;
+    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    setIsProjectFilterTransitioning(true);
+    projectFilterTimerRef.current = window.setTimeout(() => {
+      setActiveCategory(category);
+      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+    }, 130);
   }
 
   function selectTechnology(technology: string) {
@@ -817,7 +839,19 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-8 flex flex-col gap-4 border-y border-white/[0.1] py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-8 border-y border-white/[0.1] py-4">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
+                <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
+              </div>
+              <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
+                {categoryFilters.map((category) => {
+                  const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
+                  return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
+                })}
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar repositórios por tecnologia">
               {technologyFilters.map((technology) => (
                 <button
@@ -826,6 +860,7 @@ export default function Home() {
                   onClick={() => selectTechnology(technology)}
                   aria-busy={isProjectFilterTransitioning}
                   aria-pressed={activeTechnology === technology}
+                  data-filter-scope="technology"
                   className={`inline-flex shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
                     activeTechnology === technology
                       ? "border-[#3b82f6] bg-[#3b82f6] text-white"
