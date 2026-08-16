@@ -366,6 +366,8 @@ export default function Home() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
+  const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
+  const [resumePreviewError, setResumePreviewError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
@@ -550,6 +552,12 @@ export default function Home() {
       window.removeEventListener("keydown", handleResumePreviewKeyDown);
     };
   }, [resumePreviewOpen]);
+
+  useEffect(() => {
+    if (!resumePreviewOpen || !resumePreviewLoading) return;
+    const loadingFallbackTimer = window.setTimeout(() => setResumePreviewLoading(false), 4000);
+    return () => window.clearTimeout(loadingFallbackTimer);
+  }, [resumePreviewOpen, resumePreviewLoading]);
 
   useEffect(() => {
     if (!lightboxProjectId) return;
@@ -1086,6 +1094,8 @@ export default function Home() {
   const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     resumePreviewReturnFocusRef.current = event.currentTarget;
+    setResumePreviewError(false);
+    setResumePreviewLoading(true);
     setResumePreviewOpen(true);
   };
 
@@ -1916,8 +1926,26 @@ export default function Home() {
               </div>
               <button ref={resumePreviewCloseRef} type="button" onClick={closeResumePreview} aria-label="Fechar pré-visualização do currículo" title="Fechar pré-visualização" className="grid h-10 w-10 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-5 w-5" aria-hidden="true" /></button>
             </div>
-            <div className="min-h-0 flex-1 bg-[#2b3440] p-2 sm:p-4">
-              <iframe src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" className="h-full w-full border border-white/10 bg-white" />
+            <div className="resume-preview-frame-wrap relative min-h-0 flex-1 bg-[#2b3440] p-2 sm:p-4">
+              {resumePreviewLoading && !resumePreviewError && (
+                <div className="resume-pdf-loader absolute inset-2 z-10 grid place-items-center border border-[#67e8f9]/20 bg-[#07101e]/95 sm:inset-4" role="status" aria-live="polite">
+                  <div className="flex flex-col items-center gap-4 text-center">
+                    <span className="resume-loader-orbit relative grid h-14 w-14 place-items-center rounded-full border border-[#67e8f9]/25" aria-hidden="true"><span className="h-8 w-8 rounded-full border-2 border-[#67e8f9]/20 border-t-[#67e8f9] motion-safe:animate-spin" /></span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#c8f7ff]">abrindo currículo</span>
+                    <span className="font-body text-xs text-[#8499b9]">Preparando a leitura do documento…</span>
+                  </div>
+                </div>
+              )}
+              {resumePreviewError && (
+                <div className="absolute inset-2 z-10 grid place-items-center border border-amber-200/30 bg-[#07101e] p-6 text-center sm:inset-4" role="alert">
+                  <div className="max-w-sm">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-amber-200">pré-visualização indisponível</p>
+                    <p className="mt-3 font-body text-sm leading-6 text-[#c7d7ec]">O PDF não conseguiu ser renderizado aqui. Você ainda pode baixar o arquivo ou abri-lo em uma nova aba.</p>
+                    <button type="button" onClick={() => { setResumePreviewError(false); setResumePreviewLoading(true); }} className="mt-5 min-h-11 border border-[#67e8f9] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button>
+                  </div>
+                </div>
+              )}
+              <iframe key={resumePreviewLoading ? "loading" : "ready"} src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" onLoad={() => { setResumePreviewLoading(false); setResumePreviewError(false); }} onError={() => { setResumePreviewLoading(false); setResumePreviewError(true); }} className={`h-full w-full border border-white/10 bg-white transition-opacity duration-300 ${resumePreviewLoading || resumePreviewError ? "opacity-0" : "opacity-100"}`} />
             </div>
             <div className="flex shrink-0 flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">PDF atualizado · links clicáveis incluídos</p>

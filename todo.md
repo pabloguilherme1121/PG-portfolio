@@ -676,10 +676,27 @@
 - [x] Implementar modal, iframe PDF, fechar, baixar e gerenciamento de foco.
 - [x] Validar abertura, leitura, Escape, backdrop, download, acessibilidade e responsividade.
 - [x] Executar testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter o CTA de currículo no cabeçalho e o botão da seção Sobre.
 - [x] Reutilizar o PDF atualizado publicado em armazenamento.
+- [x] Preservar a barra flutuante, lightbox, favoritos e demais funcionalidades.
+
+
+## Loader do PDF no modal
+
+- [x] Auditar o estado atual do modal e do iframe PDF.
+- [x] Definir estados de carregamento, pronto e erro com feedback acessível.
+- [x] Implementar animação elegante de carregamento sincronizada com o iframe.
+- [x] Adicionar fallback compreensível se o PDF não renderizar.
+- [x] Respeitar prefers-reduced-motion e validar desktop/mobile.
+- [x] Executar testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter o modal, download, abertura em nova aba, Escape, backdrop e foco.
+- [x] Reutilizar o PDF publicado atual.
 - [x] Preservar a barra flutuante, lightbox, favoritos e demais funcionalidades.
