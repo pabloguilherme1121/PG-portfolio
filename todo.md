@@ -489,3 +489,11 @@
 - [x] Integrar miniaturas com setas, teclado, foco e responsividade.
 - [x] Validar navegação, acessibilidade, movimento reduzido, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Zoom e gesto de pinça no lightbox
+
+- [x] Auditar o lightbox atual e definir o modelo de zoom e gesto.
+- [x] Implementar zoom, pinça, arraste e controles acessíveis.
+- [x] Integrar zoom com miniaturas, setas, teclado e responsividade.
+- [x] Validar pinça, controles, acessibilidade, movimento reduzido, testes e build.
+- [x] Salvar checkpoint após a validação final.

@@ -20,6 +20,17 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   const thumbnailCount = await thumbnails.count();
   const activeThumbnailCount = await dialog.locator('[role="listitem"][aria-current="true"]').count();
   const lockedScroll = await page.evaluate(() => document.body.style.overflow === "hidden");
+  const zoomGroup = dialog.locator('[aria-label="Controles de zoom"]');
+  const zoomStatus = zoomGroup.locator('[aria-live="polite"]');
+  const zoomIncrease = zoomGroup.getByRole("button", { name: "Aumentar zoom" });
+  await zoomIncrease.click();
+  const zoomAfterIncrease = await zoomStatus.textContent();
+  await zoomGroup.getByRole("button", { name: "Restaurar zoom original" }).click();
+  const mainImage = dialog.locator('img[alt^="Imagem ampliada"]');
+  await mainImage.dblclick();
+  const zoomTransform = await mainImage.getAttribute("style");
+  await zoomGroup.getByRole("button", { name: "Restaurar zoom original" }).click();
+  const zoomAfterReset = await zoomStatus.textContent();
   const lastThumbnail = thumbnails.last();
   await lastThumbnail.click();
   await page.waitForTimeout(80);
@@ -31,7 +42,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   await dialog.waitFor({ state: "detached" });
   await page.waitForTimeout(60);
   const restoredFocus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label")?.startsWith("Ampliar imagem") ?? false);
-  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
+  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, zoomAfterIncrease, doubleClickZoomed: zoomTransform?.includes("scale(2)") ?? false, zoomAfterReset, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
   await context.close();
 }
 

@@ -49,7 +49,7 @@ import {
   LayoutGrid,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import {
@@ -424,6 +424,10 @@ export default function Home() {
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
+  const [lightboxZoom, setLightboxZoom] = useState(1);
+  const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
+  const pinchStartDistanceRef = useRef(0);
+  const pinchStartZoomRef = useRef(1);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -437,7 +441,44 @@ export default function Home() {
 
   const closeProjectLightbox = () => {
     setLightboxProjectId(null);
+    setLightboxZoom(1);
+    setLightboxOffset({ x: 0, y: 0 });
     window.setTimeout(() => lightboxReturnFocusRef.current?.focus(), 0);
+  };
+
+  const setProjectZoom = (nextZoom: number) => {
+    const clampedZoom = Math.min(3, Math.max(1, nextZoom));
+    setLightboxZoom(clampedZoom);
+    if (clampedZoom === 1) setLightboxOffset({ x: 0, y: 0 });
+  };
+
+  const resetProjectZoom = () => {
+    setLightboxZoom(1);
+    setLightboxOffset({ x: 0, y: 0 });
+  };
+
+  const getTouchDistance = (touches: TouchEvent<HTMLImageElement>["touches"]) => {
+    const first = touches[0];
+    const second = touches[1];
+    return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
+  };
+
+  const handleLightboxTouchStart = (event: TouchEvent<HTMLImageElement>) => {
+    if (event.touches.length === 2) {
+      pinchStartDistanceRef.current = getTouchDistance(event.touches);
+      pinchStartZoomRef.current = lightboxZoom;
+    }
+  };
+
+  const handleLightboxTouchMove = (event: TouchEvent<HTMLImageElement>) => {
+    if (event.touches.length !== 2 || pinchStartDistanceRef.current <= 0) return;
+    event.preventDefault();
+    const distanceRatio = getTouchDistance(event.touches) / pinchStartDistanceRef.current;
+    setProjectZoom(pinchStartZoomRef.current * distanceRatio);
+  };
+
+  const handleLightboxTouchEnd = () => {
+    pinchStartDistanceRef.current = 0;
   };
 
   useEffect(() => {
@@ -470,6 +511,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!lightboxProjectId) return;
+    setLightboxZoom(1);
+    setLightboxOffset({ x: 0, y: 0 });
     window.requestAnimationFrame(() => lightboxActiveThumbRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
   }, [lightboxProjectId]);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
@@ -1718,8 +1761,9 @@ export default function Home() {
         <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
           <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
-            <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#030812] p-3 sm:p-6">
-              <img src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} className="max-h-[68vh] w-full object-contain motion-reduce:transition-none" />
+            <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
+              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Restaurar zoom original" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
+              <img src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 2)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className="max-h-[68vh] w-full object-contain transition-transform duration-150 motion-reduce:transition-none" />
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = lightboxProjects[(projectIndex - 1 + lightboxProjects.length) % lightboxProjects.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = lightboxProjects[(projectIndex + 1) % lightboxProjects.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
             </div>
