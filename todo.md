@@ -693,10 +693,25 @@
 - [x] Adicionar fallback compreensível se o PDF não renderizar.
 - [x] Respeitar prefers-reduced-motion e validar desktop/mobile.
 - [x] Executar testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter o modal, download, abertura em nova aba, Escape, backdrop e foco.
 - [x] Reutilizar o PDF publicado atual.
 - [x] Preservar a barra flutuante, lightbox, favoritos e demais funcionalidades.
+
+
+## Barra de progresso do PDF
+
+- [x] Auditar o loader atual e o ciclo de carregamento do PDF.
+- [x] Definir progresso estimado, estados acessíveis e comportamento reduzido.
+- [x] Implementar barra visual com atualização suave e estado pronto.
+- [x] Validar progresso, reduced motion, responsividade, testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter spinner, fallback de erro, retry, download, abertura em nova aba e foco.
+- [x] Não apresentar porcentagem como medida exata de bytes; usar progresso estimado claramente rotulado.
+- [x] Preservar o modal, a barra flutuante e as demais funcionalidades do portfólio.

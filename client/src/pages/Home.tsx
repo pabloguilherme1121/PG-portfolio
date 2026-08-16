@@ -367,6 +367,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
+  const [resumePreviewProgress, setResumePreviewProgress] = useState(0);
   const [resumePreviewError, setResumePreviewError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
@@ -555,8 +556,14 @@ export default function Home() {
 
   useEffect(() => {
     if (!resumePreviewOpen || !resumePreviewLoading) return;
+    const progressTimer = window.setInterval(() => {
+      setResumePreviewProgress((currentProgress) => Math.min(92, currentProgress + (currentProgress < 55 ? 5 : 2)));
+    }, 180);
     const loadingFallbackTimer = window.setTimeout(() => setResumePreviewLoading(false), 4000);
-    return () => window.clearTimeout(loadingFallbackTimer);
+    return () => {
+      window.clearInterval(progressTimer);
+      window.clearTimeout(loadingFallbackTimer);
+    };
   }, [resumePreviewOpen, resumePreviewLoading]);
 
   useEffect(() => {
@@ -1095,6 +1102,7 @@ export default function Home() {
     event.preventDefault();
     resumePreviewReturnFocusRef.current = event.currentTarget;
     setResumePreviewError(false);
+    setResumePreviewProgress(8);
     setResumePreviewLoading(true);
     setResumePreviewOpen(true);
   };
@@ -1932,6 +1940,10 @@ export default function Home() {
                   <div className="flex flex-col items-center gap-4 text-center">
                     <span className="resume-loader-orbit relative grid h-14 w-14 place-items-center rounded-full border border-[#67e8f9]/25" aria-hidden="true"><span className="h-8 w-8 rounded-full border-2 border-[#67e8f9]/20 border-t-[#67e8f9] motion-safe:animate-spin" /></span>
                     <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#c8f7ff]">abrindo currículo</span>
+                    <div className="w-[min(260px,70vw)]" aria-label="Progresso estimado da leitura do currículo">
+                      <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-[#8499b9]"><span>progresso estimado</span><span>{resumePreviewProgress}%</span></div>
+                      <div className="h-1 overflow-hidden rounded-full bg-[#19324d]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={resumePreviewProgress} aria-label="Progresso estimado da leitura do currículo"><div className="h-full rounded-full bg-gradient-to-r from-[#38bdf8] via-[#67e8f9] to-[#d9fbff] transition-[width] duration-200 ease-out" style={{ width: `${resumePreviewProgress}%` }} /></div>
+                    </div>
                     <span className="font-body text-xs text-[#8499b9]">Preparando a leitura do documento…</span>
                   </div>
                 </div>
@@ -1941,11 +1953,11 @@ export default function Home() {
                   <div className="max-w-sm">
                     <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-amber-200">pré-visualização indisponível</p>
                     <p className="mt-3 font-body text-sm leading-6 text-[#c7d7ec]">O PDF não conseguiu ser renderizado aqui. Você ainda pode baixar o arquivo ou abri-lo em uma nova aba.</p>
-                    <button type="button" onClick={() => { setResumePreviewError(false); setResumePreviewLoading(true); }} className="mt-5 min-h-11 border border-[#67e8f9] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button>
+                    <button type="button" onClick={() => { setResumePreviewError(false); setResumePreviewProgress(8); setResumePreviewLoading(true); }} className="mt-5 min-h-11 border border-[#67e8f9] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button>
                   </div>
                 </div>
               )}
-              <iframe key={resumePreviewLoading ? "loading" : "ready"} src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" onLoad={() => { setResumePreviewLoading(false); setResumePreviewError(false); }} onError={() => { setResumePreviewLoading(false); setResumePreviewError(true); }} className={`h-full w-full border border-white/10 bg-white transition-opacity duration-300 ${resumePreviewLoading || resumePreviewError ? "opacity-0" : "opacity-100"}`} />
+              <iframe key={resumePreviewLoading ? "loading" : "ready"} src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" onLoad={() => { setResumePreviewProgress(100); setResumePreviewLoading(false); setResumePreviewError(false); }} onError={() => { setResumePreviewLoading(false); setResumePreviewError(true); }} className={`h-full w-full border border-white/10 bg-white transition-opacity duration-300 ${resumePreviewLoading || resumePreviewError ? "opacity-0" : "opacity-100"}`} />
             </div>
             <div className="flex shrink-0 flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">PDF atualizado · links clicáveis incluídos</p>
