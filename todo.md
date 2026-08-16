@@ -920,3 +920,12 @@
 - [x] Exibir legenda expandida com papel, processo e resultado reais do projeto.
 - [x] Preservar erro, loader, zoom, teclado, foco, compartilhamento e favoritos.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: formatos, cópia combinada e comparação — nova rodada
+
+- [x] Auditar formatos publicados, dados editoriais e assets de comparação.
+- [x] Adicionar opções de download em WebP e AVIF quando houver assets correspondentes.
+- [x] Copiar link do projeto e legenda expandida em uma única ação.
+- [x] Implementar slider antes/depois apenas para projetos com imagem comparativa real.
+- [x] Preservar erro, loader, prefetch, zoom, teclado, foco, compartilhamento e favoritos.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

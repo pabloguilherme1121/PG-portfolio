@@ -258,6 +258,18 @@ function renderSuggestionMatch(value: string, query: string, isActive: boolean) 
  * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
  * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
  */
+const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
+  "/manus-storage/cha-da-eloise-capa_0d17d433.jpg": { webp: "/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp", avif: "/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif" },
+  "/manus-storage/rham-interface-servicos-01_72f2d942.jpg": { webp: "/manus-storage/rham-interface-servicos-01-720w_f9038490.webp", avif: "/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif" },
+  "/manus-storage/rham-depoimento-02_c0845a39.jpg": { webp: "/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp", avif: "/manus-storage/rham-depoimento-02-720w_3f7b257b.avif" },
+  "/manus-storage/captacao-noturna-03_1033bede.jpg": { webp: "/manus-storage/captacao-noturna-03-720w_e51d98e0.webp", avif: "/manus-storage/captacao-noturna-03-720w_f24e9f42.avif" },
+  "/manus-storage/campo-iluminado-04_665a6d8f.jpg": { webp: "/manus-storage/campo-iluminado-04-1280w_bc353281.webp", avif: "/manus-storage/campo-iluminado-04-1280w_5f023100.avif" },
+  "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg": { webp: "/manus-storage/campo-iluminado-movimento-06-1280w_298c2385.webp", avif: "/manus-storage/campo-iluminado-movimento-06-1280w_7f75fd17.avif" },
+  "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg": { webp: "/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp", avif: "/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif" },
+};
+
+const comparisonPairs: Record<string, { before: string; after: string }> = {};
+
 const repositories: Repository[] = [
   {
     id: "AUD.01",
@@ -503,6 +515,7 @@ export default function Home() {
   const [lightboxImageLoading, setLightboxImageLoading] = useState(true);
   const [lightboxImageError, setLightboxImageError] = useState(false);
   const [lightboxImageAttempt, setLightboxImageAttempt] = useState(0);
+  const [lightboxComparisonPosition, setLightboxComparisonPosition] = useState(50);
   const pinchStartDistanceRef = useRef(0);
   const pinchStartZoomRef = useRef(1);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
@@ -516,12 +529,15 @@ export default function Home() {
   const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
   const lightboxProjectIndex = lightboxProject ? lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) : -1;
   const lightboxNextProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex + 1) % lightboxProjects.length] : null;
+  const lightboxPreviousProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null;
+  const lightboxComparison = lightboxProject ? comparisonPairs[lightboxProject.id] ?? null : null;
 
   useEffect(() => {
     setLightboxImageLoading(Boolean(lightboxProject));
     setLightboxImageError(false);
     setLightboxImageAttempt(0);
-    [lightboxNextProject, lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null].forEach((project) => {
+    setLightboxComparisonPosition(50);
+    [lightboxNextProject, lightboxPreviousProject].forEach((project) => {
       if (!project?.cover) return;
       const preloader = new Image();
       preloader.decoding = "async";
@@ -931,18 +947,33 @@ export default function Home() {
     window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
   }
 
-  function downloadLightboxImage() {
+  function downloadLightboxImage(format: "original" | "webp" | "avif") {
     if (!lightboxProject?.cover) return;
     const safeName = lightboxProject.name.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "imagem";
-    const extension = lightboxProject.cover.split(".").pop()?.split("?")[0] || "jpg";
+    const optimized = optimizedLightboxImages[lightboxProject.cover];
+    const source = format === "webp" ? optimized?.webp : format === "avif" ? optimized?.avif : lightboxProject.cover;
+    if (!source) return;
+    const extension = format === "original" ? source.split(".").pop()?.split("?")[0] || "jpg" : format;
     const anchor = document.createElement("a");
-    anchor.href = lightboxProject.cover;
+    anchor.href = source;
     anchor.download = `pablo-${safeName}.${extension}`;
     anchor.target = "_blank";
     anchor.rel = "noreferrer";
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+  }
+
+  async function copyLightboxProjectContext() {
+    if (!lightboxProject) return;
+    const context = [`${lightboxProject.name} — Pablo Guilherme`, lightboxProject.description, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, getLightboxShareUrl(lightboxProject)].join("\n\n");
+    try {
+      await navigator.clipboard.writeText(context);
+      setLightboxShareStatus("copied");
+    } catch {
+      setLightboxShareStatus("error");
+    }
+    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
   }
 
   async function shareLightboxProject() {
@@ -2129,17 +2160,19 @@ export default function Home() {
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                <button type="button" onClick={downloadLightboxImage} aria-label={`Baixar imagem de ${lightboxProject.name} em alta resolução`} title="Baixar imagem em alta resolução" className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">baixar imagem</span></button>
+                <details className="relative"><summary className="inline-flex h-9 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
                 <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex h-9 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
                 <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
                   <button type="button" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
                   <button type="button" onClick={copyLightboxProjectLink} className="grid h-9 w-9 place-items-center border-l border-white/15 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title="Copiar link"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>
                 </div>
-                <span role="status" aria-live="polite" className="sr-only">{lightboxShareStatus === "copied" ? "Link do projeto copiado." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
+                <button type="button" onClick={copyLightboxProjectContext} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title="Copiar link e legenda"><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">copiar contexto</span></button>
+                <span role="status" aria-live="polite" className="sr-only">{lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}                </span>
                 <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
               </div>
             </div>
             <section className="border-t border-white/10 bg-[#06101e] px-5 py-4 sm:px-7" aria-label={`Legenda expandida de ${lightboxProject.name}`}><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">leitura do projeto</p><div className="mt-3 grid gap-4 sm:grid-cols-3"><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">papel</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.role || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">processo</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.process || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">resultado</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.result || "Informação não registrada."}</p></div></div></section>
+            {lightboxProject.technologies.includes("Interface") && (lightboxComparison ? <section className="border-t border-white/10 bg-[#050b15] px-5 py-4 sm:px-7" aria-label={`Comparação antes e depois de ${lightboxProject.name}`}><div className="flex items-end justify-between gap-3"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">comparação visual</p><p className="mt-1 font-body text-xs text-[#c8e5f0]">Arraste o controle para comparar antes e depois.</p></div><span className="font-mono text-[9px] text-[#9eb5d2]">{lightboxComparisonPosition}%</span></div><div className="relative mt-3 aspect-video overflow-hidden border border-white/15 bg-[#030812]"><img src={lightboxComparison.before} alt="Antes" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${lightboxComparisonPosition}%` }}><img src={lightboxComparison.after} alt="Depois" className="h-full w-full max-w-none object-cover" style={{ width: `${100 / (lightboxComparisonPosition / 100)}%` }} /></div><span className="pointer-events-none absolute left-3 top-3 bg-[#030812]/80 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.1em] text-white">antes / depois</span><input type="range" min="0" max="100" value={lightboxComparisonPosition} onChange={(event) => setLightboxComparisonPosition(Number(event.target.value))} aria-label="Posição da comparação antes e depois" className="absolute inset-x-3 bottom-3 z-10 accent-[#67e8f9]" /></div></section> : <section className="border-t border-white/10 bg-[#050b15] px-5 py-4 sm:px-7" aria-label="Comparação antes e depois indisponível"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">comparação visual</p><p className="mt-2 font-body text-xs leading-5 text-[#9fb7ca]">Este projeto ainda não possui um par antes/depois real publicado. O comparador será habilitado quando as duas imagens estiverem disponíveis.</p></section>)}
             <div className="border-t border-white/10 bg-[#050b15] px-4 py-3 sm:px-6" role="group" aria-label="Miniaturas dos projetos">
               <div className="flex gap-2 overflow-x-auto pb-1" role="list">
                 {lightboxProjects.map((project) => {
