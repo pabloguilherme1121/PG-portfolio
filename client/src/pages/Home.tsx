@@ -43,6 +43,8 @@ import {
   Share2,
   Moon,
   Sun,
+  Volume2,
+  VolumeX,
   Monitor,
   Settings2,
   List,
@@ -376,6 +378,8 @@ export default function Home() {
   const [showreelRequested, setShowreelRequested] = useState(false);
   const [showreelReady, setShowreelReady] = useState(false);
   const [showreelError, setShowreelError] = useState(false);
+  const [showreelPlaying, setShowreelPlaying] = useState(false);
+  const [showreelMuted, setShowreelMuted] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
@@ -459,6 +463,7 @@ export default function Home() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
+  const showreelVideoRef = useRef<HTMLVideoElement>(null);
   const lightboxProjects = useMemo(() => repositories.filter((repository) => Boolean(repository.cover)), []);
   const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
 
@@ -1206,7 +1211,7 @@ export default function Home() {
           <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block"><img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" /></div>
 
           <div className="relative mx-auto flex min-h-[604px] max-w-[1440px] flex-col justify-between px-5 pb-8 pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
-            <div className="max-w-4xl">
+            <div className="relative max-w-4xl">
               <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
                 <span className="h-px w-10 bg-[#38bdf8]" />
                 01 / portfólio em movimento
@@ -1218,6 +1223,10 @@ export default function Home() {
                 <br />
                 faz sentido.
               </h1>
+              <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+                <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" />
+                <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1"><span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo / autor</span><span className="mt-1 block truncate font-display text-lg tracking-[-0.03em] text-white">Pablo Guilherme</span><span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">TI · conteúdo · imagem</span></figcaption>
+              </figure>
               <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
                 <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
                   Um arquivo vivo de tecnologia, conteúdo e imagem — feito enquanto aprendo, testo e encontro formas mais claras de fazer uma ideia circular.
@@ -1262,8 +1271,9 @@ export default function Home() {
                       <span className="showreel-play-button relative ml-5 inline-flex items-center gap-3 rounded-full border border-[#a5f3fc]/80 bg-[#38bdf8] px-3 py-2 text-[#02111f] shadow-[0_0_28px_rgba(56,189,248,0.35)] transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none" data-showreel-play="true"><span className="grid h-10 w-10 place-items-center rounded-full border border-[#02111f]/25 bg-[#a5f3fc]/80"><Play className="ml-0.5 h-4 w-4" fill="currentColor" aria-hidden="true" /></span><span className="pr-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">play</span></span>
                       <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel {isDesktopViewport ? "horizontal" : "vertical"} · 00:09</span>
                     </button>}
-                    {showreelRequested && !showreelError && <video key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onError={() => { setShowreelError(true); setShowreelReady(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
-                    {showreelRequested && showreelError && <div className="absolute inset-0 grid place-items-center px-5 text-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">showreel indisponível</p><p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#b7cdf1]">O vídeo não carregou agora. Você ainda pode conhecer os trabalhos na galeria.</p><button type="button" onClick={() => { setShowreelError(false); setShowreelReady(false); setShowreelRequested(false); }} className="mt-4 border border-[#67e8f9]/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button></div></div>}
+                    {showreelRequested && !showreelError && <video ref={showreelVideoRef} key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onPlay={() => setShowreelPlaying(true)} onPause={() => setShowreelPlaying(false)} onVolumeChange={(event) => setShowreelMuted(event.currentTarget.muted)} onError={() => { setShowreelError(true); setShowreelReady(false); setShowreelPlaying(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
+                    {showreelRequested && !showreelError && showreelReady && showreelPlaying && <button type="button" onClick={(event) => { event.stopPropagation(); const video = showreelVideoRef.current; if (!video) return; video.muted = !video.muted; setShowreelMuted(video.muted); }} aria-label={showreelMuted ? "Ativar som do showreel" : "Desativar som do showreel"} aria-pressed={showreelMuted} title={showreelMuted ? "Ativar som" : "Desativar som"} className="showreel-volume-control absolute bottom-4 right-4 z-10 grid h-11 w-11 place-items-center border border-[#a5f3fc]/75 bg-[#02111f]/85 text-[#d9fbff] shadow-[0_10px_25px_rgba(0,0,0,0.28)] backdrop-blur-sm transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none" data-showreel-volume="true">{showreelMuted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}</button>}
+                    {showreelRequested && showreelError && <div className="absolute inset-0 grid place-items-center px-5 text-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">showreel indisponível</p><p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#b7cdf1]">O vídeo não carregou agora. Você ainda pode conhecer os trabalhos na galeria.</p><button type="button" onClick={() => { setShowreelError(false); setShowreelReady(false); setShowreelPlaying(false); setShowreelMuted(false); setShowreelRequested(false); }} className="mt-4 border border-[#67e8f9]/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button></div></div>}
                   </div>
                 </div>
               </div>
@@ -1478,6 +1488,12 @@ export default function Home() {
                 <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
                 <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
               </div>
+            </div>
+
+            <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
+              <img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" />
+              <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
+              <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
 
             <div className="mt-8 border-y border-white/[0.1] py-4">

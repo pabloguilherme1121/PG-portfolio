@@ -774,10 +774,66 @@
 - [x] Definir visual, hierarquia e estados de interação do botão de play.
 - [x] Implementar o botão estilizado sobre os pôsteres horizontal e vertical.
 - [x] Validar foco, toque, reduced motion, responsividade, testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter a área de toque acessível e o rótulo do gatilho.
 - [x] Preservar o carregamento somente após clique.
 - [x] Manter as versões horizontal e vertical do showreel.
+
+
+## Controle de volume do showreel
+
+- [x] Auditar o estado de reprodução e os controles atuais do showreel.
+- [x] Definir estados de reprodução, volume e visibilidade do controle.
+- [x] Implementar controle mutar/desmutar nas versões horizontal e vertical.
+- [x] Validar reprodução, volume, foco, responsividade, reduced motion, testes, typecheck e build.
+- [x] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter carregamento sob demanda, botão de play, fallback e controles nativos.
+- [x] Preservar showreel horizontal no desktop e vertical no mobile.
+- [x] Não iniciar reprodução automaticamente nem forçar áudio ao visitante.
+
+
+## Foto profissional na capa e no Showroom
+
+- [x] Auditar o retrato profissional e os pontos de capa e Showroom.
+- [x] Definir tratamento visual, recorte e hierarquia da foto.
+- [x] Implementar a foto na capa e na abertura do Showroom.
+- [x] Validar composição, contraste, acessibilidade, responsividade, testes, typecheck e build.
+- [x] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Reutilizar a foto profissional já publicada no projeto.
+- [x] Preservar o showreel, o botão de play, a galeria e os CTAs da hero.
+- [x] Não substituir o retrato usado no currículo sem necessidade.
+
+
+## Auditoria profissional ampla — nova rodada
+
+- [ ] Auditar criticamente interface, conteúdo, currículo, mídia, contatos, acessibilidade e desempenho.
+- [ ] Consolidar critérios profissionais aplicáveis ao nicho de TI, audiovisual, drone e criação de conteúdo.
+- [ ] Produzir diagnóstico claro com forças, problemas, riscos e prioridades.
+- [ ] Implementar melhorias de maior impacto em clareza, conversão, velocidade percebida e consistência visual.
+- [ ] Revisar currículo e apresentação profissional sem inventar informações.
+- [ ] Validar responsividade, foco, reduced motion, performance, testes, typecheck e build.
+- [x] Salvar checkpoint após a validação final.
+
+### Skills avaliadas
+
+- [x] financial-analysis: não aplicar, pois não há análise financeira ou de mercado solicitada.
+- [x] excel-generator: não aplicar, pois não há planilha ou deliverable tabular solicitado.
+- [x] typst-pdf-maker: avaliar apenas se a revisão do currículo exigir migração do gerador atual.
+- [x] manus-api: não integrar sem necessidade funcional clara, credenciais e escopo de API.
+- [x] skill-creator: não criar nova skill; o pedido é melhoria do projeto existente.
+
+### Preservação
+
+- [x] Preservar showreel horizontal e vertical, botão de play, carregamento sob demanda e pôsteres.
+- [x] Preservar barra de contato, Telegram, WhatsApp, Instagram, lightbox e coleções favoritas.
+- [x] Preservar modal, loader e barra de progresso do currículo.
+- [x] Não inventar clientes, depoimentos, métricas, certificações ou experiência.
