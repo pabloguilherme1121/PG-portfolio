@@ -1057,3 +1057,12 @@
 - [x] Confirmar ou completar o pinch-to-zoom na imagem principal.
 - [x] Preservar pan, swipe, teclado, limites, fullscreen, focus trap e reduced motion.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Lightbox: testes de interação, anúncio acessível e sensibilidade mobile — nova rodada
+
+- [x] Auditar o prompt anexado e a arquitetura atual dos gestos.
+- [x] Adicionar testes de interação para pinch-to-zoom e arraste do mini-mapa.
+- [x] Anunciar a posição percentual do mini-mapa para leitores de tela durante o arraste.
+- [x] Ajustar a sensibilidade do pinch-to-zoom para iOS e Android.
+- [x] Preservar pan, swipe, teclado, limites, fullscreen, focus trap e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
