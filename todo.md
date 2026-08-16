@@ -1021,3 +1021,12 @@
 - [x] Implementar setas direcionais para mover a imagem ampliada.
 - [x] Preservar focus trap, swipe, pinch zoom, fullscreen e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: legenda de atalhos, mini-mapa interativo e sessão — nova rodada
+
+- [x] Auditar atalhos, mini-mapa e persistência atuais.
+- [x] Adicionar legenda discreta com atalhos de zoom e navegação.
+- [x] Tornar o mini-mapa clicável para reposicionar a área visível.
+- [x] Persistir o último zoom no `sessionStorage` durante a sessão.
+- [x] Preservar pan, limites reais, swipe, pinch zoom, fullscreen, teclado e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

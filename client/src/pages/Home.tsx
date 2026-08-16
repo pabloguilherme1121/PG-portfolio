@@ -636,6 +636,7 @@ export default function Home() {
   const setProjectZoom = (nextZoom: number) => {
     const clampedZoom = Math.min(3, Math.max(1, nextZoom));
     setLightboxZoom(clampedZoom);
+    try { window.sessionStorage.setItem("arquivo-profundo-lightbox-zoom", String(clampedZoom)); } catch { /* sessionStorage pode estar indisponível */ }
     setLightboxZoomFeedback(Math.round(clampedZoom * 100));
     if (zoomFeedbackTimerRef.current) window.clearTimeout(zoomFeedbackTimerRef.current);
     zoomFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomFeedback(null), 900);
@@ -667,6 +668,14 @@ export default function Home() {
   const clampPanOffset = (x: number, y: number) => {
     const bounds = getPanBounds();
     return { x: Math.min(bounds.x, Math.max(-bounds.x, x)), y: Math.min(bounds.y, Math.max(-bounds.y, y)) };
+  };
+
+  const repositionFromMiniMap = (clientX: number, clientY: number, element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
+    const xRatio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const yRatio = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
+    const bounds = getPanBounds();
+    setLightboxOffset(clampPanOffset((0.5 - xRatio) * 2 * bounds.x, (0.5 - yRatio) * 2 * bounds.y));
   };
 
   const handleLightboxPointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
@@ -843,7 +852,9 @@ export default function Home() {
 
   useEffect(() => {
     if (!lightboxProjectId) return;
-    setLightboxZoom(1);
+    let savedZoom = 1;
+    try { savedZoom = Math.min(3, Math.max(1, Number(window.sessionStorage.getItem("arquivo-profundo-lightbox-zoom")) || 1)); } catch { savedZoom = 1; }
+    setLightboxZoom(savedZoom);
     setLightboxOffset({ x: 0, y: 0 });
     window.requestAnimationFrame(() => lightboxActiveThumbRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
   }, [lightboxProjectId]);
@@ -2378,7 +2389,8 @@ export default function Home() {
               {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
               {lightboxZoomFeedback !== null && <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 border border-[#67e8f9]/40 bg-[#06172f]/95 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomFeedback}%</div>}
               <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
-              {lightboxZoom > 1 && (() => { const bounds = getPanBounds(); const viewportWidth = Math.max(18, 100 / lightboxZoom); const viewportHeight = Math.max(18, 100 / lightboxZoom); const left = Math.min(100 - viewportWidth, Math.max(0, 50 - (bounds.x ? lightboxOffset.x / bounds.x * 50 : 0) - viewportWidth / 2)); const top = Math.min(100 - viewportHeight, Math.max(0, 50 - (bounds.y ? lightboxOffset.y / bounds.y * 50 : 0) - viewportHeight / 2)); return <div className="absolute bottom-4 right-4 z-20 hidden h-20 w-28 overflow-hidden border border-[#67e8f9]/40 bg-[#06172f]/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)] sm:block" role="img" aria-label={`Mini-mapa da imagem ampliada em ${Math.round(lightboxZoom * 100)}%`} style={{ backgroundImage: `url(${lightboxProject.cover})`, backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute border-2 border-[#a5f3fc] bg-[#67e8f9]/20" style={{ left: `${left}%`, top: `${top}%`, width: `${viewportWidth}%`, height: `${viewportHeight}%` }} /></div>; })()}
+              <div className="pointer-events-none absolute bottom-4 left-4 z-20 hidden border border-white/15 bg-[#06172f]/85 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#b8d9e7] sm:block" aria-label="Atalhos do lightbox">atalhos: +/− zoom · setas movem · ←→ navegam</div>
+              {lightboxZoom > 1 && (() => { const bounds = getPanBounds(); const viewportWidth = Math.max(18, 100 / lightboxZoom); const viewportHeight = Math.max(18, 100 / lightboxZoom); const left = Math.min(100 - viewportWidth, Math.max(0, 50 - (bounds.x ? lightboxOffset.x / bounds.x * 50 : 0) - viewportWidth / 2)); const top = Math.min(100 - viewportHeight, Math.max(0, 50 - (bounds.y ? lightboxOffset.y / bounds.y * 50 : 0) - viewportHeight / 2)); return <div className="absolute bottom-4 right-4 z-20 hidden h-20 w-28 cursor-crosshair overflow-hidden border border-[#67e8f9]/40 bg-[#06172f]/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)] sm:block" role="button" tabIndex={0} aria-label={`Mini-mapa interativo da imagem ampliada em ${Math.round(lightboxZoom * 100)}%. Clique para reposicionar`} onClick={(event) => repositionFromMiniMap(event.clientX, event.clientY, event.currentTarget)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); repositionFromMiniMap(event.currentTarget.getBoundingClientRect().left + event.currentTarget.getBoundingClientRect().width / 2, event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2, event.currentTarget); } }} style={{ backgroundImage: `url(${lightboxProject.cover})`, backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute border-2 border-[#a5f3fc] bg-[#67e8f9]/20" style={{ left: `${left}%`, top: `${top}%`, width: `${viewportWidth}%`, height: `${viewportHeight}%` }} /></div>; })()}
               <div ref={lightboxImageContainerRef} className="relative flex min-h-[28vh] w-full items-center justify-center">
                 {showSwipeHint && <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 border border-[#67e8f9]/30 bg-[#06172f]/90 px-4 py-2 text-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]">deslize para navegar</span></div>}
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
