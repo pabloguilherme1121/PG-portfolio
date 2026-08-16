@@ -64,7 +64,7 @@ header.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING",
 story.append(header)
 story.append(Spacer(1, 5 * mm))
 
-contact = Table([[Paragraph("Águas Lindas · Planaltina · Entorno", styles["ResumeSmall"]), Paragraph('<link href="https://instagram.com/pablogui000" color="#0e7490">instagram.com/pablogui000</link>', styles["ResumeSmall"]), Paragraph(f'<link href="https://wa.me/5561992903029" color="#0e7490">WhatsApp: (61) 99293-03029</link>', styles["ResumeSmall"]), Paragraph('<link href="https://t.me/mpjmarketing" color="#0e7490">Telegram: t.me/mpjmarketing</link>', styles["ResumeSmall"])]], colWidths=[48 * mm, 44 * mm, 43 * mm, 41 * mm])
+contact = Table([[Paragraph("Águas Lindas · Planaltina · Entorno", styles["ResumeSmall"]), Paragraph('<link href="https://instagram.com/pablogui000" color="#0e7490">instagram.com/pablogui000</link>', styles["ResumeSmall"]), Paragraph(f'<link href="https://wa.me/5561992903029" color="#0e7490">WhatsApp: (61) 99290-3029</link>', styles["ResumeSmall"]), Paragraph('<link href="https://t.me/mpjmarketing" color="#0e7490">Telegram: t.me/mpjmarketing</link>', styles["ResumeSmall"])]], colWidths=[48 * mm, 44 * mm, 43 * mm, 41 * mm])
 contact.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "TOP"), ("LEFTPADDING", (0, 0), (-1, -1), 0), ("RIGHTPADDING", (0, 0), (-1, -1), 5), ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
 story.append(contact)
 story.append(Spacer(1, 4 * mm))

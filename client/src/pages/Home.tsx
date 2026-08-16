@@ -72,7 +72,7 @@ const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
 const portraitUrl = "/manus-storage/pablo-guilherme-retrato-profissional_a0ec8605.png";
-const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-profissional_dc004b40.pdf";
+const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf";
 const whatsAppNumber = "5561992903029";
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
@@ -177,6 +177,9 @@ type Repository = {
   id: string;
   name: string;
   description: string;
+  role: string;
+  process: string;
+  result: string;
   technologies: string[];
   url: string;
   kind: "repository" | "video";
@@ -240,6 +243,9 @@ const repositories: Repository[] = [
     id: "AUD.01",
     name: "Chá da Eloise",
     description: "Registro audiovisual de evento social, com imagens amplas do ambiente e momentos da celebração.",
+    role: "Cobertura aérea e leitura do ambiente.",
+    process: "Planos abertos, aproximações e movimentos suaves.",
+    result: "Uma memória visual que preserva espaço, presença e atmosfera.",
     technologies: ["Vídeo", "Drone", "Conteúdo"],
     url: "/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4",
     kind: "video",
@@ -252,6 +258,9 @@ const repositories: Repository[] = [
     id: "CNT.02",
     name: "RHAM — Serviços no app",
     description: "Vídeo vertical de navegação por serviços em uma interface móvel da RHAM Águas Lindas.",
+    role: "Apresentação visual da jornada de serviços.",
+    process: "Sequência curta guiada por leitura de tela e ritmo.",
+    result: "Uma demonstração direta da navegação no aplicativo.",
     technologies: ["Vídeo", "Conteúdo", "Interface"],
     url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
     kind: "video",
@@ -263,6 +272,9 @@ const repositories: Repository[] = [
     id: "CNT.03",
     name: "RHAM — Mensagem em vídeo",
     description: "Registro vertical com apresentação diante da câmera para comunicação institucional.",
+    role: "Captação e organização de uma mensagem em vídeo.",
+    process: "Enquadramento vertical e condução direta diante da câmera.",
+    result: "Uma peça curta para comunicar uma mensagem com presença.",
     technologies: ["Vídeo", "Conteúdo"],
     url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
     kind: "video",
@@ -274,6 +286,9 @@ const repositories: Repository[] = [
     id: "AUD.04",
     name: "Captação noturna — visão aérea",
     description: "Registro vertical noturno com perspectiva elevada sobre o espaço e seus arredores.",
+    role: "Exploração aérea de espaço e entorno.",
+    process: "Captação noturna com perspectiva elevada e movimento controlado.",
+    result: "Um recorte vertical que valoriza escala e atmosfera.",
     technologies: ["Vídeo", "Drone", "Noturno"],
     url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
     kind: "video",
@@ -285,6 +300,9 @@ const repositories: Repository[] = [
     id: "AUD.05",
     name: "Campo iluminado — vista aérea",
     description: "Captação horizontal de campo esportivo à noite, valorizando escala, luz e movimento.",
+    role: "Construção de uma visão ampla do campo.",
+    process: "Enquadramento horizontal atento à luz, escala e movimento.",
+    result: "Uma imagem de contexto para apresentar o espaço com impacto.",
     technologies: ["Vídeo", "Drone", "Noturno"],
     url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
     kind: "video",
@@ -296,6 +314,9 @@ const repositories: Repository[] = [
     id: "CNT.06",
     name: "RHAM — Navegação de serviços",
     description: "Segundo recorte vertical de interface móvel, focado na jornada de serviços do aplicativo.",
+    role: "Reforço visual da jornada de serviços.",
+    process: "Recorte vertical com foco nas etapas principais da interface.",
+    result: "Uma leitura complementar e rápida do fluxo do aplicativo.",
     technologies: ["Vídeo", "Conteúdo", "Interface"],
     url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
     kind: "video",
@@ -307,6 +328,9 @@ const repositories: Repository[] = [
     id: "AUD.07",
     name: "Campo iluminado — sequência aérea",
     description: "Novo enquadramento horizontal do campo, explorando a perspectiva de voo e a atmosfera noturna.",
+    role: "Variação de perspectiva para ampliar o repertório do registro.",
+    process: "Movimento aéreo horizontal com atenção à atmosfera noturna.",
+    result: "Uma sequência alternativa para comparar escala e direção.",
     technologies: ["Vídeo", "Drone", "Noturno"],
     url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
     kind: "video",
@@ -1669,6 +1693,7 @@ export default function Home() {
                         <span className={`${isCompactGallery ? "mb-3" : "mb-5"} flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#a4b1c6]`}>{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> registro de campo / assistir</> : "repositório"}</span>
                         <span className={`block font-display font-medium leading-[1.02] tracking-[-0.04em] text-white ${isCompactGallery ? "text-xl" : "text-3xl"}`}>{repository.name}</span>
                         {!isCompactGallery && <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>}
+                        {!isCompactGallery && <span className="mt-5 grid max-w-xl gap-3 border-t border-white/10 pt-4 sm:grid-cols-3"><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">papel</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.role}</span></span><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">processo</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.process}</span></span><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">resultado</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.result}</span></span></span>}
                         <span className={`${isCompactGallery ? "mt-4" : "mt-6"} flex flex-wrap gap-2`}>
                           {(isCompactGallery ? repository.technologies.slice(0, 2) : repository.technologies).map((technology) => <span key={technology} className="border border-white/15 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#abb9ce]">{technology}</span>)}
                         </span>

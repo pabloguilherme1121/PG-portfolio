@@ -83,3 +83,17 @@ A auditoria não inventa clientes, métricas, depoimentos ou resultados. A avali
 [5]: https://www.ahausten.com/ "Adam Hausten — Innovate, Create, Captivate"
 
 [6]: https://www.jannis-grosse.com/ "Jannis Große — Journalist"
+
+## Rodada complementar — evidência e apresentação
+
+A revisão final priorizou três pontos de confiança sem ampliar a complexidade da interface. Cada trabalho real agora explicita **papel**, **processo** e **resultado visual esperado**, usando apenas descrições compatíveis com os arquivos e metadados existentes; não foram adicionadas métricas, clientes, depoimentos ou resultados comerciais não fornecidos. O retrato profissional foi integrado à capa e à abertura do Showroom para conectar autoria e repertório desde o primeiro contato. O currículo foi regenerado com a foto existente, links clicáveis preservados e o telefone exibido corrigido para **(61) 99290-3029**, mantendo o link WhatsApp correspondente.
+
+| Critério | Decisão aplicada | Motivo |
+|---|---|---|
+| Clareza | Papel, processo e resultado em cada card detalhado | Contextualizar a evidência antes do clique |
+| Autoria | Retrato na hero e no início do Showroom | Humanizar sem transformar a capa em perfil social |
+| Conversão | PDF atualizado em todos os CTAs e no modal | Evitar versões divergentes do currículo |
+| Integridade | Nenhuma métrica, cliente ou depoimento novo | Preservar comunicação verificável |
+| Velocidade | Campos editoriais ocultos no modo compacto | Manter navegação rápida em galerias densas |
+
+A prioridade seguinte permanece medir o uso dos atalhos e observar quais evidências recebem mais interação, caso o proprietário habilite analytics. Sem essa medição, não há fundamento para adicionar novas integrações ou mais camadas de interface.

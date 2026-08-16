@@ -815,12 +815,12 @@
 
 ## Auditoria profissional ampla — nova rodada
 
-- [ ] Auditar criticamente interface, conteúdo, currículo, mídia, contatos, acessibilidade e desempenho.
-- [ ] Consolidar critérios profissionais aplicáveis ao nicho de TI, audiovisual, drone e criação de conteúdo.
-- [ ] Produzir diagnóstico claro com forças, problemas, riscos e prioridades.
-- [ ] Implementar melhorias de maior impacto em clareza, conversão, velocidade percebida e consistência visual.
-- [ ] Revisar currículo e apresentação profissional sem inventar informações.
-- [ ] Validar responsividade, foco, reduced motion, performance, testes, typecheck e build.
+- [x] Auditar criticamente interface, conteúdo, currículo, mídia, contatos, acessibilidade e desempenho.
+- [x] Consolidar critérios profissionais aplicáveis ao nicho de TI, audiovisual, drone e criação de conteúdo.
+- [x] Produzir diagnóstico claro com forças, problemas, riscos e prioridades.
+- [x] Implementar melhorias de maior impacto em clareza, conversão, velocidade percebida e consistência visual.
+- [x] Revisar currículo e apresentação profissional sem inventar informações.
+- [x] Validar responsividade, foco, reduced motion, performance, testes, typecheck e build.
 - [x] Salvar checkpoint após a validação final.
 
 ### Skills avaliadas
