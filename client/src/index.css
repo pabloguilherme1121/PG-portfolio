@@ -841,3 +841,43 @@ section[id] {
 
 .arquivo-page[data-theme="light"] .resume-header-cta { border-color: #0e7490; background: #e0f7ff; color: #164e63; }
 .arquivo-page[data-theme="light"] .resume-header-cta:hover { background: #cffafe; color: #082f49; }
+
+
+.archive-quick-route {
+  position: relative;
+  min-height: 6.25rem;
+  transition: background-color 180ms cubic-bezier(0.23, 1, 0.32, 1), transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.archive-quick-route::after {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-right: 1px solid #67e8f9;
+  border-top: 1px solid #67e8f9;
+  content: "";
+  opacity: 0.55;
+  transform: translate(0, 0);
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), opacity 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .archive-quick-route:hover {
+    transform: translateY(-2px);
+  }
+
+  .archive-quick-route:hover::after {
+    opacity: 1;
+    transform: translate(2px, -2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-quick-route,
+  .archive-quick-route::after {
+    transition-property: none !important;
+    transition-duration: 0s !important;
+  }
+}

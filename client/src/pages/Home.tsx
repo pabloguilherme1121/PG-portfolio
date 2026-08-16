@@ -1223,6 +1223,23 @@ export default function Home() {
                     conversar sobre o projeto <ArrowUpRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
+                <nav aria-label="Atalhos principais" className="mt-6 grid max-w-2xl gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-3">
+                  <a href="#projetos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
+                    <span className="font-mono text-[9px] text-[#67e8f9]">01</span>
+                    <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver evidências</span>
+                    <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">trabalhos e repertório</span>
+                  </a>
+                  <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
+                    <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
+                    <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">entender serviços</span>
+                    <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">formatos e duração típica</span>
+                  </a>
+                  <a href="#contato" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
+                    <span className="font-mono text-[9px] text-[#67e8f9]">03</span>
+                    <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">iniciar conversa</span>
+                    <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">orçamento e disponibilidade</span>
+                  </a>
+                </nav>
               </div>
             </div>
 

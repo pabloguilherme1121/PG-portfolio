@@ -708,10 +708,30 @@
 - [x] Definir progresso estimado, estados acessíveis e comportamento reduzido.
 - [x] Implementar barra visual com atualização suave e estado pronto.
 - [x] Validar progresso, reduced motion, responsividade, testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter spinner, fallback de erro, retry, download, abertura em nova aba e foco.
 - [x] Não apresentar porcentagem como medida exata de bytes; usar progresso estimado claramente rotulado.
 - [x] Preservar o modal, a barra flutuante e as demais funcionalidades do portfólio.
+
+
+## Auditoria comparativa e melhorias de clareza
+
+- [x] Auditar a identidade, a hero, a galeria, os CTAs, a velocidade percebida e a acessibilidade.
+- [x] Pesquisar referências profissionais de portfólio audiovisual, híbrido e editorial.
+- [x] Salvar fontes e achados em research_portfolio_references.md.
+- [x] Produzir o diagnóstico crítico em auditoria-profissional-portfolio.md.
+- [x] Adicionar atalhos de intenção na hero para evidências, serviços e conversa.
+- [x] Adicionar microinteração dos atalhos com reduced motion explícito.
+- [x] Validar atalhos, foco, overflow e reduced motion em 320px, 390px e 1280px.
+- [x] Executar 19 testes Vitest, typecheck e build de produção.
+- [x] Salvar checkpoint desta rodada.
+
+### Escopo não utilizado
+
+- [x] Não usar financial-analysis, stock-analysis ou excel-generator: não há tarefa financeira.
+- [x] Não usar video-generator, tts-prompter ou music-prompter: não foi solicitada geração de mídia.
+- [x] Não usar manus-api, similarweb-analytics ou pesquisa de YouTube como integração: faltam objetivo e necessidade operacional nesta rodada.
+- [x] Não criar uma nova skill: o pedido é uma melhoria do projeto existente.
