@@ -84,7 +84,36 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-search="true"]')).toHaveValue("");
     await expect(sort).toHaveValue("relevance");
     await expect(page.locator('[data-filter-scope="technology"]').filter({ hasText: "Todos" }).first()).toHaveAttribute("aria-pressed", "true");
-    await expect.poll(() => new URL(page.url()).search).toBe("");
+    await expect.poll(() => {
+      const params = new URL(page.url()).searchParams;
+      return [params.get("technology"), params.get("category"), params.get("tag"), params.get("sort"), params.get("q")].map((value) => value ?? "").join("|");
+    }).toBe("||||");
+  });
+
+  test("gerencia histórico, limpa estado vazio e navega entre projetos no modal", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(["termo-unico-de-teste"])));
+    await page.goto("/#galeria-publica");
+    const search = page.locator('[data-project-search="true"]');
+    const recent = page.locator('[data-recent-searches="true"]');
+    await expect(recent).toContainText("termo-unico-de-teste");
+    await recent.getByRole("button", { name: /Excluir busca recente termo-unico-de-teste/i }).click();
+    await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-recent-searches") || "[]").includes("termo-unico-de-teste"))).toBe(false);
+
+    await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
+    await search.fill("__sem-resultado-real__");
+    await expect(page.locator('[data-empty-clear-filters="true"]')).toBeVisible();
+    await page.locator('[data-empty-clear-filters="true"]').click();
+    await expect(search).toHaveValue("");
+
+    await page.locator('[data-featured-project]').first().click();
+    const details = page.locator('[data-project-details-dialog="true"]');
+    const title = details.getByRole("heading", { level: 2 });
+    const initialTitle = await title.textContent();
+    const next = details.locator('[data-project-modal-next="true"]');
+    await expect(next).toBeEnabled();
+    await next.click();
+    await expect(title).not.toHaveText(initialTitle ?? "");
+    await expect(details.locator('[data-project-modal-previous="true"]')).toBeEnabled();
   });
 
   test("exibe status de disponibilidade no contato do rodapé", async ({ page }) => {

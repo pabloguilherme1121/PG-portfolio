@@ -1032,6 +1032,9 @@ export default function Home() {
     })
     .sort((first, second) => sortMode === "manual" ? 0 : sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
+  const selectedProjectIndex = selectedProject ? visibleRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
+  const previousSelectedProject = selectedProjectIndex > 0 ? visibleRepositories[selectedProjectIndex - 1] : null;
+  const nextSelectedProject = selectedProjectIndex >= 0 && selectedProjectIndex < visibleRepositories.length - 1 ? visibleRepositories[selectedProjectIndex + 1] : null;
   const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 3), []);
   const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
   const projectPageSize = 4;
@@ -1281,6 +1284,14 @@ export default function Home() {
     setFavoritesOnly(false);
     setActiveSearchSuggestionIndex(-1);
     setIsProjectSearchFocused(false);
+  }
+
+  function removeRecentSearch(term: string) {
+    setRecentSearches((current) => current.filter((item) => item.toLowerCase() !== term.toLowerCase()));
+  }
+
+  function clearRecentSearches() {
+    setRecentSearches([]);
   }
 
   function saveSharedFavorites() {
@@ -2244,7 +2255,7 @@ export default function Home() {
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>
 
-            {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <button key={term} type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="inline-flex max-w-full items-center gap-1.5 border border-white/[0.1] bg-[#07101e] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2] transition-colors hover:border-[#67e8f9]/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{term}<span className="sr-only">, repetir busca</span></button>)}</div>}
+            {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <span key={term} className="inline-flex max-w-full items-center border border-white/[0.1] bg-[#07101e] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2]"><button type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="truncate px-2.5 py-1.5 text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]">{term}<span className="sr-only">, repetir busca</span></button><button type="button" onClick={() => removeRecentSearch(term)} aria-label={`Excluir busca recente ${term}`} title={`Excluir ${term}`} className="grid h-7 w-7 shrink-0 place-items-center border-l border-white/[0.1] text-[#7189ae] transition-colors hover:bg-red-400/10 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3 w-3" aria-hidden="true" /></button></span>)}<button type="button" onClick={clearRecentSearches} aria-label="Limpar todo o histórico de buscas" className="inline-flex items-center gap-1.5 border border-amber-300/25 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar histórico</button></div>}
 
             <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning || isGalleryLoading} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (
@@ -2325,7 +2336,7 @@ export default function Home() {
                         ? "Quando houver um link do GitHub, um vídeo ou uma nova filmagem, o registro pode entrar aqui com descrição, tecnologias e acesso direto."
                         : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
                     </p>
-                    <a href="#contato" className="mt-7 inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar material para incluir <ArrowUpRight className="h-3.5 w-3.5" /></a>
+                    <div className="mt-7 flex flex-wrap items-center gap-3"><button type="button" data-empty-clear-filters="true" onClick={clearAllProjectFilters} className="inline-flex items-center gap-2 border border-[#3b82f6]/50 bg-[#3b82f6]/10 px-3.5 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#d9e8ff] transition-colors hover:border-[#70a6ff] hover:bg-[#3b82f6]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar filtros ativos</button><a href="#contato" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar material para incluir <ArrowUpRight className="h-3.5 w-3.5" /></a></div>
                   </div>
                 </div>
                 <div className="border-t border-white/[0.1] bg-[#070b13] p-7 sm:p-10 lg:border-l lg:border-t-0">
@@ -2701,6 +2712,7 @@ export default function Home() {
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">resultado</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.result || "Informação não registrada."}</p></div>
               </div>
               <div className="mt-7 border-t border-white/10 pt-5"><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">tecnologias e repertório</p><div className="mt-3 flex flex-wrap gap-2">{selectedProject.technologies.map((technology) => <span key={technology} className="border border-[#3b82f6]/30 bg-[#0b2746] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#cfe3ff]">{technology}</span>)}</div></div>
+              <div className="mt-7 flex items-center justify-between gap-3 border-t border-white/10 pt-5"><button type="button" data-project-modal-previous="true" onClick={() => previousSelectedProject && setSelectedProject(previousSelectedProject)} disabled={!previousSelectedProject} aria-label={previousSelectedProject ? `Ver projeto anterior: ${previousSelectedProject.name}` : "Nenhum projeto anterior"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-4 w-4" aria-hidden="true" />anterior</button><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]" aria-live="polite">{selectedProjectIndex >= 0 ? `${String(selectedProjectIndex + 1).padStart(2, "0")} / ${String(visibleRepositories.length).padStart(2, "0")}` : ""}</span><button type="button" data-project-modal-next="true" onClick={() => nextSelectedProject && setSelectedProject(nextSelectedProject)} disabled={!nextSelectedProject} aria-label={nextSelectedProject ? `Ver próximo projeto: ${nextSelectedProject.name}` : "Nenhum próximo projeto"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35">próximo<ChevronRight className="h-4 w-4" aria-hidden="true" /></button></div>
             </div>
           </DialogContent>
         )}

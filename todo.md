@@ -1232,3 +1232,10 @@
 - [x] Adicionar histórico local de buscas recentes abaixo da barra.
 - [x] Criar botão Limpar todos os filtros para texto, ordenação e filtros selecionados.
 - [x] Validar URL, histórico, limpeza, teclado, reduced motion, testes, build e checkpoint.
+
+## Histórico gerenciável, estado vazio e navegação do modal — nova iteração
+
+- [x] Adicionar exclusão individual e limpeza completa do histórico de buscas.
+- [x] Criar estado Nenhum resultado encontrado com botão para limpar filtros ativos.
+- [x] Adicionar botões Anterior e Próximo no modal usando a sequência filtrada.
+- [x] Validar histórico, estado vazio, modal, teclado, reduced motion, testes, build e checkpoint.
