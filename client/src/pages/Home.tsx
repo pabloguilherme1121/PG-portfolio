@@ -401,6 +401,17 @@ const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo",
 const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
 type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
+function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback: string) {
+  if (typeof window === "undefined") return fallback;
+  const value = new URLSearchParams(window.location.search).get(key);
+  return value && allowed.includes(value) ? value : fallback;
+}
+
+function getPortfolioUrlSearch() {
+  if (typeof window === "undefined") return "";
+  return new URLSearchParams(window.location.search).get("q") ?? "";
+}
+
 const predefinedOrderProfiles: ManualOrderProfile[] = [
   { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
   { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
@@ -471,9 +482,9 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [activeTechnology, setActiveTechnology] = useState("Todos");
-  const [activeCategory, setActiveCategory] = useState("Todos");
-  const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>("Todos");
+  const [activeTechnology, setActiveTechnology] = useState(() => getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
+  const [activeCategory, setActiveCategory] = useState(() => getPortfolioUrlFilter("category", categoryFilters, "Todos"));
+  const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>(() => getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
     if (typeof window === "undefined") return repositories.map((repository) => repository.id);
@@ -552,7 +563,7 @@ export default function Home() {
   const [lightboxPositionAnnouncement, setLightboxPositionAnnouncement] = useState("");
   const [lightboxResetting, setLightboxResetting] = useState(false);
   const [lightboxClosing, setLightboxClosing] = useState(false);
-  const [projectSearch, setProjectSearch] = useState("");
+  const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
@@ -1029,6 +1040,33 @@ export default function Home() {
   useEffect(() => {
     setVisibleProjectLimit(projectPageSize);
   }, [activeTechnology, activeCategory, activeTag, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const setOrDelete = (key: string, value: string, fallback: string) => {
+      if (value && value !== fallback) params.set(key, value);
+      else params.delete(key);
+    };
+    setOrDelete("technology", activeTechnology, "Todos");
+    setOrDelete("category", activeCategory, "Todos");
+    setOrDelete("tag", activeTag, "Todos");
+    if (projectSearch.trim()) params.set("q", projectSearch.trim());
+    else params.delete("q");
+    const query = params.toString();
+    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
+    window.history.replaceState({}, "", nextUrl);
+  }, [activeTechnology, activeCategory, activeTag, projectSearch]);
+
+  useEffect(() => {
+    const readUrlState = () => {
+      setActiveTechnology(getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
+      setActiveCategory(getPortfolioUrlFilter("category", categoryFilters, "Todos"));
+      setActiveTag(getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
+      setProjectSearch(getPortfolioUrlSearch());
+    };
+    window.addEventListener("popstate", readUrlState);
+    return () => window.removeEventListener("popstate", readUrlState);
+  }, []);
 
   useEffect(() => {
     window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
@@ -2094,9 +2132,9 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div data-project-search-panel="true" className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label className="relative block w-full sm:max-w-md">
-                <span className="sr-only">Buscar trabalho por nome, tecnologia ou descrição</span>
+                <span className="sr-only">Pesquisar projetos por palavra-chave, nome, tecnologia ou descrição</span>
                 <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />
                 <input
                   ref={projectSearchInputRef}
@@ -2114,7 +2152,8 @@ export default function Home() {
                   onFocus={() => setIsProjectSearchFocused(true)}
                   onBlur={() => setIsProjectSearchFocused(false)}
                   onKeyDown={handleProjectSearchKeyDown}
-                  placeholder="buscar por nome, tecnologia ou descrição"
+                  data-project-search="true"
+                  placeholder="pesquisar por palavra-chave, tecnologia ou descrição"
                   aria-describedby="project-search-feedback"
                   aria-keyshortcuts="Escape"
                   enterKeyHint="search"
@@ -2476,7 +2515,7 @@ export default function Home() {
             <h2 id="footer-contact-title" className="mt-5 max-w-sm font-display text-2xl font-medium tracking-[-0.04em] text-white">Vamos transformar uma ideia em registro.</h2>
             <p className="mt-3 max-w-md font-body text-sm leading-6 text-[#9fb4d2]">Para orçamentos, parcerias ou uma conversa inicial, escolha o canal que fizer mais sentido.</p>
           </div>
-          <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">contato direto</p><div className="mt-3 flex flex-wrap items-center gap-2"><a href="mailto:mpjcreator@gmail.com" className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/35 bg-[#0b1c36] px-3 font-mono text-[10px] text-[#d9eaff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Mail className="h-3.5 w-3.5" aria-hidden="true" />mpjcreator@gmail.com</a><button type="button" onClick={copyContactEmail} aria-label={emailCopyStatus === "copied" ? "E-mail copiado" : "Copiar e-mail mpjcreator@gmail.com"} className="inline-flex min-h-10 items-center gap-2 border border-white/15 px-3 font-mono text-[10px] text-[#b8cae5] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{emailCopyStatus === "copied" ? "copiado" : emailCopyStatus === "error" ? "tente novamente" : "copiar e-mail"}</button></div><p role="status" aria-live="polite" className="mt-2 min-h-4 font-mono text-[9px] text-[#75a7fb]">{emailCopyStatus === "copied" ? "E-mail copiado para a área de transferência." : emailCopyStatus === "error" ? "Não foi possível copiar automaticamente." : ""}</p></div>
+          <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">contato direto</p><div data-availability-status="true" role="status" aria-live="polite" className="mt-3 inline-flex items-center gap-2 border border-amber-300/25 bg-amber-300/5 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100"><span className="h-1.5 w-1.5 rounded-full bg-amber-300 shadow-[0_0_0_3px_rgba(252,211,77,0.12)]" aria-hidden="true" />disponibilidade atual: sob consulta</div><p className="mt-2 max-w-xs font-body text-xs leading-5 text-[#8fa8c8]">A agenda pode variar; envie o briefing para confirmar a melhor janela.</p><div className="mt-3 flex flex-wrap items-center gap-2"><a href="mailto:mpjcreator@gmail.com" className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/35 bg-[#0b1c36] px-3 font-mono text-[10px] text-[#d9eaff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Mail className="h-3.5 w-3.5" aria-hidden="true" />mpjcreator@gmail.com</a><button type="button" onClick={copyContactEmail} aria-label={emailCopyStatus === "copied" ? "E-mail copiado" : "Copiar e-mail mpjcreator@gmail.com"} className="inline-flex min-h-10 items-center gap-2 border border-white/15 px-3 font-mono text-[10px] text-[#b8cae5] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{emailCopyStatus === "copied" ? "copiado" : emailCopyStatus === "error" ? "tente novamente" : "copiar e-mail"}</button></div><p data-email-copy-status="true" role="status" aria-live="polite" className="mt-2 min-h-4 font-mono text-[9px] text-[#75a7fb]">{emailCopyStatus === "copied" ? "E-mail copiado para a área de transferência." : emailCopyStatus === "error" ? "Não foi possível copiar automaticamente." : ""}</p></div>
           <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">redes e atendimento</p><div className="mt-3 flex flex-wrap gap-2"><a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Instagram @pablogui000" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" aria-label="Instagram @mpjstoryworks" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Canal público de atendimento no Telegram" className="footer-social-icon text-[#6e85a8]"><Send className="h-4 w-4" /></a><a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp" className="footer-social-icon text-[#6e85a8]"><MessageCircle className="h-4 w-4" /></a></div><p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p></div>
         </div>
       </footer>

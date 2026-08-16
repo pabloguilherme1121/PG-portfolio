@@ -1211,3 +1211,10 @@
 - [x] Refinar o botão Voltar ao topo para aparecer após rolagem e animar o retorno suavemente.
 - [x] Validar filtros, cópia de e-mail, rolagem, teclado, reduced motion, testes, build e checkpoint.
 - [x] Usar o e-mail público fornecido, mpjcreator@gmail.com, no rodapé com cópia e link mailto.
+
+## URL, busca e disponibilidade — nova iteração
+
+- [x] Persistir tecnologia, categoria, tag e busca na URL com links compartilháveis.
+- [x] Adicionar barra de pesquisa textual acima dos cards de projetos.
+- [x] Adicionar indicador visual e acessível de disponibilidade para novos projetos no contato.
+- [x] Validar URL, busca, status, teclado, reduced motion, testes, build e checkpoint.

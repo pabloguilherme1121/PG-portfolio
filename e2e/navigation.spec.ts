@@ -39,13 +39,28 @@ test.describe("navegação pública e favoritos", () => {
     await expect(emailLink).toBeVisible();
     const copyEmail = page.getByRole("button", { name: /copiar e-mail mpjcreator@gmail.com/i });
     await copyEmail.click();
-    await expect(page.locator('#contato-rodape [role="status"]')).toContainText(/copiado|não foi possível/i);
+    await expect(page.locator('#contato-rodape [data-email-copy-status="true"]')).toContainText(/copiado|não foi possível/i);
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
     const backToTop = page.locator('button[aria-label="Voltar ao topo da página"]');
     await expect(backToTop).toBeVisible();
     await page.evaluate(() => { window.scrollTo({ top: 0, behavior: "auto" }); window.dispatchEvent(new Event("scroll")); });
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(100);
     await expect(backToTop).toHaveAttribute("aria-hidden", "true");
+  });
+
+  test("restaura filtros e busca a partir da URL compartilhada", async ({ page }) => {
+    await page.goto("/?technology=HTML&category=Interface&tag=Interface&q=site#galeria-publica");
+    await expect(page.locator('[data-filter-scope="technology"]').filter({ hasText: "HTML" }).first()).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-filter-scope="category"]').filter({ hasText: "Interface" }).first()).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-filter-scope="tag"]').filter({ hasText: "Interface" }).first()).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-project-search="true"]')).toHaveValue("site");
+    await page.locator('[data-project-search="true"]').fill("drone");
+    await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("drone");
+  });
+
+  test("exibe status de disponibilidade no contato do rodapé", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator('[data-availability-status="true"]')).toContainText("disponibilidade atual: sob consulta");
   });
 
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
