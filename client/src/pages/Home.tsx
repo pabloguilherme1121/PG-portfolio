@@ -470,6 +470,7 @@ export default function Home() {
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>("Todos");
@@ -1178,7 +1179,24 @@ export default function Home() {
 
   function scrollToTop() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+    if (prefersReducedMotion) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function copyContactEmail() {
+    const email = "mpjcreator@gmail.com";
+    try {
+      await navigator.clipboard.writeText(email);
+      setEmailCopyStatus("copied");
+    } catch {
+      setEmailCopyStatus("error");
+    }
+    window.setTimeout(() => setEmailCopyStatus("idle"), 2200);
   }
 
   function saveSharedFavorites() {
@@ -2032,6 +2050,7 @@ export default function Home() {
                 {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
               </aside>
               </div>
+              <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>
             <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
                   const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
@@ -2450,22 +2469,19 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t border-white/[0.07] bg-[#06080d]">
-        <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
-          <div className="flex items-center gap-3">
-            <img src={markUrl} alt="" width="24" height="24" decoding="async" className="h-6 w-6 object-contain" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3] light-muted-ink">Pablo Guilherme · TI · conteúdo · audiovisual</p>
+      <footer id="contato-rodape" className="border-t border-white/[0.07] bg-[#06080d]" aria-labelledby="footer-contact-title">
+        <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-12">
+          <div>
+            <div className="flex items-center gap-3"><img src={markUrl} alt="" width="24" height="24" decoding="async" className="h-6 w-6 object-contain" /><p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3] light-muted-ink">Pablo Guilherme · TI · conteúdo · audiovisual</p></div>
+            <h2 id="footer-contact-title" className="mt-5 max-w-sm font-display text-2xl font-medium tracking-[-0.04em] text-white">Vamos transformar uma ideia em registro.</h2>
+            <p className="mt-3 max-w-md font-body text-sm leading-6 text-[#9fb4d2]">Para orçamentos, parcerias ou uma conversa inicial, escolha o canal que fizer mais sentido.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Instagram @pablogui000" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a>
-            <a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" aria-label="Instagram @mpjstoryworks" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a>
-            <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Canal público de atendimento no Telegram" className="footer-social-icon text-[#6e85a8]"><Send className="h-4 w-4" /></a>
-            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p>
-          </div>
+          <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">contato direto</p><div className="mt-3 flex flex-wrap items-center gap-2"><a href="mailto:mpjcreator@gmail.com" className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/35 bg-[#0b1c36] px-3 font-mono text-[10px] text-[#d9eaff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Mail className="h-3.5 w-3.5" aria-hidden="true" />mpjcreator@gmail.com</a><button type="button" onClick={copyContactEmail} aria-label={emailCopyStatus === "copied" ? "E-mail copiado" : "Copiar e-mail mpjcreator@gmail.com"} className="inline-flex min-h-10 items-center gap-2 border border-white/15 px-3 font-mono text-[10px] text-[#b8cae5] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{emailCopyStatus === "copied" ? "copiado" : emailCopyStatus === "error" ? "tente novamente" : "copiar e-mail"}</button></div><p role="status" aria-live="polite" className="mt-2 min-h-4 font-mono text-[9px] text-[#75a7fb]">{emailCopyStatus === "copied" ? "E-mail copiado para a área de transferência." : emailCopyStatus === "error" ? "Não foi possível copiar automaticamente." : ""}</p></div>
+          <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">redes e atendimento</p><div className="mt-3 flex flex-wrap gap-2"><a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Instagram @pablogui000" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" aria-label="Instagram @mpjstoryworks" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Canal público de atendimento no Telegram" className="footer-social-icon text-[#6e85a8]"><Send className="h-4 w-4" /></a><a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp" className="footer-social-icon text-[#6e85a8]"><MessageCircle className="h-4 w-4" /></a></div><p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#526783]">arquivo pessoal / em atualização contínua</p></div>
         </div>
       </footer>
 
-      {showBackToTop && <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" className="fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:bottom-5 sm:right-[360px]"><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>}
+      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav aria-label="Canais de contato" className="contact-float fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:left-auto sm:right-5 sm:translate-x-0">
         <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" title="WhatsApp" className="contact-float-link contact-float-whatsapp group">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />

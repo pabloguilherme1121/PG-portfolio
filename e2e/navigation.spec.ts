@@ -23,6 +23,31 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-id]').first()).toBeVisible();
   });
 
+  test("aplica filtro por tecnologia e atualiza a contagem de resultados", async ({ page }) => {
+    await page.goto("/#galeria-publica");
+    const technologyFilter = page.locator('[data-filter-scope="technology"]').filter({ hasText: "HTML" }).first();
+    await expect(technologyFilter).toBeVisible();
+    await technologyFilter.click();
+    await expect(technologyFilter).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator('[data-technology-result-count="true"]')).toContainText(/projeto/);
+  });
+
+  test("oferece contato no rodapé, copia o e-mail e retorna ao topo", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const emailLink = page.locator('#contato-rodape a[href="mailto:mpjcreator@gmail.com"]');
+    await expect(emailLink).toBeVisible();
+    const copyEmail = page.getByRole("button", { name: /copiar e-mail mpjcreator@gmail.com/i });
+    await copyEmail.click();
+    await expect(page.locator('#contato-rodape [role="status"]')).toContainText(/copiado|não foi possível/i);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+    const backToTop = page.locator('button[aria-label="Voltar ao topo da página"]');
+    await expect(backToTop).toBeVisible();
+    await page.evaluate(() => { window.scrollTo({ top: 0, behavior: "auto" }); window.dispatchEvent(new Event("scroll")); });
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(100);
+    await expect(backToTop).toHaveAttribute("aria-hidden", "true");
+  });
+
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
     const canonical = page.locator('link[rel="canonical"]');

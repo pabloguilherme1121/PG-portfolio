@@ -1203,3 +1203,11 @@
 - [x] Implementar skeleton loading nos cards dos três projetos destacados.
 - [x] Criar modal acessível de detalhes ao clicar nos cards destacados.
 - [x] Validar tema, skeleton, modal, teclado, reduced motion, testes, build e checkpoint.
+
+## Filtros, contato e retorno ao topo — nova iteração
+
+- [x] Implementar filtros combináveis por tecnologia nos cards de projetos.
+- [x] Adicionar seção de contato no rodapé com redes sociais e botão de copiar e-mail.
+- [x] Refinar o botão Voltar ao topo para aparecer após rolagem e animar o retorno suavemente.
+- [x] Validar filtros, cópia de e-mail, rolagem, teclado, reduced motion, testes, build e checkpoint.
+- [x] Usar o e-mail público fornecido, mpjcreator@gmail.com, no rodapé com cópia e link mailto.
