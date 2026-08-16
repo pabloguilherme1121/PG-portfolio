@@ -894,3 +894,11 @@
 - [x] Preservar prefers-reduced-motion, enquadramento e acessibilidade.
 - [x] Validar testes, typecheck, build e Chromium.
 - [x] Salvar checkpoint após a validação final.
+
+## Loader de alta resolução no lightbox — nova rodada
+
+- [x] Auditar estados e ciclo de carregamento do lightbox.
+- [x] Implementar indicador sutil sincronizado com `onLoad` e `onError.
+- [x] Preservar zoom, navegação, foco, teclado e prefers-reduced-motion.
+- [x] Validar testes, typecheck, build, responsividade e estados de erro.
+- [x] Salvar checkpoint após a validação final.
