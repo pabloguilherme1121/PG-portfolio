@@ -362,3 +362,12 @@
 - [x] Integrar feedback com filtros, busca, favoritos e Carregar mais.
 - [x] Validar skeleton, acessibilidade, reduced motion, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Alternância de tema claro/escuro
+
+- [x] Auditar o tema atual, tokens de cor e cabeçalho.
+- [x] Implementar estado persistente de tema e controle de alternância.
+- [x] Adaptar a composição visual para o modo claro sem perder a identidade.
+- [x] Validar persistência, teclado, contraste, responsividade, reduced motion, testes e build.
+- [x] Salvar checkpoint após a validação final.

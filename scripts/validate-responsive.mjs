@@ -202,7 +202,17 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  const themeToggle = page.locator('[data-theme-toggle="true"]:visible').first();
+  const themeFocusVisible = await (async () => { await themeToggle.focus(); return themeToggle.evaluate((element) => document.activeElement === element && element.className.includes("focus-visible")); })();
+  const initialTheme = await page.locator(".arquivo-page").getAttribute("data-theme");
+  await themeToggle.press("Enter");
+  await page.waitForTimeout(80);
+  const lightThemeActivated = await page.locator(".arquivo-page").getAttribute("data-theme") === "light";
+  const themeStored = await page.evaluate(() => window.localStorage.getItem("theme") === "light");
+  await themeToggle.press("Enter");
+  await page.waitForTimeout(80);
+  const darkThemeRestored = await page.locator(".arquivo-page").getAttribute("data-theme") === "dark";
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, themeFocusVisible, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 

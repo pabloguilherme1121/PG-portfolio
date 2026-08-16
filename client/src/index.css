@@ -429,3 +429,63 @@ section[id] {
     animation: none !important;
   }
 }
+
+
+/* Arquivo Profundo — modo claro: mantém o azul celeste como sinal de navegação e troca apenas as superfícies editoriais. */
+.arquivo-page[data-theme="light"] {
+  background: #f4f8fc !important;
+  color: #10223b !important;
+  color-scheme: light;
+}
+
+.arquivo-page[data-theme="light"] header,
+.arquivo-page[data-theme="light"] footer {
+  background-color: rgba(244, 248, 252, 0.94) !important;
+  border-color: rgba(20, 58, 98, 0.14) !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="bg-[#07101e"],
+.arquivo-page[data-theme="light"] [class*="bg-[#0a0f18"],
+.arquivo-page[data-theme="light"] [class*="bg-[#09101c"],
+.arquivo-page[data-theme="light"] [class*="bg-[#071326"],
+.arquivo-page[data-theme="light"] [class*="bg-[#061226"],
+.arquivo-page[data-theme="light"] [class*="bg-[#06172f"],
+.arquivo-page[data-theme="light"] [class*="bg-[#070b13"],
+.arquivo-page[data-theme="light"] [class*="bg-[#06080d"] {
+  background-color: #ffffff !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-white"],
+.arquivo-page[data-theme="light"] .font-display {
+  color: #10223b !important;
+}
+
+.arquivo-page[data-theme="light"] .font-body {
+  color: #46627f;
+}
+
+.arquivo-page[data-theme="light"] [class*="border-white"],
+.arquivo-page[data-theme="light"] [class*="border-cyan-100"] {
+  border-color: rgba(24, 64, 105, 0.16) !important;
+}
+
+.arquivo-page[data-theme="light"] input,
+.arquivo-page[data-theme="light"] textarea,
+.arquivo-page[data-theme="light"] select {
+  background-color: #ffffff !important;
+  color: #10223b !important;
+  border-color: rgba(20, 79, 126, 0.28) !important;
+}
+
+.arquivo-page[data-theme="light"] input::placeholder,
+.arquivo-page[data-theme="light"] textarea::placeholder {
+  color: #7186a0 !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="bg-[#0b2746"] {
+  background-color: #e4f3ff !important;
+}
+
+.arquivo-page[data-theme="light"] .project-gallery-card:hover {
+  background-color: #edf7ff !important;
+}

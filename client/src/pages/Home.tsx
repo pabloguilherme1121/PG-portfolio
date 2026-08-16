@@ -32,9 +32,12 @@ import {
   Search,
   Send,
   Share2,
+  Moon,
+  Sun,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useTheme } from "@/contexts/ThemeContext";
 import {
   availableTimes,
   buildAvailabilityWhatsAppUrl,
@@ -334,6 +337,7 @@ const navigationItems = [
 ] as const;
 
 export default function Home() {
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
@@ -704,7 +708,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#030b1e] text-[#f2fbff] selection:bg-[#38bdf8] selection:text-[#02111f]">
+    <div data-theme={theme} className="arquivo-page min-h-screen overflow-x-hidden bg-[#030b1e] text-[#f2fbff] selection:bg-[#38bdf8] selection:text-[#02111f]">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.10] bg-[#030b1e]/90 backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
           <a href="#inicio" aria-label="Ir ao início" className="group flex items-center gap-3" onClick={closeMenu}>
@@ -722,6 +726,7 @@ export default function Home() {
                 {label}
               </a>
             ))}
+            {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>}
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -737,6 +742,7 @@ export default function Home() {
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
+          {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>}
         </div>
         {menuOpen && (
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
@@ -752,6 +758,7 @@ export default function Home() {
                   {label}
                 </a>
               ))}
+              {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>}
             </div>
           </nav>
         )}
