@@ -881,3 +881,36 @@ section[id] {
     transition-duration: 0s !important;
   }
 }
+
+
+.showreel-play-button {
+  isolation: isolate;
+}
+
+.showreel-play-button::before {
+  position: absolute;
+  inset: -0.45rem;
+  z-index: -1;
+  border: 1px solid rgba(165, 243, 252, 0.42);
+  border-radius: 999px;
+  content: "";
+  opacity: 0.7;
+  transform: scale(0.92);
+  transition: opacity 180ms ease-out, transform 180ms ease-out;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .showreel-poster:hover .showreel-play-button::before,
+  .showreel-poster:focus-visible .showreel-play-button::before {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showreel-play-button::before {
+    opacity: 0;
+    transition: none;
+    transform: none;
+  }
+}

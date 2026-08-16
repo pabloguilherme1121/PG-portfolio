@@ -10,6 +10,9 @@ async function checkViewport(viewport, expected) {
   await page.goto(baseUrl, { waitUntil: 'networkidle' });
   const trigger = page.locator('[data-showreel-trigger="true"]');
   if (await trigger.count() !== 1) throw new Error(`Gatilho ausente em ${viewport.width}px`);
+  const playButton = trigger.locator('[data-showreel-play="true"]');
+  if (await playButton.count() !== 1) throw new Error(`Botão de play personalizado ausente em ${viewport.width}px`);
+  if (!(await trigger.getAttribute('aria-label'))?.toLowerCase().includes('showreel')) throw new Error('Rótulo acessível do play ausente');
   const poster = trigger.locator('img');
   const posterSrc = await poster.getAttribute('src');
   const expectedPoster = expected === 'vertical' ? '/manus-storage/showreel-vertical-poster_e21c73f9.jpg' : '/manus-storage/showreel-poster_847cd0c5.jpg';

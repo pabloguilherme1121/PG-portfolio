@@ -759,10 +759,25 @@
 - [x] Preparar vídeo vertical 9:16 e pôster vertical a partir dos assets reais.
 - [x] Implementar seleção por viewport, carregamento sob demanda e fallback responsivo.
 - [x] Validar proporção, reprodução, foco, acessibilidade, reduced motion, responsividade, testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter o showreel horizontal para desktop.
 - [x] Preservar o carregamento somente após intenção explícita.
 - [x] Não adicionar autoplay com som nem inventar material audiovisual.
+
+
+## Botão de play personalizado do showreel
+
+- [x] Auditar o gatilho atual do showreel e seus estados responsivos.
+- [x] Definir visual, hierarquia e estados de interação do botão de play.
+- [x] Implementar o botão estilizado sobre os pôsteres horizontal e vertical.
+- [x] Validar foco, toque, reduced motion, responsividade, testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter a área de toque acessível e o rótulo do gatilho.
+- [x] Preservar o carregamento somente após clique.
+- [x] Manter as versões horizontal e vertical do showreel.
