@@ -755,3 +755,70 @@ section[id] {
 .arquivo-page[data-theme="light"] .footer-social-icon {
   color: #1f5275 !important;
 }
+
+
+.contact-float {
+  border-radius: 999px;
+  isolation: isolate;
+}
+
+.contact-float-link {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(103, 232, 249, 0.2);
+  border-radius: 999px;
+  padding: 0.65rem 0.8rem;
+  color: #c9f8ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), border-color 180ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms cubic-bezier(0.23, 1, 0.32, 1), color 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.contact-float-link:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid #a5f3fc;
+  outline-offset: 3px;
+}
+
+.contact-float-whatsapp { color: #b8ffd0; }
+.contact-float-telegram { color: #bdf7ff; }
+.contact-float-instagram { color: #f5c8ff; }
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .contact-float-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(165, 243, 252, 0.78);
+    background: rgba(11, 49, 86, 0.92);
+    color: #ffffff;
+  }
+}
+
+.contact-float-link:active { transform: scale(0.96); }
+
+@media (max-width: 639px) {
+  .contact-float { width: calc(100vw - 1.25rem); justify-content: stretch; }
+  .contact-float-link { min-width: 0; flex: 1 1 0%; padding-inline: 0.45rem; font-size: 0.5rem; letter-spacing: 0.045em; }
+  .contact-float-link svg { flex: 0 0 auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-float-link { transition: none; }
+  .contact-float-link:active { transform: none; }
+}
+
+.arquivo-page[data-theme="light"] .contact-float {
+  border-color: rgba(14, 116, 144, 0.3);
+  background: rgba(240, 251, 255, 0.96);
+  box-shadow: 0 16px 44px rgba(16, 32, 51, 0.2);
+}
+
+.arquivo-page[data-theme="light"] .contact-float-link { border-color: rgba(14, 116, 144, 0.2); color: #164e63; }
+.arquivo-page[data-theme="light"] .contact-float-link:hover { background: rgba(207, 250, 254, 0.9); color: #082f49; }

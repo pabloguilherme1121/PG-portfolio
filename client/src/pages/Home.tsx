@@ -1840,13 +1840,21 @@ export default function Home() {
         </div>
       </footer>
 
-      {showBackToTop && <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" className="fixed bottom-20 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:bottom-5 sm:right-36"><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>}
-
-      <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" className="whatsapp-float fixed bottom-5 right-5 z-[60] inline-flex items-center gap-3 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-        <MessageCircle className="h-5 w-5 fill-current" />
-        <span className="hidden sm:inline">WhatsApp</span>
-        <span className="hidden max-w-0 overflow-hidden whitespace-nowrap text-[9px] font-medium tracking-[0.08em] opacity-0 transition-all duration-200 group-hover:max-w-[180px] group-hover:opacity-100 lg:inline">falar sobre orçamento</span>
-      </a>
+      {showBackToTop && <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" className="fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:bottom-5 sm:right-[360px]"><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>}
+      <nav aria-label="Canais de contato" className="contact-float fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:left-auto sm:right-5 sm:translate-x-0">
+        <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" title="WhatsApp" className="contact-float-link contact-float-whatsapp group">
+          <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
+          <span>WhatsApp</span>
+        </a>
+        <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" title="Telegram" className="contact-float-link contact-float-telegram group">
+          <Send className="h-4 w-4" aria-hidden="true" />
+          <span>Telegram</span>
+        </a>
+        <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Abrir Instagram @pablogui000" title="Instagram" className="contact-float-link contact-float-instagram group">
+          <Instagram className="h-4 w-4" aria-hidden="true" />
+          <span>Instagram</span>
+        </a>
+      </nav>
 
       {lightboxProject?.cover && (
         <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>

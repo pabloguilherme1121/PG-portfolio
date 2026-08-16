@@ -524,7 +524,7 @@
 - [x] Aprimorar o currículo PDF com informações verificáveis e links clicáveis.
 - [x] Atualizar a chamada de currículo no site.
 - [x] Validar Telegram, responsividade, acessibilidade, testes, typecheck e build.
-- [ ] Salvar checkpoint final da rodada.
+- [x] Salvar checkpoint final da rodada.
 
 ### Skills avaliadas
 
@@ -535,21 +535,21 @@
 ### Limitações de conteúdo
 
 - [x] Não inventar experiências, clientes, métricas, depoimentos ou certificações no currículo.
-- [ ] Registrar dados profissionais ausentes caso sejam necessários para uma revisão curricular mais específica.
+- [x] Registrar dados profissionais ausentes caso sejam necessários para uma revisão curricular mais específica.
 - [x] Confirmar que o Telegram também aparece no PDF atualizado.
 
 ### Evidências e entrega
 
 - [x] Registrar decisões de UX e canais no relatório de revisão.
 - [x] Ler o TODO completo antes do checkpoint.
-- [ ] Entregar somente o checkpoint final ao proprietário.
+- [x] Entregar somente o checkpoint final ao proprietário.
 - [x] Orientar publicação pela interface de gerenciamento, sem publicar automaticamente.
 
 ### Preservação
 
 - [x] Preservar favoritos de projetos, coleção pessoal de imagens, lightbox, temas, ordenação e demais funções existentes.
 - [x] Continuar a partir do checkpoint manus-webdev://54f720ab.
-- [ ] Registrar o identificador do novo checkpoint.
+- [x] Registrar o identificador do novo checkpoint: manus-webdev://a29e70fb.
 
 ### Critérios de aceite
 
@@ -566,15 +566,15 @@
 - [x] Auditoria concluída.
 - [x] Implementação concluída.
 - [x] Validação concluída.
-- [ ] Checkpoint salvo.
-- [ ] Entrega concluída.
+- [x] Checkpoint salvo.
+- [x] Entrega concluída.
 
 ### Decisões de escopo
 
 - [x] Não criar bot, automação de Telegram ou integração programática sem solicitação e credenciais específicas.
 - [x] Não integrar YouTube, TTS, Similarweb ou Manus API sem benefício funcional comprovado.
 - [x] Usar apenas dados profissionais já fornecidos ou presentes no projeto.
-- [ ] Definir se Telegram complementa ou substitui os canais existentes.
+- [x] Definir que o Telegram complementa WhatsApp e Instagram como canal público.
 
 ### Próxima ação
 
@@ -591,11 +591,11 @@
 ### Observação
 
 - [x] URL fornecida pelo proprietário: https://t.me/mpjmarketing.
-- [ ] O objetivo exato do atendimento no Telegram permanece aberto; usar rótulo neutro de atendimento público até confirmação.
+- [x] Usar rótulo neutro de atendimento público; não alegar automação ou disponibilidade adicional.
 
 ### Fim da rodada
 
-- [ ] Rodada revisada, validada e entregue.
+- [x] Rodada revisada, validada e entregue.
 
 ### Arquivos esperados
 
@@ -603,7 +603,7 @@
 - [x] scripts/build-curriculum.py ou gerador equivalente revisado.
 - [x] scripts de validação atualizados.
 - [x] Currículo PDF atualizado, se houver nova geração.
-- [ ] Checkpoint final salvo.
+- [x] Checkpoint final salvo.
 
 ### Qualidade
 
@@ -615,5 +615,40 @@
 ### Encerramento
 
 - [x] Atualizar este bloco com o resultado final.
-- [ ] Entregar o checkpoint da rodada.
-- [ ] Sugerir próximos passos práticos.
+- [x] Entregar o checkpoint da rodada.
+- [x] Sugerir próximos passos práticos.
+
+
+## Barra flutuante de contato
+
+- [x] Auditar a barra WhatsApp existente e os CTAs sociais atuais.
+- [x] Projetar uma barra fixa responsiva com WhatsApp, Telegram e Instagram sem cobrir conteúdo essencial.
+- [x] Implementar ícones, rótulos acessíveis, abertura externa segura e microinterações.
+- [x] Respeitar teclado, foco visível, contraste e prefers-reduced-motion.
+- [x] Validar em desktop e mobile, executar testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter o botão flutuante existente do WhatsApp funcional durante a transição.
+- [x] Preservar os links atuais do Telegram e dos dois perfis de Instagram.
+- [x] Não remover favoritos, lightbox, coleção de imagens ou currículo.
+
+### Critérios de aceite
+
+- [x] A barra permanece visível durante a rolagem sem causar overflow horizontal.
+- [x] Os três canais possuem aria-label, foco e área de toque adequados.
+- [x] A barra funciona em telas estreitas e largas.
+- [x] As animações são reduzidas quando prefers-reduced-motion está ativo.
+- [x] Nenhum teste existente, typecheck ou build é quebrado.
+
+### Estado
+
+- [x] Solicitação recebida.
+- [x] Plano criado.
+- [x] Checklist registrado antes da implementação.
+- [x] Auditoria concluída.
+- [x] Implementação concluída.
+- [x] Validação concluída.
+- [ ] Checkpoint salvo.
+- [ ] Entrega concluída.
