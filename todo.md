@@ -938,3 +938,12 @@
 - [x] Adicionar compartilhamento rápido para WhatsApp e LinkedIn.
 - [x] Preservar compartilhamento nativo, acessibilidade e abertura segura de links.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: tracking, redirecionamento e tooltips — nova rodada
+
+- [x] Auditar estados de feedback e tooltips atuais.
+- [x] Rastrear cópias e compartilhamentos por projeto e canal.
+- [x] Exibir “Redirecionando...” durante a abertura de WhatsApp e LinkedIn.
+- [x] Adicionar tooltips descritivos aos botões de download e compartilhamento.
+- [x] Preservar acessibilidade, abertura segura e feedback de erro.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

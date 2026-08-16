@@ -525,6 +525,7 @@ export default function Home() {
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
+  const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -962,10 +963,11 @@ export default function Home() {
       await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("link");
+      trackPortfolioEvent("portfolio_lightbox_copy", { action: "link", projectId: lightboxProject.id, projectName: lightboxProject.name });
     } catch {
       setLightboxShareStatus("error");
     }
-    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
+    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
   function downloadLightboxImage(format: "original" | "webp" | "avif") {
@@ -993,6 +995,7 @@ export default function Home() {
       await navigator.clipboard.writeText(context);
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("context");
+      trackPortfolioEvent("portfolio_lightbox_copy", { action: "context", projectId: lightboxProject.id, projectName: lightboxProject.name });
     } catch {
       setLightboxShareStatus("error");
     }
@@ -1000,16 +1003,24 @@ export default function Home() {
   }
 
   function shareLightboxToWhatsApp() {
-    if (!lightboxProject) return;
-    const shareText = `${lightboxProject.name} — ${getLightboxShareUrl(lightboxProject)}`;
+    if (!lightboxProject || lightboxRedirectingChannel) return;
+    const projectId = lightboxProject.id;
+    const projectName = lightboxProject.name;
+    const shareText = `${projectName} — ${getLightboxShareUrl(lightboxProject)}`;
+    setLightboxRedirectingChannel("whatsapp");
+    trackPortfolioEvent("portfolio_lightbox_share", { channel: "whatsapp", projectId, projectName });
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "whatsapp", projectId: lightboxProject.id, projectName: lightboxProject.name });
+    window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
 
   function shareLightboxToLinkedIn() {
-    if (!lightboxProject) return;
+    if (!lightboxProject || lightboxRedirectingChannel) return;
+    const projectId = lightboxProject.id;
+    const projectName = lightboxProject.name;
+    setLightboxRedirectingChannel("linkedin");
+    trackPortfolioEvent("portfolio_lightbox_share", { channel: "linkedin", projectId, projectName });
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getLightboxShareUrl(lightboxProject))}`, "_blank", "noopener,noreferrer");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "linkedin", projectId: lightboxProject.id, projectName: lightboxProject.name });
+    window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
 
   async function shareLightboxProject() {
@@ -1023,6 +1034,7 @@ export default function Home() {
       try {
         await navigator.share(shareData);
         setLightboxShareStatus("shared");
+        trackPortfolioEvent("portfolio_lightbox_share", { channel: "native", projectId: lightboxProject.id, projectName: lightboxProject.name });
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
         setLightboxShareStatus("error");
@@ -2196,16 +2208,16 @@ export default function Home() {
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                <details className="relative"><summary className="inline-flex h-9 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
+                <details className="relative"><summary title="Escolha original, WebP ou AVIF otimizado" className="inline-flex h-9 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
                 <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex h-9 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
                 <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
                   <button type="button" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
                   <button type="button" onClick={copyLightboxProjectLink} className="inline-flex h-9 items-center gap-2 border-l border-white/15 px-3 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title={lightboxCopiedAction === "link" ? "Copiado!" : "Copiar link"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">{lightboxCopiedAction === "link" ? "Copiado!" : "copiar link"}</span></button>
                 </div>
                 <button type="button" onClick={copyLightboxProjectContext} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title={lightboxCopiedAction === "context" ? "Copiado!" : "Copiar link e legenda"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "context" ? "Copiado!" : "copiar contexto"}</span></button>
-                <button type="button" onClick={shareLightboxToWhatsApp} className="inline-flex h-9 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Compartilhar no WhatsApp"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">WhatsApp</span></button>
-                <button type="button" onClick={shareLightboxToLinkedIn} className="inline-flex h-9 items-center gap-2 border border-[#70a9e8]/35 bg-[#092545]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e1ff] transition-colors hover:bg-[#123e70] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no LinkedIn" title="Compartilhar no LinkedIn"><Linkedin className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">LinkedIn</span></button>
-                <span role="status" aria-live="polite" className="sr-only">{lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}                </span>
+                <button type="button" onClick={shareLightboxToWhatsApp} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex h-9 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Abrir o WhatsApp com o link deste projeto"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "whatsapp" ? "Redirecionando..." : <span className="hidden sm:inline">WhatsApp</span>}</span></button>
+                <button type="button" onClick={shareLightboxToLinkedIn} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex h-9 items-center gap-2 border border-[#70a9e8]/35 bg-[#092545]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e1ff] transition-colors hover:bg-[#123e70] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no LinkedIn" title="Abrir o LinkedIn para compartilhar este projeto"><Linkedin className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "linkedin" ? "Redirecionando..." : <span className="hidden sm:inline">LinkedIn</span>}</span></button>
+                <span role="status" aria-live="polite" className="sr-only">{lightboxRedirectingChannel ? `Redirecionando para ${lightboxRedirectingChannel === "whatsapp" ? "o WhatsApp" : "o LinkedIn"}...` : lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
                 <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
               </div>
             </div>
