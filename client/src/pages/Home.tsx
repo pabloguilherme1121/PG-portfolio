@@ -527,6 +527,7 @@ export default function Home() {
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
   const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
+  const [lightboxEmailStatus, setLightboxEmailStatus] = useState<"idle" | "opening">("idle");
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -620,6 +621,22 @@ export default function Home() {
     document.body.style.overflow = "hidden";
     window.setTimeout(() => lightboxCloseRef.current?.focus(), 0);
     const handleLightboxKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Tab") {
+        const modal = document.querySelector<HTMLElement>("[data-lightbox-modal]");
+        const focusable = modal ? Array.from(modal.querySelectorAll<HTMLElement>('button:not([disabled]), summary, a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter((element) => element.getClientRects().length > 0) : [];
+        if (focusable.length) {
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+        return;
+      }
       if (event.key === "Escape") {
         event.preventDefault();
         closeProjectLightbox();
@@ -1025,11 +1042,15 @@ export default function Home() {
   }
 
   function shareLightboxByEmail() {
-    if (!lightboxProject) return;
+    if (!lightboxProject || lightboxEmailStatus === "opening") return;
+    const projectId = lightboxProject.id;
+    const projectName = lightboxProject.name;
     const projectUrl = getLightboxShareUrl(lightboxProject);
     const subject = `Projeto ${lightboxProject.name} — Pablo Guilherme`;
     const body = [`Olá,`, ``, `Quero compartilhar este projeto do portfólio de Pablo Guilherme: ${lightboxProject.name}.`, ``, lightboxProject.description, ``, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, ``, projectUrl].join("\n");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "email", projectId: lightboxProject.id, projectName: lightboxProject.name });
+    setLightboxEmailStatus("opening");
+    trackPortfolioEvent("portfolio_lightbox_email", { channel: "email", projectId, projectName });
+    window.setTimeout(() => setLightboxEmailStatus("idle"), 1800);
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
@@ -2202,7 +2223,7 @@ export default function Home() {
       )}
 
       {lightboxProject?.cover && (
-        <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
+        <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" data-lightbox-modal="true" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
           <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
             <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
@@ -2227,8 +2248,8 @@ export default function Home() {
                 <button type="button" data-tooltip={lightboxCopiedAction === "context" ? "Link e legenda copiados" : "Copiar link e legenda expandida"} onClick={copyLightboxProjectContext} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title={lightboxCopiedAction === "context" ? "Copiado!" : "Copiar link e legenda"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "context" ? "Copiado!" : "copiar contexto"}</span></button>
                 <button type="button" data-tooltip="Abrir o WhatsApp com o link do projeto" onClick={shareLightboxToWhatsApp} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex h-9 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Abrir o WhatsApp com o link deste projeto"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "whatsapp" ? "Redirecionando..." : <span className="hidden sm:inline">WhatsApp</span>}</span></button>
                 <button type="button" data-tooltip="Abrir o LinkedIn para compartilhar o projeto" onClick={shareLightboxToLinkedIn} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex h-9 items-center gap-2 border border-[#70a9e8]/35 bg-[#092545]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e1ff] transition-colors hover:bg-[#123e70] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no LinkedIn" title="Abrir o LinkedIn para compartilhar este projeto"><Linkedin className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "linkedin" ? "Redirecionando..." : <span className="hidden sm:inline">LinkedIn</span>}</span></button>
-                <button type="button" data-tooltip="Abrir um e-mail com assunto e detalhes preenchidos" onClick={shareLightboxByEmail} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto por e-mail" title="Abrir e-mail com detalhes do projeto"><Mail className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">e-mail</span></button>
-                <span role="status" aria-live="polite" className="sr-only">{lightboxRedirectingChannel ? `Redirecionando para ${lightboxRedirectingChannel === "whatsapp" ? "o WhatsApp" : "o LinkedIn"}...` : lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
+                <button type="button" data-tooltip={lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : "Abrir um e-mail com assunto e detalhes preenchidos"} onClick={shareLightboxByEmail} disabled={lightboxEmailStatus === "opening"} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto por e-mail" title="Abrir e-mail com detalhes do projeto"><Mail className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : <span className="hidden sm:inline">e-mail</span>}</span></button>
+                <span role="status" aria-live="polite" className="sr-only">{lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : lightboxRedirectingChannel ? `Redirecionando para ${lightboxRedirectingChannel === "whatsapp" ? "o WhatsApp" : "o LinkedIn"}...` : lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
                 <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
               </div>
             </div>

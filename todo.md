@@ -956,3 +956,12 @@
 - [x] Garantir navegação por Tab e ativação por Enter nos controles.
 - [x] Preservar reduced motion, foco visível, abertura segura e feedback.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: focus trap, e-mail e acessibilidade — nova rodada
+
+- [x] Auditar foco, feedback e evento de e-mail atuais.
+- [x] Implementar focus trap dentro do lightbox.
+- [x] Exibir “Abrindo e-mail...” temporariamente ao acionar o botão.
+- [x] Rastrear cliques de e-mail por projeto.
+- [x] Preservar Escape, retorno de foco, Tab, Enter e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
