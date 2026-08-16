@@ -975,3 +975,12 @@
 - [x] Implementar botão fullscreen com entrada e saída acessíveis.
 - [x] Preservar focus trap, Escape, retorno de foco, reduced motion e navegação.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: swipe, fullscreen e zoom — nova rodada
+
+- [x] Auditar gestos, fullscreen e controles de zoom.
+- [x] Implementar swipe horizontal para imagem anterior e próxima no mobile.
+- [x] Exibir aviso amigável quando o navegador bloquear fullscreen.
+- [x] Manter controles de zoom visíveis e acessíveis durante fullscreen.
+- [x] Preservar focus trap, teclado, pinch zoom, reduced motion e retorno de foco.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

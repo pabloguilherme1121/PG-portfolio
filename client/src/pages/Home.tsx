@@ -529,6 +529,7 @@ export default function Home() {
   const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
   const [lightboxEmailStatus, setLightboxEmailStatus] = useState<"idle" | "opening">("idle");
   const [lightboxFullscreen, setLightboxFullscreen] = useState(false);
+  const [lightboxFullscreenNotice, setLightboxFullscreenNotice] = useState("");
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
@@ -543,6 +544,7 @@ export default function Home() {
   const [lightboxComparisonPosition, setLightboxComparisonPosition] = useState(50);
   const pinchStartDistanceRef = useRef(0);
   const pinchStartZoomRef = useRef(1);
+  const swipeStartRef = useRef({ x: 0, y: 0 });
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxModalRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
@@ -574,6 +576,7 @@ export default function Home() {
   const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
     lightboxReturnFocusRef.current = event.currentTarget;
     setLightboxClosing(false);
+    setLightboxFullscreenNotice("");
     setLightboxProjectId(projectId);
   };
 
@@ -602,6 +605,8 @@ export default function Home() {
       }
     } catch {
       setLightboxFullscreen(false);
+      setLightboxFullscreenNotice("A tela cheia foi bloqueada pelo navegador. Você ainda pode ampliar a imagem usando os controles de zoom.");
+      window.setTimeout(() => setLightboxFullscreenNotice(""), 4200);
       return;
     }
     setLightboxFullscreen(Boolean(document.fullscreenElement));
@@ -625,6 +630,9 @@ export default function Home() {
   };
 
   const handleLightboxTouchStart = (event: TouchEvent<HTMLImageElement>) => {
+    if (event.touches.length === 1) {
+      swipeStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }
     if (event.touches.length === 2) {
       pinchStartDistanceRef.current = getTouchDistance(event.touches);
       pinchStartZoomRef.current = lightboxZoom;
@@ -638,7 +646,18 @@ export default function Home() {
     setProjectZoom(pinchStartZoomRef.current * distanceRatio);
   };
 
-  const handleLightboxTouchEnd = () => {
+  const handleLightboxTouchEnd = (event: TouchEvent<HTMLImageElement>) => {
+    if (event.changedTouches.length === 1 && lightboxZoom === 1 && lightboxProject && pinchStartDistanceRef.current === 0) {
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - swipeStartRef.current.x;
+      const deltaY = touch.clientY - swipeStartRef.current.y;
+      if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        const currentIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
+        const direction = deltaX < 0 ? 1 : -1;
+        const nextProject = lightboxProjects[(currentIndex + direction + lightboxProjects.length) % lightboxProjects.length];
+        if (nextProject?.cover) setLightboxProjectId(nextProject.id);
+      }
+    }
     pinchStartDistanceRef.current = 0;
   };
 
@@ -2259,6 +2278,7 @@ export default function Home() {
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" title="Fechar visualizador" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
             <button type="button" onClick={toggleLightboxFullscreen} data-tooltip={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} aria-label={lightboxFullscreen ? "Sair da tela cheia" : "Abrir visualizador em tela cheia"} title={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} className="absolute right-16 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-5 w-5" aria-hidden="true" /></button>
             <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
+              {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
               <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Restaurar zoom original" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
               <div className="relative flex min-h-[28vh] w-full items-center justify-center">
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
