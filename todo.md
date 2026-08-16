@@ -402,3 +402,11 @@
 - [x] Integrar a ordem manual com filtros, busca, favoritos, modos Grade/Lista e carregamento progressivo.
 - [x] Validar persistência, responsividade, acessibilidade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Perfis de ordenação personalizada
+
+- [x] Auditar a ordem manual atual e definir o modelo persistente de perfis.
+- [x] Implementar criação, seleção, renomeação e exclusão de perfis.
+- [x] Integrar perfis com arrastar e soltar, filtros e visualizações existentes.
+- [x] Validar persistência, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

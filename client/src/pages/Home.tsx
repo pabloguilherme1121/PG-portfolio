@@ -22,6 +22,9 @@ import {
   Download,
   FileText,
   FolderGit2,
+  Pencil,
+  Save,
+  Trash2,
   Github,
   Heart,
   Instagram,
@@ -159,6 +162,7 @@ const caseStudies = [
 ];
 
 type Repository = {
+
   id: string;
   name: string;
   description: string;
@@ -323,6 +327,8 @@ const repertoireSignals = [
 
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
+type ManualOrderProfile = { id: string; name: string; order: string[] };
+
 const sortOptions = [
   { value: "manual", label: "ordem manual" },
   { value: "relevance", label: "relevância editorial" },
@@ -368,6 +374,18 @@ export default function Home() {
   });
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [manualOrderStatus, setManualOrderStatus] = useState("");
+  const [manualOrderProfiles, setManualOrderProfiles] = useState<ManualOrderProfile[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
+      return Array.isArray(stored) ? stored.filter((profile): profile is ManualOrderProfile => Boolean(profile && typeof profile.id === "string" && typeof profile.name === "string" && Array.isArray(profile.order))) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [activeOrderProfileId, setActiveOrderProfileId] = useState<string | null>(() => typeof window === "undefined" ? null : window.localStorage.getItem("pablo-portfolio-active-order-profile"));
+  const [profileNameDraft, setProfileNameDraft] = useState("");
+
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
@@ -476,6 +494,20 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem("pablo-portfolio-manual-order", JSON.stringify(manualProjectOrder));
   }, [manualProjectOrder]);
+
+  useEffect(() => {
+    window.localStorage.setItem("pablo-portfolio-order-profiles", JSON.stringify(manualOrderProfiles));
+  }, [manualOrderProfiles]);
+
+  useEffect(() => {
+    if (activeOrderProfileId) window.localStorage.setItem("pablo-portfolio-active-order-profile", activeOrderProfileId);
+    else window.localStorage.removeItem("pablo-portfolio-active-order-profile");
+  }, [activeOrderProfileId]);
+
+  useEffect(() => {
+    if (!activeOrderProfileId) return;
+    setManualOrderProfiles((profiles) => profiles.map((profile) => profile.id === activeOrderProfileId && JSON.stringify(profile.order) !== JSON.stringify(manualProjectOrder) ? { ...profile, order: manualProjectOrder } : profile));
+  }, [activeOrderProfileId, manualProjectOrder]);
 
   useEffect(() => {
     if (!isProjectFilterTransitioning) setIsGalleryLoading(false);
@@ -666,6 +698,41 @@ export default function Home() {
     }, 130);
   }
 
+  function createOrderProfile() {
+    const name = profileNameDraft.trim();
+    if (!name) return;
+    const profile: ManualOrderProfile = { id: `profile-${Date.now()}`, name, order: manualProjectOrder };
+    setManualOrderProfiles((profiles) => [...profiles, profile]);
+    setActiveOrderProfileId(profile.id);
+    setProfileNameDraft("");
+    setManualOrderStatus(`Perfil ${name} salvo e ativado.`);
+  }
+
+  function selectOrderProfile(profile: ManualOrderProfile) {
+    setManualProjectOrder(normalizeManualOrder(profile.order, repositories.map((repository) => repository.id)));
+    setActiveOrderProfileId(profile.id);
+    setProfileNameDraft(profile.name);
+    setSortMode("manual");
+    setManualOrderStatus(`Perfil ${profile.name} ativado.`);
+  }
+
+  function renameActiveOrderProfile() {
+    const name = profileNameDraft.trim();
+    if (!activeOrderProfileId || !name) return;
+    setManualOrderProfiles((profiles) => profiles.map((profile) => profile.id === activeOrderProfileId ? { ...profile, name } : profile));
+    setProfileNameDraft("");
+    setManualOrderStatus(`Perfil renomeado para ${name}.`);
+  }
+
+  function deleteActiveOrderProfile() {
+    if (!activeOrderProfileId) return;
+    const deletedProfile = manualOrderProfiles.find((profile) => profile.id === activeOrderProfileId);
+    setManualOrderProfiles((profiles) => profiles.filter((profile) => profile.id !== activeOrderProfileId));
+    setActiveOrderProfileId(null);
+    setProfileNameDraft("");
+    setManualOrderStatus(deletedProfile ? `Perfil ${deletedProfile.name} excluído.` : "Perfil excluído.");
+  }
+
   function moveProject(projectId: string, direction: -1 | 1) {
     setManualProjectOrder((currentOrder) => {
       return moveProjectInOrder(currentOrder, projectId, direction);
@@ -842,6 +909,7 @@ export default function Home() {
             {([['light', 'Claro', Sun], ['dark', 'Escuro', Moon], ['system', 'Preferência do sistema', Monitor] ] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setPreference(value)} aria-pressed={preference === value} className={`flex items-center gap-3 border px-3 py-3 text-left font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${preference === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" /><span className="flex-1">{label}</span>{preference === value && <span className="text-[8px] text-[#67e8f9]">ativo</span>}</button>)}
           </div>
           <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Visualização dos projetos"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">visualização dos projetos</p><div className="mt-2 grid grid-cols-2 gap-2">{([['grid', 'Grade', LayoutGrid], ['list', 'Lista', List]] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setGalleryView(value)} aria-pressed={galleryView === value} className={`flex items-center justify-center gap-2 border px-2 py-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${galleryView === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" />{label}</button>)}</div></div>
+          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Perfis de ordenação"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">perfis de ordem</p>{activeOrderProfileId && <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#67e8f9]">ativo</span>}</div><p className="mt-2 font-body text-xs leading-5 text-[#9fb2ce]">Salve uma sequência para alternar entre audiovisual, tecnologia ou outros contextos.</p><div className="mt-3 space-y-2">{manualOrderProfiles.length > 0 ? manualOrderProfiles.map((profile) => <div key={profile.id} className="flex items-center gap-2"><button type="button" onClick={() => selectOrderProfile(profile)} aria-pressed={activeOrderProfileId === profile.id} className={`min-w-0 flex-1 truncate border px-3 py-2 text-left font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}>{profile.name}</button>{activeOrderProfileId === profile.id && <button type="button" onClick={deleteActiveOrderProfile} aria-label={`Excluir perfil ${profile.name}`} title="Excluir perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-rose-300/30 text-rose-200 transition-colors hover:border-rose-300 hover:text-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div>) : <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>}</div><div className="mt-3 flex gap-2"><input value={profileNameDraft} onChange={(event) => setProfileNameDraft(event.target.value)} placeholder="ex.: audiovisual" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" /><button type="button" onClick={createOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Salvar novo perfil de ordenação" title="Salvar novo perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/40 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Save className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId && <button type="button" onClick={renameActiveOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Renomear perfil ativo" title="Renomear perfil ativo" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Pencil className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div></div>
           <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#7189ae]">tema aplicado agora: {theme === "dark" ? "escuro" : "claro"}</p>
         </div>}
       </header>
