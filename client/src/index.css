@@ -405,6 +405,43 @@ html {
   scroll-behavior: smooth;
 }
 
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  border: 1px solid #67e8f9;
+  background: #071326;
+  color: #d9fbff;
+  padding: 0.7rem 0.9rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: top 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 2px solid #a5f3fc;
+  outline-offset: 3px;
+}
+
+.scroll-progress-bar {
+  transition: transform 120ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .skip-link,
+  .scroll-progress-bar {
+    transition: none;
+  }
+}
+
 section[id] {
   scroll-margin-top: 92px;
 }
@@ -430,6 +467,21 @@ section[id] {
   }
 }
 
+
+/* A troca de tema anima somente propriedades de cor para evitar deslocamento de layout ou sensação de lentidão. */
+html.theme-transitioning .arquivo-page,
+html.theme-transitioning .arquivo-page * {
+  transition-property: color, background-color, border-color, box-shadow, fill, stroke;
+  transition-duration: 320ms;
+  transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning .arquivo-page,
+  html.theme-transitioning .arquivo-page * {
+    transition-duration: 0.001ms !important;
+  }
+}
 
 /* Arquivo Profundo — modo claro: mantém o azul celeste como sinal de navegação e troca apenas as superfícies editoriais. */
 .arquivo-page[data-theme="light"] {

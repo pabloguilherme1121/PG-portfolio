@@ -850,3 +850,22 @@
 
 - [x] Preservar o tema claro, o tema sistema e a identidade Arquivo Profundo.
 - [x] Preservar navegação, currículo, galeria, showreel e barra de contato.
+
+## Transição suave entre temas — nova rodada
+
+- [x] Auditar tokens e transições atuais do tema.
+- [x] Implementar transição suave de cores sem bloquear interação.
+- [x] Preservar prefers-reduced-motion, foco e contraste.
+- [x] Validar testes, typecheck, build e Chromium.
+- [x] Salvar checkpoint após a validação final.
+
+## Melhoria geral de navegação, performance e qualidade — nova rodada
+
+- [x] Auditar navegação, animações, imagens, vídeos, fontes e carregamento inicial.
+- [x] Consolidar critérios práticos de usabilidade e performance para o portfólio.
+- [x] Melhorar a navegação com orientação, estados ativos e retorno ao topo.
+- [x] Otimizar imagens, mídia e carregamento sem remover os assets reais.
+- [x] Refinar animações, hover, foco e reduced motion.
+- [x] Revisar qualidade visual geral sem inventar conteúdo ou métricas.
+- [x] Validar responsividade, acessibilidade, testes, typecheck, build e performance.
+- [x] Salvar checkpoint após a validação final.

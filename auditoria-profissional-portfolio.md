@@ -97,3 +97,13 @@ A revisão final priorizou três pontos de confiança sem ampliar a complexidade
 | Velocidade | Campos editoriais ocultos no modo compacto | Manter navegação rápida em galerias densas |
 
 A prioridade seguinte permanece medir o uso dos atalhos e observar quais evidências recebem mais interação, caso o proprietário habilite analytics. Sem essa medição, não há fundamento para adicionar novas integrações ou mais camadas de interface.
+
+## Referências técnicas da rodada de navegação e performance
+
+A rodada adotou três critérios técnicos. A entrega de imagens deve priorizar compressão, formatos modernos e versões responsivas para evitar bytes desnecessários [7]. Vídeos iniciados pelo usuário devem permanecer sob demanda, com poster e `preload` conservador [8]. Animações não essenciais devem respeitar `prefers-reduced-motion`, reduzindo ou removendo movimento para usuários que expressaram essa preferência [9].
+
+As ações aplicadas no portfólio foram deliberadamente locais e de baixo risco: atalho de teclado para o conteúdo principal, indicador de progresso de rolagem, retorno ao topo preservado, carregamento sob demanda do showreel e manutenção dos assets reais sem introduzir integração externa ou custo de runtime adicional.
+
+[7]: https://developer.chrome.com/docs/performance/insights/image-delivery "Chrome for Developers — Improve image delivery"
+[8]: https://web.dev/learn/performance/video-performance "web.dev — Video performance"
+[9]: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion "MDN — prefers-reduced-motion"

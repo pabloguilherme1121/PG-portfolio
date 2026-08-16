@@ -56,12 +56,21 @@ export function ThemeProvider({
     }
   }, [preference, theme, switchable]);
 
+  const applyPreference = (nextPreference: ThemePreference) => {
+    if (typeof window !== "undefined") {
+      const root = document.documentElement;
+      root.classList.add("theme-transitioning");
+      window.setTimeout(() => root.classList.remove("theme-transitioning"), 360);
+    }
+    setPreference(nextPreference);
+  };
+
   const toggleTheme = switchable
-    ? () => setPreference(theme === "light" ? "dark" : "light")
+    ? () => applyPreference(theme === "light" ? "dark" : "light")
     : undefined;
 
   const value = useMemo(
-    () => ({ theme, preference, setPreference, toggleTheme, switchable }),
+    () => ({ theme, preference, setPreference: applyPreference, toggleTheme, switchable }),
     [theme, preference, toggleTheme, switchable],
   );
 
