@@ -482,6 +482,7 @@ export default function Home() {
   const [formSent, setFormSent] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [activeTechnology, setActiveTechnology] = useState(() => getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
   const [activeCategory, setActiveCategory] = useState(() => getPortfolioUrlFilter("category", categoryFilters, "Todos"));
   const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>(() => getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
@@ -1235,6 +1236,16 @@ export default function Home() {
       setEmailCopyStatus("error");
     }
     window.setTimeout(() => setEmailCopyStatus("idle"), 2200);
+  }
+
+  async function copyCurrentSearchLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setSearchShareStatus("copied");
+    } catch {
+      setSearchShareStatus("error");
+    }
+    window.setTimeout(() => setSearchShareStatus("idle"), 2200);
   }
 
   function saveSharedFavorites() {
@@ -2075,12 +2086,7 @@ export default function Home() {
                     <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
                   </span>
                   <span role="status" aria-live="polite" className="sr-only">{shareStatus === "copied" ? "Link dos favoritos copiado." : shareStatus === "error" ? "Não foi possível copiar o link dos favoritos." : ""}</span>
-                  <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">
-                  <span>ordenar por</span>
-                  <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">
-                    {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                  </select>
-                  </label>
+
                 </div>
               </div>
               <aside id="favoritos-pessoais" aria-label="Coleção pessoal de imagens favoritas" aria-hidden={!isImageCollectionOpen} inert={!isImageCollectionOpen} className={`overflow-hidden border-x border-b border-[#67e8f9]/20 bg-[#06172f]/60 transition-[max-height,opacity,transform] duration-200 motion-reduce:transition-none ${isImageCollectionOpen ? "max-h-[760px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 opacity-0"}`}>
@@ -2135,7 +2141,7 @@ export default function Home() {
             <div data-project-search-panel="true" className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <label className="relative block w-full sm:max-w-md">
                 <span className="sr-only">Pesquisar projetos por palavra-chave, nome, tecnologia ou descrição</span>
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />
+                {isGalleryLoading ? <Loader2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#60a5fa] motion-reduce:animate-none" aria-hidden="true" /> : <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />}
                 <input
                   ref={projectSearchInputRef}
                   type="search"
@@ -2196,10 +2202,15 @@ export default function Home() {
                   <span className="sr-only">Limpar busca de trabalhos</span>
                 </button>
               </label>
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <label className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb] light-muted-ink"><span>ordenar</span><select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por data ou relevância" className="border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>
+                <button type="button" onClick={copyCurrentSearchLink} aria-label={searchShareStatus === "copied" ? "Link da busca copiado" : "Copiar link da busca atual"} className="inline-flex min-h-9 items-center gap-2 border border-[#3b82f6]/30 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#b7d4ff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{searchShareStatus === "copied" ? "copiado" : searchShareStatus === "error" ? "tente novamente" : "copiar busca"}</button>
+                <span data-search-share-status="true" role="status" aria-live="polite" className="sr-only">{searchShareStatus === "copied" ? "Link da busca copiado." : searchShareStatus === "error" ? "Não foi possível copiar o link da busca." : ""}</span>
+              </div>
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>
 
-            <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
+            <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning || isGalleryLoading} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (
               <div role="status" aria-live="polite" aria-label="Carregando projetos" className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
                 {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${galleryView === "list" ? "min-h-[250px] sm:min-h-[280px]" : isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}

@@ -1218,3 +1218,10 @@
 - [x] Adicionar barra de pesquisa textual acima dos cards de projetos.
 - [x] Adicionar indicador visual e acessível de disponibilidade para novos projetos no contato.
 - [x] Validar URL, busca, status, teclado, reduced motion, testes, build e checkpoint.
+
+## Compartilhamento, debounce e ordenação — nova iteração
+
+- [x] Adicionar botão acessível para copiar o link da busca atual.
+- [x] Exibir indicador visual de carregamento durante o debounce da pesquisa.
+- [x] Posicionar ordenação por data ou relevância ao lado da barra de pesquisa.
+- [x] Validar cópia, debounce, ordenação, teclado, reduced motion, testes, build e checkpoint.

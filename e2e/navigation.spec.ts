@@ -58,6 +58,20 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => new URL(page.url()).searchParams.get("q")).toBe("drone");
   });
 
+  test("copia a busca atual, mostra debounce e ordena os projetos", async ({ page }) => {
+    await page.goto("/?technology=HTML&q=site#galeria-publica");
+    const search = page.locator('[data-project-search="true"]');
+    await expect(search).toHaveValue("site");
+    const copySearch = page.getByRole("button", { name: /copiar link da busca atual/i });
+    await copySearch.click();
+    await expect(page.locator('[data-search-share-status="true"]')).toContainText(/copiado|não foi possível/i);
+    await search.fill("drone");
+    await expect(page.locator("#galeria-publica")).toHaveAttribute("aria-busy", "true");
+    const sort = page.locator('[data-sort-control="projects"]');
+    await sort.selectOption("added");
+    await expect(sort).toHaveValue("added");
+  });
+
   test("exibe status de disponibilidade no contato do rodapé", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator('[data-availability-status="true"]')).toContainText("disponibilidade atual: sob consulta");
