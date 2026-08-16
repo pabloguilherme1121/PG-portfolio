@@ -1142,3 +1142,13 @@
 - [x] Gerar CSV/JSON com campos selecionados e ZIP com miniaturas.
 - [x] Preservar proteção, acessibilidade, sessionStorage, busca e filtros.
 - [x] Validar arquivos, testes, typecheck, build e checkpoint.
+
+## Exportação com progresso, preferências e seleção — nova rodada
+
+- [x] Auditar exportação atual, estado da prévia e sessionStorage.
+- [x] Adicionar barra de progresso durante compactação e download do ZIP.
+- [x] Persistir seleção de campos e opção de miniaturas no sessionStorage.
+- [x] Permitir selecionar projetos específicos na prévia tabular.
+- [x] Exportar somente os projetos selecionados em CSV, JSON e ZIP.
+- [x] Preservar proteção, filtros, acessibilidade e responsividade.
+- [x] Validar testes, typecheck, build e checkpoint.
