@@ -1170,3 +1170,20 @@
 - [x] Persistir última estimativa de tamanho e formato de exportação no sessionStorage.
 - [x] Preservar progresso, seleção, campos, miniaturas e acessibilidade.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Auditoria crítica e pacote profissional — execução aprovada
+
+- [x] Criar linha de base técnica de build, performance, mídia, responsividade e acessibilidade.
+- [x] Auditar UX das jornadas públicas, lightbox, contato e favoritos.
+- [x] Pesquisar e comparar referências públicas de portfólios profissionais do nicho.
+- [x] Auditar conteúdo, SEO técnico, arquitetura e conversão.
+- [x] Produzir matriz de problemas, oportunidades e prioridades P0–P3.
+- [ ] Implementar melhorias aprovadas da primeira etapa.
+- [ ] Validar regressões com testes, build e inspeção visual.
+
+## Auditoria crítica e pacote profissional — iteração de implementação
+
+- [x] Aplicar primeira etapa de identidade cobalto nos tokens globais e efeitos de foco/seleção.
+- [x] Completar metadados sociais OG/Twitter com nome do Arquivo Profundo e texto alternativo da imagem.
+- [ ] Implementar destaques de três projetos com resumos de papel, processo e resultado.
+- [ ] Validar breakpoints 320–1440 px e corrigir qualquer overflow ou corte de texto encontrado.
