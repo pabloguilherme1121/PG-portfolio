@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { blockedDates, favoriteProjectMetadata, favoriteProjectOrders, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -147,6 +147,13 @@ export async function upsertFavoriteProjectMetadata(userId: number, projectId: s
   if (!db) throw new Error("Banco de dados indisponível para salvar os metadados dos favoritos");
   await db.insert(favoriteProjectMetadata).values({ userId, projectId, displayName, description }).onDuplicateKeyUpdate({ set: { displayName, description, updatedAt: new Date() } });
   return { success: true };
+}
+
+export async function deleteFavoriteProjectMetadata(userId: number, projectId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para restaurar os metadados dos favoritos");
+  await db.delete(favoriteProjectMetadata).where(and(eq(favoriteProjectMetadata.userId, userId), eq(favoriteProjectMetadata.projectId, projectId)));
+  return { success: true, projectId };
 }
 
 export async function replaceFavoriteProjectOrder(userId: number, projectIds: string[]) {

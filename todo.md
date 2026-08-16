@@ -1105,3 +1105,12 @@
 - [x] Implementar edição manual de nome e descrição com feedback acessível.
 - [x] Preservar miniaturas reais, sincronização, responsividade e exportação.
 - [x] Validar persistência, acessibilidade, testes, typecheck, build e checkpoint.
+
+## Restauração, filtros avançados e E2E autenticado — nova rodada
+
+- [x] Auditar metadados, filtros existentes e infraestrutura E2E.
+- [x] Adicionar restauração individual dos metadados originais.
+- [x] Implementar filtros combinados por tag, status de edição e data de alteração.
+- [x] Criar testes E2E autenticados para busca e edição manual.
+- [x] Preservar proteção, miniaturas, sincronização, exportação e responsividade.
+- [x] Validar testes, typecheck, build e checkpoint.

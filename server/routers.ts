@@ -1,6 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
-import { blockAvailabilityDate, createQuoteRequest, listBlockedDates, listFavoriteProjectMetadata, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate, upsertFavoriteProjectMetadata } from "./db";
+import { blockAvailabilityDate, createQuoteRequest, deleteFavoriteProjectMetadata, listBlockedDates, listFavoriteProjectMetadata, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate, upsertFavoriteProjectMetadata } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
@@ -89,6 +89,7 @@ export const appRouter = router({
   favoriteMetadata: router({
     list: adminProcedure.query(({ ctx }) => listFavoriteProjectMetadata(ctx.user.id)),
     save: adminProcedure.input(z.object({ projectId: z.string().trim().min(1).max(64), displayName: z.string().trim().min(1).max(160), description: z.string().trim().max(2000) })).mutation(({ ctx, input }) => upsertFavoriteProjectMetadata(ctx.user.id, input.projectId, input.displayName, input.description)),
+    restore: adminProcedure.input(z.object({ projectId: z.string().trim().min(1).max(64) })).mutation(({ ctx, input }) => deleteFavoriteProjectMetadata(ctx.user.id, input.projectId)),
   }),
   availability: router({
     listBlocked: publicProcedure.query(() => listBlockedDates()),
