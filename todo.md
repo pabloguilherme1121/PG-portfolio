@@ -310,3 +310,12 @@
 
 - [x] Validar foco, Tab, Enter e Espaço nos botões CSV e JSON.
 - [x] Salvar checkpoint após a validação final da exportação.
+
+
+## Compartilhamento da lista de favoritos
+
+- [x] Auditar favoritos, URL atual e definir um formato seguro para o link.
+- [x] Implementar serialização e leitura dos IDs reais compartilhados.
+- [x] Adicionar botão de compartilhar, copiar link e feedback acessível.
+- [x] Validar abertura do link, teclado, responsividade, privacidade, testes e build.
+- [x] Salvar checkpoint após a validação final.

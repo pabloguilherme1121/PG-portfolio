@@ -7,6 +7,7 @@ const results = [];
 
 for (const width of viewports) {
   const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+  await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin: "http://127.0.0.1:3000" });
   await page.goto("http://127.0.0.1:3000/", { waitUntil: "networkidle" });
   const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   const menuButton = page.getByRole("button", { name: "Abrir menu" });
@@ -52,15 +53,31 @@ for (const width of viewports) {
   const favoritesFilterActivated = (await savedFilter.getAttribute("aria-pressed")) === "true";
   const savedCardCount = await page.locator("#projetos .project-gallery-card").count();
   await savedFilter.click();
+  const shareButton = page.getByRole("button", { name: /compartilhar|copiado/ }).first();
+  await shareButton.focus();
+  await page.keyboard.press("Enter");
+  const shareStatusLocator = page.locator('#projetos [role="status"]').filter({ hasText: "Link dos favoritos copiado" }).first();
+  await shareStatusLocator.waitFor({ state: "attached" });
+  const shareStatusText = await shareStatusLocator.textContent();
+  const sharedLink = await page.evaluate(() => navigator.clipboard.readText());
+  const sharedPage = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
+  await sharedPage.addInitScript(() => window.localStorage.clear());
+  await sharedPage.goto(sharedLink, { waitUntil: "networkidle" });
+  await sharedPage.locator("#projetos").scrollIntoViewIfNeeded();
+  const sharedSavedFilter = sharedPage.getByRole("button", { name: /salvos/ }).first();
+  const sharedFavoritesLoaded = (await sharedSavedFilter.getAttribute("aria-pressed")) === "true" && await sharedPage.locator("#projetos .project-gallery-card").count() === 1;
+  await sharedPage.close();
+  const shareLinkValid = sharedLink.includes("favorites=") && shareStatusText?.includes("copiado") && sharedFavoritesLoaded;
   const csvExportButton = page.getByRole("button", { name: "CSV" });
   await savedFilter.focus();
+  await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
   const csvFocusVisible = await csvExportButton.evaluate((element) => {
     const style = getComputedStyle(element);
     return style.outlineStyle !== "none" || style.boxShadow !== "none";
   });
   const csvDownloadPromise = page.waitForEvent("download");
-  await page.keyboard.press("Enter");
+  await csvExportButton.press("Enter");
   const csvDownload = await csvDownloadPromise;
   const csvPath = await csvDownload.path();
   const csvContent = csvPath ? await readFile(csvPath, "utf8") : "";
@@ -72,7 +89,7 @@ for (const width of viewports) {
     return style.outlineStyle !== "none" || style.boxShadow !== "none";
   });
   const jsonDownloadPromise = page.waitForEvent("download");
-  await page.keyboard.press(" ");
+  await jsonExportButton.press(" ");
   const jsonDownload = await jsonDownloadPromise;
   const jsonPath = await jsonDownload.path();
   const jsonContent = jsonPath ? await readFile(jsonPath, "utf8") : "";
@@ -137,7 +154,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, shareLinkValid, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

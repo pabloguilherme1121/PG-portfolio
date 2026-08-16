@@ -30,6 +30,7 @@ import {
   Play,
   Search,
   Send,
+  Share2,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -352,6 +353,7 @@ export default function Home() {
     }
   });
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -419,6 +421,17 @@ export default function Home() {
     ? buildAvailabilityWhatsAppUrl(whatsAppNumber, availabilityDate, availabilityTime)
     : "";
   const isAvailabilityConsultationReadyForUser = isAvailabilityConsultationReady(availabilityDate, availabilityTime, isBlockedDatesError);
+
+  useEffect(() => {
+    const sharedFavorites = new URLSearchParams(window.location.search).get("favorites");
+    if (!sharedFavorites) return;
+    const validProjectIds = new Set(repositories.map((repository) => repository.id));
+    const importedIds = sharedFavorites.split(",").map((id) => id.trim()).filter((id) => validProjectIds.has(id));
+    if (!importedIds.length) return;
+    setFavoriteProjectIds(importedIds);
+    setFavoritesOnly(true);
+    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
+  }, []);
 
   useEffect(() => {
     try {
@@ -491,6 +504,18 @@ export default function Home() {
     event.preventDefault();
     event.stopPropagation();
     setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
+  }
+
+  async function shareFavorites() {
+    if (!favoriteProjectIds.length) return;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${encodeURIComponent(favoriteProjectIds.join(","))}#projetos`;
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareStatus("copied");
+    } catch {
+      setShareStatus("error");
+    }
+    window.setTimeout(() => setShareStatus("idle"), 2600);
   }
 
   function exportFavorites(format: "csv" | "json") {
@@ -937,10 +962,12 @@ export default function Home() {
                 <div className="flex flex-wrap items-center gap-2">
                   <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
                   <span className="hidden h-5 w-px bg-white/10 sm:block" aria-hidden="true" />
+                  <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
                   <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
                     <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em CSV"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>CSV</span></button>
                     <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
                   </span>
+                  <span role="status" aria-live="polite" className="sr-only">{shareStatus === "copied" ? "Link dos favoritos copiado." : shareStatus === "error" ? "Não foi possível copiar o link dos favoritos." : ""}</span>
                   <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
                   <span>ordenar por</span>
                   <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">
