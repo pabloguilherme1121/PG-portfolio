@@ -822,3 +822,22 @@ section[id] {
 
 .arquivo-page[data-theme="light"] .contact-float-link { border-color: rgba(14, 116, 144, 0.2); color: #164e63; }
 .arquivo-page[data-theme="light"] .contact-float-link:hover { background: rgba(207, 250, 254, 0.9); color: #082f49; }
+
+
+.resume-header-cta {
+  box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.08), 0 8px 24px rgba(14, 165, 233, 0.12);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .resume-header-cta:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(165, 243, 252, 0.28), 0 12px 28px rgba(14, 165, 233, 0.2); }
+}
+
+.resume-header-cta:active { transform: scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-header-cta { transition: none; }
+  .resume-header-cta:active { transform: none; }
+}
+
+.arquivo-page[data-theme="light"] .resume-header-cta { border-color: #0e7490; background: #e0f7ff; color: #164e63; }
+.arquivo-page[data-theme="light"] .resume-header-cta:hover { background: #cffafe; color: #082f49; }

@@ -626,7 +626,7 @@
 - [x] Implementar ícones, rótulos acessíveis, abertura externa segura e microinterações.
 - [x] Respeitar teclado, foco visível, contraste e prefers-reduced-motion.
 - [x] Validar em desktop e mobile, executar testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
@@ -650,5 +650,20 @@
 - [x] Auditoria concluída.
 - [x] Implementação concluída.
 - [x] Validação concluída.
-- [ ] Checkpoint salvo.
-- [ ] Entrega concluída.
+- [x] Checkpoint salvo.
+- [x] Entrega concluída.
+
+
+## CTA de currículo no cabeçalho
+
+- [x] Auditar o cabeçalho e o link atual do currículo.
+- [x] Projetar um botão de destaque responsivo para baixar o PDF atualizado.
+- [x] Implementar o CTA com download direto, aria-label, foco e tooltip contextual.
+- [x] Validar download, responsividade, teclado, testes, typecheck e build.
+- [x] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter o botão de currículo existente na seção Sobre.
+- [x] Usar o PDF atualizado já publicado no armazenamento do projeto.
+- [x] Preservar a barra flutuante, os canais de contato e as demais funcionalidades.
