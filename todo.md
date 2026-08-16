@@ -911,3 +911,12 @@
 - [x] Exibir nome e legenda descritiva durante o carregamento.
 - [x] Preservar zoom, teclado, foco, compartilhamento e favoritos.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: navegação bidirecional e legenda expandida — nova rodada
+
+- [x] Auditar dados editoriais e navegação do lightbox.
+- [x] Pré-carregar também a imagem anterior em segundo plano.
+- [x] Adicionar botão acessível para baixar a imagem atual em alta resolução.
+- [x] Exibir legenda expandida com papel, processo e resultado reais do projeto.
+- [x] Preservar erro, loader, zoom, teclado, foco, compartilhamento e favoritos.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
