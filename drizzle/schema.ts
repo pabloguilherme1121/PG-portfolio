@@ -67,3 +67,18 @@ export const favoriteProjectOrders = mysqlTable("favorite_project_orders", {
 
 export type FavoriteProjectOrder = typeof favoriteProjectOrders.$inferSelect;
 export type InsertFavoriteProjectOrder = typeof favoriteProjectOrders.$inferInsert;
+
+export const favoriteProjectMetadata = mysqlTable("favorite_project_metadata", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  projectId: varchar("project_id", { length: 64 }).notNull(),
+  displayName: varchar("display_name", { length: 160 }).notNull(),
+  description: text("description").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userProjectUnique: uniqueIndex("favorite_project_metadata_user_project_idx").on(table.userId, table.projectId),
+}));
+
+export type FavoriteProjectMetadata = typeof favoriteProjectMetadata.$inferSelect;
+export type InsertFavoriteProjectMetadata = typeof favoriteProjectMetadata.$inferInsert;

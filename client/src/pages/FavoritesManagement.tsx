@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout, { type DashboardNavigationItem } from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
 import { portfolioCatalogById } from "@/lib/portfolioCatalog";
-import { ArrowLeft, Download, GripVertical, ShieldCheck, Cloud, CloudOff } from "lucide-react";
+import { ArrowLeft, Check, Download, GripVertical, Search, ShieldCheck, Cloud, CloudOff, Pencil, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 const FAVORITES_KEY = "pablo-portfolio-favorites";
@@ -11,74 +11,48 @@ const navigation: DashboardNavigationItem[] = [{ icon: ShieldCheck, label: "Favo
 
 function readIds(key: string) {
   if (typeof window === "undefined") return [] as string[];
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(key) ?? "[]");
-    return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : [];
-  } catch {
-    return [] as string[];
-  }
+  try { const parsed = JSON.parse(window.localStorage.getItem(key) ?? "[]"); return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : []; } catch { return []; }
 }
-
 function downloadFile(filename: string, type: string, content: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  const url = URL.createObjectURL(new Blob([content], { type })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; document.body.appendChild(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
+type Draft = { displayName: string; description: string };
 function FavoritesManagementContent() {
   const { loading, user } = useAuth();
   const { data: savedOrder = [], isLoading: orderLoading, isError: orderError } = trpc.favoriteOrder.list.useQuery(undefined, { enabled: user?.role === "admin" });
+  const { data: savedMetadata = [], isLoading: metadataLoading } = trpc.favoriteMetadata.list.useQuery(undefined, { enabled: user?.role === "admin" });
   const replaceOrder = trpc.favoriteOrder.replace.useMutation();
+  const saveMetadata = trpc.favoriteMetadata.save.useMutation();
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [query, setQuery] = useState("");
   const [feedback, setFeedback] = useState("");
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Draft>({ displayName: "", description: "" });
 
   useEffect(() => {
-    const localFavorites = readIds(FAVORITES_KEY);
-    const localOrder = readIds(ORDER_KEY);
-    const databaseOrder = savedOrder.map((item) => item.projectId);
-    const source = databaseOrder.length ? databaseOrder : localOrder;
-    const ordered = [...source.filter((id) => localFavorites.includes(id) || databaseOrder.includes(id)), ...localFavorites.filter((id) => !source.includes(id))];
-    setFavoriteIds(Array.from(new Set(ordered)));
+    const localFavorites = readIds(FAVORITES_KEY); const localOrder = readIds(ORDER_KEY); const databaseOrder = savedOrder.map((item) => item.projectId); const source = databaseOrder.length ? databaseOrder : localOrder;
+    setFavoriteIds(Array.from(new Set([...source.filter((id) => localFavorites.includes(id) || databaseOrder.includes(id)), ...localFavorites.filter((id) => !source.includes(id))])));
   }, [savedOrder]);
 
-  const entries = useMemo(() => favoriteIds.map((id, position) => ({ ...portfolioCatalogById.get(id), id, position })), [favoriteIds]);
+  const metadataById = useMemo(() => new Map(savedMetadata.map((item) => [item.projectId, item])), [savedMetadata]);
+  const entries = useMemo(() => favoriteIds.map((id, position) => { const base = portfolioCatalogById.get(id); const custom = metadataById.get(id); return { ...base, id, position, name: custom?.displayName ?? base?.name ?? id, description: custom?.description ?? base?.description ?? "Referência salva na lista de favoritos." }; }), [favoriteIds, metadataById]);
+  const filteredEntries = useMemo(() => { const normalized = query.trim().toLocaleLowerCase(); return normalized ? entries.filter((entry) => `${entry.name} ${entry.description} ${entry.id}`.toLocaleLowerCase().includes(normalized)) : entries; }, [entries, query]);
+  const isLoading = loading || orderLoading || metadataLoading;
 
   function persist(nextIds: string[]) {
-    setFavoriteIds(nextIds);
-    window.localStorage.setItem(ORDER_KEY, JSON.stringify(nextIds));
-    if (user?.role === "admin") {
-      replaceOrder.mutate({ projectIds: nextIds }, { onSuccess: () => setFeedback("Ordem salva e sincronizada entre dispositivos."), onError: () => setFeedback("A ordem foi atualizada neste dispositivo, mas não pôde ser sincronizada agora.") });
-    }
+    setFavoriteIds(nextIds); window.localStorage.setItem(ORDER_KEY, JSON.stringify(nextIds));
+    if (user?.role === "admin") replaceOrder.mutate({ projectIds: nextIds }, { onSuccess: () => setFeedback("Ordem salva e sincronizada."), onError: () => setFeedback("A ordem foi atualizada localmente, mas a sincronização falhou.") });
   }
-
-  function moveFavorite(sourceId: string, targetId: string) {
-    if (sourceId === targetId) return;
-    const next = [...favoriteIds];
-    const sourceIndex = next.indexOf(sourceId);
-    const targetIndex = next.indexOf(targetId);
-    if (sourceIndex < 0 || targetIndex < 0) return;
-    next.splice(sourceIndex, 1);
-    next.splice(next.indexOf(targetId), 0, sourceId);
-    persist(next);
-  }
-
-  function exportFavorites(format: "csv" | "json") {
-    if (!favoriteIds.length) return;
-    if (format === "json") downloadFile("favoritos-pablo-guilherme.json", "application/json", JSON.stringify({ exportedAt: new Date().toISOString(), favorites: entries }, null, 2));
-    else downloadFile("favoritos-pablo-guilherme.csv", "text/csv;charset=utf-8", ["position,id,name,description", ...entries.map(({ id, name, description, position }) => `${position + 1},${id},${name ?? id},${description ?? ""}`)].join("\n"));
-    setFeedback(`Favoritos exportados em ${format.toUpperCase()}.`);
-  }
+  function moveFavorite(sourceId: string, targetId: string) { if (sourceId === targetId) return; const next = [...favoriteIds]; const sourceIndex = next.indexOf(sourceId); const targetIndex = next.indexOf(targetId); if (sourceIndex < 0 || targetIndex < 0) return; next.splice(sourceIndex, 1); next.splice(next.indexOf(targetId), 0, sourceId); persist(next); }
+  function startEditing(entry: (typeof entries)[number]) { setEditingId(entry.id); setDraft({ displayName: entry.name, description: entry.description }); }
+  function saveDraft() { if (!editingId || !draft.displayName.trim()) return; saveMetadata.mutate({ projectId: editingId, displayName: draft.displayName.trim(), description: draft.description.trim() }, { onSuccess: () => { setEditingId(null); setFeedback("Dados do projeto atualizados."); }, onError: () => setFeedback("Não foi possível salvar os dados personalizados.") }); }
+  function exportFavorites(format: "csv" | "json") { if (!favoriteIds.length) return; if (format === "json") downloadFile("favoritos-pablo-guilherme.json", "application/json", JSON.stringify({ exportedAt: new Date().toISOString(), favorites: entries }, null, 2)); else downloadFile("favoritos-pablo-guilherme.csv", "text/csv;charset=utf-8", ["position,id,name,description", ...entries.map(({ id, name, description, position }) => `${position + 1},${id},${name},${description}`)].join("\n")); setFeedback(`Favoritos exportados em ${format.toUpperCase()}.`); }
 
   if (loading) return <p className="font-body text-sm text-slate-300">Verificando acesso aos favoritos...</p>;
-  if (user?.role !== "admin") return <section className="mx-auto max-w-xl py-12"><ShieldCheck className="h-8 w-8 text-cyan-300" aria-hidden="true" /><p className="mt-5 font-mono text-xs uppercase tracking-[0.16em] text-cyan-200">acesso restrito</p><h1 className="mt-3 font-display text-3xl font-semibold text-white">Gestão de favoritos reservada.</h1><p className="mt-4 font-body leading-7 text-slate-300">Entre com a conta proprietária do portfólio para ordenar e exportar seus favoritos.</p><a href="/" className="mt-7 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> voltar ao portfólio</a></section>;
-
-  return <section className="mx-auto w-full max-w-5xl py-4 text-white"><div className="flex flex-col gap-5 border-b border-cyan-100/15 pb-8 sm:flex-row sm:items-end sm:justify-between"><div className="min-w-0"><p className="font-mono text-xs uppercase tracking-[0.16em] text-cyan-300">Favoritos · gestão</p><h1 className="mt-3 break-words font-display text-4xl font-semibold tracking-tight">Meus favoritos</h1><p className="mt-3 max-w-2xl break-words font-body leading-7 text-slate-300">Organize referências salvas. Esta ordem é sincronizada e não altera a vitrine pública.</p></div><a href="/#favoritos-pessoais" className="inline-flex shrink-0 items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> ver favoritos</a></div><div className="mt-6 flex flex-wrap items-center gap-3"><button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteIds.length} className="inline-flex items-center gap-2 border border-cyan-300/30 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-100 hover:border-cyan-200 disabled:opacity-40"><Download className="h-4 w-4" /> exportar CSV</button><button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteIds.length} className="inline-flex items-center gap-2 border border-cyan-300/30 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-100 hover:border-cyan-200 disabled:opacity-40"><Download className="h-4 w-4" /> exportar JSON</button><span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-slate-400" role="status" aria-live="polite">{orderError ? <CloudOff className="h-4 w-4 text-amber-300" aria-hidden="true" /> : <Cloud className="h-4 w-4 text-cyan-300" aria-hidden="true" />}{orderError ? "sincronização indisponível" : replaceOrder.isPending || orderLoading ? "sincronizando" : "sincronizado"}</span></div>{feedback && <p role="status" aria-live="polite" className="mt-4 border-l-2 border-cyan-300 bg-cyan-300/10 px-4 py-3 font-body text-sm text-cyan-50">{feedback}</p>}<div className="mt-8 grid gap-3" aria-label="Lista ordenável de favoritos">{favoriteIds.length ? entries.map(({ id, name, cover, description, position }) => <article key={id} draggable onDragStart={() => setDraggedId(id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (draggedId) moveFavorite(draggedId, id); setDraggedId(null); }} className={`group flex min-w-0 flex-col gap-4 border border-cyan-100/15 bg-[#06172f]/70 p-3 transition-colors sm:flex-row sm:items-center sm:p-4 ${draggedId === id ? "border-cyan-300 bg-cyan-300/10" : ""}`}><div className="flex min-w-0 items-center gap-3"><GripVertical className="h-5 w-5 shrink-0 cursor-grab text-cyan-300" aria-hidden="true" /><span className="w-8 shrink-0 font-mono text-xs text-slate-500">{String(position + 1).padStart(2, "0")}</span><div className="h-20 w-28 shrink-0 overflow-hidden border border-cyan-100/15 bg-[#0b1d34] sm:h-24 sm:w-36">{cover ? <img src={cover} alt={`Miniatura de ${name ?? id}`} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /> : <div className="grid h-full place-items-center px-2 text-center font-mono text-[8px] text-slate-500">sem miniatura</div>}</div></div><div className="min-w-0"><p className="break-words font-display text-xl font-medium tracking-[-0.03em] text-white">{name ?? id}</p><p className="mt-1 break-words font-body text-sm leading-6 text-slate-400">{description ?? "Referência salva na lista de favoritos."}</p><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-cyan-300">{id}</p></div></article>) : <p className="border border-dashed border-cyan-100/20 px-5 py-7 font-body text-sm text-slate-400">Nenhum favorito foi salvo ainda. Volte à galeria pública para selecionar referências.</p>}</div></section>;
+  if (user?.role !== "admin") return <section className="mx-auto max-w-xl py-12"><ShieldCheck className="h-8 w-8 text-cyan-300" aria-hidden="true" /><p className="mt-5 font-mono text-xs uppercase tracking-[0.16em] text-cyan-200">acesso restrito</p><h1 className="mt-3 break-words font-display text-3xl font-semibold text-white">Gestão de favoritos reservada.</h1><p className="mt-4 break-words font-body leading-7 text-slate-300">Entre com a conta proprietária do portfólio para ordenar e exportar seus favoritos.</p><a href="/" className="mt-7 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> voltar ao portfólio</a></section>;
+  return <section className="mx-auto w-full max-w-5xl py-4 text-white"><div className="flex flex-col gap-5 border-b border-cyan-100/15 pb-8 sm:flex-row sm:items-end sm:justify-between"><div className="min-w-0"><p className="font-mono text-xs uppercase tracking-[0.16em] text-cyan-300">Favoritos · gestão</p><h1 className="mt-3 break-words font-display text-4xl font-semibold tracking-tight">Meus favoritos</h1><p className="mt-3 max-w-2xl break-words font-body leading-7 text-slate-300">Organize referências salvas com busca, edição e sincronização.</p></div><a href="/#favoritos-pessoais" className="inline-flex shrink-0 items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> ver favoritos</a></div><div className="mt-6 flex flex-wrap items-center gap-3"><button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteIds.length} className="inline-flex items-center gap-2 border border-cyan-300/30 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-100 hover:border-cyan-200 disabled:opacity-40"><Download className="h-4 w-4" /> exportar CSV</button><button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteIds.length} className="inline-flex items-center gap-2 border border-cyan-300/30 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-cyan-100 hover:border-cyan-200 disabled:opacity-40"><Download className="h-4 w-4" /> exportar JSON</button><span className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-slate-400" role="status" aria-live="polite">{orderError ? <CloudOff className="h-4 w-4 text-amber-300" aria-hidden="true" /> : <Cloud className="h-4 w-4 text-cyan-300" aria-hidden="true" />}{orderError ? "sincronização indisponível" : replaceOrder.isPending ? "salvando ordem" : "sincronizado"}</span></div><div className="mt-6 flex items-center gap-3 border border-cyan-100/15 bg-[#06172f]/55 px-3 py-2"><Search className="h-4 w-4 shrink-0 text-cyan-300" aria-hidden="true" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="buscar por nome ou descrição" aria-label="Buscar favoritos por nome ou descrição" className="min-w-0 flex-1 bg-transparent py-2 font-body text-sm text-white outline-none placeholder:text-slate-500" />{query && <button type="button" onClick={() => setQuery("")} aria-label="Limpar busca de favoritos" className="grid h-8 w-8 place-items-center text-slate-400 hover:text-white"><X className="h-4 w-4" /></button>}<span className="hidden shrink-0 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-500 sm:block">{filteredEntries.length}/{entries.length}</span></div>{feedback && <p role="status" aria-live="polite" className="mt-4 border-l-2 border-cyan-300 bg-cyan-300/10 px-4 py-3 font-body text-sm text-cyan-50">{feedback}</p>}<div className="mt-8 grid gap-3" aria-label="Lista ordenável de favoritos">{isLoading ? Array.from({ length: 3 }).map((_, index) => <div key={`favorite-skeleton-${index}`} aria-hidden="true" className="flex animate-pulse gap-4 border border-cyan-100/10 bg-[#06172f]/55 p-4"><div className="h-24 w-36 shrink-0 bg-cyan-100/10" /><div className="flex flex-1 flex-col gap-3"><div className="h-5 w-2/3 bg-cyan-100/10" /><div className="h-3 w-full bg-cyan-100/10" /><div className="h-3 w-1/2 bg-cyan-100/10" /></div></div>) : filteredEntries.length ? filteredEntries.map((entry) => <article key={entry.id} draggable={!query} onDragStart={() => setDraggedId(entry.id)} onDragEnd={() => setDraggedId(null)} onDragOver={(event) => event.preventDefault()} onDrop={() => { if (draggedId) moveFavorite(draggedId, entry.id); setDraggedId(null); }} className={`group flex min-w-0 flex-col gap-4 border border-cyan-100/15 bg-[#06172f]/70 p-3 transition-colors sm:flex-row sm:items-center sm:p-4 ${draggedId === entry.id ? "border-cyan-300 bg-cyan-300/10" : ""}`}><div className="flex min-w-0 items-center gap-3"><GripVertical className={`h-5 w-5 shrink-0 ${query ? "text-slate-600" : "cursor-grab text-cyan-300"}`} aria-hidden="true" /><span className="w-8 shrink-0 font-mono text-xs text-slate-500">{String(entry.position + 1).padStart(2, "0")}</span><div className="h-20 w-28 shrink-0 overflow-hidden border border-cyan-100/15 bg-[#0b1d34]">{entry.cover ? <img src={entry.cover} alt={`Miniatura de ${entry.name}`} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /> : <div className="grid h-full place-items-center px-2 text-center font-mono text-[8px] text-slate-500">sem miniatura</div>}</div></div><div className="min-w-0 flex-1"><div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div className="min-w-0"><p className="break-words font-display text-xl font-medium tracking-[-0.03em] text-white">{entry.name}</p><p className="mt-1 break-words font-body text-sm leading-6 text-slate-400">{entry.description}</p><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-cyan-300">{entry.id}</p></div><button type="button" onClick={() => startEditing(entry)} aria-label={`Editar ${entry.name}`} className="inline-flex shrink-0 items-center gap-2 self-start border border-cyan-300/25 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-cyan-100 hover:border-cyan-200"><Pencil className="h-3.5 w-3.5" /> editar</button></div>{editingId === entry.id && <div className="mt-4 grid gap-3 border-t border-cyan-100/10 pt-4"><label className="grid gap-1 font-mono text-[9px] uppercase tracking-[0.1em] text-cyan-200">Nome<input value={draft.displayName} onChange={(event) => setDraft((value) => ({ ...value, displayName: event.target.value }))} maxLength={160} className="border border-cyan-100/15 bg-[#07101e] px-3 py-2 font-body text-sm normal-case tracking-normal text-white outline-none focus:border-cyan-300" /></label><label className="grid gap-1 font-mono text-[9px] uppercase tracking-[0.1em] text-cyan-200">Descrição<textarea value={draft.description} onChange={(event) => setDraft((value) => ({ ...value, description: event.target.value }))} maxLength={2000} rows={3} className="resize-y border border-cyan-100/15 bg-[#07101e] px-3 py-2 font-body text-sm normal-case tracking-normal text-white outline-none focus:border-cyan-300" /></label><div className="flex flex-wrap gap-2"><button type="button" onClick={saveDraft} disabled={saveMetadata.isPending || !draft.displayName.trim()} className="inline-flex items-center gap-2 border border-cyan-300 bg-cyan-300 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] disabled:opacity-50"><Check className="h-3.5 w-3.5" /> {saveMetadata.isPending ? "salvando" : "salvar alterações"}</button><button type="button" onClick={() => setEditingId(null)} className="inline-flex items-center gap-2 border border-cyan-100/15 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-slate-300"><X className="h-3.5 w-3.5" /> cancelar</button></div></div>}</div></article>) : <p className="border border-dashed border-cyan-100/20 px-5 py-7 font-body text-sm text-slate-400">{query ? "Nenhum favorito corresponde à busca." : "Nenhum favorito foi salvo ainda. Volte à galeria pública para selecionar referências."}</p>}</div></section>;
 }
 
 export default function FavoritesManagement() { return <DashboardLayout navigation={navigation}><FavoritesManagementContent /></DashboardLayout>; }

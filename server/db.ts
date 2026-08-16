@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { blockedDates, favoriteProjectOrders, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
+import { blockedDates, favoriteProjectMetadata, favoriteProjectOrders, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -134,6 +134,19 @@ export async function listFavoriteProjectOrder(userId: number) {
   const db = await getDb();
   if (!db) throw new Error("Banco de dados indisponível para consultar a ordem dos favoritos");
   return db.select().from(favoriteProjectOrders).where(eq(favoriteProjectOrders.userId, userId)).orderBy(asc(favoriteProjectOrders.position));
+}
+
+export async function listFavoriteProjectMetadata(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para consultar os metadados dos favoritos");
+  return db.select().from(favoriteProjectMetadata).where(eq(favoriteProjectMetadata.userId, userId));
+}
+
+export async function upsertFavoriteProjectMetadata(userId: number, projectId: string, displayName: string, description: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para salvar os metadados dos favoritos");
+  await db.insert(favoriteProjectMetadata).values({ userId, projectId, displayName, description }).onDuplicateKeyUpdate({ set: { displayName, description, updatedAt: new Date() } });
+  return { success: true };
 }
 
 export async function replaceFavoriteProjectOrder(userId: number, projectIds: string[]) {

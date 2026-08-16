@@ -1095,3 +1095,13 @@
 - [x] Otimizar layout para dispositivos e posições sem cortes de palavras.
 - [x] Adicionar controle nativo e inteligente para aumentar ou diminuir a fonte.
 - [x] Validar persistência, autorização, acessibilidade, testes, build e checkpoint.
+
+## Busca, carregamento e edição de favoritos — nova rodada
+
+- [x] Auditar modelo de favoritos, dados reais e estado de carregamento.
+- [x] Persistir metadados editáveis de nome e descrição com autorização protegida.
+- [x] Adicionar busca por nome ou descrição na área de favoritos.
+- [x] Adicionar skeleton loading durante consulta e reordenação.
+- [x] Implementar edição manual de nome e descrição com feedback acessível.
+- [x] Preservar miniaturas reais, sincronização, responsividade e exportação.
+- [x] Validar persistência, acessibilidade, testes, typecheck, build e checkpoint.
