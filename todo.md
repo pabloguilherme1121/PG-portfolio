@@ -1132,3 +1132,13 @@
 - [x] Exportar a lista atualmente filtrada em CSV e JSON.
 - [x] Preservar proteção, busca, restauração, sincronização e responsividade.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Filtros ativos, prévia e exportação avançada — nova rodada
+
+- [x] Auditar exportação, filtros ativos e disponibilidade de miniaturas.
+- [x] Adicionar indicador visual de filtros ativos e botão limpar todos.
+- [x] Implementar seleção de campos personalizados para exportação.
+- [x] Criar pré-visualização tabular dos dados exportáveis.
+- [x] Gerar CSV/JSON com campos selecionados e ZIP com miniaturas.
+- [x] Preservar proteção, acessibilidade, sessionStorage, busca e filtros.
+- [x] Validar arquivos, testes, typecheck, build e checkpoint.
