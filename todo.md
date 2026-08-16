@@ -410,3 +410,10 @@
 - [x] Integrar perfis com arrastar e soltar, filtros e visualizações existentes.
 - [x] Validar persistência, acessibilidade, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Duplicação de perfis de ordenação
+
+- [x] Auditar o modelo atual de perfis e definir cópias independentes.
+- [x] Implementar controle acessível para duplicar perfis existentes.
+- [x] Validar nova cópia, seleção, persistência, testes e build.
+- [x] Salvar checkpoint após a validação final.

@@ -219,9 +219,13 @@ for (const width of viewports) {
   await page.getByRole("button", { name: "teste audiovisual", exact: true }).press("Enter");
   await page.waitForTimeout(80);
   const audiovisualProfileActivated = await page.getByRole("button", { name: "teste audiovisual", exact: true }).getAttribute("aria-pressed") === "true";
+  await page.getByRole("button", { name: "Duplicar perfil teste tecnologia", exact: true }).press("Enter");
+  await page.waitForTimeout(80);
+  const duplicatedProfileCreated = await page.getByRole("button", { name: "teste tecnologia — cópia", exact: true }).count() === 1;
+  const duplicatedProfileActivated = await page.getByRole("button", { name: "teste tecnologia — cópia", exact: true }).getAttribute("aria-pressed") === "true";
   const profileOrderStored = await page.evaluate(() => {
     const value = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
-    return Array.isArray(value) && value.length === 2 && value.every((profile) => Array.isArray(profile.order));
+    return Array.isArray(value) && value.length === 3 && value.every((profile) => Array.isArray(profile.order));
   });
   const lightOption = page.getByRole("button", { name: /Claro/ }).last();
   await lightOption.focus();
@@ -263,7 +267,7 @@ for (const width of viewports) {
     const value = window.localStorage.getItem("pablo-portfolio-manual-order");
     return Array.isArray(JSON.parse(value || "[]")) && JSON.parse(value || "[]").length >= 7;
   });
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, audiovisualProfileCreated, technologyProfileCreated, audiovisualProfileActivated, profileOrderStored, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, orderBeforeManualMove, orderAfterManualMove, firstProjectName, moveDownFocusVisible, manualMoveChangedOrder, manualOrderStored, lightThemeActivated, themeStored, darkThemeRestored });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, audiovisualProfileCreated, technologyProfileCreated, audiovisualProfileActivated, duplicatedProfileCreated, duplicatedProfileActivated, profileOrderStored, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, orderBeforeManualMove, orderAfterManualMove, firstProjectName, moveDownFocusVisible, manualMoveChangedOrder, manualOrderStored, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 
