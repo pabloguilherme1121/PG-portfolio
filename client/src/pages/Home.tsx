@@ -34,6 +34,8 @@ import {
   Share2,
   Moon,
   Sun,
+  Monitor,
+  Settings2,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -337,7 +339,8 @@ const navigationItems = [
 ] as const;
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, preference, setPreference } = useTheme();
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
@@ -466,6 +469,14 @@ export default function Home() {
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
+
+  useEffect(() => {
+    const handleAppearanceKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setAppearanceOpen(false);
+    };
+    window.addEventListener("keydown", handleAppearanceKeyDown);
+    return () => window.removeEventListener("keydown", handleAppearanceKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => setShowBackToTop(window.scrollY > 640);
@@ -726,7 +737,7 @@ export default function Home() {
                 {label}
               </a>
             ))}
-            {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>}
+            <button type="button" data-theme-toggle="true" onClick={() => setAppearanceOpen((open) => !open)} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -742,7 +753,7 @@ export default function Home() {
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>}
+          <button type="button" data-theme-toggle="true" onClick={() => setAppearanceOpen((open) => !open)} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
         </div>
         {menuOpen && (
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
@@ -758,10 +769,18 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              {toggleTheme && <button type="button" data-theme-toggle="true" onClick={toggleTheme} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>}
+              <button type="button" data-theme-toggle="true" onClick={() => setAppearanceOpen((open) => !open)} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
           </nav>
         )}
+        {appearanceOpen && <div role="dialog" aria-modal="false" aria-labelledby="appearance-title" className="appearance-panel fixed right-4 top-[88px] z-[60] w-[min(92vw,340px)] border border-[#67e8f9]/30 bg-[#071326] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.42)] sm:right-8 lg:right-12">
+          <div className="flex items-start justify-between gap-4"><div><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#67e8f9]">configurações</p><h2 id="appearance-title" className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">Aparência</h2></div><button type="button" onClick={() => setAppearanceOpen(false)} aria-label="Fechar configurações de aparência" className="grid h-8 w-8 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-4 w-4" aria-hidden="true" /></button></div>
+          <p className="mt-3 font-body text-xs leading-5 text-[#9fb2ce]">Escolha como o arquivo deve aparecer neste dispositivo.</p>
+          <div className="mt-5 grid gap-2" role="group" aria-label="Preferência de tema">
+            {([['light', 'Claro', Sun], ['dark', 'Escuro', Moon], ['system', 'Preferência do sistema', Monitor] ] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setPreference(value)} aria-pressed={preference === value} className={`flex items-center gap-3 border px-3 py-3 text-left font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${preference === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" /><span className="flex-1">{label}</span>{preference === value && <span className="text-[8px] text-[#67e8f9]">ativo</span>}</button>)}
+          </div>
+          <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#7189ae]">tema aplicado agora: {theme === "dark" ? "escuro" : "claro"}</p>
+        </div>}
       </header>
 
       <main className="relative">

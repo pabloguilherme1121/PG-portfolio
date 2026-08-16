@@ -371,3 +371,12 @@
 - [x] Adaptar a composição visual para o modo claro sem perder a identidade.
 - [x] Validar persistência, teclado, contraste, responsividade, reduced motion, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Painel de configurações de aparência
+
+- [x] Auditar o contexto de tema e o controle atual.
+- [x] Expandir o modelo de tema para claro, escuro e preferência do sistema.
+- [x] Implementar painel de configurações com seleção explícita e fechamento acessível.
+- [x] Validar persistência, mudança do sistema, teclado, foco, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

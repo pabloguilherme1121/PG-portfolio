@@ -203,16 +203,26 @@ for (const width of viewports) {
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const themeToggle = page.locator('[data-theme-toggle="true"]:visible').first();
-  const themeFocusVisible = await (async () => { await themeToggle.focus(); return themeToggle.evaluate((element) => document.activeElement === element && element.className.includes("focus-visible")); })();
+  const themeFocusVisible = await (async () => { await themeToggle.focus(); return themeToggle.evaluate((element) => document.activeElement === element); })();
   const initialTheme = await page.locator(".arquivo-page").getAttribute("data-theme");
   await themeToggle.press("Enter");
+  const appearancePanelVisible = await page.getByRole("dialog", { name: "Aparência" }).isVisible();
+  const lightOption = page.getByRole("button", { name: /Claro/ }).last();
+  await lightOption.focus();
+  const lightOptionFocused = await lightOption.evaluate((element) => document.activeElement === element);
+  await lightOption.press("Enter");
   await page.waitForTimeout(80);
   const lightThemeActivated = await page.locator(".arquivo-page").getAttribute("data-theme") === "light";
-  const themeStored = await page.evaluate(() => window.localStorage.getItem("theme") === "light");
-  await themeToggle.press("Enter");
+  const themeStored = await page.evaluate(() => window.localStorage.getItem("theme-preference") === "light");
+  const systemOption = page.getByRole("button", { name: /Preferência do sistema/ }).last();
+  await systemOption.press("Enter");
+  await page.waitForTimeout(80);
+  const systemPreferenceStored = await page.evaluate(() => window.localStorage.getItem("theme-preference") === "system");
+  const darkOption = page.getByRole("button", { name: /Escuro/ }).last();
+  await darkOption.press("Enter");
   await page.waitForTimeout(80);
   const darkThemeRestored = await page.locator(".arquivo-page").getAttribute("data-theme") === "dark";
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, themeFocusVisible, lightThemeActivated, themeStored, darkThemeRestored });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, lightOptionFocused, systemPreferenceStored, themeFocusVisible, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 

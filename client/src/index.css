@@ -489,3 +489,19 @@ section[id] {
 .arquivo-page[data-theme="light"] .project-gallery-card:hover {
   background-color: #edf7ff !important;
 }
+
+
+.arquivo-page[data-theme="light"] .appearance-panel {
+  background-color: #ffffff !important;
+  border-color: rgba(20, 79, 126, 0.24) !important;
+  box-shadow: 0 20px 60px rgba(30, 70, 110, 0.18);
+}
+
+.arquivo-page[data-theme="light"] .appearance-panel [class*="text-white"],
+.arquivo-page[data-theme="light"] .appearance-panel .font-display {
+  color: #10223b !important;
+}
+
+.arquivo-page[data-theme="light"] .appearance-panel .font-body {
+  color: #46627f !important;
+}
