@@ -72,6 +72,21 @@ test.describe("navegação pública e favoritos", () => {
     await expect(sort).toHaveValue("added");
   });
 
+  test("mantém ordenação na URL, mostra histórico e limpa todos os filtros", async ({ page }) => {
+    await page.goto("/?technology=HTML&category=Interface&tag=Interface&sort=added&q=site#galeria-publica");
+    const sort = page.locator('[data-sort-control="projects"]');
+    await expect(sort).toHaveValue("added");
+    await expect(page.locator('[data-project-search="true"]')).toHaveValue("site");
+    await page.locator('[data-project-search="true"]').fill("drone");
+    await page.waitForTimeout(800);
+    await expect(page.locator('[data-recent-searches="true"]')).toContainText("drone");
+    await page.getByRole("button", { name: /limpar todos os filtros de projetos/i }).click();
+    await expect(page.locator('[data-project-search="true"]')).toHaveValue("");
+    await expect(sort).toHaveValue("relevance");
+    await expect(page.locator('[data-filter-scope="technology"]').filter({ hasText: "Todos" }).first()).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => new URL(page.url()).search).toBe("");
+  });
+
   test("exibe status de disponibilidade no contato do rodapé", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator('[data-availability-status="true"]')).toContainText("disponibilidade atual: sob consulta");

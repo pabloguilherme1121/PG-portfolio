@@ -486,7 +486,7 @@ export default function Home() {
   const [activeTechnology, setActiveTechnology] = useState(() => getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
   const [activeCategory, setActiveCategory] = useState(() => getPortfolioUrlFilter("category", categoryFilters, "Todos"));
   const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>(() => getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
-  const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
+  const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>(() => getPortfolioUrlFilter("sort", sortOptions.map((option) => option.value), "relevance") as (typeof sortOptions)[number]["value"]);
   const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
     if (typeof window === "undefined") return repositories.map((repository) => repository.id);
     try {
@@ -565,6 +565,15 @@ export default function Home() {
   const [lightboxResetting, setLightboxResetting] = useState(false);
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-recent-searches") || "[]");
+      return Array.isArray(stored) ? stored.filter((term): term is string => typeof term === "string" && term.trim().length >= 2).slice(0, 6) : [];
+    } catch {
+      return [];
+    }
+  });
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
@@ -1051,23 +1060,38 @@ export default function Home() {
     setOrDelete("technology", activeTechnology, "Todos");
     setOrDelete("category", activeCategory, "Todos");
     setOrDelete("tag", activeTag, "Todos");
+    setOrDelete("sort", sortMode, "relevance");
     if (projectSearch.trim()) params.set("q", projectSearch.trim());
     else params.delete("q");
     const query = params.toString();
     const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", nextUrl);
-  }, [activeTechnology, activeCategory, activeTag, projectSearch]);
+  }, [activeTechnology, activeCategory, activeTag, sortMode, projectSearch]);
 
   useEffect(() => {
     const readUrlState = () => {
       setActiveTechnology(getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
       setActiveCategory(getPortfolioUrlFilter("category", categoryFilters, "Todos"));
       setActiveTag(getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
+      setSortMode(getPortfolioUrlFilter("sort", sortOptions.map((option) => option.value), "relevance") as (typeof sortOptions)[number]["value"]);
       setProjectSearch(getPortfolioUrlSearch());
     };
     window.addEventListener("popstate", readUrlState);
     return () => window.removeEventListener("popstate", readUrlState);
   }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(recentSearches));
+  }, [recentSearches]);
+
+  useEffect(() => {
+    const term = projectSearch.trim();
+    if (term.length < 2) return;
+    const timer = window.setTimeout(() => {
+      setRecentSearches((current) => [term, ...current.filter((item) => item.toLowerCase() !== term.toLowerCase())].slice(0, 6));
+    }, 650);
+    return () => window.clearTimeout(timer);
+  }, [projectSearch]);
 
   useEffect(() => {
     window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
@@ -1246,6 +1270,17 @@ export default function Home() {
       setSearchShareStatus("error");
     }
     window.setTimeout(() => setSearchShareStatus("idle"), 2200);
+  }
+
+  function clearAllProjectFilters() {
+    setActiveTechnology("Todos");
+    setActiveCategory("Todos");
+    setActiveTag("Todos");
+    setProjectSearch("");
+    setSortMode("relevance");
+    setFavoritesOnly(false);
+    setActiveSearchSuggestionIndex(-1);
+    setIsProjectSearchFocused(false);
   }
 
   function saveSharedFavorites() {
@@ -1435,13 +1470,11 @@ export default function Home() {
   }
 
   function selectSort(mode: (typeof sortOptions)[number]["value"]) {
-    if (mode === sortMode || isProjectFilterTransitioning) return;
+    if (mode === sortMode) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    setSortMode(mode);
     setIsProjectFilterTransitioning(true);
-    projectFilterTimerRef.current = window.setTimeout(() => {
-      setSortMode(mode);
-      projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
-    }, 130);
+    projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
   }
 
   function selectTag(tag: (typeof tagFilters)[number]) {
@@ -2206,9 +2239,12 @@ export default function Home() {
                 <label className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb] light-muted-ink"><span>ordenar</span><select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por data ou relevância" className="border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>
                 <button type="button" onClick={copyCurrentSearchLink} aria-label={searchShareStatus === "copied" ? "Link da busca copiado" : "Copiar link da busca atual"} className="inline-flex min-h-9 items-center gap-2 border border-[#3b82f6]/30 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#b7d4ff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{searchShareStatus === "copied" ? "copiado" : searchShareStatus === "error" ? "tente novamente" : "copiar busca"}</button>
                 <span data-search-share-status="true" role="status" aria-live="polite" className="sr-only">{searchShareStatus === "copied" ? "Link da busca copiado." : searchShareStatus === "error" ? "Não foi possível copiar o link da busca." : ""}</span>
+                <button type="button" onClick={clearAllProjectFilters} aria-label="Limpar todos os filtros de projetos" className="inline-flex min-h-9 items-center gap-2 border border-amber-300/25 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar filtros</button>
               </div>
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>
+
+            {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <button key={term} type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="inline-flex max-w-full items-center gap-1.5 border border-white/[0.1] bg-[#07101e] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2] transition-colors hover:border-[#67e8f9]/60 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{term}<span className="sr-only">, repetir busca</span></button>)}</div>}
 
             <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning || isGalleryLoading} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (

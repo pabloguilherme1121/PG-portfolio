@@ -1225,3 +1225,10 @@
 - [x] Exibir indicador visual de carregamento durante o debounce da pesquisa.
 - [x] Posicionar ordenação por data ou relevância ao lado da barra de pesquisa.
 - [x] Validar cópia, debounce, ordenação, teclado, reduced motion, testes, build e checkpoint.
+
+## Ordenação compartilhável, histórico e limpeza — nova iteração
+
+- [x] Persistir a opção de ordenação na URL compartilhável.
+- [x] Adicionar histórico local de buscas recentes abaixo da barra.
+- [x] Criar botão Limpar todos os filtros para texto, ordenação e filtros selecionados.
+- [x] Validar URL, histórico, limpeza, teclado, reduced motion, testes, build e checkpoint.
