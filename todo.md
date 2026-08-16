@@ -1114,3 +1114,12 @@
 - [x] Criar testes E2E autenticados para busca e edição manual.
 - [x] Preservar proteção, miniaturas, sincronização, exportação e responsividade.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Restauração segura, intervalo personalizado e toast — nova rodada
+
+- [x] Auditar diálogo, filtros de data e feedback existentes.
+- [x] Adicionar modal de confirmação antes de restaurar metadados.
+- [x] Implementar filtro por intervalo de datas personalizado.
+- [x] Exibir toast de sucesso após restauração concluída.
+- [x] Preservar proteção, acessibilidade, busca, filtros existentes e sincronização.
+- [x] Validar testes, typecheck, build e checkpoint.
