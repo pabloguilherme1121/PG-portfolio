@@ -384,11 +384,11 @@
 
 ## Visualização de projetos em grade/lista
 
-- [ ] Auditar a composição atual da galeria e o painel de aparência.
-- [ ] Implementar preferência persistente de visualização grade/lista.
-- [ ] Integrar o layout de lista com cartões, overlay e controles existentes.
-- [ ] Validar persistência, teclado, filtros, carregamento progressivo, responsividade, testes e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Auditar a composição atual da galeria e o painel de aparência.
+- [x] Implementar preferência persistente de visualização grade/lista.
+- [x] Integrar o layout de lista com cartões, overlay e controles existentes.
+- [x] Validar persistência, teclado, filtros, carregamento progressivo, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
 
 - [x] Validar alternância entre Grade e Lista em 320, 390, 768 e 1280px, incluindo persistência local e teclado
 - [x] Refinar o modo Lista com cards de largura total e alturas responsivas em telas menores
