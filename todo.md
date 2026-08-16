@@ -1030,3 +1030,12 @@
 - [x] Persistir o último zoom no `sessionStorage` durante a sessão.
 - [x] Preservar pan, limites reais, swipe, pinch zoom, fullscreen, teclado e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: mini-mapa arrastável, legenda contextual e limpeza de sessão — nova rodada
+
+- [x] Auditar mini-mapa, legenda e configurações do lightbox.
+- [x] Implementar arraste do quadro de visualização dentro do mini-mapa.
+- [x] Ocultar legenda de atalhos por padrão e mostrar após foco ou interação.
+- [x] Adicionar ação para limpar o zoom salvo no sessionStorage.
+- [x] Preservar pan, limites reais, teclado, swipe, pinch zoom, fullscreen e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
