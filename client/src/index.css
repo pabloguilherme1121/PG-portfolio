@@ -856,12 +856,44 @@ html.theme-transitioning .arquivo-page * {
 .contact-float-link:active { transform: scale(0.96); }
 
 @media (max-width: 639px) {
+  .arquivo-page #inicio { padding-bottom: 5.5rem; }
   .contact-float { width: calc(100vw - 1.25rem); justify-content: stretch; }
   .contact-float-link { min-width: 0; flex: 1 1 0%; padding-inline: 0.45rem; font-size: 0.5rem; letter-spacing: 0.045em; }
   .contact-float-link svg { flex: 0 0 auto; }
 }
 
+.featured-project-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms cubic-bezier(0.23, 1, 0.32, 1), box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.featured-project-card::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  content: "";
+  transform: scaleX(0.25);
+  transform-origin: left;
+  background: #3b82f6;
+  opacity: 0.7;
+  transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), opacity 200ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .featured-project-card:hover {
+    transform: translateY(-4px);
+    background-color: #0a1930;
+    box-shadow: 0 18px 40px rgba(2, 17, 31, 0.28), 0 0 0 1px rgba(59, 130, 246, 0.22);
+  }
+
+  .featured-project-card:hover::before { transform: scaleX(1); opacity: 1; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .featured-project-card,
+  .featured-project-card::before { transition: none; }
+
   .contact-float-link { transition: none; }
   .contact-float-link:active { transform: none; }
 }

@@ -1002,6 +1002,7 @@ export default function Home() {
     })
     .sort((first, second) => sortMode === "manual" ? 0 : sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
+  const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 3), []);
   const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
   const projectPageSize = 4;
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -1941,6 +1942,33 @@ export default function Home() {
               <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
               <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
+
+            <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
+              <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6">
+                <div>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">entrada / três evidências</p>
+                  <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">O trabalho antes do filtro.</h3>
+                </div>
+                <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar rapidamente o papel, o processo e o resultado de cada registro.</p>
+              </div>
+              <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-3">
+                {featuredRepositories.map((project) => (
+                  <article key={`featured-${project.id}`} className="featured-project-card group bg-[#07111f] p-4 sm:p-5">
+                    {project.cover && <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" />}
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">{project.id}</p>
+                      <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">{project.kind === "video" ? "vídeo" : "repositório"}</span>
+                    </div>
+                    <h4 className="mt-2 break-words font-display text-xl font-medium leading-tight tracking-[-0.035em] text-white">{project.name}</h4>
+                    <dl className="mt-4 grid gap-3 text-sm leading-5">
+                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">papel</dt><dd className="mt-1 text-[#c4d9ee]">{project.role}</dd></div>
+                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">processo</dt><dd className="mt-1 text-[#c4d9ee]">{project.process}</dd></div>
+                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">resultado</dt><dd className="mt-1 text-[#c4d9ee]">{project.result}</dd></div>
+                    </dl>
+                  </article>
+                ))}
+              </div>
+            </section>
 
             <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
               <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>

@@ -23,6 +23,38 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-id]').first()).toBeVisible();
   });
 
+  test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
+    await page.goto("/");
+    const canonical = page.locator('link[rel="canonical"]');
+    await expect(canonical).toHaveAttribute("href", `${new URL(baseURL).origin}/`);
+    const robots = await request.get("/robots.txt");
+    expect(robots.ok()).toBeTruthy();
+    expect(await robots.text()).toContain("Sitemap:");
+    const sitemap = await request.get("/sitemap.xml");
+    expect(sitemap.ok()).toBeTruthy();
+    expect(await sitemap.text()).toContain("<loc>");
+    await page.goto("/favoritos");
+    await expect(page.locator('#robots-meta')).toHaveAttribute("content", "noindex, nofollow");
+  });
+
+  test("mantém foco visível, skip link e layout sem overflow horizontal", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+    const skipLink = page.locator(".skip-link");
+    for (let index = 0; index < 6 && !(await skipLink.evaluate((element) => element === document.activeElement)); index += 1) {
+      await page.keyboard.press("Tab");
+    }
+    await expect(skipLink).toBeFocused();
+    const focusOutline = await skipLink.evaluate((element) => getComputedStyle(element).outlineColor);
+    expect(focusOutline).not.toBe("rgba(0, 0, 0, 0)");
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#conteudo-principal")).toBeFocused();
+    const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+    expect(hasHorizontalOverflow).toBeFalsy();
+    await expect(page.locator("#trabalhos-destaque-title")).toBeVisible();
+    await expect(page.locator(".featured-project-card")).toHaveCount(3);
+  });
+
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);

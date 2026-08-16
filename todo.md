@@ -1178,12 +1178,21 @@
 - [x] Pesquisar e comparar referências públicas de portfólios profissionais do nicho.
 - [x] Auditar conteúdo, SEO técnico, arquitetura e conversão.
 - [x] Produzir matriz de problemas, oportunidades e prioridades P0–P3.
-- [ ] Implementar melhorias aprovadas da primeira etapa.
-- [ ] Validar regressões com testes, build e inspeção visual.
+- [x] Implementar melhorias aprovadas da primeira etapa.
+- [x] Validar regressões com testes, build e inspeção visual.
 
 ## Auditoria crítica e pacote profissional — iteração de implementação
 
 - [x] Aplicar primeira etapa de identidade cobalto nos tokens globais e efeitos de foco/seleção.
 - [x] Completar metadados sociais OG/Twitter com nome do Arquivo Profundo e texto alternativo da imagem.
-- [ ] Implementar destaques de três projetos com resumos de papel, processo e resultado.
-- [ ] Validar breakpoints 320–1440 px e corrigir qualquer overflow ou corte de texto encontrado.
+- [x] Implementar destaques de três projetos com resumos de papel, processo e resultado.
+- [x] Validar breakpoints 320–1440 px e corrigir qualquer overflow ou corte de texto encontrado.
+
+## SEO, acessibilidade e microinterações — nova iteração
+
+- [x] Implementar tag canonical configurável para a homepage.
+- [x] Gerar sitemap.xml e robots.txt coerentes com as rotas públicas do portfólio.
+- [x] Validar acessibilidade por teclado, foco visível e contraste nos fluxos públicos e protegidos.
+- [x] Corrigir problemas de contraste ou navegação encontrados na validação.
+- [x] Adicionar hover, focus-visible e transições suaves aos três cards de projetos destacados.
+- [x] Executar testes, build, inspeção visual e salvar checkpoint da iteração.
