@@ -25,6 +25,10 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   await copyLinkButton.click();
   const copiedProjectLink = await page.evaluate(() => navigator.clipboard.readText());
   const shareStatus = await dialog.locator('[role="status"]').filter({ hasText: "Link do projeto copiado." }).textContent();
+  const imageFavoriteButton = dialog.locator('[data-lightbox-image-favorite="true"]');
+  await imageFavoriteButton.click();
+  const imageFavoriteIsPressed = await imageFavoriteButton.getAttribute("aria-pressed");
+  const imageFavoriteStatus = await page.locator('[role="status"]').filter({ hasText: "salva na coleção pessoal" }).textContent();
   const zoomGroup = dialog.locator('[aria-label="Controles de zoom"]');
   const zoomStatus = zoomGroup.locator('[aria-live="polite"]');
   const zoomIncrease = zoomGroup.getByRole("button", { name: "Aumentar zoom" });
@@ -47,7 +51,15 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   await dialog.waitFor({ state: "detached" });
   await page.waitForTimeout(60);
   const restoredFocus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label")?.startsWith("Ampliar imagem") ?? false);
-  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, copiedProjectLink, shareStatus, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, zoomAfterIncrease, doubleClickZoomed: zoomTransform?.includes("scale(2)") ?? false, zoomAfterReset, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
+  const collectionToggle = page.locator('[data-image-collection-toggle="true"]');
+  await collectionToggle.click();
+  const collection = page.locator("#favorite-image-collection");
+  const collectionItemCount = await collection.locator('[data-image-collection-item]').count();
+  const storedImageFavorites = await page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-favorite-images") ?? "[]"));
+  await page.reload({ waitUntil: "networkidle" });
+  await page.locator('[data-image-collection-toggle="true"]').click();
+  const persistedCollectionItemCount = await page.locator("#favorite-image-collection").locator('[data-image-collection-item]').count();
+  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, copiedProjectLink, shareStatus, imageFavoriteIsPressed, imageFavoriteStatus, collectionItemCount, storedImageFavorites, persistedCollectionItemCount, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, zoomAfterIncrease, doubleClickZoomed: zoomTransform?.includes("scale(2)") ?? false, zoomAfterReset, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
   await context.close();
 }
 

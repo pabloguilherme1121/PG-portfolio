@@ -51,6 +51,7 @@ import {
 } from "lucide-react";
 import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { favoriteImageStorageKey, normalizeFavoriteImageIds, toggleFavoriteImageId } from "@/lib/imageFavorites";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import {
   availableTimes,
@@ -416,6 +417,17 @@ export default function Home() {
       return [];
     }
   });
+  const [favoriteImageIds, setFavoriteImageIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = window.localStorage.getItem(favoriteImageStorageKey);
+      return normalizeFavoriteImageIds(stored ? JSON.parse(stored) : [], repositories.filter((repository) => Boolean(repository.cover)).map((repository) => repository.id));
+    } catch {
+      return [];
+    }
+  });
+  const [isImageCollectionOpen, setIsImageCollectionOpen] = useState(false);
+  const [favoriteImageStatus, setFavoriteImageStatus] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -526,6 +538,8 @@ export default function Home() {
   const galleryLoadingTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
+  const favoriteImageIdSet = useMemo(() => new Set(favoriteImageIds), [favoriteImageIds]);
+  const favoriteImageProjects = useMemo(() => lightboxProjects.filter((project) => favoriteImageIdSet.has(project.id)), [favoriteImageIdSet, lightboxProjects]);
   const sharedProjectIdSet = useMemo(() => new Set(sharedProjectIds ?? []), [sharedProjectIds]);
   const {
     data: blockedDates = [],
@@ -651,6 +665,14 @@ export default function Home() {
   }, [favoriteProjectIds]);
 
   useEffect(() => {
+    try {
+      window.localStorage.setItem(favoriteImageStorageKey, JSON.stringify(favoriteImageIds));
+    } catch {
+      // A coleção continua disponível durante a sessão quando o armazenamento está indisponível.
+    }
+  }, [favoriteImageIds]);
+
+  useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
 
@@ -745,6 +767,16 @@ export default function Home() {
     event.preventDefault();
     event.stopPropagation();
     setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
+  }
+
+  function toggleFavoriteImage(projectId: string, event?: React.MouseEvent | React.KeyboardEvent) {
+    event?.preventDefault();
+    event?.stopPropagation();
+    const isAlreadySaved = favoriteImageIdSet.has(projectId);
+    const projectName = lightboxProjects.find((project) => project.id === projectId)?.name ?? "Imagem";
+    setFavoriteImageIds((current) => toggleFavoriteImageId(current, projectId));
+    setFavoriteImageStatus(isAlreadySaved ? `Imagem ${projectName} removida da coleção pessoal.` : `Imagem ${projectName} salva na coleção pessoal.`);
+    window.setTimeout(() => setFavoriteImageStatus(""), 2600);
   }
 
   async function shareFavorites() {
@@ -1355,7 +1387,9 @@ export default function Home() {
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">{visibleRepositories.length} referências visíveis</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
+                  <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>projetos salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
+                  <button type="button" data-image-collection-toggle="true" onClick={() => setIsImageCollectionOpen((current) => !current)} aria-expanded={isImageCollectionOpen} aria-controls="favorite-image-collection" className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${isImageCollectionOpen ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIds.length ? "fill-[#67e8f9] text-[#67e8f9]" : ""}`} aria-hidden="true" /><span>minhas imagens</span><span aria-hidden="true">{favoriteImageIds.length}</span></button>
+                  <span role="status" aria-live="polite" className="sr-only">{favoriteImageStatus}</span>
                   <span className="hidden h-5 w-px bg-white/10 sm:block" aria-hidden="true" />
                   <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
                   <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
@@ -1371,6 +1405,10 @@ export default function Home() {
                   </label>
                 </div>
               </div>
+              <aside id="favorite-image-collection" aria-label="Coleção pessoal de imagens favoritas" aria-hidden={!isImageCollectionOpen} inert={!isImageCollectionOpen} className={`overflow-hidden border-x border-b border-[#67e8f9]/20 bg-[#06172f]/60 transition-[max-height,opacity,transform] duration-200 motion-reduce:transition-none ${isImageCollectionOpen ? "max-h-[760px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 opacity-0"}`}>
+                <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">coleção pessoal</p><h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Imagens guardadas para rever.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">Esta coleção é salva apenas neste navegador e permanece separada dos projetos favoritos.</p></div><span className="shrink-0 border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff]">{favoriteImageProjects.length} {favoriteImageProjects.length === 1 ? "imagem" : "imagens"}</span></div>
+                {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
+              </aside>
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
                   const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
@@ -1513,10 +1551,12 @@ export default function Home() {
 
                   const reorderControls = <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1" role="group" aria-label={`Reordenar ${repository.name}`}><span className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#9eb5d2]" title="Arraste para reordenar"><GripVertical className="h-4 w-4" aria-hidden="true" /></span><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, -1); }} aria-label={`Mover ${repository.name} para cima`} title="Mover para cima" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronUp className="h-4 w-4" aria-hidden="true" /></button><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, 1); }} aria-label={`Mover ${repository.name} para baixo`} title="Mover para baixo" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronDown className="h-4 w-4" aria-hidden="true" /></button></div>;
                   const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-5 top-5 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button>;
+                  const imageFavoriteButton = repository.cover ? <button type="button" data-image-favorite-control="true" aria-label={favoriteImageIdSet.has(repository.id) ? `Remover imagem de ${repository.name} da coleção pessoal` : `Salvar imagem de ${repository.name} na coleção pessoal`} aria-pressed={favoriteImageIdSet.has(repository.id)} onClick={(event) => toggleFavoriteImage(repository.id, event)} title={favoriteImageIdSet.has(repository.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`absolute right-16 top-5 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoriteImageIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#a5f3fc] shadow-[0_0_0_1px_rgba(103,232,249,0.25)]" : "border-[#67e8f9]/35 bg-[#07101e]/80 text-[#c8f7ff] hover:border-[#67e8f9] hover:bg-[#0b2746]"}`}><Heart className={`h-4 w-4 ${favoriteImageIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button> : null;
                   const lightboxButton = repository.cover ? <button type="button" onClick={(event) => openProjectLightbox(repository.id, event)} aria-label={`Ampliar imagem de ${repository.name}`} title="Ampliar imagem" className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center border border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] transition-all hover:border-[#67e8f9] hover:bg-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-4 w-4" aria-hidden="true" /></button> : null;
                   return repository.kind === "video" ? (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {lightboxButton}
+                      {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
                       <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
@@ -1526,6 +1566,7 @@ export default function Home() {
                   ) : (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {lightboxButton}
+                      {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
                       <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
@@ -1817,6 +1858,7 @@ export default function Home() {
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex h-9 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
                 <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
                   <button type="button" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
                   <button type="button" onClick={copyLightboxProjectLink} className="grid h-9 w-9 place-items-center border-l border-white/15 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title="Copiar link"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>

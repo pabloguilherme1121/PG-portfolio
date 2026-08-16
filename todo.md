@@ -505,3 +505,12 @@
 - [x] Integrar feedback visual, teclado, responsividade e suporte móvel.
 - [x] Validar compartilhamento, acessibilidade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Coleção pessoal de imagens favoritas
+
+- [x] Mapear controles e estados para manter favoritos de imagens separados dos favoritos de projetos.
+- [x] Persistir a coleção pessoal de imagens no navegador com uma chave dedicada.
+- [x] Adicionar controles acessíveis de favoritar na galeria e no lightbox.
+- [x] Criar uma forma de revisar e abrir rapidamente as imagens salvas.
+- [x] Validar persistência, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
