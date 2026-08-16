@@ -984,3 +984,12 @@
 - [x] Manter controles de zoom visíveis e acessíveis durante fullscreen.
 - [x] Preservar focus trap, teclado, pinch zoom, reduced motion e retorno de foco.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: swipe visual, pan e reset — nova rodada
+
+- [x] Auditar gestos, zoom e feedback visual atuais.
+- [x] Exibir indicação discreta da direção durante o swipe.
+- [x] Implementar pan da imagem quando o zoom estiver acima de 100%.
+- [x] Adicionar botão acessível para redefinir o zoom.
+- [x] Preservar pinch zoom, fullscreen, teclado, focus trap e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

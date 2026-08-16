@@ -530,6 +530,7 @@ export default function Home() {
   const [lightboxEmailStatus, setLightboxEmailStatus] = useState<"idle" | "opening">("idle");
   const [lightboxFullscreen, setLightboxFullscreen] = useState(false);
   const [lightboxFullscreenNotice, setLightboxFullscreenNotice] = useState("");
+  const [lightboxSwipeDirection, setLightboxSwipeDirection] = useState<"previous" | "next" | null>(null);
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
@@ -545,6 +546,7 @@ export default function Home() {
   const pinchStartDistanceRef = useRef(0);
   const pinchStartZoomRef = useRef(1);
   const swipeStartRef = useRef({ x: 0, y: 0 });
+  const panStartRef = useRef({ active: false, x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxModalRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
@@ -577,6 +579,7 @@ export default function Home() {
     lightboxReturnFocusRef.current = event.currentTarget;
     setLightboxClosing(false);
     setLightboxFullscreenNotice("");
+    setLightboxSwipeDirection(null);
     setLightboxProjectId(projectId);
   };
 
@@ -631,7 +634,9 @@ export default function Home() {
 
   const handleLightboxTouchStart = (event: TouchEvent<HTMLImageElement>) => {
     if (event.touches.length === 1) {
-      swipeStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+      const touch = event.touches[0];
+      swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
+      panStartRef.current = { active: lightboxZoom > 1, x: touch.clientX, y: touch.clientY, offsetX: lightboxOffset.x, offsetY: lightboxOffset.y };
     }
     if (event.touches.length === 2) {
       pinchStartDistanceRef.current = getTouchDistance(event.touches);
@@ -640,6 +645,15 @@ export default function Home() {
   };
 
   const handleLightboxTouchMove = (event: TouchEvent<HTMLImageElement>) => {
+    if (event.touches.length === 1 && panStartRef.current.active && lightboxZoom > 1) {
+      event.preventDefault();
+      const touch = event.touches[0];
+      const maxPan = 240 * (lightboxZoom - 1);
+      const nextX = panStartRef.current.offsetX + touch.clientX - panStartRef.current.x;
+      const nextY = panStartRef.current.offsetY + touch.clientY - panStartRef.current.y;
+      setLightboxOffset({ x: Math.min(maxPan, Math.max(-maxPan, nextX)), y: Math.min(maxPan, Math.max(-maxPan, nextY)) });
+      return;
+    }
     if (event.touches.length !== 2 || pinchStartDistanceRef.current <= 0) return;
     event.preventDefault();
     const distanceRatio = getTouchDistance(event.touches) / pinchStartDistanceRef.current;
@@ -647,6 +661,11 @@ export default function Home() {
   };
 
   const handleLightboxTouchEnd = (event: TouchEvent<HTMLImageElement>) => {
+    if (panStartRef.current.active) {
+      panStartRef.current.active = false;
+      pinchStartDistanceRef.current = 0;
+      return;
+    }
     if (event.changedTouches.length === 1 && lightboxZoom === 1 && lightboxProject && pinchStartDistanceRef.current === 0) {
       const touch = event.changedTouches[0];
       const deltaX = touch.clientX - swipeStartRef.current.x;
@@ -654,6 +673,8 @@ export default function Home() {
       if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY)) {
         const currentIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
         const direction = deltaX < 0 ? 1 : -1;
+        setLightboxSwipeDirection(direction === 1 ? "next" : "previous");
+        window.setTimeout(() => setLightboxSwipeDirection(null), 520);
         const nextProject = lightboxProjects[(currentIndex + direction + lightboxProjects.length) % lightboxProjects.length];
         if (nextProject?.cover) setLightboxProjectId(nextProject.id);
       }
@@ -2278,8 +2299,9 @@ export default function Home() {
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" title="Fechar visualizador" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
             <button type="button" onClick={toggleLightboxFullscreen} data-tooltip={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} aria-label={lightboxFullscreen ? "Sair da tela cheia" : "Abrir visualizador em tela cheia"} title={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} className="absolute right-16 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-5 w-5" aria-hidden="true" /></button>
             <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
+              {lightboxSwipeDirection && <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-5" aria-hidden="true"><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "previous" ? "opacity-100" : "opacity-30"}`}><ChevronLeft className="h-5 w-5" /></span><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "next" ? "opacity-100" : "opacity-30"}`}><ChevronRight className="h-5 w-5" /></span></div>}
               {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
-              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Restaurar zoom original" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
+              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
               <div className="relative flex min-h-[28vh] w-full items-center justify-center">
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
                 {lightboxImageError && <div className="absolute inset-0 z-10 grid place-items-center px-6 text-center" role="alert"><div className="max-w-sm border border-[#fb7185]/35 bg-[#190f1c]/95 px-5 py-5 shadow-[0_10px_30px_rgba(0,0,0,0.28)]"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#fda4af]">imagem indisponível</p><p className="mt-2 font-display text-xl font-medium tracking-[-0.03em] text-white">Não conseguimos abrir esta imagem agora.</p><p className="mt-2 font-body text-sm leading-6 text-[#f6d8df]">Você pode tentar novamente ou continuar navegando pelos projetos.</p><button type="button" onClick={() => { setLightboxImageError(false); setLightboxImageLoading(true); setLightboxImageAttempt((attempt) => attempt + 1); }} className="mt-4 border border-[#fda4af]/55 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#ffe4e8] transition-colors hover:bg-[#4b1d2a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fda4af]">tentar novamente</button></div></div>}
