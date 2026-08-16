@@ -328,3 +328,19 @@
 - [x] Criar aviso visual acessível com salvar e dispensar.
 - [x] Validar link compartilhado, persistência, teclado, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Carregamento progressivo da galeria
+
+- [x] Auditar a lista filtrada e definir o tamanho inicial e o incremento de carregamento.
+- [x] Implementar estado de itens exibidos e reset após mudança de filtro ou busca.
+- [x] Adicionar botão acessível de Carregar mais e estado de fim da lista.
+- [x] Integrar com favoritos, filtros, busca, ordenação, modo compacto e reduced motion.
+- [x] Validar navegação progressiva, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
+
+
+## Fechamento do carregamento progressivo
+
+- [x] Exibir mensagem visual e acessível quando todos os projetos filtrados estiverem carregados.
+- [x] Validar o estado final e salvar checkpoint da rodada.

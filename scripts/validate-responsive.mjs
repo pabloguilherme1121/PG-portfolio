@@ -125,6 +125,23 @@ for (const width of viewports) {
   const categoryTodosFilter = page.locator('#projetos button[data-filter-scope="category"]', { hasText: "Todos" }).first();
   await categoryTodosFilter.click();
   await page.waitForTimeout(280);
+  const initialLoadedProjectCount = await page.locator('#projetos .project-gallery-card').count();
+  const loadMoreButton = page.getByRole("button", { name: "carregar mais" });
+  const loadMoreAvailable = await loadMoreButton.isVisible();
+  await categoryTodosFilter.focus();
+  for (let tabIndex = 0; tabIndex < 32; tabIndex += 1) {
+    await page.keyboard.press("Tab");
+    if (await loadMoreButton.evaluate((element) => document.activeElement === element)) break;
+  }
+  const loadMoreFocusVisible = await loadMoreButton.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  await loadMoreButton.press("Enter");
+  await page.waitForTimeout(280);
+  const expandedProjectCount = await page.locator('#projetos .project-gallery-card').count();
+  const loadMoreCompleted = expandedProjectCount > initialLoadedProjectCount && await page.getByRole("button", { name: "carregar mais" }).count() === 0;
+  const endOfListVisible = await page.getByText(/todos os .* projetos desta seleção foram carregados/).isVisible();
   const initialProjectOrder = await page.locator('#projetos .project-gallery-card .font-display').allTextContents();
   const sortControl = page.locator('#projetos select[data-sort-control="projects"]');
   await sortControl.focus();
@@ -165,7 +182,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

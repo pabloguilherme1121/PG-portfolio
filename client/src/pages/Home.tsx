@@ -342,6 +342,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
+  const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -412,6 +413,9 @@ export default function Home() {
       return matchesTechnology && matchesCategory && matchesSearch && matchesFavorites;
     })
     .sort((first, second) => sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
+  const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
+  const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
+  const projectPageSize = 4;
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -423,6 +427,10 @@ export default function Home() {
     ? buildAvailabilityWhatsAppUrl(whatsAppNumber, availabilityDate, availabilityTime)
     : "";
   const isAvailabilityConsultationReadyForUser = isAvailabilityConsultationReady(availabilityDate, availabilityTime, isBlockedDatesError);
+
+  useEffect(() => {
+    setVisibleProjectLimit(projectPageSize);
+  }, [activeTechnology, activeCategory, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
 
   useEffect(() => {
     const sharedFavorites = new URLSearchParams(window.location.search).get("favorites");
@@ -1107,8 +1115,9 @@ export default function Home() {
 
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {visibleRepositories.length > 0 ? (
+              <>
               <div className={`grid gap-px bg-white/[0.1] ${isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`}>
-                {visibleRepositories.map((repository, index) => {
+                {displayedRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
                       {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-105" />}
@@ -1151,6 +1160,9 @@ export default function Home() {
                   );
                 })}
               </div>
+              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={() => setVisibleProjectLimit((current) => Math.min(current + projectPageSize, visibleRepositories.length))} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
+              {!hasMoreRepositories && <p role="status" aria-live="polite" className="mt-5 border border-white/[0.1] bg-[#07101e]/60 px-4 py-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">todos os {visibleRepositories.length} projetos desta seleção foram carregados</p>}
+              </>
             ) : (
               <div key={`empty-${activeTechnology}`} className="project-gallery-empty grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
                 <div className="relative overflow-hidden p-7 sm:p-10">
