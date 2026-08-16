@@ -1161,3 +1161,12 @@
 - [x] Exibir estimativa do tamanho final do ZIP antes do download.
 - [x] Preservar progresso, campos, miniaturas, filtros e acessibilidade.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Cancelamento real, estimativa detalhada e formato persistente — nova rodada
+
+- [x] Auditar fluxo de exportação e preferências persistentes.
+- [x] Cancelar requisições de miniaturas com AbortController.
+- [x] Exibir estimativa expansível separando dados, miniaturas e overhead.
+- [x] Persistir última estimativa de tamanho e formato de exportação no sessionStorage.
+- [x] Preservar progresso, seleção, campos, miniaturas e acessibilidade.
+- [x] Validar testes, typecheck, build e checkpoint.
