@@ -8,6 +8,7 @@ const results = [];
 for (const width of viewports) {
   const page = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin: "http://127.0.0.1:3000" });
+  await page.addInitScript(() => { if (!window.sessionStorage.getItem("validation-clean")) { window.localStorage.clear(); window.sessionStorage.setItem("validation-clean", "1"); } });
   await page.goto("http://127.0.0.1:3000/", { waitUntil: "networkidle" });
   const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
   await page.evaluate(() => window.scrollTo(0, 1200));
@@ -69,7 +70,7 @@ for (const width of viewports) {
   await shareButton.focus();
   await page.keyboard.press("Enter");
   const shareStatusLocator = page.locator('#projetos [role="status"]').filter({ hasText: "Link dos favoritos copiado" }).first();
-  await shareStatusLocator.waitFor({ state: "attached" });
+  await page.waitForTimeout(180);
   const shareStatusText = await shareStatusLocator.textContent();
   const sharedLink = await page.evaluate(() => navigator.clipboard.readText());
   const sharedPage = await browser.newPage({ viewport: { width, height: 844 }, reducedMotion: "reduce" });
@@ -222,6 +223,13 @@ for (const width of viewports) {
   const previewStaggerCount = await audiovisualPreviewRegion.locator(".preview-stagger-item:visible").count();
   const previewStaggerSequence = await audiovisualPreviewRegion.locator(".preview-stagger-item:visible").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("style") || ""));
   const previewStaggered = previewStaggerCount >= 3 && previewStaggerSequence.every((style, index) => style.includes(`--preview-delay: ${index * 45}ms`));
+  const firstPreviewCard = audiovisualPreviewRegion.locator(".group").first();
+  await firstPreviewCard.hover();
+  const previewHoverTitleVisible = await firstPreviewCard.locator(".pointer-events-none").isVisible();
+  await audiovisualPreviewRegion.click();
+  await page.waitForTimeout(80);
+  const previewDirectActivation = await audiovisualPreset.getAttribute("aria-pressed") === "true";
+  const previewActivationHighlight = await audiovisualPreset.getAttribute("data-profile-recently-activated") === "true";
   await page.getByRole("button", { name: "Ocultar prévia do perfil Audiovisual", exact: true }).press("Enter");
   await page.waitForTimeout(240);
   const audiovisualPreviewCollapsed = await audiovisualPreviewRegion.getAttribute("aria-hidden") === "true" && await audiovisualPreviewRegion.getAttribute("data-preview-open") === "false";
@@ -277,6 +285,12 @@ for (const width of viewports) {
   const gridViewRestored = await page.locator('[data-gallery-view="grid"]').count() > 0;
   await page.getByRole("button", { name: "Fechar configurações de aparência" }).press("Enter");
   await page.waitForTimeout(80);
+  const categoryAll = page.locator('[data-filter-scope="category"]').filter({ hasText: "Todos" }).first();
+  const technologyAll = page.locator('[data-filter-scope="technology"]').filter({ hasText: "Todos" }).first();
+  if (await categoryAll.getAttribute("aria-pressed") !== "true") await categoryAll.press("Enter");
+  if (await technologyAll.getAttribute("aria-pressed") !== "true") await technologyAll.press("Enter");
+  const savedToggle = page.getByRole("button", { name: /salvos/ });
+  if (await savedToggle.getAttribute("aria-pressed") === "true") await savedToggle.press("Enter");
   await searchInput.fill("");
   await page.waitForTimeout(520);
   await page.locator('[data-project-id]').nth(1).waitFor({ state: "visible", timeout: 5000 });
@@ -293,7 +307,7 @@ for (const width of viewports) {
     const value = window.localStorage.getItem("pablo-portfolio-manual-order");
     return Array.isArray(JSON.parse(value || "[]")) && JSON.parse(value || "[]").length >= 7;
   });
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, predefinedProfilesVisible, audiovisualPresetActivated, previewInitiallyCollapsed, audiovisualPreviewVisible, audiovisualPreviewTransitioned, previewStaggerCount, previewStaggered, audiovisualPreviewCollapsed, audiovisualPreviewProjectCount, audiovisualPreviewResponsiveCount, predefinedProfilesStored, audiovisualProfileCreated, technologyProfileCreated, audiovisualProfileActivated, duplicatedProfileCreated, duplicatedProfileActivated, profileOrderStored, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, orderBeforeManualMove, orderAfterManualMove, firstProjectName, moveDownFocusVisible, manualMoveChangedOrder, manualOrderStored, lightThemeActivated, themeStored, darkThemeRestored });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, predefinedProfilesVisible, audiovisualPresetActivated, previewInitiallyCollapsed, audiovisualPreviewVisible, audiovisualPreviewTransitioned, previewStaggerCount, previewStaggered, previewHoverTitleVisible, previewDirectActivation, previewActivationHighlight, audiovisualPreviewCollapsed, audiovisualPreviewProjectCount, audiovisualPreviewResponsiveCount, predefinedProfilesStored, audiovisualProfileCreated, technologyProfileCreated, audiovisualProfileActivated, duplicatedProfileCreated, duplicatedProfileActivated, profileOrderStored, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, orderBeforeManualMove, orderAfterManualMove, firstProjectName, moveDownFocusVisible, manualMoveChangedOrder, manualOrderStored, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 

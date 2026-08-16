@@ -452,3 +452,15 @@
 - [x] Implementar atrasos e animação individual nas miniaturas.
 - [x] Validar sequência, reduced motion, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Reformulação visual ampla e interações dos perfis
+
+- [x] Auditar a interface atual, os assets fornecidos, a foto e o currículo.
+- [x] Definir nova direção visual com cores vivas, artes naturais, ícones e cards profissionais.
+- [x] Reformular cores, artes, ícones, cards e uso das imagens fornecidas.
+- [x] Aprimorar o currículo e melhorar a foto profissional do portfólio.
+- [x] Adicionar destaque temporário ao perfil recém-ativado.
+- [x] Adicionar hover nas miniaturas com título do projeto.
+- [x] Permitir ativação do perfil diretamente pela área de prévia expandida.
+- [x] Validar visual, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
