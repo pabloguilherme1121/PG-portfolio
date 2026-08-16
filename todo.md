@@ -497,3 +497,11 @@
 - [x] Integrar zoom com miniaturas, setas, teclado e responsividade.
 - [x] Validar pinça, controles, acessibilidade, movimento reduzido, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Compartilhamento no lightbox
+
+- [x] Auditar o lightbox e definir links de compartilhamento por projeto.
+- [x] Implementar cópia de link e compartilhamento nativo acessíveis.
+- [x] Integrar feedback visual, teclado, responsividade e suporte móvel.
+- [x] Validar compartilhamento, acessibilidade, testes e build.
+- [x] Salvar checkpoint após a validação final.

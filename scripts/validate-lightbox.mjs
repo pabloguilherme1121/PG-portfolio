@@ -6,6 +6,7 @@ const results = [];
 
 for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
   const context = await browser.newContext({ viewport });
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
   const page = await context.newPage();
   await page.goto(url, { waitUntil: "networkidle" });
   await page.waitForTimeout(900);
@@ -20,6 +21,10 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   const thumbnailCount = await thumbnails.count();
   const activeThumbnailCount = await dialog.locator('[role="listitem"][aria-current="true"]').count();
   const lockedScroll = await page.evaluate(() => document.body.style.overflow === "hidden");
+  const copyLinkButton = dialog.getByRole("button", { name: "Copiar link do projeto" });
+  await copyLinkButton.click();
+  const copiedProjectLink = await page.evaluate(() => navigator.clipboard.readText());
+  const shareStatus = await dialog.locator('[role="status"]').filter({ hasText: "Link do projeto copiado." }).textContent();
   const zoomGroup = dialog.locator('[aria-label="Controles de zoom"]');
   const zoomStatus = zoomGroup.locator('[aria-live="polite"]');
   const zoomIncrease = zoomGroup.getByRole("button", { name: "Aumentar zoom" });
@@ -42,7 +47,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   await dialog.waitFor({ state: "detached" });
   await page.waitForTimeout(60);
   const restoredFocus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label")?.startsWith("Ampliar imagem") ?? false);
-  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, zoomAfterIncrease, doubleClickZoomed: zoomTransform?.includes("scale(2)") ?? false, zoomAfterReset, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
+  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, copiedProjectLink, shareStatus, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, zoomAfterIncrease, doubleClickZoomed: zoomTransform?.includes("scale(2)") ?? false, zoomAfterReset, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
   await context.close();
 }
 

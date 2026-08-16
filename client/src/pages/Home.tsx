@@ -419,6 +419,7 @@ export default function Home() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -636,6 +637,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const sharedImageId = new URLSearchParams(window.location.search).get("imagem");
+    if (!sharedImageId || !lightboxProjects.some((project) => project.id === sharedImageId)) return;
+    setLightboxProjectId(sharedImageId);
+  }, [lightboxProjects]);
+
+  useEffect(() => {
     try {
       window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
     } catch {
@@ -750,6 +757,46 @@ export default function Home() {
       setShareStatus("error");
     }
     window.setTimeout(() => setShareStatus("idle"), 2600);
+  }
+
+  function getLightboxShareUrl(project: Repository) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("imagem", project.id);
+    url.hash = "projetos";
+    return url.toString();
+  }
+
+  async function copyLightboxProjectLink() {
+    if (!lightboxProject) return;
+    try {
+      await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
+      setLightboxShareStatus("copied");
+    } catch {
+      setLightboxShareStatus("error");
+    }
+    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
+  }
+
+  async function shareLightboxProject() {
+    if (!lightboxProject) return;
+    const shareData = {
+      title: `${lightboxProject.name} — Pablo Guilherme`,
+      text: lightboxProject.description,
+      url: getLightboxShareUrl(lightboxProject),
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setLightboxShareStatus("shared");
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setLightboxShareStatus("error");
+      }
+    } else {
+      await copyLightboxProjectLink();
+      return;
+    }
+    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
   }
 
   function exportFavorites(format: "csv" | "json") {
@@ -1769,7 +1816,14 @@ export default function Home() {
             </div>
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
-              <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
+              <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
+                  <button type="button" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
+                  <button type="button" onClick={copyLightboxProjectLink} className="grid h-9 w-9 place-items-center border-l border-white/15 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title="Copiar link"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                </div>
+                <span role="status" aria-live="polite" className="sr-only">{lightboxShareStatus === "copied" ? "Link do projeto copiado." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
+                <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
+              </div>
             </div>
             <div className="border-t border-white/10 bg-[#050b15] px-4 py-3 sm:px-6" role="group" aria-label="Miniaturas dos projetos">
               <div className="flex gap-2 overflow-x-auto pb-1" role="list">
