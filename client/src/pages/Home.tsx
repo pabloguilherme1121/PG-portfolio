@@ -531,6 +531,7 @@ export default function Home() {
   const [lightboxFullscreen, setLightboxFullscreen] = useState(false);
   const [lightboxFullscreenNotice, setLightboxFullscreenNotice] = useState("");
   const [lightboxSwipeDirection, setLightboxSwipeDirection] = useState<"previous" | "next" | null>(null);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
@@ -547,8 +548,11 @@ export default function Home() {
   const pinchStartZoomRef = useRef(1);
   const swipeStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ active: false, x: 0, y: 0, offsetX: 0, offsetY: 0 });
+  const panPointerRef = useRef({ active: false, pointerId: -1, x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxModalRef = useRef<HTMLDivElement>(null);
+  const lightboxImageRef = useRef<HTMLImageElement>(null);
+  const lightboxImageContainerRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -580,6 +584,17 @@ export default function Home() {
     setLightboxClosing(false);
     setLightboxFullscreenNotice("");
     setLightboxSwipeDirection(null);
+    try {
+      const swipeHintSeen = window.localStorage.getItem("arquivo-profundo-swipe-hint-seen") === "true";
+      if (!swipeHintSeen) {
+        setShowSwipeHint(true);
+        window.localStorage.setItem("arquivo-profundo-swipe-hint-seen", "true");
+        window.setTimeout(() => setShowSwipeHint(false), 3200);
+      }
+    } catch {
+      setShowSwipeHint(true);
+      window.setTimeout(() => setShowSwipeHint(false), 3200);
+    }
     setLightboxProjectId(projectId);
   };
 
@@ -632,6 +647,39 @@ export default function Home() {
     return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
   };
 
+  const getPanBounds = () => {
+    const image = lightboxImageRef.current;
+    const container = lightboxImageContainerRef.current;
+    if (!image || !container || !image.naturalWidth || !image.naturalHeight) return { x: 0, y: 0 };
+    const containerRect = container.getBoundingClientRect();
+    const aspectRatio = image.naturalWidth / image.naturalHeight;
+    const fitWidth = Math.min(containerRect.width, containerRect.height * aspectRatio);
+    const fitHeight = fitWidth / aspectRatio;
+    return { x: Math.max(0, (fitWidth * lightboxZoom - containerRect.width) / 2), y: Math.max(0, (fitHeight * lightboxZoom - containerRect.height) / 2) };
+  };
+
+  const clampPanOffset = (x: number, y: number) => {
+    const bounds = getPanBounds();
+    return { x: Math.min(bounds.x, Math.max(-bounds.x, x)), y: Math.min(bounds.y, Math.max(-bounds.y, y)) };
+  };
+
+  const handleLightboxPointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (event.pointerType === "touch" || lightboxZoom <= 1 || !lightboxImageRef.current) return;
+    event.preventDefault();
+    panPointerRef.current = { active: true, pointerId: event.pointerId, x: event.clientX, y: event.clientY, offsetX: lightboxOffset.x, offsetY: lightboxOffset.y };
+    event.currentTarget.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleLightboxPointerMove = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (!panPointerRef.current.active || panPointerRef.current.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setLightboxOffset(clampPanOffset(panPointerRef.current.offsetX + event.clientX - panPointerRef.current.x, panPointerRef.current.offsetY + event.clientY - panPointerRef.current.y));
+  };
+
+  const handleLightboxPointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
+    if (panPointerRef.current.pointerId === event.pointerId) panPointerRef.current.active = false;
+  };
+
   const handleLightboxTouchStart = (event: TouchEvent<HTMLImageElement>) => {
     if (event.touches.length === 1) {
       const touch = event.touches[0];
@@ -648,10 +696,9 @@ export default function Home() {
     if (event.touches.length === 1 && panStartRef.current.active && lightboxZoom > 1) {
       event.preventDefault();
       const touch = event.touches[0];
-      const maxPan = 240 * (lightboxZoom - 1);
       const nextX = panStartRef.current.offsetX + touch.clientX - panStartRef.current.x;
       const nextY = panStartRef.current.offsetY + touch.clientY - panStartRef.current.y;
-      setLightboxOffset({ x: Math.min(maxPan, Math.max(-maxPan, nextX)), y: Math.min(maxPan, Math.max(-maxPan, nextY)) });
+      setLightboxOffset(clampPanOffset(nextX, nextY));
       return;
     }
     if (event.touches.length !== 2 || pinchStartDistanceRef.current <= 0) return;
@@ -2302,10 +2349,11 @@ export default function Home() {
               {lightboxSwipeDirection && <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-5" aria-hidden="true"><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "previous" ? "opacity-100" : "opacity-30"}`}><ChevronLeft className="h-5 w-5" /></span><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "next" ? "opacity-100" : "opacity-30"}`}><ChevronRight className="h-5 w-5" /></span></div>}
               {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
               <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
-              <div className="relative flex min-h-[28vh] w-full items-center justify-center">
+              <div ref={lightboxImageContainerRef} className="relative flex min-h-[28vh] w-full items-center justify-center">
+                {showSwipeHint && <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 border border-[#67e8f9]/30 bg-[#06172f]/90 px-4 py-2 text-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]">deslize para navegar</span></div>}
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
                 {lightboxImageError && <div className="absolute inset-0 z-10 grid place-items-center px-6 text-center" role="alert"><div className="max-w-sm border border-[#fb7185]/35 bg-[#190f1c]/95 px-5 py-5 shadow-[0_10px_30px_rgba(0,0,0,0.28)]"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#fda4af]">imagem indisponível</p><p className="mt-2 font-display text-xl font-medium tracking-[-0.03em] text-white">Não conseguimos abrir esta imagem agora.</p><p className="mt-2 font-body text-sm leading-6 text-[#f6d8df]">Você pode tentar novamente ou continuar navegando pelos projetos.</p><button type="button" onClick={() => { setLightboxImageError(false); setLightboxImageLoading(true); setLightboxImageAttempt((attempt) => attempt + 1); }} className="mt-4 border border-[#fda4af]/55 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#ffe4e8] transition-colors hover:bg-[#4b1d2a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fda4af]">tentar novamente</button></div></div>}
-                <img key={`${lightboxProject.id}-${lightboxImageAttempt}`} src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onLoad={() => { setLightboxImageLoading(false); setLightboxImageError(false); }} onError={() => { setLightboxImageLoading(false); setLightboxImageError(true); }} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 2)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className={`max-h-[68vh] w-full object-contain transition-[transform,opacity] duration-150 motion-reduce:transition-none ${lightboxImageLoading || lightboxImageError ? "opacity-0" : "opacity-100"}`} />
+                <img ref={lightboxImageRef} key={`${lightboxProject.id}-${lightboxImageAttempt}`} src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onLoad={() => { setLightboxImageLoading(false); setLightboxImageError(false); }} onError={() => { setLightboxImageLoading(false); setLightboxImageError(true); }} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onPointerDown={handleLightboxPointerDown} onPointerMove={handleLightboxPointerMove} onPointerUp={handleLightboxPointerEnd} onPointerCancel={handleLightboxPointerEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 2)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className={`max-h-[68vh] w-full object-contain transition-[transform,opacity] duration-150 motion-reduce:transition-none ${lightboxImageLoading || lightboxImageError ? "opacity-0" : "opacity-100"}`} />
               </div>
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = lightboxProjects[(projectIndex - 1 + lightboxProjects.length) % lightboxProjects.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = lightboxProjects[(projectIndex + 1) % lightboxProjects.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>

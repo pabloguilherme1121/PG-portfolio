@@ -993,3 +993,12 @@
 - [x] Adicionar botão acessível para redefinir o zoom.
 - [x] Preservar pinch zoom, fullscreen, teclado, focus trap e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: pan desktop, dica inicial e limites precisos — nova rodada
+
+- [x] Auditar pan atual, persistência da dica e dimensões reais da imagem.
+- [x] Implementar pan por mouse e trackpad quando o zoom estiver acima de 100%.
+- [x] Exibir “deslize para navegar” somente na primeira abertura do lightbox.
+- [x] Limitar o arraste às dimensões reais da imagem e do viewport.
+- [x] Preservar swipe mobile, pinch zoom, fullscreen, teclado, focus trap e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
