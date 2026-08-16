@@ -473,3 +473,11 @@
 - [x] Otimizar responsividade e performance sem quebrar funcionalidades.
 - [x] Validar melhorias com testes, auditorias, screenshots e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Lightbox de imagens dos projetos
+
+- [x] Auditar cards, imagens e estados atuais da galeria.
+- [x] Implementar lightbox com navegação, foco e fechamento acessível.
+- [x] Integrar lightbox aos cards, miniaturas e modos de visualização.
+- [x] Validar acessibilidade, responsividade, movimento reduzido, testes e build.
+- [x] Salvar checkpoint após a validação final.

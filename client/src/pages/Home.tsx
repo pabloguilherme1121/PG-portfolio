@@ -34,6 +34,7 @@ import {
   Loader2,
   MapPin,
   Menu,
+  Maximize2,
   MessageCircle,
   Plane,
   Play,
@@ -48,7 +49,7 @@ import {
   LayoutGrid,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import {
@@ -422,6 +423,48 @@ export default function Home() {
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
+  const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
+  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
+  const lightboxProject = lightboxProjectId ? repositories.find((repository) => repository.id === lightboxProjectId) ?? null : null;
+
+  const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
+    lightboxReturnFocusRef.current = event.currentTarget;
+    setLightboxProjectId(projectId);
+  };
+
+  const closeProjectLightbox = () => {
+    setLightboxProjectId(null);
+    window.setTimeout(() => lightboxReturnFocusRef.current?.focus(), 0);
+  };
+
+  useEffect(() => {
+    if (!lightboxProjectId) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.setTimeout(() => lightboxCloseRef.current?.focus(), 0);
+    const handleLightboxKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeProjectLightbox();
+        return;
+      }
+      if (!lightboxProject) return;
+      const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id);
+      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+        event.preventDefault();
+        const direction = event.key === "ArrowRight" ? 1 : -1;
+        const nextIndex = (projectIndex + direction + repositories.length) % repositories.length;
+        const nextProject = repositories[nextIndex];
+        if (nextProject?.cover) setLightboxProjectId(nextProject.id);
+      }
+    };
+    window.addEventListener("keydown", handleLightboxKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleLightboxKeyDown);
+    };
+  }, [lightboxProjectId, lightboxProject, repositories]);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
   const [isAvailabilityRedirecting, setIsAvailabilityRedirecting] = useState(false);
@@ -1373,8 +1416,10 @@ export default function Home() {
 
                   const reorderControls = <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1" role="group" aria-label={`Reordenar ${repository.name}`}><span className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#9eb5d2]" title="Arraste para reordenar"><GripVertical className="h-4 w-4" aria-hidden="true" /></span><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, -1); }} aria-label={`Mover ${repository.name} para cima`} title="Mover para cima" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronUp className="h-4 w-4" aria-hidden="true" /></button><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, 1); }} aria-label={`Mover ${repository.name} para baixo`} title="Mover para baixo" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronDown className="h-4 w-4" aria-hidden="true" /></button></div>;
                   const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-5 top-5 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button>;
+                  const lightboxButton = repository.cover ? <button type="button" onClick={(event) => openProjectLightbox(repository.id, event)} aria-label={`Ampliar imagem de ${repository.name}`} title="Ampliar imagem" className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center border border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] transition-all hover:border-[#67e8f9] hover:bg-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-4 w-4" aria-hidden="true" /></button> : null;
                   return repository.kind === "video" ? (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
+                      {lightboxButton}
                       {favoriteButton}
                       {reorderControls}
                       <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
@@ -1383,6 +1428,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
+                      {lightboxButton}
                       {favoriteButton}
                       {reorderControls}
                       <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
@@ -1660,6 +1706,23 @@ export default function Home() {
         <span className="hidden sm:inline">WhatsApp</span>
         <span className="hidden max-w-0 overflow-hidden whitespace-nowrap text-[9px] font-medium tracking-[0.08em] opacity-0 transition-all duration-200 group-hover:max-w-[180px] group-hover:opacity-100 lg:inline">falar sobre orçamento</span>
       </a>
+
+      {lightboxProject?.cover && (
+        <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
+          <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
+            <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
+            <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#030812] p-3 sm:p-6">
+              <img src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} className="max-h-[68vh] w-full object-contain motion-reduce:transition-none" />
+              <button type="button" onClick={() => { const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = repositories[(projectIndex - 1 + repositories.length) % repositories.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
+              <button type="button" onClick={() => { const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = repositories[(projectIndex + 1) % repositories.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
+            </div>
+            <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
+              <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
+              <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{repositories.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {repositories.length}</div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedProject?.kind === "video" && (
         <div className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={`Vídeo: ${selectedProject.name}`}>
