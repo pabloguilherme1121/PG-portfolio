@@ -837,3 +837,16 @@
 - [x] Preservar barra de contato, Telegram, WhatsApp, Instagram, lightbox e coleções favoritas.
 - [x] Preservar modal, loader e barra de progresso do currículo.
 - [x] Não inventar clientes, depoimentos, métricas, certificações ou experiência.
+
+## Alternância de modo escuro — nova rodada
+
+- [x] Auditar o sistema de temas existente e o botão atual.
+- [x] Refinar a alternância claro/escuro com rótulo acessível e persistência.
+- [x] Garantir contraste, foco visível, responsividade e suporte a prefers-reduced-motion.
+- [x] Validar testes, typecheck, build e Chromium.
+- [x] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Preservar o tema claro, o tema sistema e a identidade Arquivo Profundo.
+- [x] Preservar navegação, currículo, galeria, showreel e barra de contato.
