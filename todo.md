@@ -1196,3 +1196,10 @@
 - [x] Corrigir problemas de contraste ou navegação encontrados na validação.
 - [x] Adicionar hover, focus-visible e transições suaves aos três cards de projetos destacados.
 - [x] Executar testes, build, inspeção visual e salvar checkpoint da iteração.
+
+## Tema, carregamento e detalhes dos projetos — nova iteração
+
+- [x] Adicionar botão acessível de alternância entre tema claro e escuro, com persistência local.
+- [x] Implementar skeleton loading nos cards dos três projetos destacados.
+- [x] Criar modal acessível de detalhes ao clicar nos cards destacados.
+- [x] Validar tema, skeleton, modal, teclado, reduced motion, testes, build e checkpoint.

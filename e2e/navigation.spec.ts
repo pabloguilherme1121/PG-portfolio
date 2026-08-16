@@ -55,6 +55,22 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator(".featured-project-card")).toHaveCount(3);
   });
 
+  test("alterna tema, exibe skeleton inicial e abre detalhes dos destaques", async ({ page }) => {
+    await page.goto("/");
+    const themeToggle = page.locator('[data-theme-toggle="true"]').first();
+    await expect(themeToggle).toHaveAttribute("aria-pressed", "true");
+    await themeToggle.click();
+    await expect(themeToggle).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    await page.locator('[data-featured-project]').first().waitFor({ state: "visible" });
+    await page.locator('[data-featured-project]').first().click();
+    const details = page.locator('[data-project-details-dialog="true"]');
+    await expect(details).toBeVisible();
+    await expect(details.getByRole("heading", { level: 2 })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(details).toBeHidden();
+  });
+
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);
