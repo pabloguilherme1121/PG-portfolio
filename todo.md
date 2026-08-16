@@ -445,3 +445,10 @@
 - [x] Implementar animação suave de expansão e recolhimento.
 - [x] Validar movimento, acessibilidade, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Entrada sequencial das miniaturas
+
+- [x] Definir a entrada escalonada e o comportamento com movimento reduzido.
+- [x] Implementar atrasos e animação individual nas miniaturas.
+- [x] Validar sequência, reduced motion, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
