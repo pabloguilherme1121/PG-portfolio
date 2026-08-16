@@ -735,3 +735,19 @@
 - [x] Não usar video-generator, tts-prompter ou music-prompter: não foi solicitada geração de mídia.
 - [x] Não usar manus-api, similarweb-analytics ou pesquisa de YouTube como integração: faltam objetivo e necessidade operacional nesta rodada.
 - [x] Não criar uma nova skill: o pedido é uma melhoria do projeto existente.
+
+
+## Showreel principal com carregamento sob demanda
+
+- [x] Auditar os assets audiovisuais reais disponíveis e a estratégia atual da hero.
+- [x] Selecionar ou preparar um showreel curto e um pôster otimizado compatíveis com o armazenamento do projeto.
+- [x] Implementar o bloco de showreel com carregamento sob demanda, controles nativos e fallback.
+- [x] Evitar autoplay com som, preservar dados móveis e respeitar prefers-reduced-motion.
+- [x] Validar pôster, reprodução, foco, acessibilidade, responsividade, velocidade, testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter a identidade Arquivo Profundo e a hero atual.
+- [x] Preservar a galeria, lightbox, favoritos, barra de contato e currículo.
+- [x] Não inventar imagens ou trabalhos; usar somente asset fornecido ou projeto real já existente.
