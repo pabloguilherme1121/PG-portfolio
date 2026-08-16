@@ -438,3 +438,10 @@
 - [x] Implementar quatro ou cinco projetos na prévia em telas maiores.
 - [x] Validar quantidade, layout, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Animação da prévia de perfis
+
+- [x] Definir a transição e o comportamento com movimento reduzido.
+- [x] Implementar animação suave de expansão e recolhimento.
+- [x] Validar movimento, acessibilidade, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
