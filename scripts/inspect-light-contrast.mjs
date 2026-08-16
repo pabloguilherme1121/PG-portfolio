@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch({ headless: true });
+const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+await context.addInitScript(() => localStorage.setItem("theme-preference", "light"));
+const page = await context.newPage();
+await page.goto(process.env.SITE_URL ?? "http://127.0.0.1:3000/", { waitUntil: "networkidle" });
+await page.waitForTimeout(1200);
+const data = await page.evaluate(() => [...document.querySelectorAll("p,a,button")].map((element) => { const style = getComputedStyle(element); return { text: (element.textContent || element.getAttribute("aria-label") || "").trim().slice(0, 70), color: style.color, background: style.backgroundColor, classes: element.className }; }).filter((item) => item.color === "rgb(111, 145, 183)" || item.color === "rgb(120, 144, 180)" || item.color === "rgb(123, 145, 179)" || item.color === "rgb(110, 137, 171)" || item.color === "rgb(110, 133, 168)" || item.color === "rgb(99, 125, 165)" || item.color === "rgb(95, 126, 154)" || item.color === "rgb(111, 145, 168)"));
+console.log(JSON.stringify(data, null, 2));
+await browser.close();

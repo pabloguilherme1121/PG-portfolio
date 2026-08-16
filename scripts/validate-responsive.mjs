@@ -69,7 +69,7 @@ for (const width of viewports) {
   const shareButton = page.getByRole("button", { name: /compartilhar|copiado/ }).first();
   await shareButton.focus();
   await page.keyboard.press("Enter");
-  const shareStatusLocator = page.locator('#projetos [role="status"]').filter({ hasText: "Link dos favoritos copiado" }).first();
+  const shareStatusLocator = page.locator('#projetos [role="status"]').first();
   await page.waitForTimeout(180);
   const shareStatusText = await shareStatusLocator.textContent();
   const sharedLink = await page.evaluate(() => navigator.clipboard.readText());

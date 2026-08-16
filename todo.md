@@ -464,3 +464,12 @@
 - [x] Permitir ativação do perfil diretamente pela área de prévia expandida.
 - [x] Validar visual, acessibilidade, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Auditoria profissional e melhoria geral
+
+- [x] Auditar visual, conteúdo, interação, acessibilidade e performance atuais.
+- [x] Priorizar problemas e definir melhorias de maior impacto.
+- [x] Implementar melhorias visuais, de conteúdo, UX e acessibilidade.
+- [x] Otimizar responsividade e performance sem quebrar funcionalidades.
+- [x] Validar melhorias com testes, auditorias, screenshots e build.
+- [x] Salvar checkpoint após a validação final.

@@ -705,3 +705,53 @@ section[id] {
   .profile-activation-pulse { animation: none; }
 }
 
+
+.archive-entry,
+.evidence-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.archive-entry::before,
+.evidence-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(103, 232, 249, 0.08), transparent 38%, rgba(14, 116, 144, 0.06));
+  opacity: 0;
+  transition: opacity 260ms var(--ease-out, cubic-bezier(0.23, 1, 0.32, 1));
+}
+
+.archive-entry:hover::before,
+.evidence-card:hover::before {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .archive-entry::before,
+  .evidence-card::before { transition: none; }
+}
+
+.arquivo-page[data-theme="light"] a[href*="instagram.com"] {
+  color: #1f5275 !important;
+}
+
+
+
+.arquivo-page[data-theme="light"] button[aria-pressed="true"] {
+  color: #02111f !important;
+}
+
+.arquivo-page[data-theme="light"] .light-muted-ink {
+  color: #294f6b !important;
+}
+
+.arquivo-page[data-theme="light"] .light-dark-cta:disabled {
+  color: #e7fbff !important;
+}
+
+.arquivo-page[data-theme="light"] .footer-social-icon {
+  color: #1f5275 !important;
+}

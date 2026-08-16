@@ -103,7 +103,7 @@ export default function InstagramRepertoire() {
               })}
             </div>
           </div>
-          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#5f7e9a]" role="status" aria-live="polite">{visibleProfiles.length} {visibleProfiles.length === 1 ? "referência" : "referências"} visível{visibleProfiles.length === 1 ? "" : "eis"}</p>
+          <p className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#5f7e9a] light-muted-ink" role="status" aria-live="polite">{visibleProfiles.length} {visibleProfiles.length === 1 ? "referência" : "referências"} visível{visibleProfiles.length === 1 ? "" : "eis"}</p>
         </div>
 
         {visibleProfiles.length > 0 ? (

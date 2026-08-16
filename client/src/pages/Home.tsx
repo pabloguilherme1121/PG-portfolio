@@ -987,7 +987,7 @@ export default function Home() {
             </div>
 
             <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
-              <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4]">
+              <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
                 STATUS: aprendendo na prática<br />
                 FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL<br />
                 ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
@@ -1022,7 +1022,7 @@ export default function Home() {
                   <aside className="human-note mt-9 max-w-2xl p-5 sm:p-6">
                     <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">nota de direção</p>
                     <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">“Um bom projeto não precisa começar pronto. Precisa de clareza para dar o próximo passo.”</p>
-                    <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd]">— direção e processo</p>
+                    <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd] light-muted-ink">— direção e processo</p>
                   </aside>
                   <a
                     href={resumeUrl}
@@ -1048,7 +1048,7 @@ export default function Home() {
                       <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6fa4ff]">perfil / 2026</span>
                     </figcaption>
                   </figure>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#7d94b8]">coordenadas atuais</p>
+                  <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#7d94b8] light-muted-ink">coordenadas atuais</p>
                   <dl className="mt-5 space-y-5">
                     <div>
                       <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">formação</dt>
@@ -1075,8 +1075,8 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
-                <h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Skills para tirar ideias do lugar.</h2>
-                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: estratégia e execução, tela e presença, detalhe e visão geral.</p>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que estou aprendendo a fazer bem.</h2>
+                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: lógica e presença, tela e câmera, detalhe e visão geral.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">status do arquivo</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Aprendendo na prática, registrando o processo e melhorando a cada entrega.</p></div>
               </div>
               <div className="border-t border-white/[0.1]">
                 {skillTracks.map((skill) => (
@@ -1085,7 +1085,7 @@ export default function Home() {
                     <div>
                       <h3 className="font-display text-2xl font-medium text-[#eff6ff] transition-colors group-hover:text-[#69a1ff]">{skill.title}</h3>
                       <p className="mt-3 max-w-lg font-body text-sm leading-7 text-[#9eb0cc]">{skill.text}</p>
-                      <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f91b7]">{skill.tools}</p>
+                      <p className="mt-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f91b7] light-muted-ink">{skill.tools}</p>
                     </div>
                     <span className="flex h-8 w-8 items-center justify-center border border-white/10 text-[#7daafa] transition-all duration-200 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white">
                       <ArrowUpRight className="h-4 w-4" />
@@ -1104,7 +1104,7 @@ export default function Home() {
               </div>
               <div className="mt-7 grid gap-px bg-white/[0.1] md:grid-cols-3">
                 {repertoireSignals.map((signal) => (
-                  <article key={signal.title} className="group relative min-h-[270px] overflow-hidden bg-[#07101c] p-5 sm:p-6">
+                  <article key={signal.title} className="evidence-card group relative min-h-[270px] overflow-hidden bg-[#07101c] p-5 sm:p-6">
                     <img src={signal.cover} alt={`Referência visual: ${signal.title}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 saturate-[0.75] transition duration-500 group-hover:scale-105 group-hover:opacity-60" />
                     <div className="absolute inset-0 bg-gradient-to-t from-[#030b1e] via-[#030b1e]/65 to-transparent" />
                     <div className="relative flex h-full flex-col justify-end">
@@ -1125,7 +1125,7 @@ export default function Home() {
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
-                <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do briefing à entrega,<br />com clareza.</h2>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de produção</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Como uma ideia vira entrega.</h2>
                 <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // direção e imagem</div>
               </div>
               <div className="lg:pb-2">
@@ -1136,18 +1136,18 @@ export default function Home() {
 
             <div className="mt-8 divide-y divide-white/[0.1] border-y border-white/[0.1]">
               {serviceOffers.map(({ number, label, title, text, detail, delivery, duration, Icon }, index) => (
-                <article key={number} className={`group relative grid gap-7 overflow-hidden py-9 transition-colors duration-200 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
+                <article key={number} className={`archive-entry group relative grid gap-7 overflow-hidden border-l border-transparent py-9 transition-all duration-300 hover:border-[#67e8f9]/60 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
                   <div className="flex items-start justify-between gap-4 lg:pr-8">
-                    <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1]">PG / SVC.{number}</p></div>
+                    <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1] light-muted-ink">PG / SVC.{number}</p></div>
                     <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
                   </div>
                   <div className="lg:border-l lg:border-white/[0.1] lg:pl-8">
-                    <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7190bd]">{label}</p>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7190bd] light-muted-ink">{label}</p>
                     <h3 className="mt-4 font-display text-[clamp(2rem,3vw,3.2rem)] font-medium leading-[0.96] tracking-[-0.05em] text-white">{title}</h3>
                     <p className="mt-5 max-w-lg font-body text-sm leading-7 text-[#a4b5cf]">{text}</p>
                   </div>
                   <div className="border-t border-white/[0.1] pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
-                    <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8]">{detail}</p>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8] light-muted-ink">{detail}</p>
                     <div className="mt-5 grid grid-cols-2 gap-4">
                       <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">entrega</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{delivery}</p></div>
                       <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">duração típica</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{duration}</p></div>
@@ -1156,7 +1156,7 @@ export default function Home() {
                 </article>
               ))}
             </div>
-            <p className="mt-5 max-w-3xl font-mono text-[9px] uppercase leading-5 tracking-[0.11em] text-[#637da5]">REFERÊNCIAS INICIAIS DE MERCADO. FORMATOS, QUANTIDADE DE PEÇAS E DURAÇÃO PODEM SER AJUSTADOS CONFORME O OBJETIVO DE CADA PROJETO.</p>
+            <p className="mt-5 max-w-3xl font-mono text-[9px] uppercase leading-5 tracking-[0.11em] text-[#637da5] light-muted-ink">REFERÊNCIAS INICIAIS DE MERCADO. FORMATOS, QUANTIDADE DE PEÇAS E DURAÇÃO PODEM SER AJUSTADOS CONFORME O OBJETIVO DE CADA PROJETO.</p>
           </div>
         </section>
 
@@ -1193,7 +1193,7 @@ export default function Home() {
               </div>
               <div className="max-w-sm">
                 <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
-                <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
+                <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
               </div>
             </div>
 
@@ -1211,8 +1211,8 @@ export default function Home() {
                 <span role="status" aria-live="polite" className="sr-only">Lista compartilhada com {sharedProjectIds.length} {sharedProjectIds.length === 1 ? "referência" : "referências"} carregada.</span>
               </aside>}
               <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7] light-muted-ink">explorar por categoria</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">{visibleRepositories.length} referências visíveis</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
@@ -1223,7 +1223,7 @@ export default function Home() {
                     <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
                   </span>
                   <span role="status" aria-live="polite" className="sr-only">{shareStatus === "copied" ? "Link dos favoritos copiado." : shareStatus === "error" ? "Não foi possível copiar o link dos favoritos." : ""}</span>
-                  <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">
+                  <label className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">
                   <span>ordenar por</span>
                   <select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]">
                     {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -1329,13 +1329,13 @@ export default function Home() {
                   aria-label="Limpar busca de trabalhos"
                   title="Limpar busca"
                   tabIndex={projectSearch ? 0 : -1}
-                  className={`absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center border border-transparent text-[#91acd0] transition-[opacity,transform,background-color,border-color,color] duration-200 focus-visible:border-[#67e8f9]/60 focus-visible:bg-[#0b2746] focus-visible:text-[#eaffff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101e] active:scale-95 ${projectSearch ? "scale-100 opacity-100 hover:border-[#67e8f9]/35 hover:bg-[#0b2746] hover:text-white" : "pointer-events-none scale-95 opacity-0"}`}
+                  className={`absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center border border-transparent text-[#91acd0] light-muted-ink transition-[opacity,transform,background-color,border-color,color] duration-200 focus-visible:border-[#67e8f9]/60 focus-visible:bg-[#0b2746] focus-visible:text-[#eaffff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101e] active:scale-95 ${projectSearch ? "scale-100 opacity-100 hover:border-[#67e8f9]/35 hover:bg-[#0b2746] hover:text-white" : "pointer-events-none scale-95 opacity-0"}`}
                 >
                   <X className="h-4 w-4 transition-transform duration-200 hover:rotate-90" aria-hidden="true" />
                   <span className="sr-only">Limpar busca de trabalhos</span>
                 </button>
               </label>
-              <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
+              <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>
 
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
@@ -1392,8 +1392,8 @@ export default function Home() {
                   );
                 })}
               </div>
-              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={loadMoreProjects} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
-              {!hasMoreRepositories && <p role="status" aria-live="polite" className="mt-5 border border-white/[0.1] bg-[#07101e]/60 px-4 py-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">todos os {visibleRepositories.length} projetos desta seleção foram carregados</p>}
+              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={loadMoreProjects} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
+              {!hasMoreRepositories && <p role="status" aria-live="polite" className="mt-5 border border-white/[0.1] bg-[#07101e]/60 px-4 py-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">todos os {visibleRepositories.length} projetos desta seleção foram carregados</p>}
               </>
             ) : (
               <div key={`empty-${activeTechnology}`} className="project-gallery-empty grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
@@ -1513,12 +1513,12 @@ export default function Home() {
                 </div>
                 {isBlockedDatesError ? <div role="alert" className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-[11px] leading-5 text-amber-100">Não foi possível verificar as datas indisponíveis. A consulta está temporariamente desativada. <button type="button" onClick={() => void refetchBlockedDates()} className="font-semibold underline decoration-amber-200/60 underline-offset-2 hover:text-white">Tentar novamente</button></div> : blockedDates.length > 0 && <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-[11px] leading-5 text-rose-200">Datas riscadas em rosa estão indisponíveis para consulta.</p>}
                 <div className="mt-5 border-t border-cyan-100/[0.12] pt-4">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad]">{selectedDateLabel ? `horário desejado · ${selectedDateLabel}` : "escolha uma data útil"}</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad] light-muted-ink">{selectedDateLabel ? `horário desejado · ${selectedDateLabel}` : "escolha uma data útil"}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate || isBlockedDatesError} onClick={() => setAvailabilityTime(time)} className={`border py-2 font-mono text-[10px] transition-colors ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate && !isBlockedDatesError ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
-                <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8]">
+                <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta">
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>
                 <span id="availability-feedback" role="status" aria-live="polite" className="sr-only">{isAvailabilityRedirecting ? "Abrindo o WhatsApp com sua data e horário selecionados." : ""}</span>
@@ -1538,7 +1538,7 @@ export default function Home() {
               <form id="contato-briefing" onSubmit={handleSubmit} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5]">* campos obrigatórios</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
                 </div>
                 <div className="grid gap-7">
                   <div className="grid gap-7 sm:grid-cols-2">
@@ -1617,7 +1617,7 @@ export default function Home() {
                   <Button disabled={quoteRequestMutation.isPending} type="submit" className="h-auto w-fit rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70">
                     {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
                   </Button>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f]">seus dados ficam apenas neste pedido</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f] light-muted-ink">seus dados ficam apenas neste pedido</p>
                 </div>
                 {formError && <p role="alert" className="mt-6 border-l-2 border-rose-400 bg-rose-400/10 px-4 py-3 font-body text-sm text-rose-100">{formError}</p>}
                 {formSent && (
@@ -1643,7 +1643,7 @@ export default function Home() {
         <div className="mx-auto flex max-w-[1440px] flex-col gap-5 px-5 py-7 sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
           <div className="flex items-center gap-3">
             <img src={markUrl} alt="" width="24" height="24" decoding="async" className="h-6 w-6 object-contain" />
-            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3]">Pablo Guilherme · TI · conteúdo · audiovisual</p>
+            <p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3] light-muted-ink">Pablo Guilherme · TI · conteúdo · audiovisual</p>
           </div>
           <div className="flex items-center gap-3">
             <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Instagram @pablogui000" className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a>
