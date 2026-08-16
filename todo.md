@@ -417,3 +417,10 @@
 - [x] Implementar controle acessível para duplicar perfis existentes.
 - [x] Validar nova cópia, seleção, persistência, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Perfis predefinidos de organização
+
+- [x] Auditar os projetos reais e definir ordens iniciais de Audiovisual e Tecnologia.
+- [x] Implementar instalação e alternância dos perfis predefinidos sem sobrescrever perfis personalizados.
+- [x] Validar instalação, persistência, acessibilidade, testes e build.
+- [x] Salvar checkpoint após a validação final.
