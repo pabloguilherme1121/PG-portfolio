@@ -38,3 +38,11 @@ export function calculatePinchZoom(startZoom: number, startDistance: number, cur
 export function formatMiniMapPositionAnnouncement(position: Pick<MiniMapPosition, "xPercent" | "yPercent">): string {
   return `Posição da imagem: ${position.xPercent}% na horizontal e ${position.yPercent}% na vertical.`;
 }
+
+export function getViewportOrientation(width: number, height: number): "portrait" | "landscape" {
+  return width >= height ? "landscape" : "portrait";
+}
+
+export function getCancelledInteractionState() {
+  return { isPanning: false, isPinching: false, allowSwipe: false };
+}

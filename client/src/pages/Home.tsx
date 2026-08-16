@@ -4,7 +4,7 @@
  * metadados, linha de progresso e linguagem visual de arquivo em evolução.
  */
 import { Button } from "@/components/ui/button";
-import { calculateMiniMapPosition, calculatePinchZoom, formatMiniMapPositionAnnouncement } from "@/lib/lightboxInteractions";
+import { calculateMiniMapPosition, calculatePinchZoom, formatMiniMapPositionAnnouncement, getCancelledInteractionState, getViewportOrientation } from "@/lib/lightboxInteractions";
 import {
   ArrowDown,
   ArrowDownRight,
@@ -535,6 +535,8 @@ export default function Home() {
   const [showSwipeHint, setShowSwipeHint] = useState(false);
   const [lightboxPanning, setLightboxPanning] = useState(false);
   const [lightboxZoomFeedback, setLightboxZoomFeedback] = useState<number | null>(null);
+  const [lightboxZoomLimitFeedback, setLightboxZoomLimitFeedback] = useState<"min" | "max" | null>(null);
+  const [viewportOrientation, setViewportOrientation] = useState<"portrait" | "landscape">(() => getViewportOrientation(window.innerWidth, window.innerHeight));
   const [showLightboxShortcutLegend, setShowLightboxShortcutLegend] = useState(false);
   const [miniMapDragging, setMiniMapDragging] = useState(false);
   const [lightboxPositionAnnouncement, setLightboxPositionAnnouncement] = useState("");
@@ -558,6 +560,7 @@ export default function Home() {
   const panStartRef = useRef({ active: false, x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const panPointerRef = useRef({ active: false, pointerId: -1, x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const zoomFeedbackTimerRef = useRef<number | null>(null);
+  const zoomLimitFeedbackTimerRef = useRef<number | null>(null);
   const shortcutLegendTimerRef = useRef<number | null>(null);
   const miniMapDragRef = useRef({ active: false, pointerId: -1 });
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
@@ -589,6 +592,22 @@ export default function Home() {
       preloader.src = project.cover;
     });
   }, [lightboxProject?.id]);
+
+  useEffect(() => {
+    if (!lightboxProjectId) return;
+    const handleViewportChange = () => {
+      setViewportOrientation(getViewportOrientation(window.innerWidth, window.innerHeight));
+      setLightboxOffset((offset) => clampPanOffset(offset.x, offset.y));
+    };
+    window.addEventListener("resize", handleViewportChange, { passive: true });
+    window.addEventListener("orientationchange", handleViewportChange, { passive: true });
+    window.screen.orientation?.addEventListener?.("change", handleViewportChange);
+    return () => {
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("orientationchange", handleViewportChange);
+      window.screen.orientation?.removeEventListener?.("change", handleViewportChange);
+    };
+  }, [lightboxProjectId, lightboxZoom]);
 
   const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
     lightboxReturnFocusRef.current = event.currentTarget;
@@ -641,8 +660,15 @@ export default function Home() {
     setLightboxFullscreen(Boolean(document.fullscreenElement));
   };
 
-  const setProjectZoom = (nextZoom: number) => {
+  const setProjectZoom = (nextZoom: number, announceLimit = true) => {
     const clampedZoom = Math.min(3, Math.max(1, nextZoom));
+    const hitLimit = announceLimit && (nextZoom <= 1 || nextZoom >= 3);
+    if (hitLimit) {
+      const limit = nextZoom < 1 ? "min" : "max";
+      setLightboxZoomLimitFeedback(limit);
+      if (zoomLimitFeedbackTimerRef.current) window.clearTimeout(zoomLimitFeedbackTimerRef.current);
+      zoomLimitFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomLimitFeedback(null), 1200);
+    }
     setLightboxZoom(clampedZoom);
     try { window.sessionStorage.setItem("arquivo-profundo-lightbox-zoom", String(clampedZoom)); } catch { /* sessionStorage pode estar indisponível */ }
     setLightboxZoomFeedback(Math.round(clampedZoom * 100));
@@ -653,7 +679,7 @@ export default function Home() {
 
   const resetProjectZoom = () => {
     setLightboxResetting(true);
-    setProjectZoom(1);
+    setProjectZoom(1, false);
     setLightboxOffset({ x: 0, y: 0 });
     window.setTimeout(() => setLightboxResetting(false), 320);
   };
@@ -740,7 +766,7 @@ export default function Home() {
 
   const handleLightboxPointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
     if (panPointerRef.current.pointerId === event.pointerId) {
-      panPointerRef.current.active = false;
+      panPointerRef.current.active = getCancelledInteractionState().isPanning;
       setLightboxPanning(false);
     }
   };
@@ -1894,6 +1920,10 @@ export default function Home() {
               <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
 
+            <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
+              <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>
+              <a href="#curadoria-pessoal" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">curadoria pessoal</a>
+            </nav>
             <div className="mt-8 border-y border-white/[0.1] py-4">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 {sharedProjectIds && <aside role="region" aria-labelledby="shared-list-title" className="mb-5 flex flex-col gap-4 border border-[#67e8f9]/35 bg-[#062342]/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -1913,7 +1943,7 @@ export default function Home() {
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>projetos salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
-                  <button type="button" data-image-collection-toggle="true" onClick={() => setIsImageCollectionOpen((current) => !current)} aria-expanded={isImageCollectionOpen} aria-controls="favorite-image-collection" className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${isImageCollectionOpen ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIds.length ? "fill-[#67e8f9] text-[#67e8f9]" : ""}`} aria-hidden="true" /><span>minhas imagens</span><span aria-hidden="true">{favoriteImageIds.length}</span></button>
+                  <button type="button" data-image-collection-toggle="true" onClick={() => setIsImageCollectionOpen((current) => !current)} aria-expanded={isImageCollectionOpen} aria-controls="curadoria-pessoal" className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${isImageCollectionOpen ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIds.length ? "fill-[#67e8f9] text-[#67e8f9]" : ""}`} aria-hidden="true" /><span>minhas imagens</span><span aria-hidden="true">{favoriteImageIds.length}</span></button>
                   <span role="status" aria-live="polite" className="sr-only">{favoriteImageStatus}</span>
                   <span className="hidden h-5 w-px bg-white/10 sm:block" aria-hidden="true" />
                   <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
@@ -1930,17 +1960,17 @@ export default function Home() {
                   </label>
                 </div>
               </div>
-              <aside id="favorite-image-collection" aria-label="Coleção pessoal de imagens favoritas" aria-hidden={!isImageCollectionOpen} inert={!isImageCollectionOpen} className={`overflow-hidden border-x border-b border-[#67e8f9]/20 bg-[#06172f]/60 transition-[max-height,opacity,transform] duration-200 motion-reduce:transition-none ${isImageCollectionOpen ? "max-h-[760px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 opacity-0"}`}>
+              <aside id="curadoria-pessoal" aria-label="Coleção pessoal de imagens favoritas" aria-hidden={!isImageCollectionOpen} inert={!isImageCollectionOpen} className={`overflow-hidden border-x border-b border-[#67e8f9]/20 bg-[#06172f]/60 transition-[max-height,opacity,transform] duration-200 motion-reduce:transition-none ${isImageCollectionOpen ? "max-h-[760px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 opacity-0"}`}>
                 <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">coleção pessoal</p><h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Imagens guardadas para rever.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">Esta coleção é salva apenas neste navegador e permanece separada dos projetos favoritos.</p></div><span className="shrink-0 border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff]">{favoriteImageProjects.length} {favoriteImageProjects.length === 1 ? "imagem" : "imagens"}</span></div>
                 {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
               </aside>
-              <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
+              </div>
+            <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
                   const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
                   return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
                 })}
               </div>
-            </div>
             <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar repositórios por tecnologia">
               {technologyFilters.map((technology) => (
@@ -2041,7 +2071,7 @@ export default function Home() {
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
             </div>
 
-            <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
+            <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (
               <div role="status" aria-live="polite" aria-label="Carregando projetos" className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
                 {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${galleryView === "list" ? "min-h-[250px] sm:min-h-[280px]" : isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}
@@ -2429,7 +2459,7 @@ export default function Home() {
       )}
 
       {lightboxProject?.cover && (
-        <div ref={lightboxModalRef} className={`project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-200 ${lightboxFullscreen ? "lightbox-fullscreen" : ""} ${lightboxClosing ? "lightbox-closing" : ""}`} data-lightbox-modal="true" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { revealShortcutLegend(); if (event.target === event.currentTarget) closeProjectLightbox(); }} onPointerDown={revealShortcutLegend} onFocus={revealShortcutLegend}>
+        <div ref={lightboxModalRef} className={`project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-200 ${lightboxFullscreen ? "lightbox-fullscreen" : ""} ${lightboxClosing ? "lightbox-closing" : ""}`} data-lightbox-modal="true" data-viewport-orientation={viewportOrientation} role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { revealShortcutLegend(); if (event.target === event.currentTarget) closeProjectLightbox(); }} onPointerDown={revealShortcutLegend} onFocus={revealShortcutLegend}>
           <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" title="Fechar visualizador" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
             <button type="button" onClick={toggleLightboxFullscreen} data-tooltip={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} aria-label={lightboxFullscreen ? "Sair da tela cheia" : "Abrir visualizador em tela cheia"} title={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} className="absolute right-16 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-5 w-5" aria-hidden="true" /></button>
@@ -2437,7 +2467,8 @@ export default function Home() {
               {lightboxSwipeDirection && <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-5" aria-hidden="true"><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "previous" ? "opacity-100" : "opacity-30"}`}><ChevronLeft className="h-5 w-5" /></span><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "next" ? "opacity-100" : "opacity-30"}`}><ChevronRight className="h-5 w-5" /></span></div>}
               {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
               {lightboxZoomFeedback !== null && <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 border border-[#67e8f9]/40 bg-[#06172f]/95 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomFeedback}%</div>}
-              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button><button type="button" onClick={clearLightboxSessionPreferences} aria-label="Limpar preferência de zoom desta sessão" data-tooltip="Limpar zoom salvo na sessão" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar</button></div>
+              {lightboxZoomLimitFeedback && <div className="pointer-events-none absolute left-1/2 top-16 z-30 -translate-x-1/2 border border-[#67e8f9]/35 bg-[#06172f]/90 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#bdf7ff] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomLimitFeedback === "max" ? "máximo · 300%" : "mínimo · 100%"}</div>}
+              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} aria-label="Reduzir zoom (mínimo 100%)" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} aria-label="Aumentar zoom (máximo 300%)" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button><button type="button" onClick={clearLightboxSessionPreferences} aria-label="Limpar preferência de zoom desta sessão" data-tooltip="Limpar zoom salvo na sessão" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar</button></div>
               {showLightboxShortcutLegend && <div className="pointer-events-none absolute bottom-4 left-4 z-20 hidden border border-white/15 bg-[#06172f]/85 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#b8d9e7] motion-safe:animate-in motion-safe:fade-in sm:block" aria-label="Atalhos do lightbox">atalhos: +/− zoom · setas movem · ←→ navegam</div>}
               <div className="sr-only" aria-live="polite" aria-atomic="true">{lightboxPositionAnnouncement}</div>
               {lightboxZoom > 1 && (() => { const mapPosition = calculateMiniMapPosition(lightboxZoom, lightboxOffset, getPanBounds()); const { left, top, viewportWidth, viewportHeight, xPercent: positionX, yPercent: positionY } = mapPosition; return <div className={`absolute bottom-4 right-4 z-20 hidden h-20 w-28 touch-none overflow-hidden border border-[#67e8f9]/40 bg-[#06172f]/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)] sm:block ${miniMapDragging ? "cursor-grabbing" : "cursor-grab"}`} role="button" tabIndex={0} aria-label={`Mini-mapa interativo da imagem ampliada em ${Math.round(lightboxZoom * 100)}%. Arraste o quadro para reposicionar`} onPointerDown={handleMiniMapPointerDown} onPointerMove={handleMiniMapPointerMove} onPointerUp={handleMiniMapPointerEnd} onPointerCancel={handleMiniMapPointerEnd} onClick={(event) => { if (!miniMapDragRef.current.active) repositionFromMiniMap(event.clientX, event.clientY, event.currentTarget); }} onFocus={revealShortcutLegend} onKeyDown={(event) => { revealShortcutLegend(); if (event.key === "Enter" || event.key === " ") { event.preventDefault(); repositionFromMiniMap(event.currentTarget.getBoundingClientRect().left + event.currentTarget.getBoundingClientRect().width / 2, event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2, event.currentTarget); } }} style={{ backgroundImage: `url(${lightboxProject.cover})`, backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute border-2 border-[#a5f3fc] bg-[#67e8f9]/20" style={{ left: `${left}%`, top: `${top}%`, width: `${viewportWidth}%`, height: `${viewportHeight}%` }} /><span className="pointer-events-none absolute inset-x-1 bottom-1 bg-[#030812]/85 px-1 py-0.5 text-center font-mono text-[7px] uppercase tracking-[0.08em] text-[#d9fbff]" aria-live="polite">{positionX}% · {positionY}%</span></div>; })()}

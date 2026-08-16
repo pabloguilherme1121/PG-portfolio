@@ -4,6 +4,8 @@ import {
   calculatePinchZoom,
   formatMiniMapPositionAnnouncement,
   PINCH_ZOOM_SENSITIVITY,
+  getCancelledInteractionState,
+  getViewportOrientation,
 } from "./lightboxInteractions";
 
 describe("lightbox interaction helpers", () => {
@@ -25,6 +27,16 @@ describe("lightbox interaction helpers", () => {
     expect(position.xPercent).toBeLessThanOrEqual(83);
     expect(position.yPercent).toBeGreaterThanOrEqual(17);
     expect(position.yPercent).toBeLessThanOrEqual(83);
+  });
+
+  it("returns a neutral state after pointercancel or touchcancel cleanup", () => {
+    expect(getCancelledInteractionState()).toEqual({ isPanning: false, isPinching: false, allowSwipe: false });
+  });
+
+  it("detects orientation changes consistently for portrait and landscape viewports", () => {
+    expect(getViewportOrientation(390, 844)).toBe("portrait");
+    expect(getViewportOrientation(844, 390)).toBe("landscape");
+    expect(getViewportOrientation(800, 800)).toBe("landscape");
   });
 
   it("applies a damped pinch curve for smoother mobile zoom changes", () => {

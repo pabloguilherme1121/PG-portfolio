@@ -1066,3 +1066,12 @@
 - [x] Ajustar a sensibilidade do pinch-to-zoom para iOS e Android.
 - [x] Preservar pan, swipe, teclado, limites, fullscreen, focus trap e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox e navegação pública: robustez, separação e limites — nova rodada
+
+- [x] Auditar eventos, estrutura da galeria e feedback de zoom.
+- [x] Adicionar cobertura de pointercancel, touchcancel e mudanças de orientação da tela.
+- [x] Separar a galeria pública dos recursos de curadoria pessoal em seções navegáveis.
+- [x] Adicionar feedback visual sutil ao atingir os limites mínimo e máximo de zoom.
+- [x] Preservar acessibilidade, responsividade, pan, swipe, pinch, teclado e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
