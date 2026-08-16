@@ -902,3 +902,12 @@
 - [x] Preservar zoom, navegação, foco, teclado e prefers-reduced-motion.
 - [x] Validar testes, typecheck, build, responsividade e estados de erro.
 - [x] Salvar checkpoint após a validação final.
+
+## Lightbox: erro, prefetch e contexto — nova rodada
+
+- [x] Auditar estados, navegação e dados dos projetos.
+- [x] Implementar mensagem de erro amigável com tentativa de recuperação.
+- [x] Pré-carregar a próxima imagem em segundo plano sem bloquear a interface.
+- [x] Exibir nome e legenda descritiva durante o carregamento.
+- [x] Preservar zoom, teclado, foco, compartilhamento e favoritos.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
