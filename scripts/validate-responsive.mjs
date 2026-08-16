@@ -222,7 +222,16 @@ for (const width of viewports) {
   await darkOption.press("Enter");
   await page.waitForTimeout(80);
   const darkThemeRestored = await page.locator(".arquivo-page").getAttribute("data-theme") === "dark";
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, lightOptionFocused, systemPreferenceStored, themeFocusVisible, lightThemeActivated, themeStored, darkThemeRestored });
+  const listOption = page.getByRole("button", { name: "Lista", exact: true });
+  await listOption.press("Enter");
+  await page.waitForTimeout(80);
+  const listViewActivated = await page.locator('[data-gallery-view="list"]').count() > 0;
+  const listViewStored = await page.evaluate(() => window.localStorage.getItem("pablo-portfolio-gallery-view") === "list");
+  const gridOption = page.getByRole("button", { name: "Grade", exact: true });
+  await gridOption.press("Enter");
+  await page.waitForTimeout(80);
+  const gridViewRestored = await page.locator('[data-gallery-view="grid"]').count() > 0;
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 

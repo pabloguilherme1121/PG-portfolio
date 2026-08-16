@@ -36,6 +36,8 @@ import {
   Sun,
   Monitor,
   Settings2,
+  List,
+  LayoutGrid,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
@@ -354,6 +356,10 @@ export default function Home() {
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
+  const [galleryView, setGalleryView] = useState<"grid" | "list">(() => {
+    if (typeof window === "undefined") return "grid";
+    return window.localStorage.getItem("pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
+  });
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -442,6 +448,10 @@ export default function Home() {
   useEffect(() => {
     setVisibleProjectLimit(projectPageSize);
   }, [activeTechnology, activeCategory, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
+
+  useEffect(() => {
+    window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
+  }, [galleryView]);
 
   useEffect(() => {
     if (!isProjectFilterTransitioning) setIsGalleryLoading(false);
@@ -779,6 +789,7 @@ export default function Home() {
           <div className="mt-5 grid gap-2" role="group" aria-label="Preferência de tema">
             {([['light', 'Claro', Sun], ['dark', 'Escuro', Moon], ['system', 'Preferência do sistema', Monitor] ] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setPreference(value)} aria-pressed={preference === value} className={`flex items-center gap-3 border px-3 py-3 text-left font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${preference === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" /><span className="flex-1">{label}</span>{preference === value && <span className="text-[8px] text-[#67e8f9]">ativo</span>}</button>)}
           </div>
+          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Visualização dos projetos"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">visualização dos projetos</p><div className="mt-2 grid grid-cols-2 gap-2">{([['grid', 'Grade', LayoutGrid], ['list', 'Lista', List]] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setGalleryView(value)} aria-pressed={galleryView === value} className={`flex items-center justify-center gap-2 border px-2 py-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${galleryView === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" />{label}</button>)}</div></div>
           <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#7189ae]">tema aplicado agora: {theme === "dark" ? "escuro" : "claro"}</p>
         </div>}
       </header>
@@ -1175,11 +1186,11 @@ export default function Home() {
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (
               <div role="status" aria-live="polite" aria-label="Carregando projetos" className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
-                {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}
+                {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${galleryView === "list" ? "min-h-[250px] sm:min-h-[280px]" : isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}
               </div>
             ) : visibleRepositories.length > 0 ? (
               <>
-              <div className={`grid gap-px bg-white/[0.1] ${isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`}>
+              <div className={`grid gap-px bg-white/[0.1] ${galleryView === "list" ? "grid-cols-1" : isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`} data-gallery-view={galleryView}>
                 {displayedRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
@@ -1209,14 +1220,14 @@ export default function Home() {
                   return repository.kind === "video" ? (
                     <div key={`${activeTechnology}-${repository.id}`} className="relative">
                       {favoriteButton}
-                      <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
+                      <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
                         {cardContent}
                       </button>
                     </div>
                   ) : (
                     <div key={`${activeTechnology}-${repository.id}`} className="relative">
                       {favoriteButton}
-                      <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
+                      <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
                         {cardContent}
                       </a>
                     </div>

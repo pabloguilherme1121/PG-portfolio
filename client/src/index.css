@@ -505,3 +505,156 @@ section[id] {
 .arquivo-page[data-theme="light"] .appearance-panel .font-body {
   color: #46627f !important;
 }
+
+/* Contraste editorial no modo claro: preserva o azul celeste, mas troca textos pensados para superfícies escuras por tons ink legíveis. */
+.arquivo-page[data-theme="light"] .whatsapp-float,
+.arquivo-page[data-theme="light"] a[href*="wa.me"] {
+  color: #075985 !important;
+}
+
+.arquivo-page[data-theme="light"] [data-favorite-control="true"] {
+  background-color: rgba(228, 243, 255, 0.96) !important;
+  border-color: rgba(15, 82, 122, 0.4) !important;
+  color: #0c4a6e !important;
+}
+
+.arquivo-page[data-theme="light"] [data-favorite-control="true"][aria-pressed="true"] {
+  background-color: #38bdf8 !important;
+  border-color: #075985 !important;
+  color: #06243c !important;
+}
+
+.arquivo-page[data-theme="light"] [data-gallery-view="grid"] ~ div button,
+.arquivo-page[data-theme="light"] button:has(> svg + span),
+.arquivo-page[data-theme="light"] button {
+  --light-control-ink: #123d61;
+}
+
+.arquivo-page[data-theme="light"] .font-mono.text\[\#c8f7ff\],
+.arquivo-page[data-theme="light"] .font-mono.text\[\#c9f8ff\],
+.arquivo-page[data-theme="light"] .font-mono.text\[\#bdf7ff\] {
+  color: #075985 !important;
+}
+
+.arquivo-page[data-theme="light"] .whatsapp-float {
+  background-color: #d9f3ff !important;
+  border-color: #0e7490 !important;
+}
+
+.arquivo-page[data-theme="light"] .project-gallery-card + * {
+  color: #365875;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#7691b8"],
+.arquivo-page[data-theme="light"] [class*="text-[#6f8fb7"],
+.arquivo-page[data-theme="light"] [class*="text-[#7899ae"],
+.arquivo-page[data-theme="light"] [class*="text-[#718ca4"] {
+  color: #476783 !important;
+}
+
+.arquivo-page[data-theme="light"] .font-display {
+  color: #10223b !important;
+}
+
+.arquivo-page[data-theme="light"] .project-gallery-card .font-display,
+.arquivo-page[data-theme="light"] .project-gallery-card [class*="text-white"] {
+  color: #f8fcff !important;
+  text-shadow: 0 1px 2px rgba(2, 17, 31, 0.72);
+}
+
+.arquivo-page[data-theme="light"] .project-gallery-card {
+  background-color: #12304b !important;
+}
+
+.arquivo-page[data-theme="light"] .project-gallery-card:hover {
+  background-color: #174565 !important;
+}
+
+.arquivo-page[data-theme="light"] button[aria-label="Voltar ao topo da página"] {
+  background-color: #d9f3ff !important;
+  color: #075985 !important;
+}
+
+.arquivo-page[data-theme="light"] .archive-chapter,
+.arquivo-page[data-theme="light"] [class*="bg-[#050c18"],
+.arquivo-page[data-theme="light"] [class*="bg-[#070a10"],
+.arquivo-page[data-theme="light"] [class*="bg-[#07101c"],
+.arquivo-page[data-theme="light"] [class*="bg-[#071326"],
+.arquivo-page[data-theme="light"] [class*="bg-[#0b1220"],
+.arquivo-page[data-theme="light"] [class*="bg-[#0d1523"] {
+  background-color: #f4f8fc !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#f4f8ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#e6f8ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#e7f0ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#d9e8ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#e2f7ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#e3faff"],
+.arquivo-page[data-theme="light"] [class*="text-[#b8c8df"],
+.arquivo-page[data-theme="light"] [class*="text-[#c0e3f4"],
+.arquivo-page[data-theme="light"] [class*="text-[#accddd"] {
+  color: #284c6b !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#c8f7ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#c9f8ff"],
+.arquivo-page[data-theme="light"] [class*="text-[#bdf7ff"] {
+  color: #075985 !important;
+}
+
+.arquivo-page[data-theme="light"] a[href="#contato-briefing"] {
+  color: #06243c !important;
+}
+
+.arquivo-page[data-theme="light"] a[download] {
+  background-color: #e7f3fb !important;
+  color: #10223b !important;
+}
+
+.arquivo-page[data-theme="light"] a[download] [class*="text-white"] {
+  color: #10223b !important;
+}
+
+.arquivo-page[data-theme="light"] .human-note {
+  background-color: #e3f3fb !important;
+  border-color: rgba(14, 116, 144, 0.24) !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#a5f3fc"],
+.arquivo-page[data-theme="light"] [class*="text-[#67e8f9"],
+.arquivo-page[data-theme="light"] [class*="text-[#d7eff9"],
+.arquivo-page[data-theme="light"] [class*="text-[#e3eeff"] {
+  color: #075985 !important;
+}
+
+.arquivo-page[data-theme="light"] a[href*="wa.me"] {
+  color: #075985 !important;
+  border-color: rgba(14, 116, 144, 0.42) !important;
+}
+
+.arquivo-page[data-theme="light"] .availability-calendar button:not(:disabled) {
+  color: #124e78 !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#b7cdf1"],
+.arquivo-page[data-theme="light"] [class*="text-[#b6cae8"],
+.arquivo-page[data-theme="light"] [class*="text-[#b8cbe8"],
+.arquivo-page[data-theme="light"] [class*="text-[#91b9cd"],
+.arquivo-page[data-theme="light"] [class*="text-[#91acd0"],
+.arquivo-page[data-theme="light"] [class*="text-[#77a9fc"],
+.arquivo-page[data-theme="light"] [class*="text-[#8ca4c8"],
+.arquivo-page[data-theme="light"] [class*="text-[#60789d"],
+.arquivo-page[data-theme="light"] [class*="text-[#6f8fb7"] {
+  color: #365875 !important;
+}
+
+.arquivo-page[data-theme="light"] button[aria-label="Limpar busca de trabalhos"] {
+  color: #1d5278 !important;
+}
+
+.arquivo-page[data-theme="light"] [class*="text-[#b7cbe8"],
+.arquivo-page[data-theme="light"] [class*="text-[#88a6bd"],
+.arquivo-page[data-theme="light"] [class*="text-[#88a0c4"] {
+  color: #365875 !important;
+}

@@ -380,3 +380,17 @@
 - [x] Implementar painel de configurações com seleção explícita e fechamento acessível.
 - [x] Validar persistência, mudança do sistema, teclado, foco, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Visualização de projetos em grade/lista
+
+- [ ] Auditar a composição atual da galeria e o painel de aparência.
+- [ ] Implementar preferência persistente de visualização grade/lista.
+- [ ] Integrar o layout de lista com cartões, overlay e controles existentes.
+- [ ] Validar persistência, teclado, filtros, carregamento progressivo, responsividade, testes e build.
+- [ ] Salvar checkpoint após a validação final.
+
+- [x] Validar alternância entre Grade e Lista em 320, 390, 768 e 1280px, incluindo persistência local e teclado
+- [x] Refinar o modo Lista com cards de largura total e alturas responsivas em telas menores
+- [x] Auditar e ajustar contraste das principais seções no modo claro
+- [x] Recompilar e confirmar TypeScript/build após os ajustes finais de visualização
