@@ -947,3 +947,12 @@
 - [x] Adicionar tooltips descritivos aos botões de download e compartilhamento.
 - [x] Preservar acessibilidade, abertura segura e feedback de erro.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: tooltips animados, e-mail e teclado — nova rodada
+
+- [x] Auditar tooltips, ações de compartilhamento e foco.
+- [x] Adicionar fade-in/fade-out suave aos tooltips do lightbox.
+- [x] Adicionar compartilhamento por e-mail com assunto e corpo preenchidos.
+- [x] Garantir navegação por Tab e ativação por Enter nos controles.
+- [x] Preservar reduced motion, foco visível, abertura segura e feedback.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
