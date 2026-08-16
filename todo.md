@@ -431,3 +431,10 @@
 - [x] Implementar prévia visual acessível dos primeiros projetos.
 - [x] Validar prévias, ativação, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Prévia responsiva ampliada
+
+- [x] Definir comportamento responsivo da quantidade de projetos.
+- [x] Implementar quatro ou cinco projetos na prévia em telas maiores.
+- [x] Validar quantidade, layout, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
