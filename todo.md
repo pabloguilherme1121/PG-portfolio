@@ -344,3 +344,12 @@
 
 - [x] Exibir mensagem visual e acessível quando todos os projetos filtrados estiverem carregados.
 - [x] Validar o estado final e salvar checkpoint da rodada.
+
+
+## Botão voltar ao topo
+
+- [x] Auditar navegação e padrões de rolagem existentes.
+- [x] Implementar visibilidade após rolagem e ação de retorno ao topo.
+- [x] Estilizar botão para toque, foco, identidade visual e reduced motion.
+- [x] Validar aparecimento, teclado, rolagem, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

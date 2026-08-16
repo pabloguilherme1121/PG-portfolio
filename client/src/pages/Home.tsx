@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowDown,
   ArrowDownRight,
+  ArrowUp,
   ArrowUpRight,
   Camera,
   CalendarDays,
@@ -334,6 +335,7 @@ const navigationItems = [
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
@@ -456,6 +458,13 @@ export default function Home() {
   }, [formSent]);
 
   useEffect(() => {
+    const handleScroll = () => setShowBackToTop(window.scrollY > 640);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
     const handleViewportChange = () => {
       setIsDesktopViewport(mediaQuery.matches);
@@ -508,6 +517,11 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function scrollToTop() {
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
   }
 
   function saveSharedFavorites() {
@@ -1420,6 +1434,8 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {showBackToTop && <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" className="fixed bottom-20 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-all hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:bottom-5 sm:right-36"><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>}
 
       <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" className="whatsapp-float fixed bottom-5 right-5 z-[60] inline-flex items-center gap-3 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
         <MessageCircle className="h-5 w-5 fill-current" />

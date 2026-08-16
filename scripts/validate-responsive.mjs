@@ -10,6 +10,18 @@ for (const width of viewports) {
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin: "http://127.0.0.1:3000" });
   await page.goto("http://127.0.0.1:3000/", { waitUntil: "networkidle" });
   const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  await page.evaluate(() => window.scrollTo(0, 1200));
+  await page.waitForTimeout(120);
+  const backToTopButton = page.getByRole("button", { name: "Voltar ao topo da página" });
+  const backToTopVisible = await backToTopButton.isVisible();
+  await backToTopButton.focus();
+  const backToTopFocusVisible = await backToTopButton.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  await backToTopButton.press("Enter");
+  await page.waitForTimeout(120);
+  const returnedToTop = await page.evaluate(() => window.scrollY <= 2);
   const menuButton = page.getByRole("button", { name: "Abrir menu" });
   const menuVisible = width < 768 && await menuButton.isVisible();
   let menuKeyboardClosed = true;
@@ -182,7 +194,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 
