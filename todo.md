@@ -1039,3 +1039,21 @@
 - [x] Adicionar ação para limpar o zoom salvo no sessionStorage.
 - [x] Preservar pan, limites reais, teclado, swipe, pinch zoom, fullscreen e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: posição percentual, transição de reset e pinch-to-zoom — nova rodada
+
+- [x] Auditar o estado atual de zoom, mini-mapa e gestos touch.
+- [x] Mostrar posição percentual atualizada em tempo real durante o arraste no mini-mapa.
+- [x] Adicionar transição suave ao limpar o zoom e retornar a 100%.
+- [x] Implementar ou reforçar pinch-to-zoom na imagem principal para dispositivos móveis.
+- [x] Preservar pan, swipe, teclado, limites, fullscreen, focus trap e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: confirmação de posição, reset animado e pinch-to-zoom — rodada de conclusão
+
+- [x] Auditar o estado implementado no lightbox.
+- [x] Confirmar ou completar o indicador percentual em tempo real no mini-mapa.
+- [x] Confirmar ou completar a transição suave ao limpar o zoom.
+- [x] Confirmar ou completar o pinch-to-zoom na imagem principal.
+- [x] Preservar pan, swipe, teclado, limites, fullscreen, focus trap e reduced motion.
+- [x] Validar testes, typecheck, build e checkpoint.
