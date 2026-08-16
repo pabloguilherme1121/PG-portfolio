@@ -394,3 +394,11 @@
 - [x] Refinar o modo Lista com cards de largura total e alturas responsivas em telas menores
 - [x] Auditar e ajustar contraste das principais seções no modo claro
 - [x] Recompilar e confirmar TypeScript/build após os ajustes finais de visualização
+
+## Ordenação manual da galeria
+
+- [x] Auditar a composição atual da galeria e definir o modelo persistente de ordem manual.
+- [x] Implementar arrastar e soltar com feedback visual e suporte a teclado.
+- [x] Integrar a ordem manual com filtros, busca, favoritos, modos Grade/Lista e carregamento progressivo.
+- [x] Validar persistência, responsividade, acessibilidade, testes e build.
+- [x] Salvar checkpoint após a validação final.

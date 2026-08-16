@@ -14,6 +14,9 @@ import {
   CheckCircle2,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  GripVertical,
   Clapperboard,
   Braces,
   Download,
@@ -42,6 +45,7 @@ import {
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import {
   availableTimes,
   buildAvailabilityWhatsAppUrl,
@@ -320,6 +324,7 @@ const repertoireSignals = [
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
 const sortOptions = [
+  { value: "manual", label: "ordem manual" },
   { value: "relevance", label: "relevância editorial" },
   { value: "added", label: "ordem de adição" },
 ] as const;
@@ -352,6 +357,17 @@ export default function Home() {
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
+  const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
+    if (typeof window === "undefined") return repositories.map((repository) => repository.id);
+    try {
+      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-manual-order") || "[]");
+      return normalizeManualOrder(stored, repositories.map((repository) => repository.id));
+    } catch {
+      return repositories.map((repository) => repository.id);
+    }
+  });
+  const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
+  const [manualOrderStatus, setManualOrderStatus] = useState("");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
@@ -420,7 +436,11 @@ export default function Home() {
       .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
       .slice(0, 6)
     : [];
-  const visibleRepositories = repositories
+  const orderedRepositories = useMemo(() => {
+    const orderIndex = new Map(manualProjectOrder.map((id, index) => [id, index]));
+    return [...repositories].sort((first, second) => (orderIndex.get(first.id) ?? Number.MAX_SAFE_INTEGER) - (orderIndex.get(second.id) ?? Number.MAX_SAFE_INTEGER));
+  }, [manualProjectOrder]);
+  const visibleRepositories = orderedRepositories
     .filter((repository) => {
       const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
       const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
@@ -429,7 +449,7 @@ export default function Home() {
       const matchesFavorites = !favoritesOnly || (sharedProjectIds ? sharedProjectIdSet.has(repository.id) : favoriteProjectIdSet.has(repository.id));
       return matchesTechnology && matchesCategory && matchesSearch && matchesFavorites;
     })
-    .sort((first, second) => sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
+    .sort((first, second) => sortMode === "manual" ? 0 : sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
   const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
   const projectPageSize = 4;
@@ -452,6 +472,10 @@ export default function Home() {
   useEffect(() => {
     window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
   }, [galleryView]);
+
+  useEffect(() => {
+    window.localStorage.setItem("pablo-portfolio-manual-order", JSON.stringify(manualProjectOrder));
+  }, [manualProjectOrder]);
 
   useEffect(() => {
     if (!isProjectFilterTransitioning) setIsGalleryLoading(false);
@@ -640,6 +664,34 @@ export default function Home() {
       setActiveTechnology(technology);
       projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
     }, 130);
+  }
+
+  function moveProject(projectId: string, direction: -1 | 1) {
+    setManualProjectOrder((currentOrder) => {
+      return moveProjectInOrder(currentOrder, projectId, direction);
+    });
+    if (sortMode !== "manual") setSortMode("manual");
+    const movedRepository = repositories.find((repository) => repository.id === projectId);
+    setManualOrderStatus(movedRepository ? `${movedRepository.name} movido ${direction < 0 ? "para cima" : "para baixo"}.` : "Ordem manual atualizada.");
+  }
+
+  function startProjectDrag(projectId: string) {
+    setDraggedProjectId(projectId);
+    if (sortMode !== "manual") setSortMode("manual");
+  }
+
+  function dropProject(projectId: string) {
+    if (!draggedProjectId || draggedProjectId === projectId) {
+      setDraggedProjectId(null);
+      return;
+    }
+    setManualProjectOrder((currentOrder) => {
+      return dropProjectInOrder(currentOrder, draggedProjectId, projectId);
+    });
+    setDraggedProjectId(null);
+    const movedRepository = repositories.find((repository) => repository.id === draggedProjectId);
+    const targetRepository = repositories.find((repository) => repository.id === projectId);
+    setManualOrderStatus(movedRepository && targetRepository ? `${movedRepository.name} movido antes de ${targetRepository.name}.` : "Ordem manual atualizada.");
   }
 
   function loadMoreProjects() {
@@ -1190,7 +1242,7 @@ export default function Home() {
               </div>
             ) : visibleRepositories.length > 0 ? (
               <>
-              <div className={`grid gap-px bg-white/[0.1] ${galleryView === "list" ? "grid-cols-1" : isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`} data-gallery-view={galleryView}>
+              <div className={`grid gap-px bg-white/[0.1] ${galleryView === "list" ? "grid-cols-1" : isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`} data-gallery-view={galleryView}><p className="sr-only" role="status" aria-live="polite">{manualOrderStatus}</p>
                 {displayedRepositories.map((repository, index) => {
                   const cardContent = (
                     <>
@@ -1216,17 +1268,20 @@ export default function Home() {
                     </>
                   );
 
+                  const reorderControls = <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1" role="group" aria-label={`Reordenar ${repository.name}`}><span className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#9eb5d2]" title="Arraste para reordenar"><GripVertical className="h-4 w-4" aria-hidden="true" /></span><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, -1); }} aria-label={`Mover ${repository.name} para cima`} title="Mover para cima" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronUp className="h-4 w-4" aria-hidden="true" /></button><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, 1); }} aria-label={`Mover ${repository.name} para baixo`} title="Mover para baixo" className="grid h-9 w-9 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ChevronDown className="h-4 w-4" aria-hidden="true" /></button></div>;
                   const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-5 top-5 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button>;
                   return repository.kind === "video" ? (
-                    <div key={`${activeTechnology}-${repository.id}`} className="relative">
+                    <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {favoriteButton}
+                      {reorderControls}
                       <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
                         {cardContent}
                       </button>
                     </div>
                   ) : (
-                    <div key={`${activeTechnology}-${repository.id}`} className="relative">
+                    <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {favoriteButton}
+                      {reorderControls}
                       <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
                         {cardContent}
                       </a>

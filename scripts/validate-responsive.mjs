@@ -231,7 +231,23 @@ for (const width of viewports) {
   await gridOption.press("Enter");
   await page.waitForTimeout(80);
   const gridViewRestored = await page.locator('[data-gallery-view="grid"]').count() > 0;
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, lightThemeActivated, themeStored, darkThemeRestored });
+  await searchInput.fill("");
+  await page.waitForTimeout(520);
+  await page.locator('[data-project-id]').nth(1).waitFor({ state: "visible", timeout: 5000 });
+  const orderBeforeManualMove = await page.locator('[data-project-id]').evaluateAll((nodes) => nodes.slice(0, 4).map((node) => node.getAttribute("data-project-id")));
+  const secondProject = page.locator('[data-project-id]').nth(1);
+  const firstProjectName = await secondProject.getAttribute("aria-label");
+  const moveUpControl = secondProject.getByRole("button", { name: /Mover .* para cima/ });
+  const moveDownFocusVisible = await (async () => { await moveUpControl.focus(); return moveUpControl.evaluate((element) => document.activeElement === element); })();
+  await moveUpControl.press("Enter");
+  await page.waitForTimeout(80);
+  const orderAfterManualMove = await page.locator('[data-project-id]').evaluateAll((nodes) => nodes.slice(0, 4).map((node) => node.getAttribute("data-project-id")));
+  const manualMoveChangedOrder = orderBeforeManualMove[1] !== orderAfterManualMove[1] && orderAfterManualMove[0] === orderBeforeManualMove[1];
+  const manualOrderStored = await page.evaluate(() => {
+    const value = window.localStorage.getItem("pablo-portfolio-manual-order");
+    return Array.isArray(JSON.parse(value || "[]")) && JSON.parse(value || "[]").length >= 7;
+  });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion, initialTheme, appearancePanelVisible, lightOptionFocused, systemPreferenceStored, themeFocusVisible, listViewActivated, listViewStored, gridViewRestored, orderBeforeManualMove, orderAfterManualMove, firstProjectName, moveDownFocusVisible, manualMoveChangedOrder, manualOrderStored, lightThemeActivated, themeStored, darkThemeRestored });
   await page.close();
 }
 
