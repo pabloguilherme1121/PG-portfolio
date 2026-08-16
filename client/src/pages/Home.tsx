@@ -76,6 +76,8 @@ const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20V
 const telegramUrl = "https://t.me/mpjmarketing";
 const showreelUrl = "/manus-storage/showreel_e887bf6f.mp4";
 const showreelPosterUrl = "/manus-storage/showreel-poster_847cd0c5.jpg";
+const showreelVerticalUrl = "/manus-storage/showreel-vertical_00d4c92f.mp4";
+const showreelVerticalPosterUrl = "/manus-storage/showreel-vertical-poster_e21c73f9.jpg";
 
 const skillTracks = [
   {
@@ -1251,16 +1253,16 @@ export default function Home() {
                       <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo em movimento</p>
                       <p className="mt-1 font-body text-xs text-[#a9bed8]">showreel curto · imagem aérea, interface e registro</p>
                     </div>
-                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]">{showreelRequested ? (showreelError ? "erro" : showreelReady ? "pronto" : "carregando") : "sob demanda"}</span>
+                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]">{showreelRequested ? (showreelError ? "erro" : showreelReady ? "pronto" : "carregando") : isDesktopViewport ? "sob demanda" : "vertical sob demanda"}</span>
                   </div>
-                  <div className="relative aspect-video bg-[#07111f]">
+                  <div className={`relative bg-[#07111f] ${isDesktopViewport ? "aspect-video" : "aspect-[9/16]"}`}>
                     {!showreelRequested && <button type="button" onClick={() => { setShowreelError(false); setShowreelRequested(true); }} className="showreel-poster group absolute inset-0 grid place-items-center text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]" aria-label="Carregar e reproduzir o showreel" data-showreel-trigger="true">
-                      <img src={showreelPosterUrl} alt="Pôster do showreel com imagem aérea e registro audiovisual" loading="lazy" decoding="async" width="1280" height="720" className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                      <img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
                       <span className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,20,0.82),rgba(3,11,20,0.18))]" />
                       <span className="relative ml-5 grid h-14 w-14 place-items-center rounded-full border border-[#a5f3fc] bg-[#38bdf8] text-[#02111f] shadow-[0_0_28px_rgba(56,189,248,0.35)] transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none"><Play className="ml-0.5 h-5 w-5" fill="currentColor" aria-hidden="true" /></span>
-                      <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel · 00:09</span>
+                      <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel {isDesktopViewport ? "horizontal" : "vertical"} · 00:09</span>
                     </button>}
-                    {showreelRequested && !showreelError && <video src={showreelUrl} poster={showreelPosterUrl} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onError={() => { setShowreelError(true); setShowreelReady(false); }} className="h-full w-full object-cover" aria-label="Showreel curto de Pablo Guilherme" data-showreel-video="true" />}
+                    {showreelRequested && !showreelError && <video key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onError={() => { setShowreelError(true); setShowreelReady(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
                     {showreelRequested && showreelError && <div className="absolute inset-0 grid place-items-center px-5 text-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">showreel indisponível</p><p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#b7cdf1]">O vídeo não carregou agora. Você ainda pode conhecer os trabalhos na galeria.</p><button type="button" onClick={() => { setShowreelError(false); setShowreelReady(false); setShowreelRequested(false); }} className="mt-4 border border-[#67e8f9]/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button></div></div>}
                   </div>
                 </div>

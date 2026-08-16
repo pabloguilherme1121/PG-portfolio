@@ -744,10 +744,25 @@
 - [x] Implementar o bloco de showreel com carregamento sob demanda, controles nativos e fallback.
 - [x] Evitar autoplay com som, preservar dados móveis e respeitar prefers-reduced-motion.
 - [x] Validar pôster, reprodução, foco, acessibilidade, responsividade, velocidade, testes, typecheck e build.
-- [ ] Salvar checkpoint após a validação final.
+- [x] Salvar checkpoint após a validação final.
 
 ### Preservação
 
 - [x] Manter a identidade Arquivo Profundo e a hero atual.
 - [x] Preservar a galeria, lightbox, favoritos, barra de contato e currículo.
 - [x] Não inventar imagens ou trabalhos; usar somente asset fornecido ou projeto real já existente.
+
+
+## Showreel vertical para mobile
+
+- [x] Auditar o showreel horizontal e a estratégia mobile atual.
+- [x] Preparar vídeo vertical 9:16 e pôster vertical a partir dos assets reais.
+- [x] Implementar seleção por viewport, carregamento sob demanda e fallback responsivo.
+- [x] Validar proporção, reprodução, foco, acessibilidade, reduced motion, responsividade, testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter o showreel horizontal para desktop.
+- [x] Preservar o carregamento somente após intenção explícita.
+- [x] Não adicionar autoplay com som nem inventar material audiovisual.
