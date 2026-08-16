@@ -1152,3 +1152,12 @@
 - [x] Exportar somente os projetos selecionados em CSV, JSON e ZIP.
 - [x] Preservar proteção, filtros, acessibilidade e responsividade.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## ZIP cancelável, seleção persistente e estimativa — nova rodada
+
+- [x] Auditar fluxo de exportação, seleção e estimativa atual.
+- [x] Adicionar botão para cancelar compactação e download do ZIP.
+- [x] Persistir seleção de projetos no sessionStorage.
+- [x] Exibir estimativa do tamanho final do ZIP antes do download.
+- [x] Preservar progresso, campos, miniaturas, filtros e acessibilidade.
+- [x] Validar testes, typecheck, build e checkpoint.
