@@ -528,6 +528,8 @@ export default function Home() {
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
   const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
   const [lightboxEmailStatus, setLightboxEmailStatus] = useState<"idle" | "opening">("idle");
+  const [lightboxFullscreen, setLightboxFullscreen] = useState(false);
+  const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -542,6 +544,7 @@ export default function Home() {
   const pinchStartDistanceRef = useRef(0);
   const pinchStartZoomRef = useRef(1);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxModalRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -570,14 +573,38 @@ export default function Home() {
 
   const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
     lightboxReturnFocusRef.current = event.currentTarget;
+    setLightboxClosing(false);
     setLightboxProjectId(projectId);
   };
 
   const closeProjectLightbox = () => {
-    setLightboxProjectId(null);
-    setLightboxZoom(1);
-    setLightboxOffset({ x: 0, y: 0 });
-    window.setTimeout(() => lightboxReturnFocusRef.current?.focus(), 0);
+    if (lightboxClosing) return;
+    setLightboxClosing(true);
+    if (document.fullscreenElement) void document.exitFullscreen?.();
+    setLightboxFullscreen(false);
+    window.setTimeout(() => {
+      setLightboxProjectId(null);
+      setLightboxClosing(false);
+      setLightboxZoom(1);
+      setLightboxOffset({ x: 0, y: 0 });
+      lightboxReturnFocusRef.current?.focus();
+    }, 180);
+  };
+
+  const toggleLightboxFullscreen = async () => {
+    const modal = lightboxModalRef.current;
+    if (!modal) return;
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen?.();
+      } else if (modal.requestFullscreen) {
+        await modal.requestFullscreen();
+      }
+    } catch {
+      setLightboxFullscreen(false);
+      return;
+    }
+    setLightboxFullscreen(Boolean(document.fullscreenElement));
   };
 
   const setProjectZoom = (nextZoom: number) => {
@@ -620,6 +647,8 @@ export default function Home() {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.setTimeout(() => lightboxCloseRef.current?.focus(), 0);
+    const handleFullscreenChange = () => setLightboxFullscreen(document.fullscreenElement === document.querySelector("[data-lightbox-modal]"));
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
     const handleLightboxKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Tab") {
         const modal = document.querySelector<HTMLElement>("[data-lightbox-modal]");
@@ -656,6 +685,8 @@ export default function Home() {
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleLightboxKeyDown);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      if (document.fullscreenElement) void document.exitFullscreen?.();
     };
   }, [lightboxProjectId, lightboxProject, lightboxProjects]);
 
@@ -2223,9 +2254,10 @@ export default function Home() {
       )}
 
       {lightboxProject?.cover && (
-        <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" data-lightbox-modal="true" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
+        <div ref={lightboxModalRef} className={`project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-200 ${lightboxFullscreen ? "lightbox-fullscreen" : ""} ${lightboxClosing ? "lightbox-closing" : ""}`} data-lightbox-modal="true" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
           <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
-            <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
+            <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" title="Fechar visualizador" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
+            <button type="button" onClick={toggleLightboxFullscreen} data-tooltip={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} aria-label={lightboxFullscreen ? "Sair da tela cheia" : "Abrir visualizador em tela cheia"} title={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} className="absolute right-16 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-5 w-5" aria-hidden="true" /></button>
             <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
               <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Restaurar zoom original" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
               <div className="relative flex min-h-[28vh] w-full items-center justify-center">
@@ -2239,7 +2271,7 @@ export default function Home() {
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
               <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                <details className="relative"><summary data-tooltip="Escolha original, WebP ou AVIF otimizado" title="Escolha original, WebP ou AVIF otimizado" className="inline-flex h-9 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
+                <details className="relative"><summary data-tooltip="Escolha original, WebP ou AVIF otimizado" title="Escolha original, WebP ou AVIF otimizado" className="inline-flex h-9 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} aria-label={`Baixar imagem original de ${lightboxProject.name}`} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} aria-label={`Baixar ${lightboxProject.name} em WebP otimizado`} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} aria-label={`Baixar ${lightboxProject.name} em AVIF otimizado`} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
                 <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex h-9 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
                 <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
                   <button type="button" data-tooltip="Compartilhar usando o menu do seu dispositivo" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>

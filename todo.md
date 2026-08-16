@@ -965,3 +965,13 @@
 - [x] Rastrear cliques de e-mail por projeto.
 - [x] Preservar Escape, retorno de foco, Tab, Enter e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: ARIA, zoom de abertura e tela cheia — nova rodada
+
+- [x] Auditar controles, fechamento e suporte fullscreen.
+- [x] Adicionar rótulos ARIA completos aos botões de download e compartilhamento.
+- [x] Confirmar fechamento ao clicar no fundo escuro.
+- [x] Adicionar animação suave de zoom na abertura e no fechamento.
+- [x] Implementar botão fullscreen com entrada e saída acessíveis.
+- [x] Preservar focus trap, Escape, retorno de foco, reduced motion e navegação.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

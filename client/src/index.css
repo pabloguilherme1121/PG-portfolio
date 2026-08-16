@@ -1003,3 +1003,14 @@ html.theme-transitioning .arquivo-page * {
 @media (prefers-reduced-motion: reduce) {
   [data-tooltip]::after { transition: none; transform: translate(-50%, 0); }
 }
+
+.lightbox-fullscreen { padding: 0 !important; background: #02050a !important; }
+.lightbox-fullscreen > div { width: 100vw; max-width: none; height: 100vh; max-height: none; border: 0; }
+.lightbox-closing { animation: lightbox-close 180ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+@keyframes lightbox-close {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0.97); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-closing { animation: none; opacity: 0; }
+}
