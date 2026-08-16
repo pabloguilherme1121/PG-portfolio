@@ -424,3 +424,10 @@
 - [x] Implementar instalação e alternância dos perfis predefinidos sem sobrescrever perfis personalizados.
 - [x] Validar instalação, persistência, acessibilidade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Prévia visual dos perfis
+
+- [x] Definir o modelo de prévia por perfil e os estados de interação.
+- [x] Implementar prévia visual acessível dos primeiros projetos.
+- [x] Validar prévias, ativação, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.
