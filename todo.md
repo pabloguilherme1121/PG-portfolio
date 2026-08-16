@@ -1002,3 +1002,12 @@
 - [x] Limitar o arraste às dimensões reais da imagem e do viewport.
 - [x] Preservar swipe mobile, pinch zoom, fullscreen, teclado, focus trap e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: cursor, preferência e duplo clique — nova rodada
+
+- [x] Auditar estados de pan, dica e duplo clique.
+- [x] Exibir cursor `grab` e `grabbing` durante o pan desktop.
+- [x] Persistir a preferência de ocultar a dica de swipe no localStorage.
+- [x] Alternar entre zoom máximo e tamanho original com duplo clique.
+- [x] Preservar limites de pan, pinch zoom, swipe, fullscreen, teclado e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.
