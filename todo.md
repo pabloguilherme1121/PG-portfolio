@@ -319,3 +319,12 @@
 - [x] Adicionar botão de compartilhar, copiar link e feedback acessível.
 - [x] Validar abertura do link, teclado, responsividade, privacidade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Aviso de lista compartilhada
+
+- [x] Auditar o carregamento atual de links compartilhados e os estados locais de favoritos.
+- [x] Implementar estado de importação e ação para salvar todos os projetos encontrados.
+- [x] Criar aviso visual acessível com salvar e dispensar.
+- [x] Validar link compartilhado, persistência, teclado, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

@@ -65,6 +65,17 @@ for (const width of viewports) {
   await sharedPage.goto(sharedLink, { waitUntil: "networkidle" });
   await sharedPage.locator("#projetos").scrollIntoViewIfNeeded();
   const sharedSavedFilter = sharedPage.getByRole("button", { name: /salvos/ }).first();
+  const sharedNotice = sharedPage.getByRole("region", { name: "lista compartilhada" });
+  const sharedNoticeVisible = await sharedNotice.isVisible();
+  const saveSharedButton = sharedPage.getByRole("button", { name: "salvar na minha lista" });
+  await saveSharedButton.focus();
+  const saveSharedFocusVisible = await saveSharedButton.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return style.outlineStyle !== "none" || style.boxShadow !== "none";
+  });
+  await saveSharedButton.press("Enter");
+  const sharedFavoritesSaved = await sharedPage.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-favorites") || "[]").includes("AUD.01"));
+  const sharedNoticeDismissedAfterSave = await sharedPage.getByRole("region", { name: "lista compartilhada" }).count() === 0;
   const sharedFavoritesLoaded = (await sharedSavedFilter.getAttribute("aria-pressed")) === "true" && await sharedPage.locator("#projetos .project-gallery-card").count() === 1;
   await sharedPage.close();
   const shareLinkValid = sharedLink.includes("favorites=") && shareStatusText?.includes("copiado") && sharedFavoritesLoaded;
@@ -154,7 +165,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, shareLinkValid, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

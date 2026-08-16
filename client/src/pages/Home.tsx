@@ -353,6 +353,7 @@ export default function Home() {
     }
   });
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
@@ -367,6 +368,7 @@ export default function Home() {
   const projectFilterTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
+  const sharedProjectIdSet = useMemo(() => new Set(sharedProjectIds ?? []), [sharedProjectIds]);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
@@ -406,7 +408,7 @@ export default function Home() {
       const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
       const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
       const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
-      const matchesFavorites = !favoritesOnly || favoriteProjectIdSet.has(repository.id);
+      const matchesFavorites = !favoritesOnly || (sharedProjectIds ? sharedProjectIdSet.has(repository.id) : favoriteProjectIdSet.has(repository.id));
       return matchesTechnology && matchesCategory && matchesSearch && matchesFavorites;
     })
     .sort((first, second) => sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
@@ -428,7 +430,7 @@ export default function Home() {
     const validProjectIds = new Set(repositories.map((repository) => repository.id));
     const importedIds = sharedFavorites.split(",").map((id) => id.trim()).filter((id) => validProjectIds.has(id));
     if (!importedIds.length) return;
-    setFavoriteProjectIds(importedIds);
+    setSharedProjectIds(importedIds);
     setFavoritesOnly(true);
     window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
   }, []);
@@ -498,6 +500,18 @@ export default function Home() {
 
   function closeMenu() {
     setMenuOpen(false);
+  }
+
+  function saveSharedFavorites() {
+    if (!sharedProjectIds?.length) return;
+    setFavoriteProjectIds((current) => Array.from(new Set([...current, ...sharedProjectIds])));
+    setSharedProjectIds(null);
+    setFavoritesOnly(true);
+  }
+
+  function dismissSharedFavorites() {
+    setSharedProjectIds(null);
+    setFavoritesOnly(false);
   }
 
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
@@ -955,7 +969,18 @@ export default function Home() {
 
             <div className="mt-8 border-y border-white/[0.1] py-4">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center justify-between gap-4">
+                {sharedProjectIds && <aside role="region" aria-labelledby="shared-list-title" className="mb-5 flex flex-col gap-4 border border-[#67e8f9]/35 bg-[#062342]/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+                <div className="min-w-0">
+                  <p id="shared-list-title" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">lista compartilhada</p>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#d9f4ff]">Você recebeu {sharedProjectIds.length} {sharedProjectIds.length === 1 ? "referência" : "referências"}. Salve {sharedProjectIds.length === 1 ? "esta seleção" : "todas na sua lista"} para acessar depois.</p>
+                </div>
+                <div className="flex shrink-0 flex-wrap gap-2">
+                  <button type="button" onClick={saveSharedFavorites} className="border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">salvar na minha lista</button>
+                  <button type="button" onClick={dismissSharedFavorites} className="border border-white/15 bg-[#07101e]/60 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-white/35 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">agora não</button>
+                </div>
+                <span role="status" aria-live="polite" className="sr-only">Lista compartilhada com {sharedProjectIds.length} {sharedProjectIds.length === 1 ? "referência" : "referências"} carregada.</span>
+              </aside>}
+              <div className="flex items-center justify-between gap-4">
                   <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7]">explorar por categoria</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">{visibleRepositories.length} referências visíveis</p>
                 </div>
