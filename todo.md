@@ -878,3 +878,11 @@
 - [x] Atualizar imagens e metadados para usar `picture`, `srcset` e `sizes` quando aplicável.
 - [x] Validar qualidade visual, fallback, testes, typecheck, build e carregamento.
 - [x] Salvar checkpoint após a validação final.
+
+## Lazy loading abaixo da dobra — nova rodada
+
+- [x] Auditar imagens críticas e imagens abaixo da dobra.
+- [x] Aplicar `loading="lazy"` nas imagens não críticas e manter prioridade na hero.
+- [x] Garantir dimensões, `srcset`, `sizes`, fallback e estabilidade de layout.
+- [x] Validar testes, typecheck, build, responsividade e carregamento.
+- [x] Salvar checkpoint após a validação final.

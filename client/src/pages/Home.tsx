@@ -1419,7 +1419,7 @@ export default function Home() {
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que estou aprendendo a fazer bem.</h2>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que estou aprendendo a fazer bem.</h2>
                 <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: lógica e presença, tela e câmera, detalhe e visão geral.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">status do arquivo</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Aprendendo na prática, registrando o processo e melhorando a cada entrega.</p></div>
               </div>
               <div className="border-t border-white/[0.1]">
@@ -1469,8 +1469,8 @@ export default function Home() {
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de produção</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Como uma ideia vira entrega.</h2>
-                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // direção e imagem</div>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de produção</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Como uma ideia vira entrega.</h2>
+                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // direção e imagem</div>
               </div>
               <div className="lg:pb-2">
                 <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">Cada projeto recebe uma combinação de direção, captação e organização para que a entrega seja clara antes, durante e depois da produção.</p>
@@ -1533,7 +1533,7 @@ export default function Home() {
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / trabalhos selecionados</p>
                 <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Repertório em uso,<br className="hidden sm:block" /> não só na vitrine.</h2>
-                <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
+                <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
               </div>
               <div className="max-w-sm">
                 <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
@@ -2107,7 +2107,7 @@ export default function Home() {
               <div className="flex gap-2 overflow-x-auto pb-1" role="list">
                 {lightboxProjects.map((project) => {
                   const isActive = project.id === lightboxProject.id;
-                  return <button key={`lightbox-thumb-${project.id}`} ref={isActive ? lightboxActiveThumbRef : undefined} type="button" onClick={() => setLightboxProjectId(project.id)} aria-current={isActive ? "true" : undefined} aria-label={`Ver imagem de ${project.name}`} title={project.name} className={`group relative w-24 shrink-0 overflow-hidden border text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.98] sm:w-28 ${isActive ? "border-[#67e8f9] shadow-[0_0_0_1px_rgba(103,232,249,0.4)]" : "border-white/15 opacity-65 hover:border-[#67e8f9]/70 hover:opacity-100"}`} role="listitem"><img src={project.cover} alt="" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105" /><span className={`absolute inset-x-0 bottom-0 truncate bg-[#030812]/85 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.08em] ${isActive ? "text-[#bdf7ff]" : "text-[#c1d1e5]"}`}>{project.name}</span></button>;
+                  return <button key={`lightbox-thumb-${project.id}`} ref={isActive ? lightboxActiveThumbRef : undefined} type="button" onClick={() => setLightboxProjectId(project.id)} aria-current={isActive ? "true" : undefined} aria-label={`Ver imagem de ${project.name}`} title={project.name} className={`group relative w-24 shrink-0 overflow-hidden border text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.98] sm:w-28 ${isActive ? "border-[#67e8f9] shadow-[0_0_0_1px_rgba(103,232,249,0.4)]" : "border-white/15 opacity-65 hover:border-[#67e8f9]/70 hover:opacity-100"}`} role="listitem"><img src={project.cover} alt="" loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105" /><span className={`absolute inset-x-0 bottom-0 truncate bg-[#030812]/85 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.08em] ${isActive ? "text-[#bdf7ff]" : "text-[#c1d1e5]"}`}>{project.name}</span></button>;
                 })}
               </div>
             </div>
