@@ -929,3 +929,12 @@
 - [x] Implementar slider antes/depois apenas para projetos com imagem comparativa real.
 - [x] Preservar erro, loader, prefetch, zoom, teclado, foco, compartilhamento e favoritos.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: feedback, analytics e compartilhamento rápido — nova rodada
+
+- [x] Auditar analytics e ações atuais do lightbox.
+- [x] Exibir feedback visual temporário “Copiado!” após cópia de link ou contexto.
+- [x] Rastrear downloads por formato original, WebP e AVIF.
+- [x] Adicionar compartilhamento rápido para WhatsApp e LinkedIn.
+- [x] Preservar compartilhamento nativo, acessibilidade e abertura segura de links.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

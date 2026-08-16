@@ -31,6 +31,7 @@ import {
   Heart,
   Instagram,
   Layers2,
+  Linkedin,
   Loader2,
   MapPin,
   Menu,
@@ -406,6 +407,24 @@ const sortOptions = [
   { value: "relevance", label: "relevância editorial" },
   { value: "added", label: "ordem de adição" },
 ] as const;
+function trackPortfolioEvent(eventName: string, properties: Record<string, string | number>) {
+  if (typeof window === "undefined") return;
+  const payload = { eventName, properties, url: window.location.href, websiteId: import.meta.env.VITE_ANALYTICS_WEBSITE_ID };
+  window.dispatchEvent(new CustomEvent("portfolio:analytics", { detail: payload }));
+  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT as string | undefined;
+  if (!endpoint) return;
+  const body = JSON.stringify(payload);
+  try {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+    } else {
+      void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => undefined);
+    }
+  } catch {
+    // Analytics must never interfere with the portfolio interaction.
+  }
+}
+
 function getRepositoryCategories(repository: Repository) {
   const categories = new Set<string>();
   if (repository.description.toLocaleLowerCase("pt-BR").includes("evento") || repository.name.toLocaleLowerCase("pt-BR").includes("eloise")) categories.add("Eventos");
@@ -505,6 +524,7 @@ export default function Home() {
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
+  const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
@@ -941,6 +961,7 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
       setLightboxShareStatus("copied");
+      setLightboxCopiedAction("link");
     } catch {
       setLightboxShareStatus("error");
     }
@@ -962,6 +983,7 @@ export default function Home() {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
+    trackPortfolioEvent("portfolio_image_download", { format, projectId: lightboxProject.id, projectName: lightboxProject.name });
   }
 
   async function copyLightboxProjectContext() {
@@ -970,10 +992,24 @@ export default function Home() {
     try {
       await navigator.clipboard.writeText(context);
       setLightboxShareStatus("copied");
+      setLightboxCopiedAction("context");
     } catch {
       setLightboxShareStatus("error");
     }
-    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
+    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
+  }
+
+  function shareLightboxToWhatsApp() {
+    if (!lightboxProject) return;
+    const shareText = `${lightboxProject.name} — ${getLightboxShareUrl(lightboxProject)}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
+    trackPortfolioEvent("portfolio_lightbox_share", { channel: "whatsapp", projectId: lightboxProject.id, projectName: lightboxProject.name });
+  }
+
+  function shareLightboxToLinkedIn() {
+    if (!lightboxProject) return;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getLightboxShareUrl(lightboxProject))}`, "_blank", "noopener,noreferrer");
+    trackPortfolioEvent("portfolio_lightbox_share", { channel: "linkedin", projectId: lightboxProject.id, projectName: lightboxProject.name });
   }
 
   async function shareLightboxProject() {
@@ -995,7 +1031,7 @@ export default function Home() {
       await copyLightboxProjectLink();
       return;
     }
-    window.setTimeout(() => setLightboxShareStatus("idle"), 2600);
+    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
   function exportFavorites(format: "csv" | "json") {
@@ -2164,9 +2200,11 @@ export default function Home() {
                 <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex h-9 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
                 <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
                   <button type="button" onClick={shareLightboxProject} className="inline-flex h-9 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
-                  <button type="button" onClick={copyLightboxProjectLink} className="grid h-9 w-9 place-items-center border-l border-white/15 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title="Copiar link"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>
+                  <button type="button" onClick={copyLightboxProjectLink} className="inline-flex h-9 items-center gap-2 border-l border-white/15 px-3 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title={lightboxCopiedAction === "link" ? "Copiado!" : "Copiar link"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">{lightboxCopiedAction === "link" ? "Copiado!" : "copiar link"}</span></button>
                 </div>
-                <button type="button" onClick={copyLightboxProjectContext} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title="Copiar link e legenda"><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">copiar contexto</span></button>
+                <button type="button" onClick={copyLightboxProjectContext} className="inline-flex h-9 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title={lightboxCopiedAction === "context" ? "Copiado!" : "Copiar link e legenda"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "context" ? "Copiado!" : "copiar contexto"}</span></button>
+                <button type="button" onClick={shareLightboxToWhatsApp} className="inline-flex h-9 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Compartilhar no WhatsApp"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">WhatsApp</span></button>
+                <button type="button" onClick={shareLightboxToLinkedIn} className="inline-flex h-9 items-center gap-2 border border-[#70a9e8]/35 bg-[#092545]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e1ff] transition-colors hover:bg-[#123e70] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no LinkedIn" title="Compartilhar no LinkedIn"><Linkedin className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">LinkedIn</span></button>
                 <span role="status" aria-live="polite" className="sr-only">{lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}                </span>
                 <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
               </div>
