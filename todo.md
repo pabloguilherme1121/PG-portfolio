@@ -1011,3 +1011,13 @@
 - [x] Alternar entre zoom máximo e tamanho original com duplo clique.
 - [x] Preservar limites de pan, pinch zoom, swipe, fullscreen, teclado e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Lightbox: indicador de zoom, mini-mapa e atalhos — nova rodada
+
+- [x] Auditar zoom, pan, teclado e dimensões da imagem.
+- [x] Exibir porcentagem de zoom temporariamente após alterações.
+- [x] Adicionar mini-mapa de posição durante zoom acima de 100%.
+- [x] Implementar teclas `+` e `-` para zoom.
+- [x] Implementar setas direcionais para mover a imagem ampliada.
+- [x] Preservar focus trap, swipe, pinch zoom, fullscreen e reduced motion.
+- [x] Validar testes, typecheck, build, responsividade e checkpoint.

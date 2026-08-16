@@ -533,6 +533,7 @@ export default function Home() {
   const [lightboxSwipeDirection, setLightboxSwipeDirection] = useState<"previous" | "next" | null>(null);
   const [showSwipeHint, setShowSwipeHint] = useState(false);
   const [lightboxPanning, setLightboxPanning] = useState(false);
+  const [lightboxZoomFeedback, setLightboxZoomFeedback] = useState<number | null>(null);
   const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState("");
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
@@ -550,6 +551,7 @@ export default function Home() {
   const swipeStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ active: false, x: 0, y: 0, offsetX: 0, offsetY: 0 });
   const panPointerRef = useRef({ active: false, pointerId: -1, x: 0, y: 0, offsetX: 0, offsetY: 0 });
+  const zoomFeedbackTimerRef = useRef<number | null>(null);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxModalRef = useRef<HTMLDivElement>(null);
   const lightboxImageRef = useRef<HTMLImageElement>(null);
@@ -634,11 +636,14 @@ export default function Home() {
   const setProjectZoom = (nextZoom: number) => {
     const clampedZoom = Math.min(3, Math.max(1, nextZoom));
     setLightboxZoom(clampedZoom);
+    setLightboxZoomFeedback(Math.round(clampedZoom * 100));
+    if (zoomFeedbackTimerRef.current) window.clearTimeout(zoomFeedbackTimerRef.current);
+    zoomFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomFeedback(null), 900);
     if (clampedZoom === 1) setLightboxOffset({ x: 0, y: 0 });
   };
 
   const resetProjectZoom = () => {
-    setLightboxZoom(1);
+    setProjectZoom(1);
     setLightboxOffset({ x: 0, y: 0 });
   };
 
@@ -765,6 +770,24 @@ export default function Home() {
       }
       if (!lightboxProject) return;
       const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
+      if (event.key === "+" || event.key === "=") {
+        event.preventDefault();
+        setProjectZoom(lightboxZoom + 0.25);
+        return;
+      }
+      if (event.key === "-" || event.key === "_") {
+        event.preventDefault();
+        setProjectZoom(lightboxZoom - 0.25);
+        return;
+      }
+      if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key) && lightboxZoom > 1) {
+        event.preventDefault();
+        const step = 48;
+        const deltaX = event.key === "ArrowRight" ? -step : event.key === "ArrowLeft" ? step : 0;
+        const deltaY = event.key === "ArrowDown" ? -step : event.key === "ArrowUp" ? step : 0;
+        setLightboxOffset((offset) => clampPanOffset(offset.x + deltaX, offset.y + deltaY));
+        return;
+      }
       if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
         event.preventDefault();
         const direction = event.key === "ArrowRight" ? 1 : -1;
@@ -780,7 +803,7 @@ export default function Home() {
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
       if (document.fullscreenElement) void document.exitFullscreen?.();
     };
-  }, [lightboxProjectId, lightboxProject, lightboxProjects]);
+  }, [lightboxProjectId, lightboxProject, lightboxProjects, lightboxZoom]);
 
   useEffect(() => {
     if (!resumePreviewOpen) return;
@@ -2353,7 +2376,9 @@ export default function Home() {
             <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden bg-[#030812] p-3 sm:p-6">
               {lightboxSwipeDirection && <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-5" aria-hidden="true"><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "previous" ? "opacity-100" : "opacity-30"}`}><ChevronLeft className="h-5 w-5" /></span><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "next" ? "opacity-100" : "opacity-30"}`}><ChevronRight className="h-5 w-5" /></span></div>}
               {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
+              {lightboxZoomFeedback !== null && <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 border border-[#67e8f9]/40 bg-[#06172f]/95 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomFeedback}%</div>}
               <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} disabled={lightboxZoom <= 1} aria-label="Reduzir zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} disabled={lightboxZoom >= 3} aria-label="Aumentar zoom" className="grid h-9 w-9 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button></div>
+              {lightboxZoom > 1 && (() => { const bounds = getPanBounds(); const viewportWidth = Math.max(18, 100 / lightboxZoom); const viewportHeight = Math.max(18, 100 / lightboxZoom); const left = Math.min(100 - viewportWidth, Math.max(0, 50 - (bounds.x ? lightboxOffset.x / bounds.x * 50 : 0) - viewportWidth / 2)); const top = Math.min(100 - viewportHeight, Math.max(0, 50 - (bounds.y ? lightboxOffset.y / bounds.y * 50 : 0) - viewportHeight / 2)); return <div className="absolute bottom-4 right-4 z-20 hidden h-20 w-28 overflow-hidden border border-[#67e8f9]/40 bg-[#06172f]/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)] sm:block" role="img" aria-label={`Mini-mapa da imagem ampliada em ${Math.round(lightboxZoom * 100)}%`} style={{ backgroundImage: `url(${lightboxProject.cover})`, backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute border-2 border-[#a5f3fc] bg-[#67e8f9]/20" style={{ left: `${left}%`, top: `${top}%`, width: `${viewportWidth}%`, height: `${viewportHeight}%` }} /></div>; })()}
               <div ref={lightboxImageContainerRef} className="relative flex min-h-[28vh] w-full items-center justify-center">
                 {showSwipeHint && <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 border border-[#67e8f9]/30 bg-[#06172f]/90 px-4 py-2 text-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]">deslize para navegar</span></div>}
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
