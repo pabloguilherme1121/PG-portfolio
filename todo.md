@@ -869,3 +869,12 @@
 - [x] Revisar qualidade visual geral sem inventar conteúdo ou métricas.
 - [x] Validar responsividade, acessibilidade, testes, typecheck, build e performance.
 - [x] Salvar checkpoint após a validação final.
+
+## Imagens responsivas WebP e AVIF — nova rodada
+
+- [x] Auditar pesos, dimensões e usos das imagens mais pesadas.
+- [x] Gerar variantes WebP e AVIF em larguras responsivas.
+- [x] Publicar os novos assets fora do diretório do projeto.
+- [x] Atualizar imagens e metadados para usar `picture`, `srcset` e `sizes` quando aplicável.
+- [x] Validar qualidade visual, fallback, testes, typecheck, build e carregamento.
+- [x] Salvar checkpoint após a validação final.

@@ -70,16 +70,36 @@ const InstagramRepertoire = lazy(() => import("./InstagramRepertoire"));
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
+const heroResponsive = {
+  avif: "/manus-storage/pablo-hero-archive-480w_e40b1df5.avif 480w, /manus-storage/pablo-hero-archive-768w_5499edae.avif 768w, /manus-storage/pablo-hero-archive-1200w_862455f5.avif 1200w, /manus-storage/pablo-hero-archive-1600w_1c356f9e.avif 1600w, /manus-storage/pablo-hero-archive-1920w_64ab699e.avif 1920w",
+  webp: "/manus-storage/pablo-hero-archive-480w_b3b1574d.webp 480w, /manus-storage/pablo-hero-archive-768w_cd8f428d.webp 768w, /manus-storage/pablo-hero-archive-1200w_b0307ff4.webp 1200w, /manus-storage/pablo-hero-archive-1600w_d789da48.webp 1600w, /manus-storage/pablo-hero-archive-1920w_19e9d0c3.webp 1920w",
+};
 const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
+const textureResponsive = {
+  avif: "/manus-storage/pablo-systems-texture-480w_5a6395b2.avif 480w, /manus-storage/pablo-systems-texture-768w_8d43ab9a.avif 768w, /manus-storage/pablo-systems-texture-1200w_bd814e99.avif 1200w, /manus-storage/pablo-systems-texture-1600w_37d28a1c.avif 1600w, /manus-storage/pablo-systems-texture-1920w_743d3758.avif 1920w",
+  webp: "/manus-storage/pablo-systems-texture-480w_ec71c815.webp 480w, /manus-storage/pablo-systems-texture-768w_c701324d.webp 768w, /manus-storage/pablo-systems-texture-1200w_4041e6bf.webp 1200w, /manus-storage/pablo-systems-texture-1600w_c56f3109.webp 1600w, /manus-storage/pablo-systems-texture-1920w_89c6d1bd.webp 1920w",
+};
 const portraitUrl = "/manus-storage/pablo-guilherme-retrato-profissional_a0ec8605.png";
+const portraitResponsive = {
+  avif: "/manus-storage/pablo-retrato-480w_72345227.avif 480w, /manus-storage/pablo-retrato-768w_02bb45b0.avif 768w, /manus-storage/pablo-retrato-1200w_e67ca5a8.avif 1200w, /manus-storage/pablo-retrato-1600w_09cf51fa.avif 1600w, /manus-storage/pablo-retrato-1664w_a3e67f83.avif 1664w",
+  webp: "/manus-storage/pablo-retrato-480w_d51f7f1b.webp 480w, /manus-storage/pablo-retrato-768w_b05571cc.webp 768w, /manus-storage/pablo-retrato-1200w_00268506.webp 1200w, /manus-storage/pablo-retrato-1600w_ad3a0976.webp 1600w, /manus-storage/pablo-retrato-1664w_fe47542b.webp 1664w",
+};
 const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf";
 const whatsAppNumber = "5561992903029";
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
 const showreelUrl = "/manus-storage/showreel_e887bf6f.mp4";
 const showreelPosterUrl = "/manus-storage/showreel-poster_847cd0c5.jpg";
+const showreelPosterResponsive = {
+  avif: "/manus-storage/showreel-poster-480w_409a88d2.avif 480w, /manus-storage/showreel-poster-768w_e6e5d093.avif 768w, /manus-storage/showreel-poster-1200w_b3315973.avif 1200w, /manus-storage/showreel-poster-1280w_54c3532c.avif 1280w",
+  webp: "/manus-storage/showreel-poster-480w_5c84b53c.webp 480w, /manus-storage/showreel-poster-768w_c3e4972b.webp 768w, /manus-storage/showreel-poster-1200w_876a4b83.webp 1200w, /manus-storage/showreel-poster-1280w_cab44748.webp 1280w",
+};
 const showreelVerticalUrl = "/manus-storage/showreel-vertical_00d4c92f.mp4";
 const showreelVerticalPosterUrl = "/manus-storage/showreel-vertical-poster_e21c73f9.jpg";
+const showreelVerticalPosterResponsive = {
+  avif: "/manus-storage/showreel-vertical-poster-480w_e4656a6a.avif 480w, /manus-storage/showreel-vertical-poster-720w_7e009499.avif 720w",
+  webp: "/manus-storage/showreel-vertical-poster-480w_092fa9d6.webp 480w, /manus-storage/showreel-vertical-poster-720w_d90358f3.webp 720w",
+};
 
 const skillTracks = [
   {
@@ -1236,7 +1256,7 @@ export default function Home() {
         <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
         <section id="inicio" className="relative isolate min-h-[680px] overflow-hidden pt-[76px] sm:min-h-[850px]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-cover bg-center opacity-70 lg:w-[72%]" style={{ backgroundImage: `url(${heroUrl})` }} />
+          <picture className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-70 lg:w-[72%]"><source type="image/avif" srcSet={heroResponsive.avif} sizes="(min-width: 1024px) 72vw, 100vw" /><source type="image/webp" srcSet={heroResponsive.webp} sizes="(min-width: 1024px) 72vw, 100vw" /><img src={heroUrl} alt="" width="1920" height="1080" loading="eager" fetchPriority="high" decoding="async" className="h-full w-full object-cover object-center" /></picture>
           <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-[linear-gradient(90deg,#07111f_5%,rgba(7,17,31,0.96)_30%,rgba(7,17,31,0.30)_68%,rgba(7,17,31,0.66)_100%)] lg:w-[80%]" />
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-52 bg-[linear-gradient(0deg,#07111f,transparent)]" />
           <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block"><img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" /></div>
@@ -1255,7 +1275,7 @@ export default function Home() {
                 faz sentido.
               </h1>
               <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
-                <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" />
+                <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" /><img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" /></picture>
                 <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1"><span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo / autor</span><span className="mt-1 block truncate font-display text-lg tracking-[-0.03em] text-white">Pablo Guilherme</span><span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">TI · conteúdo · imagem</span></figcaption>
               </figure>
               <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
@@ -1297,12 +1317,12 @@ export default function Home() {
                   </div>
                   <div className={`relative bg-[#07111f] ${isDesktopViewport ? "aspect-video" : "aspect-[9/16]"}`}>
                     {!showreelRequested && <button type="button" onClick={() => { setShowreelError(false); setShowreelRequested(true); }} className="showreel-poster group absolute inset-0 grid place-items-center text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]" aria-label="Carregar e reproduzir o showreel" data-showreel-trigger="true">
-                      <img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" />
+                      <picture className="absolute inset-0"><source type="image/avif" srcSet={isDesktopViewport ? showreelPosterResponsive.avif : showreelVerticalPosterResponsive.avif} sizes="(min-width: 1024px) 900px, 100vw" /><source type="image/webp" srcSet={isDesktopViewport ? showreelPosterResponsive.webp : showreelVerticalPosterResponsive.webp} sizes="(min-width: 1024px) 900px, 100vw" /><img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" /></picture>
                       <span className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,20,0.82),rgba(3,11,20,0.18))]" />
                       <span className="showreel-play-button relative ml-5 inline-flex items-center gap-3 rounded-full border border-[#a5f3fc]/80 bg-[#38bdf8] px-3 py-2 text-[#02111f] shadow-[0_0_28px_rgba(56,189,248,0.35)] transition-transform duration-200 group-hover:scale-105 motion-reduce:transition-none" data-showreel-play="true"><span className="grid h-10 w-10 place-items-center rounded-full border border-[#02111f]/25 bg-[#a5f3fc]/80"><Play className="ml-0.5 h-4 w-4" fill="currentColor" aria-hidden="true" /></span><span className="pr-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">play</span></span>
                       <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel {isDesktopViewport ? "horizontal" : "vertical"} · 00:09</span>
                     </button>}
-                    {showreelRequested && !showreelError && <video ref={showreelVideoRef} key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onPlay={() => setShowreelPlaying(true)} onPause={() => setShowreelPlaying(false)} onVolumeChange={(event) => setShowreelMuted(event.currentTarget.muted)} onError={() => { setShowreelError(true); setShowreelReady(false); setShowreelPlaying(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
+                    {showreelRequested && !showreelError && <video ref={showreelVideoRef} key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? "/manus-storage/showreel-poster-1280w_54c3532c.avif" : "/manus-storage/showreel-vertical-poster-720w_7e009499.avif"} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onPlay={() => setShowreelPlaying(true)} onPause={() => setShowreelPlaying(false)} onVolumeChange={(event) => setShowreelMuted(event.currentTarget.muted)} onError={() => { setShowreelError(true); setShowreelReady(false); setShowreelPlaying(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
                     {showreelRequested && !showreelError && showreelReady && showreelPlaying && <button type="button" onClick={(event) => { event.stopPropagation(); const video = showreelVideoRef.current; if (!video) return; video.muted = !video.muted; setShowreelMuted(video.muted); }} aria-label={showreelMuted ? "Ativar som do showreel" : "Desativar som do showreel"} aria-pressed={showreelMuted} title={showreelMuted ? "Ativar som" : "Desativar som"} className="showreel-volume-control absolute bottom-4 right-4 z-10 grid h-11 w-11 place-items-center border border-[#a5f3fc]/75 bg-[#02111f]/85 text-[#d9fbff] shadow-[0_10px_25px_rgba(0,0,0,0.28)] backdrop-blur-sm transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none" data-showreel-volume="true">{showreelMuted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}</button>}
                     {showreelRequested && showreelError && <div className="absolute inset-0 grid place-items-center px-5 text-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">showreel indisponível</p><p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#b7cdf1]">O vídeo não carregou agora. Você ainda pode conhecer os trabalhos na galeria.</p><button type="button" onClick={() => { setShowreelError(false); setShowreelReady(false); setShowreelPlaying(false); setShowreelMuted(false); setShowreelRequested(false); }} className="mt-4 border border-[#67e8f9]/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button></div></div>}
                   </div>
@@ -1365,7 +1385,7 @@ export default function Home() {
                 </div>
                 <div className="border-l border-white/10 pl-6 xl:mt-4">
                   <figure className="relative mb-8 overflow-hidden border border-white/10 bg-[#0d1523]">
-                    <img src={portraitUrl} alt="Pablo Guilherme" width="720" height="860" loading="lazy" decoding="async" className="h-64 w-full object-cover object-center saturate-[0.8] contrast-110 transition-transform duration-700 hover:scale-[1.03] sm:h-72" />
+                    <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 640px) 448px, 100vw" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 640px) 448px, 100vw" /><img src={portraitUrl} alt="Pablo Guilherme" width="720" height="860" loading="lazy" decoding="async" className="h-64 w-full object-cover object-center saturate-[0.8] contrast-110 transition-transform duration-700 hover:scale-[1.03] sm:h-72" /></picture>
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_40%,rgba(6,8,13,0.92)_100%)]" />
                     <figcaption className="absolute inset-x-0 bottom-0 flex items-end justify-between px-4 py-3">
                       <span className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#d9e8ff]">Pablo Guilherme</span>
@@ -1394,7 +1414,7 @@ export default function Home() {
         </section>
 
         <section id="trilha" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#070a10] py-16 sm:py-24 lg:py-32">
-          {isDesktopViewport && <img src={textureUrl} alt="" loading="lazy" decoding="async" className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.13] mix-blend-screen" />}
+          {isDesktopViewport && <picture className="pointer-events-none absolute inset-0 block"><source type="image/avif" srcSet={textureResponsive.avif} sizes="100vw" /><source type="image/webp" srcSet={textureResponsive.webp} sizes="100vw" /><img src={textureUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-[0.13] mix-blend-screen" /></picture>}
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
@@ -1522,7 +1542,7 @@ export default function Home() {
             </div>
 
             <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
-              <img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" />
+              <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
               <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
               <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
