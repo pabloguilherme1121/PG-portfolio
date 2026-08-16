@@ -514,3 +514,106 @@
 - [x] Criar uma forma de revisar e abrir rapidamente as imagens salvas.
 - [x] Validar persistência, acessibilidade, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Nova rodada: Telegram, UX e currículo
+
+- [x] Auditar os pontos de atendimento, animações e currículo atuais.
+- [x] Integrar https://t.me/mpjmarketing como canal público de atendimento em CTAs contextuais.
+- [x] Revisar microinterações e animações com reduced motion, foco e desempenho preservados.
+- [x] Aprimorar o currículo PDF com informações verificáveis e links clicáveis.
+- [x] Atualizar a chamada de currículo no site.
+- [x] Validar Telegram, responsividade, acessibilidade, testes, typecheck e build.
+- [ ] Salvar checkpoint final da rodada.
+
+### Skills avaliadas
+
+- [x] Ler skill-creator para orientar modificações sem criar uma skill nova sem especificação.
+- [x] Ler typst-pdf-maker para decidir se a revisão do PDF atual exige migração.
+- [x] Adiar manus-api, youtube-video-research, tts-prompter e similarweb-analytics por não haver necessidade funcional clara nesta rodada.
+
+### Limitações de conteúdo
+
+- [x] Não inventar experiências, clientes, métricas, depoimentos ou certificações no currículo.
+- [ ] Registrar dados profissionais ausentes caso sejam necessários para uma revisão curricular mais específica.
+- [x] Confirmar que o Telegram também aparece no PDF atualizado.
+
+### Evidências e entrega
+
+- [x] Registrar decisões de UX e canais no relatório de revisão.
+- [x] Ler o TODO completo antes do checkpoint.
+- [ ] Entregar somente o checkpoint final ao proprietário.
+- [x] Orientar publicação pela interface de gerenciamento, sem publicar automaticamente.
+
+### Preservação
+
+- [x] Preservar favoritos de projetos, coleção pessoal de imagens, lightbox, temas, ordenação e demais funções existentes.
+- [x] Continuar a partir do checkpoint manus-webdev://54f720ab.
+- [ ] Registrar o identificador do novo checkpoint.
+
+### Critérios de aceite
+
+- [x] Telegram aparece em pelo menos dois pontos de contato e abre com segurança em nova aba.
+- [x] Animações não quebram navegação por teclado ou prefers-reduced-motion.
+- [x] Currículo continua baixável e fiel ao perfil informado.
+- [x] Testes, typecheck, build e validação Chromium passam.
+- [x] Nenhuma pendência essencial permanece antes da entrega.
+
+### Estado da rodada
+
+- [x] Solicitação recebida e plano criado.
+- [x] Checklist conciso registrado antes da implementação.
+- [x] Auditoria concluída.
+- [x] Implementação concluída.
+- [x] Validação concluída.
+- [ ] Checkpoint salvo.
+- [ ] Entrega concluída.
+
+### Decisões de escopo
+
+- [x] Não criar bot, automação de Telegram ou integração programática sem solicitação e credenciais específicas.
+- [x] Não integrar YouTube, TTS, Similarweb ou Manus API sem benefício funcional comprovado.
+- [x] Usar apenas dados profissionais já fornecidos ou presentes no projeto.
+- [ ] Definir se Telegram complementa ou substitui os canais existentes.
+
+### Próxima ação
+
+- [x] Inspecionar Home.tsx, gerador de currículo e scripts de validação.
+- [x] Iniciar a auditoria técnica e de conteúdo.
+
+### Controle final
+
+- [x] Marcar os itens implementados após cada conclusão.
+- [x] Confirmar links e acessibilidade em desktop e celular.
+- [x] Salvar checkpoint somente depois de todos os testes.
+- [x] Entregar resumo final em português.
+
+### Observação
+
+- [x] URL fornecida pelo proprietário: https://t.me/mpjmarketing.
+- [ ] O objetivo exato do atendimento no Telegram permanece aberto; usar rótulo neutro de atendimento público até confirmação.
+
+### Fim da rodada
+
+- [ ] Rodada revisada, validada e entregue.
+
+### Arquivos esperados
+
+- [x] client/src/pages/Home.tsx revisado.
+- [x] scripts/build-curriculum.py ou gerador equivalente revisado.
+- [x] scripts de validação atualizados.
+- [x] Currículo PDF atualizado, se houver nova geração.
+- [ ] Checkpoint final salvo.
+
+### Qualidade
+
+- [x] Conferir contraste, foco, hover, active e reduced motion dos novos CTAs.
+- [x] Conferir abertura externa segura do Telegram.
+- [x] Conferir que o download do currículo e seus links continuam funcionando.
+- [x] Conferir ausência de erros críticos no console.
+
+### Encerramento
+
+- [x] Atualizar este bloco com o resultado final.
+- [ ] Entregar o checkpoint da rodada.
+- [ ] Sugerir próximos passos práticos.
