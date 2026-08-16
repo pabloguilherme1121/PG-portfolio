@@ -353,3 +353,12 @@
 - [x] Estilizar botão para toque, foco, identidade visual e reduced motion.
 - [x] Validar aparecimento, teclado, rolagem, responsividade, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+
+## Skeleton loading da galeria
+
+- [x] Auditar o fluxo atual de filtros, carregamento progressivo e transições.
+- [x] Implementar estado de carregamento e skeletons estruturais dos cards.
+- [x] Integrar feedback com filtros, busca, favoritos e Carregar mais.
+- [x] Validar skeleton, acessibilidade, reduced motion, responsividade, testes e build.
+- [x] Salvar checkpoint após a validação final.

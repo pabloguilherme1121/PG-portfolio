@@ -128,8 +128,12 @@ for (const width of viewports) {
   });
   const categoryKeyboardFilter = page.locator('#projetos button[data-filter-scope="category"]', { hasText: "Eventos" }).first();
   await categoryKeyboardFilter.focus();
-  await page.keyboard.press("Enter");
+  await categoryKeyboardFilter.press("Enter");
+  const skeletonStatus = page.locator('[role="status"][aria-label="Carregando projetos"]');
+  const skeletonVisibleDuringCategoryChange = await skeletonStatus.count() > 0 && await skeletonStatus.first().isVisible();
   await page.waitForTimeout(280);
+  await skeletonStatus.waitFor({ state: "detached", timeout: 1500 }).catch(() => undefined);
+  const skeletonHiddenAfterLoad = await skeletonStatus.count() === 0;
   const categoryEnterActivated = (await categoryKeyboardFilter.getAttribute("aria-pressed")) === "true";
   await page.keyboard.press("Space");
   await page.waitForTimeout(280);
@@ -150,7 +154,10 @@ for (const width of viewports) {
     return style.outlineStyle !== "none" || style.boxShadow !== "none";
   });
   await loadMoreButton.press("Enter");
-  await page.waitForTimeout(280);
+  await page.waitForTimeout(30);
+  const skeletonVisibleDuringLoadMore = await page.locator('[role="status"][aria-label="Carregando projetos"]').count() > 0;
+  await page.waitForTimeout(520);
+  await page.locator('[role="status"][aria-label="Carregando projetos"]').waitFor({ state: "detached", timeout: 1500 }).catch(() => undefined);
   const expandedProjectCount = await page.locator('#projetos .project-gallery-card').count();
   const loadMoreCompleted = expandedProjectCount > initialLoadedProjectCount && await page.getByRole("button", { name: "carregar mais" }).count() === 0;
   const endOfListVisible = await page.getByText(/todos os .* projetos desta seleção foram carregados/).isVisible();
@@ -182,7 +189,8 @@ for (const width of viewports) {
   await page.waitForTimeout(280);
   const searchInput = page.locator('#projetos input[type="search"]');
   await searchInput.fill("Interface");
-  await page.waitForTimeout(280);
+  await page.waitForTimeout(520);
+  const skeletonHiddenAfterSearch = await page.locator('[role="status"][aria-label="Carregando projetos"]').count() === 0;
   const searchWorked = (await page.locator("#projetos .project-gallery-card").count()) > 0;
   await page.locator("#contato").scrollIntoViewIfNeeded();
   const availableDate = page.locator('#contato .availability-calendar button[aria-label*="feira"]:not(:disabled)').first();
@@ -194,7 +202,7 @@ for (const width of viewports) {
     calendarInteractive = await availableTime.count() > 0;
   }
   const reducedMotion = await page.evaluate(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
+  results.push({ width, documentWidth, noViewportOverflow: documentWidth <= width, backToTopVisible, backToTopFocusVisible, returnedToTop, menuKeyboardClosed, filterFocusVisible, skeletonVisibleDuringCategoryChange, skeletonHiddenAfterLoad, categoryEnterActivated, categorySpacePreserved, filterContainerWidth, overlayHoverVisible, overlayFocusVisible, overlayHasTechnologies, overlayReducedMotionSafe, favoriteActivated, favoritesStored, favoritePersisted, favoriteFocusVisible, favoriteKeyboardRemoved, favoriteKeyboardRestored, favoritesFilterActivated, savedCardCount, initialLoadedProjectCount, loadMoreAvailable, loadMoreFocusVisible, expandedProjectCount, loadMoreCompleted, endOfListVisible, skeletonVisibleDuringLoadMore, skeletonHiddenAfterSearch, csvExportValid, jsonExportValid, shareLinkValid, sharedNoticeVisible, saveSharedFocusVisible, sharedFavoritesSaved, sharedNoticeDismissedAfterSave, csvFocusVisible, jsonFocusVisible, sortFocusVisible, sortKeyboardChanged, sortAddedChangedOrder, relevanceSortRestored, filterClicked, searchWorked, calendarInteractive, reducedMotion });
   await page.close();
 }
 

@@ -344,6 +344,7 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState("Todos");
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
+  const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
@@ -369,6 +370,7 @@ export default function Home() {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
+  const galleryLoadingTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
   const sharedProjectIdSet = useMemo(() => new Set(sharedProjectIds ?? []), [sharedProjectIds]);
@@ -433,6 +435,10 @@ export default function Home() {
   useEffect(() => {
     setVisibleProjectLimit(projectPageSize);
   }, [activeTechnology, activeCategory, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
+
+  useEffect(() => {
+    if (!isProjectFilterTransitioning) setIsGalleryLoading(false);
+  }, [isProjectFilterTransitioning]);
 
   useEffect(() => {
     const sharedFavorites = new URLSearchParams(window.location.search).get("favorites");
@@ -587,7 +593,7 @@ export default function Home() {
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => {
       setActiveCategory(category);
-      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+      projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
     }, 130);
   }
 
@@ -597,7 +603,7 @@ export default function Home() {
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => {
       setSortMode(mode);
-      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+      projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
     }, 130);
   }
 
@@ -607,8 +613,18 @@ export default function Home() {
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => {
       setActiveTechnology(technology);
-      projectFilterTimerRef.current = window.setTimeout(() => setIsProjectFilterTransitioning(false), 40);
+      projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
     }, 130);
+  }
+
+  function loadMoreProjects() {
+    if (!hasMoreRepositories || isGalleryLoading) return;
+    setIsGalleryLoading(true);
+    if (galleryLoadingTimerRef.current) window.clearTimeout(galleryLoadingTimerRef.current);
+    galleryLoadingTimerRef.current = window.setTimeout(() => {
+      setVisibleProjectLimit((current) => Math.min(current + projectPageSize, visibleRepositories.length));
+      setIsGalleryLoading(false);
+    }, 220);
   }
 
   function applyProjectSearchSuggestion(suggestion: SearchSuggestion) {
@@ -1075,6 +1091,9 @@ export default function Home() {
                   value={projectSearch}
                   onChange={(event) => {
                     setProjectSearch(event.target.value);
+                    if (galleryLoadingTimerRef.current) window.clearTimeout(galleryLoadingTimerRef.current);
+                    setIsGalleryLoading(true);
+                    galleryLoadingTimerRef.current = window.setTimeout(() => setIsGalleryLoading(false), 260);
                     setActiveSearchSuggestionIndex(-1);
                     setIsProjectSearchFocused(true);
                   }}
@@ -1128,7 +1147,11 @@ export default function Home() {
             </div>
 
             <div aria-busy={isProjectFilterTransitioning} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
-            {visibleRepositories.length > 0 ? (
+            {isGalleryLoading ? (
+              <div role="status" aria-live="polite" aria-label="Carregando projetos" className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
+                {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}
+              </div>
+            ) : visibleRepositories.length > 0 ? (
               <>
               <div className={`grid gap-px bg-white/[0.1] ${isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`}>
                 {displayedRepositories.map((repository, index) => {
@@ -1174,7 +1197,7 @@ export default function Home() {
                   );
                 })}
               </div>
-              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={() => setVisibleProjectLimit((current) => Math.min(current + projectPageSize, visibleRepositories.length))} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
+              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={loadMoreProjects} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
               {!hasMoreRepositories && <p role="status" aria-live="polite" className="mt-5 border border-white/[0.1] bg-[#07101e]/60 px-4 py-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7]">todos os {visibleRepositories.length} projetos desta seleção foram carregados</p>}
               </>
             ) : (
