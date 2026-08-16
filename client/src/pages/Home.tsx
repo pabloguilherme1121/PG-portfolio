@@ -425,8 +425,10 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
+  const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
-  const lightboxProject = lightboxProjectId ? repositories.find((repository) => repository.id === lightboxProjectId) ?? null : null;
+  const lightboxProjects = useMemo(() => repositories.filter((repository) => Boolean(repository.cover)), []);
+  const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
 
   const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
     lightboxReturnFocusRef.current = event.currentTarget;
@@ -450,12 +452,12 @@ export default function Home() {
         return;
       }
       if (!lightboxProject) return;
-      const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id);
+      const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
       if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
         event.preventDefault();
         const direction = event.key === "ArrowRight" ? 1 : -1;
-        const nextIndex = (projectIndex + direction + repositories.length) % repositories.length;
-        const nextProject = repositories[nextIndex];
+        const nextIndex = (projectIndex + direction + lightboxProjects.length) % lightboxProjects.length;
+        const nextProject = lightboxProjects[nextIndex];
         if (nextProject?.cover) setLightboxProjectId(nextProject.id);
       }
     };
@@ -464,7 +466,12 @@ export default function Home() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleLightboxKeyDown);
     };
-  }, [lightboxProjectId, lightboxProject, repositories]);
+  }, [lightboxProjectId, lightboxProject, lightboxProjects]);
+
+  useEffect(() => {
+    if (!lightboxProjectId) return;
+    window.requestAnimationFrame(() => lightboxActiveThumbRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
+  }, [lightboxProjectId]);
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
   const [isAvailabilityRedirecting, setIsAvailabilityRedirecting] = useState(false);
@@ -1713,12 +1720,20 @@ export default function Home() {
             <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
             <div className="relative flex min-h-0 flex-1 items-center justify-center bg-[#030812] p-3 sm:p-6">
               <img src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} className="max-h-[68vh] w-full object-contain motion-reduce:transition-none" />
-              <button type="button" onClick={() => { const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = repositories[(projectIndex - 1 + repositories.length) % repositories.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
-              <button type="button" onClick={() => { const projectIndex = repositories.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = repositories[(projectIndex + 1) % repositories.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
+              <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = lightboxProjects[(projectIndex - 1 + lightboxProjects.length) % lightboxProjects.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
+              <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = lightboxProjects[(projectIndex + 1) % lightboxProjects.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
             </div>
             <div className="flex flex-col gap-3 border-t border-white/10 px-5 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 font-display text-2xl font-medium tracking-[-0.04em] text-white">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c8e5f0]">{lightboxProject.description}</p></div>
-              <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{repositories.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {repositories.length}</div>
+              <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
+            </div>
+            <div className="border-t border-white/10 bg-[#050b15] px-4 py-3 sm:px-6" role="group" aria-label="Miniaturas dos projetos">
+              <div className="flex gap-2 overflow-x-auto pb-1" role="list">
+                {lightboxProjects.map((project) => {
+                  const isActive = project.id === lightboxProject.id;
+                  return <button key={`lightbox-thumb-${project.id}`} ref={isActive ? lightboxActiveThumbRef : undefined} type="button" onClick={() => setLightboxProjectId(project.id)} aria-current={isActive ? "true" : undefined} aria-label={`Ver imagem de ${project.name}`} title={project.name} className={`group relative w-24 shrink-0 overflow-hidden border text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.98] sm:w-28 ${isActive ? "border-[#67e8f9] shadow-[0_0_0_1px_rgba(103,232,249,0.4)]" : "border-white/15 opacity-65 hover:border-[#67e8f9]/70 hover:opacity-100"}`} role="listitem"><img src={project.cover} alt="" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105" /><span className={`absolute inset-x-0 bottom-0 truncate bg-[#030812]/85 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.08em] ${isActive ? "text-[#bdf7ff]" : "text-[#c1d1e5]"}`}>{project.name}</span></button>;
+                })}
+              </div>
             </div>
           </div>
         </div>

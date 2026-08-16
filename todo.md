@@ -481,3 +481,11 @@
 - [x] Integrar lightbox aos cards, miniaturas e modos de visualização.
 - [x] Validar acessibilidade, responsividade, movimento reduzido, testes e build.
 - [x] Salvar checkpoint após a validação final.
+
+## Miniaturas navegáveis no lightbox
+
+- [x] Auditar o lightbox atual e definir a coleção de miniaturas.
+- [x] Implementar miniaturas, seleção ativa e rolagem sincronizada.
+- [x] Integrar miniaturas com setas, teclado, foco e responsividade.
+- [x] Validar navegação, acessibilidade, movimento reduzido, testes e build.
+- [x] Salvar checkpoint após a validação final.

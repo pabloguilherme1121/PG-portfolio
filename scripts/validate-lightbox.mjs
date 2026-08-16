@@ -15,15 +15,23 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
   const dialog = page.locator('[role="dialog"][aria-labelledby="project-lightbox-title"]');
   await dialog.waitFor({ state: "visible" });
   const initialTitle = await page.locator("#project-lightbox-title").textContent();
-  const imageAlt = await dialog.locator("img").getAttribute("alt");
+  const imageAlt = await dialog.locator('img[alt^="Imagem ampliada"]').getAttribute("alt");
+  const thumbnails = dialog.locator('[role="listitem"]');
+  const thumbnailCount = await thumbnails.count();
+  const activeThumbnailCount = await dialog.locator('[role="listitem"][aria-current="true"]').count();
   const lockedScroll = await page.evaluate(() => document.body.style.overflow === "hidden");
+  const lastThumbnail = thumbnails.last();
+  await lastThumbnail.click();
+  await page.waitForTimeout(80);
+  const clickedThumbnailTitle = await page.locator("#project-lightbox-title").textContent();
   await page.keyboard.press("ArrowRight");
   await page.waitForTimeout(80);
   const nextTitle = await page.locator("#project-lightbox-title").textContent();
   await page.keyboard.press("Escape");
   await dialog.waitFor({ state: "detached" });
+  await page.waitForTimeout(60);
   const restoredFocus = await page.evaluate(() => document.activeElement?.getAttribute("aria-label")?.startsWith("Ampliar imagem") ?? false);
-  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), lockedScroll, arrowNavigationChangedTitle: initialTitle !== nextTitle, closedByEscape: true, restoredFocus });
+  results.push({ viewport: viewport.width, opened: true, hasImageAlt: Boolean(imageAlt), thumbnailCount, activeThumbnailCount, thumbnailClickChangedTitle: clickedThumbnailTitle !== initialTitle, lockedScroll, arrowNavigationChangedTitle: clickedThumbnailTitle !== nextTitle, closedByEscape: true, restoredFocus });
   await context.close();
 }
 
