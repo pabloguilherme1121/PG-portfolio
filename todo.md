@@ -1075,3 +1075,12 @@
 - [x] Adicionar feedback visual sutil ao atingir os limites mínimo e máximo de zoom.
 - [x] Preservar acessibilidade, responsividade, pan, swipe, pinch, teclado e reduced motion.
 - [x] Validar testes, typecheck, build, responsividade e checkpoint.
+
+## Gestão de favoritos, filtros públicos e E2E — nova rodada
+
+- [x] Auditar arquitetura, autenticação, galeria e nomenclatura atual.
+- [x] Criar uma área de gestão protegida para ordenar e exportar favoritos.
+- [x] Adicionar testes E2E da navegação entre galeria pública e curadoria.
+- [x] Implementar filtros por tags na galeria pública.
+- [x] Renomear a ação/seção de Currículo para Portfólio sem quebrar links ou downloads existentes.
+- [x] Validar autorização, acessibilidade, responsividade, testes, typecheck, build e checkpoint.

@@ -397,6 +397,7 @@ const repertoireSignals = [
 
 const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
+const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
 type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 const predefinedOrderProfiles: ManualOrderProfile[] = [
@@ -465,6 +466,7 @@ export default function Home() {
   const [formError, setFormError] = useState<string | null>(null);
   const [activeTechnology, setActiveTechnology] = useState("Todos");
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>("Todos");
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
   const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
     if (typeof window === "undefined") return repositories.map((repository) => repository.id);
@@ -987,10 +989,11 @@ export default function Home() {
     .filter((repository) => {
       const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
       const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
+      const matchesTag = activeTag === "Todos" || repository.technologies.includes(activeTag) || getRepositoryCategories(repository).has(activeTag);
       const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
       const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
       const matchesFavorites = !favoritesOnly || (sharedProjectIds ? sharedProjectIdSet.has(repository.id) : favoriteProjectIdSet.has(repository.id));
-      return matchesTechnology && matchesCategory && matchesSearch && matchesFavorites;
+      return matchesTechnology && matchesCategory && matchesTag && matchesSearch && matchesFavorites;
     })
     .sort((first, second) => sortMode === "manual" ? 0 : sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
@@ -1010,7 +1013,7 @@ export default function Home() {
 
   useEffect(() => {
     setVisibleProjectLimit(projectPageSize);
-  }, [activeTechnology, activeCategory, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
+  }, [activeTechnology, activeCategory, activeTag, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
 
   useEffect(() => {
     window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
@@ -1356,6 +1359,15 @@ export default function Home() {
     }, 130);
   }
 
+  function selectTag(tag: (typeof tagFilters)[number]) {
+    if (tag === activeTag || isProjectFilterTransitioning) return;
+    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    setIsProjectFilterTransitioning(true);
+    projectFilterTimerRef.current = window.setTimeout(() => {
+      setActiveTag(tag);
+      projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 40);
+    }, 130);
+  }
   function selectTechnology(technology: string) {
     if (technology === activeTechnology || isProjectFilterTransitioning) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
@@ -1572,8 +1584,8 @@ export default function Home() {
               </a>
             ))}
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-            <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar currículo atualizado em PDF" title="Visualizar currículo em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
-              <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>currículo PDF</span>
+            <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+              <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
             </a>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
@@ -1607,7 +1619,7 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar currículo atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar currículo PDF</a>
+              <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>
               <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
           </nav>
@@ -1743,13 +1755,13 @@ export default function Home() {
                   </aside>
                   <a
                     href={resumeUrl}
-                    download="curriculo-pablo-guilherme.pdf"
+                    download="portfolio-pablo-guilherme.pdf"
                     className="group mt-9 inline-flex w-full max-w-md items-center justify-between border border-[#67e8f9]/45 bg-[#0b1d2e] px-4 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#102a3b] hover:shadow-[0_12px_30px_rgba(14,116,144,0.28)] sm:w-auto sm:min-w-[320px]"
                   >
                     <span className="flex items-center gap-3">
                       <span className="grid h-9 w-9 place-items-center bg-[#3b82f6] text-white transition-transform duration-200 group-hover:scale-[1.03]"><Download className="h-4 w-4" /></span>
                       <span className="text-left">
-                        <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white">Baixar currículo</span>
+                        <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white">Baixar portfólio</span>
                         <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.11em] text-[#9edce9]">PDF · perfil profissional · links clicáveis</span>
                       </span>
                     </span>
@@ -1923,6 +1935,7 @@ export default function Home() {
             <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
               <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>
               <a href="#curadoria-pessoal" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">curadoria pessoal</a>
+              <a href="/curadoria" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8edff0] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">gestão protegida</a>
             </nav>
             <div className="mt-8 border-y border-white/[0.1] py-4">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1970,6 +1983,9 @@ export default function Home() {
                   const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
                   return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
                 })}
+              </div>
+              <div className="mt-3 flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria pública por tags">
+                {tagFilters.map((tag) => <button type="button" key={tag} onClick={() => selectTag(tag)} aria-pressed={activeTag === tag} data-filter-scope="tag" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeTag === tag ? "border-[#a5f3fc] bg-[#0b3156] text-[#dffbff]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{tag}</span><span aria-hidden="true" className="text-[8px] text-[#5e789d]">{tag === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(tag) || getRepositoryCategories(repository).has(tag)).length}</span></button>)}
               </div>
             <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar repositórios por tecnologia">
@@ -2417,20 +2433,20 @@ export default function Home() {
             <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 px-4 py-4 sm:px-6">
               <div className="min-w-0">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#67e8f9]">documento em leitura</p>
-                <h2 id="resume-preview-title" className="mt-1 truncate font-display text-xl tracking-[-0.03em] text-white sm:text-2xl">Currículo de Pablo Guilherme</h2>
+                <h2 id="resume-preview-title" className="mt-1 truncate font-display text-xl tracking-[-0.03em] text-white sm:text-2xl">Portfólio de Pablo Guilherme</h2>
                 <p id="resume-preview-description" className="mt-1 font-body text-xs text-[#9fb2ce]">Pré-visualize o PDF diretamente na página antes de salvar uma cópia.</p>
               </div>
-              <button ref={resumePreviewCloseRef} type="button" onClick={closeResumePreview} aria-label="Fechar pré-visualização do currículo" title="Fechar pré-visualização" className="grid h-10 w-10 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-5 w-5" aria-hidden="true" /></button>
+              <button ref={resumePreviewCloseRef} type="button" onClick={closeResumePreview} aria-label="Fechar pré-visualização do portfólio" title="Fechar pré-visualização" className="grid h-10 w-10 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-5 w-5" aria-hidden="true" /></button>
             </div>
             <div className="resume-preview-frame-wrap relative min-h-0 flex-1 bg-[#2b3440] p-2 sm:p-4">
               {resumePreviewLoading && !resumePreviewError && (
                 <div className="resume-pdf-loader absolute inset-2 z-10 grid place-items-center border border-[#67e8f9]/20 bg-[#07101e]/95 sm:inset-4" role="status" aria-live="polite">
                   <div className="flex flex-col items-center gap-4 text-center">
                     <span className="resume-loader-orbit relative grid h-14 w-14 place-items-center rounded-full border border-[#67e8f9]/25" aria-hidden="true"><span className="h-8 w-8 rounded-full border-2 border-[#67e8f9]/20 border-t-[#67e8f9] motion-safe:animate-spin" /></span>
-                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#c8f7ff]">abrindo currículo</span>
-                    <div className="w-[min(260px,70vw)]" aria-label="Progresso estimado da leitura do currículo">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#c8f7ff]">abrindo portfólio</span>
+                    <div className="w-[min(260px,70vw)]" aria-label="Progresso estimado da leitura do portfólio">
                       <div className="mb-2 flex items-center justify-between font-mono text-[9px] uppercase tracking-[0.12em] text-[#8499b9]"><span>progresso estimado</span><span>{resumePreviewProgress}%</span></div>
-                      <div className="h-1 overflow-hidden rounded-full bg-[#19324d]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={resumePreviewProgress} aria-label="Progresso estimado da leitura do currículo"><div className="h-full rounded-full bg-gradient-to-r from-[#38bdf8] via-[#67e8f9] to-[#d9fbff] transition-[width] duration-200 ease-out" style={{ width: `${resumePreviewProgress}%` }} /></div>
+                      <div className="h-1 overflow-hidden rounded-full bg-[#19324d]" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={resumePreviewProgress} aria-label="Progresso estimado da leitura do portfólio"><div className="h-full rounded-full bg-gradient-to-r from-[#38bdf8] via-[#67e8f9] to-[#d9fbff] transition-[width] duration-200 ease-out" style={{ width: `${resumePreviewProgress}%` }} /></div>
                     </div>
                     <span className="font-body text-xs text-[#8499b9]">Preparando a leitura do documento…</span>
                   </div>
@@ -2445,12 +2461,12 @@ export default function Home() {
                   </div>
                 </div>
               )}
-              <iframe key={resumePreviewLoading ? "loading" : "ready"} src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" onLoad={() => { setResumePreviewProgress(100); setResumePreviewLoading(false); setResumePreviewError(false); }} onError={() => { setResumePreviewLoading(false); setResumePreviewError(true); }} className={`h-full w-full border border-white/10 bg-white transition-opacity duration-300 ${resumePreviewLoading || resumePreviewError ? "opacity-0" : "opacity-100"}`} />
+              <iframe key={resumePreviewLoading ? "loading" : "ready"} src={resumeUrl} title="Pré-visualização do portfólio de Pablo Guilherme em PDF" onLoad={() => { setResumePreviewProgress(100); setResumePreviewLoading(false); setResumePreviewError(false); }} onError={() => { setResumePreviewLoading(false); setResumePreviewError(true); }} className={`h-full w-full border border-white/10 bg-white transition-opacity duration-300 ${resumePreviewLoading || resumePreviewError ? "opacity-0" : "opacity-100"}`} />
             </div>
             <div className="flex shrink-0 flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">PDF atualizado · links clicáveis incluídos</p>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <a href={resumeUrl} download="curriculo-pablo-guilherme.pdf" className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar PDF</a>
+                <a href={resumeUrl} download="portfolio-pablo-guilherme.pdf" className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio em PDF</a>
                 <a href={resumeUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ArrowUpRight className="h-4 w-4" aria-hidden="true" /> abrir em nova aba</a>
               </div>
             </div>
