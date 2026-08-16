@@ -667,3 +667,19 @@
 - [x] Manter o botão de currículo existente na seção Sobre.
 - [x] Usar o PDF atualizado já publicado no armazenamento do projeto.
 - [x] Preservar a barra flutuante, os canais de contato e as demais funcionalidades.
+
+
+## Modal de pré-visualização do currículo
+
+- [x] Auditar o CTA atual e os estados modais existentes.
+- [x] Projetar uma pré-visualização PDF responsiva com leitura direta na página.
+- [x] Implementar modal, iframe PDF, fechar, baixar e gerenciamento de foco.
+- [x] Validar abertura, leitura, Escape, backdrop, download, acessibilidade e responsividade.
+- [x] Executar testes, typecheck e build.
+- [ ] Salvar checkpoint após a validação final.
+
+### Preservação
+
+- [x] Manter o CTA de currículo no cabeçalho e o botão da seção Sobre.
+- [x] Reutilizar o PDF atualizado publicado em armazenamento.
+- [x] Preservar a barra flutuante, lightbox, favoritos e demais funcionalidades.

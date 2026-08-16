@@ -365,6 +365,7 @@ export default function Home() {
   const { theme, preference, setPreference } = useTheme();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
@@ -445,6 +446,9 @@ export default function Home() {
   const lightboxCloseRef = useRef<HTMLButtonElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
+  const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const lightboxProjects = useMemo(() => repositories.filter((repository) => Boolean(repository.cover)), []);
   const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
 
@@ -522,6 +526,30 @@ export default function Home() {
       window.removeEventListener("keydown", handleLightboxKeyDown);
     };
   }, [lightboxProjectId, lightboxProject, lightboxProjects]);
+
+  useEffect(() => {
+    if (!resumePreviewOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.setTimeout(() => resumePreviewCloseRef.current?.focus(), 0);
+    const handleResumePreviewKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setResumePreviewOpen(false);
+        setMenuOpen(false);
+        window.setTimeout(() => {
+          const returnTarget = resumePreviewReturnFocusRef.current;
+          if (returnTarget?.isConnected && returnTarget.offsetParent !== null) returnTarget.focus();
+          else (Array.from(document.querySelectorAll<HTMLElement>('[data-resume-header="true"]')).find((element) => element.offsetParent !== null) ?? menuButtonRef.current)?.focus();
+        }, 0);
+      }
+    };
+    window.addEventListener("keydown", handleResumePreviewKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleResumePreviewKeyDown);
+    };
+  }, [resumePreviewOpen]);
 
   useEffect(() => {
     if (!lightboxProjectId) return;
@@ -1055,6 +1083,22 @@ export default function Home() {
     );
   }
 
+  const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    resumePreviewReturnFocusRef.current = event.currentTarget;
+    setResumePreviewOpen(true);
+  };
+
+  const closeResumePreview = () => {
+    setResumePreviewOpen(false);
+    setMenuOpen(false);
+    window.setTimeout(() => {
+      const returnTarget = resumePreviewReturnFocusRef.current;
+      if (returnTarget?.isConnected && returnTarget.offsetParent !== null) returnTarget.focus();
+      else (Array.from(document.querySelectorAll<HTMLElement>('[data-resume-header="true"]')).find((element) => element.offsetParent !== null) ?? menuButtonRef.current)?.focus();
+    }, 0);
+  };
+
   return (
     <div data-theme={theme} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/90 backdrop-blur-xl">
@@ -1075,7 +1119,7 @@ export default function Home() {
               </a>
             ))}
             <button type="button" data-theme-toggle="true" onClick={() => setAppearanceOpen((open) => !open)} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-            <a href={resumeUrl} download="curriculo-pablo-guilherme.pdf" data-resume-header="true" aria-label="Baixar currículo atualizado em PDF" title="Baixar currículo em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar currículo atualizado em PDF" title="Visualizar currículo em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>currículo PDF</span>
             </a>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
@@ -1084,6 +1128,7 @@ export default function Home() {
           </nav>
 
           <button
+            ref={menuButtonRef}
             type="button"
             onClick={() => setMenuOpen((open) => !open)}
             className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] md:hidden"
@@ -1109,7 +1154,7 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              <a href={resumeUrl} download="curriculo-pablo-guilherme.pdf" data-resume-header="true" aria-label="Baixar currículo atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar currículo PDF</a>
+              <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar currículo atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar currículo PDF</a>
               <button type="button" data-theme-toggle="true" onClick={() => setAppearanceOpen((open) => !open)} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
           </nav>
@@ -1859,6 +1904,31 @@ export default function Home() {
           <span>Instagram</span>
         </a>
       </nav>
+
+      {resumePreviewOpen && (
+        <div className="resume-preview-overlay fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/85 p-3 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200 sm:p-6" role="dialog" aria-modal="true" aria-labelledby="resume-preview-title" aria-describedby="resume-preview-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeResumePreview(); }}>
+          <div className="resume-preview-modal flex h-[min(92svh,900px)] w-full max-w-5xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
+            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 px-4 py-4 sm:px-6">
+              <div className="min-w-0">
+                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#67e8f9]">documento em leitura</p>
+                <h2 id="resume-preview-title" className="mt-1 truncate font-display text-xl tracking-[-0.03em] text-white sm:text-2xl">Currículo de Pablo Guilherme</h2>
+                <p id="resume-preview-description" className="mt-1 font-body text-xs text-[#9fb2ce]">Pré-visualize o PDF diretamente na página antes de salvar uma cópia.</p>
+              </div>
+              <button ref={resumePreviewCloseRef} type="button" onClick={closeResumePreview} aria-label="Fechar pré-visualização do currículo" title="Fechar pré-visualização" className="grid h-10 w-10 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-5 w-5" aria-hidden="true" /></button>
+            </div>
+            <div className="min-h-0 flex-1 bg-[#2b3440] p-2 sm:p-4">
+              <iframe src={resumeUrl} title="Pré-visualização do currículo de Pablo Guilherme em PDF" className="h-full w-full border border-white/10 bg-white" />
+            </div>
+            <div className="flex shrink-0 flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <p className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">PDF atualizado · links clicáveis incluídos</p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <a href={resumeUrl} download="curriculo-pablo-guilherme.pdf" className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar PDF</a>
+                <a href={resumeUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/15 px-4 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ArrowUpRight className="h-4 w-4" aria-hidden="true" /> abrir em nova aba</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {lightboxProject?.cover && (
         <div className="project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200" role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { if (event.target === event.currentTarget) closeProjectLightbox(); }}>
