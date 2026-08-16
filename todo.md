@@ -1123,3 +1123,12 @@
 - [x] Exibir toast de sucesso após restauração concluída.
 - [x] Preservar proteção, acessibilidade, busca, filtros existentes e sincronização.
 - [x] Validar testes, typecheck, build e checkpoint.
+
+## Descarte seguro, filtros persistentes e exportação filtrada — nova rodada
+
+- [x] Auditar estado de edição, filtros, sessionStorage e exportação.
+- [x] Adicionar confirmação ao descartar alterações não salvas.
+- [x] Persistir filtros da gestão em sessionStorage.
+- [x] Exportar a lista atualmente filtrada em CSV e JSON.
+- [x] Preservar proteção, busca, restauração, sincronização e responsividade.
+- [x] Validar testes, typecheck, build e checkpoint.
