@@ -886,3 +886,11 @@
 - [x] Garantir dimensões, `srcset`, `sizes`, fallback e estabilidade de layout.
 - [x] Validar testes, typecheck, build, responsividade e carregamento.
 - [x] Salvar checkpoint após a validação final.
+
+## Hover sutil nas miniaturas — nova rodada
+
+- [x] Auditar miniaturas e estilos existentes.
+- [x] Aplicar zoom sutil em hover e foco.
+- [x] Preservar prefers-reduced-motion, enquadramento e acessibilidade.
+- [x] Validar testes, typecheck, build e Chromium.
+- [x] Salvar checkpoint após a validação final.
