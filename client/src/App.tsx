@@ -18,6 +18,7 @@ function Router() {
       <Switch>
         <Route path="/" component={Home} />
         <Route path="/agenda" component={AvailabilityManager} />
+        <Route path="/favoritos" component={FavoritesManagement} />
         <Route path="/curadoria" component={FavoritesManagement} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />

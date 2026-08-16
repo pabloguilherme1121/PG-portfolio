@@ -4,14 +4,14 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 
 test.use({ baseURL });
 
-test.describe("navegação pública e curadoria", () => {
+test.describe("navegação pública e favoritos", () => {
   test("percorre as âncoras públicas e mantém a galeria acessível", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("main")).toBeVisible();
     await page.getByRole("link", { name: /galeria pública/i }).click();
     await expect(page.locator("#galeria-publica")).toBeVisible();
-    await page.getByRole("link", { name: /curadoria pessoal/i }).click();
-    await expect(page.locator("#curadoria-pessoal")).toBeVisible();
+    await page.getByRole("link", { name: /meus favoritos/i }).click();
+    await expect(page.locator("#favoritos-pessoais")).toBeVisible();
   });
 
   test("aplica um filtro por tag na galeria pública", async ({ page }) => {
@@ -23,11 +23,11 @@ test.describe("navegação pública e curadoria", () => {
     await expect(page.locator('[data-project-id]').first()).toBeVisible();
   });
 
-  test("mantém a área de gestão fora da vitrine pública", async ({ page }) => {
-    await page.goto("/curadoria");
-    await expect(page).toHaveURL(/\/curadoria$/);
+  test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
+    await page.goto("/favoritos");
+    await expect(page).toHaveURL(/\/favoritos$/);
     await expect(page.locator("h1").first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator("h1").first()).toContainText(/Curadoria reservada|Favoritos organizados|Sign in to continue/);
+    await expect(page.locator("h1").first()).toContainText(/Gestão de favoritos reservada|Favoritos organizados|Sign in to continue/);
     await expect(page.locator("#projetos")).toHaveCount(0);
   });
 });

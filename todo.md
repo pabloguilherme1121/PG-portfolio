@@ -1084,3 +1084,14 @@
 - [x] Implementar filtros por tags na galeria pública.
 - [x] Renomear a ação/seção de Currículo para Portfólio sem quebrar links ou downloads existentes.
 - [x] Validar autorização, acessibilidade, responsividade, testes, typecheck, build e checkpoint.
+
+## Gestão visual, sincronização e acessibilidade tipográfica — nova rodada
+
+- [x] Auditar dados de projetos, banco, gestão e responsividade atual.
+- [x] Exibir nomes e miniaturas reais dos projetos na gestão de favoritos.
+- [x] Sincronizar a ordem dos favoritos no banco com autorização protegida.
+- [x] Adicionar transição suave ao filtrar projetos por tags.
+- [x] Remover a nomenclatura “curadoria” da interface pública e de gestão.
+- [x] Otimizar layout para dispositivos e posições sem cortes de palavras.
+- [x] Adicionar controle nativo e inteligente para aumentar ou diminuir a fonte.
+- [x] Validar persistência, autorização, acessibilidade, testes, build e checkpoint.

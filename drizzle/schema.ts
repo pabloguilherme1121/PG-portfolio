@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -52,3 +52,18 @@ export const blockedDates = mysqlTable("availability_blocked_dates", {
 
 export type BlockedDate = typeof blockedDates.$inferSelect;
 export type InsertBlockedDate = typeof blockedDates.$inferInsert;
+
+export const favoriteProjectOrders = mysqlTable("favorite_project_orders", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("user_id").notNull(),
+  projectId: varchar("project_id", { length: 64 }).notNull(),
+  position: int("position").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  userProjectUnique: uniqueIndex("favorite_project_orders_user_project_idx").on(table.userId, table.projectId),
+  userPositionUnique: uniqueIndex("favorite_project_orders_user_position_idx").on(table.userId, table.position),
+}));
+
+export type FavoriteProjectOrder = typeof favoriteProjectOrders.$inferSelect;
+export type InsertFavoriteProjectOrder = typeof favoriteProjectOrders.$inferInsert;

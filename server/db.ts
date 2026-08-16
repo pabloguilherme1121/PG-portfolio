@@ -1,6 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { blockedDates, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
+import { blockedDates, favoriteProjectOrders, InsertQuoteRequest, InsertUser, quoteRequests, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -128,4 +128,22 @@ export async function unblockAvailabilityDate(dateKey: string) {
   if (!db) throw new Error("Banco de dados indisponível para atualizar a agenda");
 
   await db.delete(blockedDates).where(eq(blockedDates.dateKey, dateKey));
+}
+
+export async function listFavoriteProjectOrder(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para consultar a ordem dos favoritos");
+  return db.select().from(favoriteProjectOrders).where(eq(favoriteProjectOrders.userId, userId)).orderBy(asc(favoriteProjectOrders.position));
+}
+
+export async function replaceFavoriteProjectOrder(userId: number, projectIds: string[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Banco de dados indisponível para salvar a ordem dos favoritos");
+  const uniqueProjectIds = Array.from(new Set(projectIds));
+  await db.transaction(async (transaction) => {
+    await transaction.delete(favoriteProjectOrders).where(eq(favoriteProjectOrders.userId, userId));
+    if (uniqueProjectIds.length === 0) return;
+    await transaction.insert(favoriteProjectOrders).values(uniqueProjectIds.map((projectId, position) => ({ userId, projectId, position })));
+  });
+  return { count: uniqueProjectIds.length };
 }

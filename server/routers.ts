@@ -1,6 +1,6 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
-import { blockAvailabilityDate, createQuoteRequest, listBlockedDates, unblockAvailabilityDate } from "./db";
+import { blockAvailabilityDate, createQuoteRequest, listBlockedDates, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
@@ -81,6 +81,10 @@ export const appRouter = router({
       items: [],
       message: "A conexão com a API da Meta ainda depende de uma conta profissional e autorização válida.",
     })),
+  }),
+  favoriteOrder: router({
+    list: adminProcedure.query(({ ctx }) => listFavoriteProjectOrder(ctx.user.id)),
+    replace: adminProcedure.input(z.object({ projectIds: z.array(z.string().trim().min(1).max(64)).max(100) })).mutation(({ ctx, input }) => replaceFavoriteProjectOrder(ctx.user.id, input.projectIds)),
   }),
   availability: router({
     listBlocked: publicProcedure.query(() => listBlockedDates()),
