@@ -552,6 +552,10 @@ export default function Home() {
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectDetailsLoading, setProjectDetailsLoading] = useState(false);
+  const [projectVideoNeedsPlay, setProjectVideoNeedsPlay] = useState(false);
+  const [showProjectSwipeHint, setShowProjectSwipeHint] = useState(false);
+  const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
+  const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
@@ -1305,12 +1309,20 @@ export default function Home() {
 
   function openProjectDetails(project: Repository) {
     setProjectDetailsLoading(true);
+    setProjectVideoNeedsPlay(false);
+    if (window.innerWidth < 768 && !window.localStorage.getItem("pablo-portfolio-project-swipe-hint-seen")) {
+      setShowProjectSwipeHint(true);
+      window.localStorage.setItem("pablo-portfolio-project-swipe-hint-seen", "true");
+      window.setTimeout(() => setShowProjectSwipeHint(false), 2800);
+    }
     setSelectedProject(project);
   }
   function navigateSelectedProject(direction: "next" | "previous") {
     const target = direction === "next" ? nextSelectedProject : previousSelectedProject;
     if (!target) return;
+    setShowProjectSwipeHint(false);
     setProjectDetailsLoading(true);
+    setProjectVideoNeedsPlay(false);
     setProjectDetailsTransition(direction);
     setSelectedProject(target);
     window.setTimeout(() => setProjectDetailsTransition(null), 260);
@@ -1337,11 +1349,20 @@ export default function Home() {
   useEffect(() => {
     if (!selectedProject) {
       setProjectDetailsLoading(false);
+      setProjectVideoNeedsPlay(false);
       return;
     }
     const timer = window.setTimeout(() => setProjectDetailsLoading(false), 420);
     return () => window.clearTimeout(timer);
   }, [selectedProject]);
+  useEffect(() => {
+    const visualViewport = window.visualViewport;
+    if (!visualViewport) return;
+    const updateKeyboardState = () => setIsMobileKeyboardOpen(window.innerWidth < 768 && visualViewport.height < window.innerHeight * 0.78);
+    updateKeyboardState();
+    visualViewport.addEventListener("resize", updateKeyboardState, { passive: true });
+    return () => visualViewport.removeEventListener("resize", updateKeyboardState);
+  }, []);
 
   function clearAllProjectFilters() {
     setActiveTechnology("Todos");
@@ -2623,7 +2644,7 @@ export default function Home() {
             </div>
 
             <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form id="contato-briefing" onSubmit={handleSubmit} className="max-w-xl scroll-mt-24">
+              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => setIsBriefingFieldFocused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
@@ -2730,7 +2751,7 @@ export default function Home() {
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Canais de contato" className={`contact-float fixed bottom-5 left-1/2 z-[60] transition-opacity duration-200 ${lightboxProjectId ? "pointer-events-none opacity-0" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:left-auto sm:right-5 sm:translate-x-0`}>
+      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
         <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Pedir orçamento pelo WhatsApp" title="WhatsApp — pedir orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
@@ -2852,7 +2873,8 @@ export default function Home() {
         {selectedProject && (
           <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
             {projectDetailsLoading && <div data-project-details-loading="true" role="status" aria-live="polite" className="pointer-events-none absolute inset-x-0 top-0 z-20 grid gap-3 border-b border-[#67e8f9]/20 bg-[#071326]/90 p-4 backdrop-blur-sm sm:p-8"><div className="h-2 w-28 animate-pulse bg-[#3b82f6]/35" /><div className="h-9 w-4/5 animate-pulse bg-white/10" /><div className="h-3 w-full animate-pulse bg-white/10" /><div className="h-3 w-2/3 animate-pulse bg-white/10" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#9fc6e9]">carregando projeto…</span></div>}
-            {selectedProject.kind === "video" && <video className="block h-auto max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata">Seu navegador não oferece suporte à reprodução audiovisual.</video>}
+            {showProjectSwipeHint && <div data-project-swipe-hint="true" className="pointer-events-none absolute inset-x-4 top-4 z-30 flex justify-center sm:hidden" role="status" aria-live="polite"><span className="border border-[#67e8f9]/35 bg-[#06172f]/95 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_10px_28px_rgba(0,0,0,0.3)]">deslize para navegar</span></div>}
+            {selectedProject.kind === "video" && <div className="relative bg-black"><video className="block h-auto max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata" onLoadedData={(event) => { event.currentTarget.play().catch(() => setProjectVideoNeedsPlay(true)); }} onPlay={() => setProjectVideoNeedsPlay(false)}>Seu navegador não oferece suporte à reprodução audiovisual.</video>{projectVideoNeedsPlay && <button type="button" data-project-video-play="true" onClick={(event) => { const video = event.currentTarget.parentElement?.querySelector("video"); video?.play().then(() => setProjectVideoNeedsPlay(false)).catch(() => setProjectVideoNeedsPlay(true)); }} className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 border border-[#a5f3fc]/55 bg-[#06172f]/90 px-4 py-3 font-mono text-[9px] uppercase tracking-[0.12em] text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] transition-colors hover:border-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Play className="h-4 w-4" aria-hidden="true" />tocar vídeo</button>}</div>}
             {selectedProject.kind !== "video" && selectedProject.cover && <img src={selectedProject.cover} alt={`Imagem do projeto ${selectedProject.name}`} width="1200" height="800" className="max-h-[38svh] w-full max-w-full object-cover sm:max-h-[42svh]" />}
             <div className="min-h-0 min-w-0 overflow-x-hidden p-4 sm:p-8">
               <DialogHeader className="min-w-0 text-left">

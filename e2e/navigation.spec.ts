@@ -204,6 +204,8 @@ test.describe("navegação pública e favoritos", () => {
     await firstProject.click();
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
+    await expect(page.locator('[data-project-swipe-hint="true"]')).toBeVisible();
+    await expect(page.locator('[data-mobile-contact-bar="true"]')).toHaveCSS("opacity", "0");
     const title = dialog.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
     await dialog.evaluate((element) => {
@@ -212,6 +214,19 @@ test.describe("navegação pública e favoritos", () => {
       element.dispatchEvent(new TouchEvent("touchend", { bubbles: true, changedTouches: [touch(100)] }));
     });
     await expect(title).not.toHaveText(initialTitle ?? "");
+  });
+
+  test("mostra ação clara quando o autoplay do vídeo é bloqueado", async ({ page }) => {
+    await page.addInitScript(() => {
+      HTMLMediaElement.prototype.play = () => Promise.reject(new DOMException("Autoplay blocked", "NotAllowedError"));
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/#galeria-publica");
+    await page.locator('[data-featured-project]').first().click();
+    const video = page.locator('[data-project-details-dialog="true"] video');
+    await expect(video).toBeVisible();
+    await video.dispatchEvent("loadeddata");
+    await expect(page.locator('[data-project-video-play="true"]')).toBeVisible();
   });
 
   test("abre automaticamente um projeto ao acessar link direto", async ({ page }) => {

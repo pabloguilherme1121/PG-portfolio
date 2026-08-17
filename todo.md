@@ -1392,3 +1392,12 @@
 - [x] Adicionar botão explícito de copiar link junto às opções de compartilhamento.
 - [x] Criar ou atualizar testes das interações e validar check, testes, build e E2E.
 - [x] Salvar checkpoint e publicar a versão validada.
+
+## Melhorias mobile baseadas na auditoria — 2026-08-17
+
+- [x] Melhorar a descoberta do swipe com uma dica discreta e única no modal de detalhes.
+- [x] Tratar visualmente o autoplay bloqueado dos vídeos do modal com uma ação clara de reprodução.
+- [x] Reduzir a competição da barra fixa de contato durante modais e campos de entrada, respeitando safe-area.
+- [x] Adicionar cobertura E2E para orientação, cancelamento de toque, barra fixa e estados mobile críticos.
+- [x] Executar testes de otimização mobile e análise crítica comparativa do resultado.
+- [x] Salvar checkpoint e republicar a versão validada.
