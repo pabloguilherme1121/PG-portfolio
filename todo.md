@@ -1333,3 +1333,10 @@
 - [x] Confirmar ausência de secrets no bundle e imports íntegros.
 - [x] Executar instalação congelada, check, testes, build e Playwright.
 - [x] Limpar entrega, documentar resultados e salvar checkpoint.
+
+## E2E autenticado, páginas de erro e novo ZIP
+
+- [x] Executar os testes E2E autenticados e registrar se a sessão administrativa está disponível; `E2E_AUTH_STATE` ausente e os 2 cenários foram ignorados, sem serem declarados aprovados.
+- [x] Implementar páginas amigáveis para erros 404 e 500, preservando o design existente.
+- [x] Validar check, testes, build e Playwright após as correções; 24 Vitest aprovados, 16 E2E públicos aprovados e 2 autenticados ignorados.
+- [x] Gerar e auditar novo ZIP de produção.
