@@ -1378,3 +1378,9 @@
 - [x] Tornar os cenários E2E longos tolerantes ao tempo real de renderização do ambiente.
 - [x] Validar typecheck, testes unitários, build e suíte E2E pública completa.
 - [x] Salvar checkpoint da rodada e republicar a versão validada.
+
+## Correção mobile do modal audiovisual — 2026-08-17
+
+- [x] Corrigir o overflow horizontal e o enquadramento do modal audiovisual em telas estreitas, preservando vídeo, texto, ações e barras fixas.
+- [x] Validar o modal em 320, 390, 414 e 768 px, além de typecheck, testes, build e E2E público.
+- [x] Salvar checkpoint e republicar a correção mobile.
