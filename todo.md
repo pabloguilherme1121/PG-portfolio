@@ -1260,3 +1260,19 @@
 - [x] Exportar projetos favoritados em CSV e PDF na seção pública salva.
 - [x] Permitir arrastar e soltar projetos na seção pública de favoritos.
 - [x] Validar link direto, exportações, reordenação, teclado, testes, build e checkpoint.
+
+## Refação profissional baseada em referência — nova rodada
+
+- [x] Inspecionar o ZIP recebido, a avaliação textual e a versão atual do projeto.
+- [x] Comparar arquitetura, documentação, privacidade, performance e acabamento visual com a referência.
+- [x] Definir um pacote de refatoração seguro sem perder funcionalidades existentes.
+- [x] Implementar melhorias estruturais e visuais priorizadas.
+- [x] Validar visualmente, testar regressões e salvar checkpoint da nova rodada.
+
+## Refação profissional baseada na segunda rodada de referência
+
+- [x] Extrair a homepage para features/portfolio sem perder recursos existentes.
+- [x] Extrair repertório social e rodapé para features próprias.
+- [x] Adicionar página e documentação pública de privacidade.
+- [x] Corrigir bandas vazias causadas por pintura adiada e validar ritmo editorial da homepage.
+- [x] Executar validação visual desktop/mobile, typecheck, Vitest, E2E e build.

@@ -10,6 +10,7 @@ import { lazy, Suspense } from "react";
 const Home = lazy(() => import("./pages/Home"));
 const AvailabilityManager = lazy(() => import("./pages/AvailabilityManager"));
 const FavoritesManagement = lazy(() => import("./pages/FavoritesManagement"));
+const Privacy = lazy(() => import("./pages/Privacy"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -20,6 +21,7 @@ function Router() {
         <Route path="/agenda" component={AvailabilityManager} />
         <Route path="/favoritos" component={FavoritesManagement} />
         <Route path="/curadoria" component={FavoritesManagement} />
+        <Route path="/privacidade" component={Privacy} />
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />
       </Switch>
