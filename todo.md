@@ -1360,3 +1360,10 @@
 - [x] Implementar notificações personalizadas para visitantes e alertas internos quando aplicável.
 - [x] Validar acessibilidade, persistência, sucesso/erro e testes do fluxo.
 - [x] Documentar a configuração e salvar checkpoint.
+
+## Correção mobile do lightbox
+
+- [x] Auditar e reproduzir clipping, overflow, scroll lock, foco e conflito com barras fixas nas larguras solicitadas.
+- [x] Aplicar somente correções responsivas no modal/lightbox, preservando identidade e funcionalidades.
+- [x] Validar vídeo vertical, imagem, descrição/título longos em mobile, tablet e desktop.
+- [x] Executar check, testes, build, E2E e documentar a causa/solução antes do checkpoint.

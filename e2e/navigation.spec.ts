@@ -214,6 +214,23 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-id][draggable="true"]').first()).toBeVisible();
   });
 
+  test("mantém o lightbox e os modais audiovisuais utilizáveis em telas estreitas", async ({ page }) => {
+    for (const viewport of [{ width: 320, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 768, height: 1024 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const imageTrigger = page.getByRole("button", { name: /Ampliar imagem/ }).first();
+      await imageTrigger.scrollIntoViewIfNeeded();
+      await imageTrigger.click();
+      const lightbox = page.locator('[data-lightbox-modal="true"]');
+      await expect(lightbox).toBeVisible();
+      await expect(lightbox.locator("#project-lightbox-title")).toBeVisible();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+      await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
+      await page.keyboard.press("Escape");
+      await expect(lightbox).toBeHidden();
+    }
+  });
+
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);
