@@ -15,12 +15,12 @@
     <meta property="og:site_name" content="Arquivo Profundo — Pablo Guilherme" />
     <meta property="og:title" content="Pablo Guilherme — tecnologia, conteúdo e repertório visual" />
     <meta property="og:description" content="Repertório aplicado em tecnologia, conteúdo, captação terrestre e imagens aéreas para projetos em Águas Lindas de Goiás, Planaltina (GO/DF) e Entorno." />
-    <meta property="og:image" content="/manus-storage/pablo-hero-archive_fbc55c04.png" />
+    <meta property="og:image" content="/manus-storage/pablo-hero-archive_fbc55c04.png" id="og-image" />
     <meta property="og:image:alt" content="Composição editorial azul profunda do portfólio de Pablo Guilherme" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Pablo Guilherme — tecnologia, conteúdo e repertório visual" />
     <meta name="twitter:description" content="Repertório aplicado em tecnologia, conteúdo, captação terrestre e imagens aéreas." />
-    <meta name="twitter:image" content="/manus-storage/pablo-hero-archive_fbc55c04.png" />
+    <meta name="twitter:image" content="/manus-storage/pablo-hero-archive_fbc55c04.png" id="twitter-image" />
     <link rel="icon" type="image/png" href="/manus-storage/pablo-pg-mark_3a636084.png" />
     <title>Pablo Guilherme — Tecnologia, Conteúdo e Repertório Visual</title>
     <script>
@@ -30,6 +30,9 @@
       if (canonicalLink) canonicalLink.setAttribute("href", publicUrl);
       const ogUrl = document.querySelector('#og-url');
       if (ogUrl) ogUrl.setAttribute("content", publicUrl);
+      const socialImageUrl = new URL("/manus-storage/pablo-hero-archive_fbc55c04.png", window.location.origin).href;
+      document.querySelector('#og-image')?.setAttribute("content", socialImageUrl);
+      document.querySelector('#twitter-image')?.setAttribute("content", socialImageUrl);
       if (/^\/(favoritos|curadoria)(\/|$)/.test(window.location.pathname)) {
         document.querySelector('#robots-meta')?.setAttribute("content", "noindex, nofollow");
       }

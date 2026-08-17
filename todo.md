@@ -1409,3 +1409,17 @@
 - [x] Aplicar apenas melhorias restantes de baixo risco, preservando identidade e funcionalidades.
 - [x] Executar validação completa, incluindo mobile ampliado, SEO, erros, build e E2E público.
 - [x] Registrar análise crítica final e salvar checkpoint republicado.
+
+## Pacote ZIP para análise — 2026-08-17
+
+- [x] Gerar ZIP do estado atual do projeto sem node_modules, dist, test-results, coverage ou logs.
+- [x] Validar o conteúdo e a integridade do ZIP antes da entrega.
+- [x] Entregar o arquivo ZIP ao usuário.
+
+## Reforma mobile e relatório de performance/SEO — 2026-08-17
+
+- [x] Auditar a versão publicada e comparar com a referência anexada em 320–430 px, landscape e desktop.
+- [x] Reformar a composição mobile dos visualizadores sem remover funcionalidades nem alterar a identidade visual.
+- [x] Refinar a Home mobile, navegação, CTA, barra fixa, performance, acessibilidade e SEO com mudanças de baixo risco.
+- [x] Gerar relatório detalhado de performance/SEO e recomendações futuras de UI/UX.
+- [x] Validar a versão publicada, executar testes completos e republicar somente com aprovação.

@@ -263,6 +263,16 @@ test.describe("navegação pública e favoritos", () => {
       await expect(lightbox.locator("#project-lightbox-title")).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
       await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
+      if (viewport.width === 390) {
+        const detailsToggle = lightbox.locator('[data-lightbox-mobile-details-toggle="true"]');
+        const detailsSection = lightbox.locator('section[aria-label^="Legenda expandida"]');
+        await expect(detailsToggle).toBeVisible();
+        await expect(detailsSection).toBeHidden();
+        await detailsToggle.click();
+        await expect(detailsSection).toBeVisible();
+        await detailsToggle.click();
+        await expect(detailsSection).toBeHidden();
+      }
       await page.keyboard.press("Escape");
       await expect(lightbox).toBeHidden();
     }
