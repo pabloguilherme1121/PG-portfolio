@@ -218,7 +218,7 @@ test.describe("navegação pública e favoritos", () => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);
     await expect(page.locator("h1").first()).toBeVisible({ timeout: 15000 });
-    await expect(page.locator("h1").first()).toContainText(/Gestão de favoritos reservada|Favoritos organizados|Sign in to continue/);
+    await expect(page.locator("h1").first()).toContainText(/Gestão de favoritos reservada|Favoritos organizados|Sign in to continue|Entre para continuar/);
     await expect(page.locator("#projetos")).toHaveCount(0);
   });
 });

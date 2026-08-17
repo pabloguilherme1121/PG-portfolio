@@ -1292,3 +1292,18 @@
 - [x] Confirmar documentação após a árvore real estar correta e verificar imports quebrados.
 - [x] Executar pnpm check, pnpm test, pnpm build e E2E públicos.
 - [x] Confirmar limpeza da entrega e apresentar árvore real de client/src/features com resultados.
+
+## Exportação ZIP íntegra
+
+- [x] Confirmar a árvore final e os artefatos que devem entrar no pacote.
+- [x] Gerar ZIP limpo diretamente do workspace validado.
+- [x] Auditar o conteúdo compactado e entregar o arquivo ao usuário.
+
+## Hardening final executado a pedido do usuário
+
+- [x] Auditar integridade, arquitetura, documentação e matriz de riscos.
+- [x] Auditar UX, breakpoints, acessibilidade, performance e SEO.
+- [x] Auditar segurança, privacidade, formulário e dependências.
+- [x] Aplicar somente correções justificadas, sem novas funcionalidades desnecessárias.
+- [x] Executar validação completa, QA, limpeza e gerar veredito final.
+- [x] Atualizar a expectativa E2E da rota protegida para aceitar a mensagem de autenticação em português introduzida pelo hardening.
