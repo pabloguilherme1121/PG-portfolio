@@ -103,6 +103,7 @@ test.describe("navegação pública e favoritos", () => {
     await page.locator('[data-empty-clear-filters="true"]').click();
     await expect(search).toHaveValue("");
 
+    await expect(page.locator('[data-featured-project]').first()).toBeVisible({ timeout: 10000 });
     await page.locator('[data-featured-project]').first().click();
     const details = page.locator('[data-project-details-dialog="true"]');
     const title = details.getByRole("heading", { level: 2 });
@@ -168,6 +169,17 @@ test.describe("navegação pública e favoritos", () => {
     await favorite.click();
     await expect(favorite).toHaveAttribute("aria-pressed", "true");
     await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-favorites") || "[]").length)).toBeGreaterThan(0);
+    await details.locator('[data-project-modal-share="true"]').click();
+    await expect(details.locator('[data-project-modal-share="true"]')).toContainText(/link copiado|tentar novamente/);
+    await page.keyboard.press("Escape");
+    await expect(page.locator('[data-favorite-control="true"][aria-pressed="true"]').first()).toBeVisible();
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
+    await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
+    await expect(page.locator('[data-sort-control="projects"]')).toBeVisible();
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
+    await expect(page.locator('[data-featured-project]').first()).toBeVisible({ timeout: 10000 });
+    await page.locator('[data-featured-project]').first().click();
+    await expect(details).toBeVisible();
     const next = details.locator('[data-project-modal-next="true"]');
     await expect(next).toBeEnabled();
     await next.click();

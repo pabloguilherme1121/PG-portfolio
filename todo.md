@@ -1246,3 +1246,10 @@
 - [x] Permitir favoritar e desfavoritar o projeto diretamente no modal com persistência local.
 - [x] Animar suavemente a troca de projeto no modal, respeitando reduced motion.
 - [x] Validar teclado, favoritos, transições, reduced motion, testes, build e checkpoint.
+
+## Favoritos visíveis, compartilhamento direto e seção salva — nova iteração
+
+- [x] Exibir indicador visual de favorito nos cards de projetos.
+- [x] Adicionar compartilhamento direto do projeto no modal de detalhes.
+- [x] Criar seção dedicada de projetos favoritados com ordenação.
+- [x] Validar favoritos, compartilhamento, ordenação, teclado, testes, build e checkpoint.
