@@ -659,6 +659,7 @@ export default function Home() {
   }, [lightboxProjectId, lightboxZoom]);
 
   const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     lightboxReturnFocusRef.current = event.currentTarget;
     setLightboxClosing(false);
     setLightboxFullscreenNotice("");
@@ -1340,11 +1341,14 @@ export default function Home() {
   }, [selectedProject, nextSelectedProject, previousSelectedProject]);
 
   function removeRecentSearch(term: string) {
-    setRecentSearches((current) => current.filter((item) => item.toLowerCase() !== term.toLowerCase()));
+    const next = recentSearches.filter((item) => item.toLowerCase() !== term.toLowerCase());
+    setRecentSearches(next);
+    window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(next));
   }
 
   function clearRecentSearches() {
     setRecentSearches([]);
+    window.localStorage.setItem("pablo-portfolio-recent-searches", "[]");
   }
 
   function saveSharedFavorites() {
@@ -1900,12 +1904,13 @@ export default function Home() {
                 <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
                   Um arquivo vivo de tecnologia, conteúdo e imagem — feito enquanto aprendo, testo e encontro formas mais claras de fazer uma ideia circular.
                 </p>
+                <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.</p>
                 <div className="flex flex-wrap items-center gap-3">
-                  <a href="#sobre" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
-                    ver como podemos trabalhar <ArrowDownRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
+                  <a href="#contato" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
+                    pedir orçamento <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
-                  <a href="#contato" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
-                    conversar sobre o projeto <ArrowUpRight className="h-3.5 w-3.5" />
+                  <a href="#projetos" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
+                    ver trabalhos <ArrowDownRight className="h-3.5 w-3.5" />
                   </a>
                 </div>
                 <nav aria-label="Atalhos principais" className="mt-6 grid max-w-2xl gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-3">
@@ -2357,6 +2362,7 @@ export default function Home() {
                 <button type="button" onClick={clearAllProjectFilters} aria-label="Limpar todos os filtros de projetos" className="inline-flex min-h-9 items-center gap-2 border border-amber-300/25 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar filtros</button>
               </div>
               <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
+              {(activeCategory !== "Todos" || activeTag !== "Todos" || activeTechnology !== "Todos" || favoritesOnly || projectSearch) && <div data-active-filter-summary="true" className="mt-3 flex flex-wrap items-center gap-2" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">filtros ativos</span>{activeCategory !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">categoria: {activeCategory}</span>}{activeTag !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">tag: {activeTag}</span>}{activeTechnology !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">tecnologia: {activeTechnology}</span>}{favoritesOnly && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">salvos</span>}<button type="button" onClick={clearAllProjectFilters} className="font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 underline decoration-amber-300/50 underline-offset-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar ativos</button></div>}
             </div>
 
             {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <span key={term} className="inline-flex max-w-full items-center border border-white/[0.1] bg-[#07101e] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2]"><button type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="truncate px-2.5 py-1.5 text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]">{term}<span className="sr-only">, repetir busca</span></button><button type="button" onClick={() => removeRecentSearch(term)} aria-label={`Excluir busca recente ${term}`} title={`Excluir ${term}`} className="grid h-7 w-7 shrink-0 place-items-center border-l border-white/[0.1] text-[#7189ae] transition-colors hover:bg-red-400/10 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3 w-3" aria-hidden="true" /></button></span>)}<button type="button" onClick={clearRecentSearches} aria-label="Limpar todo o histórico de buscas" className="inline-flex items-center gap-1.5 border border-amber-300/25 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar histórico</button></div>}
@@ -2674,7 +2680,7 @@ export default function Home() {
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav aria-label="Canais de contato" className={`contact-float fixed bottom-5 left-1/2 z-[60] transition-opacity duration-200 ${lightboxProjectId ? "pointer-events-none opacity-0" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:left-auto sm:right-5 sm:translate-x-0`}>
-        <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp sobre um orçamento" title="WhatsApp" className="contact-float-link contact-float-whatsapp group">
+        <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Pedir orçamento pelo WhatsApp" title="WhatsApp — pedir orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
         </a>
@@ -2793,10 +2799,10 @@ export default function Home() {
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
-          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} className={`w-[calc(100vw-1rem)] max-h-[calc(100svh-1rem)] max-w-3xl overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
+          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} className={`w-[calc(100vw-1rem)] h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] max-w-3xl overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
             {selectedProject.kind === "video" && <video className="max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata">Seu navegador não oferece suporte à reprodução audiovisual.</video>}
             {selectedProject.kind !== "video" && selectedProject.cover && <img src={selectedProject.cover} alt={`Imagem do projeto ${selectedProject.name}`} width="1200" height="800" className="max-h-[38svh] w-full max-w-full object-cover sm:max-h-[42svh]" />}
-            <div className="min-w-0 p-4 sm:p-8">
+            <div className="min-h-0 min-w-0 p-4 sm:p-8">
               <DialogHeader className="text-left">
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#60a5fa]">{selectedProject.kind === "video" ? "projeto audiovisual" : "projeto em destaque"}</p>
                 <DialogTitle className="mt-2 break-words font-display text-3xl font-medium tracking-[-0.05em] text-white [overflow-wrap:anywhere]">{selectedProject.name}</DialogTitle>

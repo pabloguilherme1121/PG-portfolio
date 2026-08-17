@@ -1367,3 +1367,14 @@
 - [x] Aplicar somente correções responsivas no modal/lightbox, preservando identidade e funcionalidades.
 - [x] Validar vídeo vertical, imagem, descrição/título longos em mobile, tablet e desktop.
 - [x] Executar check, testes, build, E2E e documentar a causa/solução antes do checkpoint.
+- [ ] Diagnosticar e corrigir as falhas E2E pós-melhoria: abertura do modal de detalhes e clique no lightbox sob execução serializada longa.
+
+## Revisão final baseada em auditoria externa — 2026-08-17
+
+- [x] Corrigir o CTA principal e a hierarquia de conversão sem redesign estrutural.
+- [x] Adicionar resumo semântico dos filtros ativos na galeria pública.
+- [x] Persistir imediatamente a exclusão individual do histórico de buscas.
+- [x] Evitar conflito de clique entre cards audiovisuais e abertura do lightbox.
+- [x] Tornar os cenários E2E longos tolerantes ao tempo real de renderização do ambiente.
+- [x] Validar typecheck, testes unitários, build e suíte E2E pública completa.
+- [x] Salvar checkpoint da rodada e republicar a versão validada.

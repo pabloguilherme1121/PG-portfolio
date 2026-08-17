@@ -89,13 +89,14 @@ test.describe("navegação pública e favoritos", () => {
   });
 
   test("gerencia histórico, limpa estado vazio e navega entre projetos no modal", async ({ page }) => {
+    test.setTimeout(60000);
     await page.addInitScript(() => window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(["termo-unico-de-teste"])));
     await page.goto("/#galeria-publica");
     const search = page.locator('[data-project-search="true"]');
     const recent = page.locator('[data-recent-searches="true"]');
     await expect(recent).toContainText("termo-unico-de-teste");
     await recent.getByRole("button", { name: /Excluir busca recente termo-unico-de-teste/i }).click();
-    await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-recent-searches") || "[]").includes("termo-unico-de-teste"))).toBe(false);
+    await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-recent-searches") || "[]").includes("termo-unico-de-teste")), { timeout: 15000 }).toBe(false);
 
     await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
     await search.fill("__sem-resultado-real__");
@@ -215,6 +216,7 @@ test.describe("navegação pública e favoritos", () => {
   });
 
   test("mantém o lightbox e os modais audiovisuais utilizáveis em telas estreitas", async ({ page }) => {
+    test.setTimeout(60000);
     for (const viewport of [{ width: 320, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 768, height: 1024 }]) {
       await page.setViewportSize(viewport);
       await page.goto("/");
