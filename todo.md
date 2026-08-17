@@ -1313,3 +1313,9 @@
 - [x] Reproduzir o erro e identificar qual recurso JavaScript está recebendo HTML.
 - [x] Aplicar a correção mínima na configuração ou roteamento, sem alterar funcionalidades; o estado HMR/cache foi limpo por reinício após confirmar que o import atual já estava correto.
 - [x] Validar navegador, typecheck, build, testes e checkpoint corrigido.
+
+## Investigação recorrente de `Unexpected token '<'`
+
+- [x] Reproduzir o erro no preview e comparar com o asset publicado/servido.
+- [x] Identificar o arquivo que está retornando HTML no lugar de JavaScript.
+- [x] Aplicar correção definitiva, validar no navegador e salvar checkpoint.
