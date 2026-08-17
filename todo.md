@@ -1347,3 +1347,16 @@
 - [x] Confirmar que ComponentShowcase não participa das rotas públicas e corrigir somente documentação/isolamento se necessário.
 - [x] Aplicar apenas correções reais de produção, sem redesign ou funcionalidades novas; nenhum bloqueio adicional foi encontrado.
 - [x] Reexecutar validações, documentar o veredito e salvar checkpoint.
+
+## Nova exportação ZIP de produção
+
+- [x] Confirmar o estado revisado e os arquivos essenciais do pacote.
+- [x] Gerar ZIP limpo sem dependências, builds, testes, logs, debug ou temporários.
+- [x] Auditar integridade, checksum e conteúdo do ZIP antes da entrega.
+
+## Notificações personalizadas
+
+- [x] Auditar toasts, formulário de orçamento, notificações do proprietário e preferências locais.
+- [x] Implementar notificações personalizadas para visitantes e alertas internos quando aplicável.
+- [x] Validar acessibilidade, persistência, sucesso/erro e testes do fluxo.
+- [x] Documentar a configuração e salvar checkpoint.

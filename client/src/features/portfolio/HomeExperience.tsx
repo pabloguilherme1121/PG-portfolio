@@ -70,6 +70,7 @@ import {
   toDateKey,
 } from "@/lib/availability";
 import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
@@ -1247,8 +1248,19 @@ export default function Home() {
   }, []);
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
-    onSuccess: () => setFormSent(true),
-    onError: () => setFormError("Não foi possível enviar agora. Confira sua conexão e tente novamente."),
+    onSuccess: (result) => {
+      setFormSent(true);
+      toast.success("Briefing recebido", {
+        description: result.ownerNotified
+          ? "Seu pedido foi registrado. Em breve, Pablo retorna com os próximos passos."
+          : "Seu pedido foi registrado. A confirmação interna será revisada assim que o serviço voltar.",
+      });
+    },
+    onError: () => {
+      const message = "Não foi possível enviar agora. Confira sua conexão e tente novamente.";
+      setFormError(message);
+      toast.error("Não foi possível enviar", { description: message });
+    },
   });
 
   function closeMenu() {
