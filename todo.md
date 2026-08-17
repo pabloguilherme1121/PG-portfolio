@@ -1367,7 +1367,7 @@
 - [x] Aplicar somente correções responsivas no modal/lightbox, preservando identidade e funcionalidades.
 - [x] Validar vídeo vertical, imagem, descrição/título longos em mobile, tablet e desktop.
 - [x] Executar check, testes, build, E2E e documentar a causa/solução antes do checkpoint.
-- [ ] Diagnosticar e corrigir as falhas E2E pós-melhoria: abertura do modal de detalhes e clique no lightbox sob execução serializada longa.
+- [x] Diagnosticar e corrigir as falhas E2E pós-melhoria: abertura do modal de detalhes e clique no lightbox sob execução serializada longa.
 
 ## Revisão final baseada em auditoria externa — 2026-08-17
 
