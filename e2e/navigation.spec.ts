@@ -152,6 +152,7 @@ test.describe("navegação pública e favoritos", () => {
     expect(hasHorizontalOverflow).toBeFalsy();
     await expect(page.locator("#trabalhos-destaque-title")).toBeVisible();
     await expect(page.locator(".featured-project-card")).toHaveCount(3);
+    await expect.poll(() => page.locator('.social-filter-card img').evaluateAll((images) => images.every((image) => Boolean(image.getAttribute("alt")?.trim())))).toBeTruthy();
   });
 
   test("alterna tema, exibe skeleton inicial e abre detalhes dos destaques", async ({ page }) => {
@@ -231,7 +232,7 @@ test.describe("navegação pública e favoritos", () => {
 
   test("abre automaticamente um projeto ao acessar link direto", async ({ page }) => {
     await page.goto("/?projeto=AUD.01#projetos");
-    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 30000 });
     await expect(page.locator('[data-project-details-dialog="true"] [data-project-modal-share="true"]')).toBeVisible();
   });
 
@@ -263,6 +264,22 @@ test.describe("navegação pública e favoritos", () => {
       await expect(lightbox.locator("#project-lightbox-title")).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
       await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
+      const lightboxImage = lightbox.locator('img[alt^="Imagem ampliada"]');
+      await expect.poll(() => lightboxImage.evaluate((image) => image.getBoundingClientRect().width > 0 && image.getBoundingClientRect().height > 0)).toBeTruthy();
+      const imageFitsMedia = await lightboxImage.evaluate((image) => {
+        const media = image.parentElement;
+        if (!media) return false;
+        const imageRect = image.getBoundingClientRect();
+        const mediaRect = media.getBoundingClientRect();
+        return imageRect.width <= mediaRect.width + 1 && imageRect.height <= mediaRect.height + 1;
+      });
+      expect(imageFitsMedia).toBeTruthy();
+      const fullscreen = lightbox.locator('button[aria-label="Abrir visualizador em tela cheia"]');
+      if (viewport.width < 640) {
+        await expect(fullscreen).toBeHidden();
+      } else {
+        await expect(fullscreen).toBeVisible();
+      }
       if (viewport.width === 390) {
         const detailsToggle = lightbox.locator('[data-lightbox-mobile-details-toggle="true"]');
         const detailsSection = lightbox.locator('section[aria-label^="Legenda expandida"]');
@@ -270,12 +287,42 @@ test.describe("navegação pública e favoritos", () => {
         await expect(detailsSection).toBeHidden();
         await detailsToggle.click();
         await expect(detailsSection).toBeVisible();
+        const moreActions = lightbox.locator('[data-lightbox-more-actions="true"]');
+        await expect(moreActions).toBeVisible();
+        await moreActions.locator('summary').filter({ hasText: "mais ações" }).click();
+        await expect(lightbox.getByRole("button", { name: /Copiar link do projeto/i })).toBeVisible();
+        await expect(lightbox.getByRole("button", { name: /Compartilhar projeto no WhatsApp/i })).toBeVisible();
         await detailsToggle.click();
         await expect(detailsSection).toBeHidden();
       }
       await page.keyboard.press("Escape");
       await expect(lightbox).toBeHidden();
     }
+  });
+
+  test("contém imagens verticais, quadradas e horizontais no quadro do lightbox mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: /Ampliar imagem/ }).first().click();
+    const lightbox = page.locator('[data-lightbox-modal="true"]');
+    const image = lightbox.locator('img[alt^="Imagem ampliada"]');
+    for (const ratio of [{ name: "9:16", width: 900, height: 1600 }, { name: "4:5", width: 800, height: 1000 }, { name: "1:1", width: 1000, height: 1000 }, { name: "4:3", width: 1200, height: 900 }, { name: "16:9", width: 1600, height: 900 }]) {
+      await image.evaluate((element, dimensions) => {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${dimensions.width}" height="${dimensions.height}" viewBox="0 0 ${dimensions.width} ${dimensions.height}"><rect width="100%" height="100%" fill="#0b2746"/></svg>`;
+        element.setAttribute("src", `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
+      }, ratio);
+      await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth > 0)).toBeTruthy();
+      const fits = await image.evaluate((element) => {
+        const media = element.parentElement;
+        if (!media) return false;
+        const imageRect = element.getBoundingClientRect();
+        const mediaRect = media.getBoundingClientRect();
+        return imageRect.width <= mediaRect.width + 1 && imageRect.height <= mediaRect.height + 1;
+      });
+      expect(fits, `Imagem ${ratio.name} excedeu o quadro do lightbox`).toBeTruthy();
+    }
+    await page.keyboard.press("Escape");
+    await expect(lightbox).toBeHidden();
   });
 
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {

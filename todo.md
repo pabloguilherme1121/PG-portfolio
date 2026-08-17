@@ -1423,3 +1423,29 @@
 - [x] Refinar a Home mobile, navegação, CTA, barra fixa, performance, acessibilidade e SEO com mudanças de baixo risco.
 - [x] Gerar relatório detalhado de performance/SEO e recomendações futuras de UI/UX.
 - [x] Validar a versão publicada, executar testes completos e republicar somente com aprovação.
+
+## Alt text, analytics, Core Web Vitals e ZIP — 2026-08-17
+
+- [x] Auditar os 11 `alt` vazios e distinguir imagens informativas de elementos decorativos.
+- [x] Corrigir os textos alternativos informativos sem inventar conteúdo.
+- [x] Adicionar GA4 e Search Console por configuração segura, sem versionar IDs ou credenciais reais.
+- [x] Medir LCP, INP e CLS com emulação de conexão 4G e registrar limitações da medição.
+- [x] Validar código, testes, build e gerar ZIP limpo para análise.
+
+## Priorização da rodada — 2026-08-17
+
+- [x] Manter GA4 e Search Console preparados, porém desativados até o usuário fornecer IDs/tokens.
+- [x] Corrigir somente os `alt` informativos, preservando `alt=""` em imagens puramente decorativas.
+- [x] Medir Core Web Vitals com emulação 4G, registrar limitações e gerar ZIP limpo.
+
+## Refinamento fechado do lightbox mobile — 2026-08-17
+
+- [x] Corrigir clipping preservando proporção em imagens 9:16, 4:5, 1:1, 4:3 e 16:9.
+- [x] Agrupar somente ações secundárias em “mais ações” no mobile, sem remover funcionalidades.
+- [x] Ocultar fullscreen somente no mobile e preservar no desktop.
+- [x] Validar viewports, gestos, zoom, ações, acessibilidade, safe-area, overflow e scroll.
+- [x] Executar `pnpm check`, `pnpm test`, `pnpm build` e Playwright sem outras alterações.
+
+## Entrega do refinamento fechado do lightbox mobile
+
+- [x] Salvar checkpoint da rodada validada sem outras alterações.

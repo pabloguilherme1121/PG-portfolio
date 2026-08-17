@@ -120,7 +120,7 @@ export default function InstagramRepertoire() {
             >
               <img
                 src={profile.cover}
-                alt=""
+                alt={`Imagem de capa do perfil ${profile.handle}: ${profile.description}`}
                 loading="lazy"
                 decoding="async"
                 className={`absolute inset-0 -z-10 h-full w-full object-cover ${profile.position} opacity-40 saturate-[0.72] transition duration-500 group-hover:scale-105 group-hover:opacity-55`}
