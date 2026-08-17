@@ -548,6 +548,7 @@ export default function Home() {
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
   const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
@@ -987,6 +988,7 @@ export default function Home() {
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
   const galleryLoadingTimerRef = useRef<number | null>(null);
+  const favoriteExportTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
   const favoriteImageIdSet = useMemo(() => new Set(favoriteImageIds), [favoriteImageIds]);
@@ -1301,6 +1303,10 @@ export default function Home() {
     setFavoritesOnly(false);
     setActiveSearchSuggestionIndex(-1);
     setIsProjectSearchFocused(false);
+    const params = new URLSearchParams(window.location.search);
+    ["technology", "category", "tag", "sort", "q"].forEach((key) => params.delete(key));
+    const nextQuery = params.toString();
+    window.history.replaceState({}, "", `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`);
   }
 
   useEffect(() => {
@@ -1492,9 +1498,11 @@ export default function Home() {
     window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
-  function exportFavorites(format: "csv" | "json") {
+  async function exportFavorites(format: "csv" | "json" | "pdf") {
     const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
     if (!favoriteProjects.length) return;
+    if (favoriteExportTimerRef.current) window.clearTimeout(favoriteExportTimerRef.current);
+    setFavoriteExportStatus(format);
     const exportRows = favoriteProjects.map((repository) => ({
       id: repository.id,
       nome: repository.name,
@@ -1504,19 +1512,58 @@ export default function Home() {
       tipo: repository.kind,
       link: repository.url,
     }));
-    const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
-    const content = format === "json"
-      ? JSON.stringify(exportRows, null, 2)
-      : ["id,nome,resumo,tecnologias,categorias,tipo,link", ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(","))].join("\n");
-    const blob = new Blob([format === "csv" ? `\uFEFF${content}` : content], { type: format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" });
-    const downloadUrl = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = downloadUrl;
-    anchor.download = `pablo-guilherme-favoritos.${format}`;
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+    try {
+      const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
+      if (format === "pdf") {
+        const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
+        const pdf = await PDFDocument.create();
+        const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
+        const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
+        const pageSize: [number, number] = [595.28, 841.89];
+        let page = pdf.addPage(pageSize);
+        let y = pageSize[1] - 48;
+        const drawLine = (text: string, bold = false, size = 10) => {
+          if (y < 46) { page = pdf.addPage(pageSize); y = pageSize[1] - 48; }
+          page.drawText(text.slice(0, 110), { x: 42, y, size, font: bold ? boldFont : regularFont, color: rgb(0.08, 0.14, 0.23) });
+          y -= size + 7;
+        };
+        drawLine("Pablo Guilherme — projetos favoritos", true, 16);
+        drawLine(`Arquivo exportado em ${new Date().toLocaleDateString("pt-BR")}`, false, 9);
+        y -= 8;
+        exportRows.forEach((row, index) => {
+          drawLine(`${String(index + 1).padStart(2, "0")}  ${row.nome}`, true, 12);
+          drawLine(`${row.id} · ${row.tipo}`, false, 9);
+          drawLine(`Tecnologias: ${row.tecnologias.join(", ")}`, false, 9);
+          drawLine(row.resumo, false, 9);
+          drawLine(row.link, false, 8);
+          y -= 8;
+        });
+        const bytes = await pdf.save();
+        const blob = new Blob([bytes as unknown as ArrayBuffer], { type: "application/pdf" });
+        const downloadUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = "pablo-guilherme-favoritos.pdf";
+        document.body.appendChild(anchor); anchor.click(); anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+      } else {
+        const content = format === "json"
+          ? JSON.stringify(exportRows, null, 2)
+          : ["id,nome,resumo,tecnologias,categorias,tipo,link", ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(","))].join("\n");
+        const blob = new Blob([format === "csv" ? `\uFEFF${content}` : content], { type: format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" });
+        const downloadUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = downloadUrl;
+        anchor.download = `pablo-guilherme-favoritos.${format}`;
+        document.body.appendChild(anchor); anchor.click(); anchor.remove();
+        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+      }
+    } catch {
+      setFavoriteExportStatus("error");
+      favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
+      return;
+    }
+    favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
   }
 
   function selectCategory(category: string) {
@@ -2181,7 +2228,7 @@ export default function Home() {
                 {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
               </aside>
               </div>
-              {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p></div><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></section>}
+              {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" aria-describedby="saved-projects-help" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p><p id="saved-projects-help" className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">arraste os cartões para ajustar sua ordem manual</p></div><div className="flex flex-wrap gap-2"><button type="button" data-saved-export-csv="true" onClick={() => void exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" />CSV</button><button type="button" data-saved-export-pdf="true" onClick={() => void exportFavorites("pdf")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><FileText className="h-3.5 w-3.5" aria-hidden="true" />PDF</button><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></div><p role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{favoriteExportStatus === "csv" ? "CSV preparado para download." : favoriteExportStatus === "pdf" ? "PDF preparado para download." : favoriteExportStatus === "error" ? "Não foi possível preparar a exportação." : ""}</p></section>}
               <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>
             <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {

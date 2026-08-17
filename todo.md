@@ -1253,3 +1253,10 @@
 - [x] Adicionar compartilhamento direto do projeto no modal de detalhes.
 - [x] Criar seção dedicada de projetos favoritados com ordenação.
 - [x] Validar favoritos, compartilhamento, ordenação, teclado, testes, build e checkpoint.
+
+## Link direto, exportação offline e ordem pública — nova iteração
+
+- [x] Abrir automaticamente o modal ao acessar link compartilhado com projeto específico.
+- [x] Exportar projetos favoritados em CSV e PDF na seção pública salva.
+- [x] Permitir arrastar e soltar projetos na seção pública de favoritos.
+- [x] Validar link direto, exportações, reordenação, teclado, testes, build e checkpoint.

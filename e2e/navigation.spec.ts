@@ -99,6 +99,7 @@ test.describe("navegação pública e favoritos", () => {
 
     await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
     await search.fill("__sem-resultado-real__");
+    await expect(page.locator('#galeria-publica')).toHaveAttribute("aria-busy", "false", { timeout: 10000 });
     await expect(page.locator('[data-empty-clear-filters="true"]')).toBeVisible({ timeout: 10000 });
     await page.locator('[data-empty-clear-filters="true"]').click();
     await expect(search).toHaveValue("");
@@ -190,6 +191,27 @@ test.describe("navegação pública e favoritos", () => {
     await expect(title).toHaveText(initialTitle ?? "");
     await page.keyboard.press("Escape");
     await expect(details).toBeHidden();
+  });
+
+  test("abre automaticamente um projeto ao acessar link direto", async ({ page }) => {
+    await page.goto("/?projeto=AUD.01#projetos");
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('[data-project-details-dialog="true"] [data-project-modal-share="true"]')).toBeVisible();
+  });
+
+  test("expõe exportação offline e instrução de reordenação nos favoritos", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(["AUD.01"])))
+    await page.goto("/#galeria-publica");
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
+    await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
+    await expect(page.locator('[data-saved-export-csv="true"]')).toBeVisible();
+    await expect(page.locator('[data-saved-export-pdf="true"]')).toBeVisible();
+    await page.locator('[data-saved-export-csv="true"]').click();
+    await expect(page.locator('[data-saved-projects-section="true"]')).toContainText(/CSV preparado/i);
+    await page.locator('[data-saved-export-pdf="true"]').click();
+    await expect(page.locator('[data-saved-projects-section="true"]')).toContainText(/PDF preparado/i);
+    await expect(page.locator('[data-saved-projects-section="true"]')).toContainText(/arraste os cartões/i);
+    await expect(page.locator('[data-project-id][draggable="true"]').first()).toBeVisible();
   });
 
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
