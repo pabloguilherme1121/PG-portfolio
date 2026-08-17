@@ -1307,3 +1307,9 @@
 - [x] Aplicar somente correções justificadas, sem novas funcionalidades desnecessárias.
 - [x] Executar validação completa, QA, limpeza e gerar veredito final.
 - [x] Atualizar a expectativa E2E da rota protegida para aceitar a mensagem de autenticação em português introduzida pelo hardening.
+
+## Correção do erro Unexpected token '<'
+
+- [x] Reproduzir o erro e identificar qual recurso JavaScript está recebendo HTML.
+- [x] Aplicar a correção mínima na configuração ou roteamento, sem alterar funcionalidades; o estado HMR/cache foi limpo por reinício após confirmar que o import atual já estava correto.
+- [x] Validar navegador, typecheck, build, testes e checkpoint corrigido.
