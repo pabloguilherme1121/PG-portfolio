@@ -1284,3 +1284,11 @@
 - [x] Separar dist, test-results e artefatos de debug da entrega de produção quando aplicável.
 - [x] Executar pnpm check, Vitest, Playwright e build, registrando os resultados.
 - [x] Salvar checkpoint íntegro e entregar relatório de integridade.
+
+## Auditoria de integridade solicitada pelo usuário — execução controlada
+
+- [x] Auditar árvore atual, histórico e artefatos antes de modificar qualquer código.
+- [x] Restaurar somente arquivos ausentes da feature portfolio, preservando funcionalidades; a auditoria confirmou que os arquivos já estão presentes no checkpoint atual, portanto nenhuma alteração de código foi necessária.
+- [x] Confirmar documentação após a árvore real estar correta e verificar imports quebrados.
+- [x] Executar pnpm check, pnpm test, pnpm build e E2E públicos.
+- [x] Confirmar limpeza da entrega e apresentar árvore real de client/src/features com resultados.
