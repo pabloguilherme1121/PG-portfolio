@@ -577,6 +577,7 @@ export default function Home() {
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
+  const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
   const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
   const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
@@ -1275,6 +1276,14 @@ export default function Home() {
     window.setTimeout(() => setSearchShareStatus("idle"), 2200);
   }
 
+  function navigateSelectedProject(direction: "next" | "previous") {
+    const target = direction === "next" ? nextSelectedProject : previousSelectedProject;
+    if (!target) return;
+    setProjectDetailsTransition(direction);
+    setSelectedProject(target);
+    window.setTimeout(() => setProjectDetailsTransition(null), 260);
+  }
+
   function clearAllProjectFilters() {
     setActiveTechnology("Todos");
     setActiveCategory("Todos");
@@ -1285,6 +1294,23 @@ export default function Home() {
     setActiveSearchSuggestionIndex(-1);
     setIsProjectSearchFocused(false);
   }
+
+  useEffect(() => {
+    if (!selectedProject) return;
+    const handleProjectDetailsKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
+      if (event.key === "ArrowRight" && nextSelectedProject) {
+        event.preventDefault();
+        navigateSelectedProject("next");
+      } else if (event.key === "ArrowLeft" && previousSelectedProject) {
+        event.preventDefault();
+        navigateSelectedProject("previous");
+      }
+    };
+    window.addEventListener("keydown", handleProjectDetailsKeyDown);
+    return () => window.removeEventListener("keydown", handleProjectDetailsKeyDown);
+  }, [selectedProject, nextSelectedProject, previousSelectedProject]);
 
   function removeRecentSearch(term: string) {
     setRecentSearches((current) => current.filter((item) => item.toLowerCase() !== term.toLowerCase()));
@@ -2697,7 +2723,7 @@ export default function Home() {
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
-          <DialogContent data-project-details-dialog="true" className="max-h-[90svh] max-w-3xl overflow-y-auto border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)]">
+          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} className={`max-h-[90svh] max-w-3xl overflow-y-auto border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
             {selectedProject.kind === "video" && <video className="max-h-[42svh] w-full bg-black object-contain" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata">Seu navegador não oferece suporte à reprodução audiovisual.</video>}
             {selectedProject.kind !== "video" && selectedProject.cover && <img src={selectedProject.cover} alt={`Imagem do projeto ${selectedProject.name}`} width="1200" height="800" className="max-h-[42svh] w-full object-cover" />}
             <div className="p-6 sm:p-8">
@@ -2705,6 +2731,7 @@ export default function Home() {
                 <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[#60a5fa]">{selectedProject.kind === "video" ? "projeto audiovisual" : "projeto em destaque"}</p>
                 <DialogTitle className="mt-2 font-display text-3xl font-medium tracking-[-0.05em] text-white">{selectedProject.name}</DialogTitle>
                 <DialogDescription className="mt-3 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">{selectedProject.description}</DialogDescription>
+                <button type="button" data-project-modal-favorite="true" onClick={(event) => toggleFavorite(selectedProject.id, event)} aria-pressed={favoriteProjectIdSet.has(selectedProject.id)} aria-label={favoriteProjectIdSet.has(selectedProject.id) ? `Remover ${selectedProject.name} dos projetos salvos` : `Salvar ${selectedProject.name} nos projetos favoritos`} className={`mt-5 inline-flex min-h-10 items-center gap-2 self-start border px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteProjectIdSet.has(selectedProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#3b82f6]/35 text-[#cfe3ff] hover:border-[#70a6ff] hover:text-white"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(selectedProject.id) ? "fill-current" : ""}`} aria-hidden="true" />{favoriteProjectIdSet.has(selectedProject.id) ? "salvo nos favoritos" : "salvar nos favoritos"}</button>
               </DialogHeader>
               <div className="mt-7 grid gap-5 sm:grid-cols-3">
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">papel</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.role || "Informação não registrada."}</p></div>
@@ -2712,7 +2739,7 @@ export default function Home() {
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">resultado</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.result || "Informação não registrada."}</p></div>
               </div>
               <div className="mt-7 border-t border-white/10 pt-5"><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">tecnologias e repertório</p><div className="mt-3 flex flex-wrap gap-2">{selectedProject.technologies.map((technology) => <span key={technology} className="border border-[#3b82f6]/30 bg-[#0b2746] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#cfe3ff]">{technology}</span>)}</div></div>
-              <div className="mt-7 flex items-center justify-between gap-3 border-t border-white/10 pt-5"><button type="button" data-project-modal-previous="true" onClick={() => previousSelectedProject && setSelectedProject(previousSelectedProject)} disabled={!previousSelectedProject} aria-label={previousSelectedProject ? `Ver projeto anterior: ${previousSelectedProject.name}` : "Nenhum projeto anterior"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-4 w-4" aria-hidden="true" />anterior</button><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]" aria-live="polite">{selectedProjectIndex >= 0 ? `${String(selectedProjectIndex + 1).padStart(2, "0")} / ${String(visibleRepositories.length).padStart(2, "0")}` : ""}</span><button type="button" data-project-modal-next="true" onClick={() => nextSelectedProject && setSelectedProject(nextSelectedProject)} disabled={!nextSelectedProject} aria-label={nextSelectedProject ? `Ver próximo projeto: ${nextSelectedProject.name}` : "Nenhum próximo projeto"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35">próximo<ChevronRight className="h-4 w-4" aria-hidden="true" /></button></div>
+              <div className="mt-7 flex items-center justify-between gap-3 border-t border-white/10 pt-5"><button type="button" data-project-modal-previous="true" onClick={() => navigateSelectedProject("previous")} disabled={!previousSelectedProject} aria-label={previousSelectedProject ? `Ver projeto anterior: ${previousSelectedProject.name}` : "Nenhum projeto anterior"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-4 w-4" aria-hidden="true" />anterior</button><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]" aria-live="polite">{selectedProjectIndex >= 0 ? `${String(selectedProjectIndex + 1).padStart(2, "0")} / ${String(visibleRepositories.length).padStart(2, "0")}` : ""}</span><button type="button" data-project-modal-next="true" onClick={() => navigateSelectedProject("next")} disabled={!nextSelectedProject} aria-label={nextSelectedProject ? `Ver próximo projeto: ${nextSelectedProject.name}` : "Nenhum próximo projeto"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35">próximo<ChevronRight className="h-4 w-4" aria-hidden="true" /></button></div>
             </div>
           </DialogContent>
         )}

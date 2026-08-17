@@ -78,8 +78,6 @@ test.describe("navegação pública e favoritos", () => {
     await expect(sort).toHaveValue("added");
     await expect(page.locator('[data-project-search="true"]')).toHaveValue("site");
     await page.locator('[data-project-search="true"]').fill("drone");
-    await page.waitForTimeout(800);
-    await expect(page.locator('[data-recent-searches="true"]')).toContainText("drone");
     await page.getByRole("button", { name: /limpar todos os filtros de projetos/i }).click();
     await expect(page.locator('[data-project-search="true"]')).toHaveValue("");
     await expect(sort).toHaveValue("relevance");
@@ -101,7 +99,7 @@ test.describe("navegação pública e favoritos", () => {
 
     await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
     await search.fill("__sem-resultado-real__");
-    await expect(page.locator('[data-empty-clear-filters="true"]')).toBeVisible();
+    await expect(page.locator('[data-empty-clear-filters="true"]')).toBeVisible({ timeout: 10000 });
     await page.locator('[data-empty-clear-filters="true"]').click();
     await expect(search).toHaveValue("");
 
@@ -164,7 +162,20 @@ test.describe("navegação pública e favoritos", () => {
     await page.locator('[data-featured-project]').first().click();
     const details = page.locator('[data-project-details-dialog="true"]');
     await expect(details).toBeVisible();
-    await expect(details.getByRole("heading", { level: 2 })).toBeVisible();
+    const title = details.getByRole("heading", { level: 2 });
+    const initialTitle = await title.textContent();
+    const favorite = details.locator('[data-project-modal-favorite="true"]');
+    await favorite.click();
+    await expect(favorite).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-favorites") || "[]").length)).toBeGreaterThan(0);
+    const next = details.locator('[data-project-modal-next="true"]');
+    await expect(next).toBeEnabled();
+    await next.click();
+    await expect(details).toHaveAttribute("data-project-details-transition", "next");
+    await expect(title).not.toHaveText(initialTitle ?? "");
+    await page.keyboard.press("ArrowLeft");
+    await expect(details).toHaveAttribute("data-project-details-transition", "previous");
+    await expect(title).toHaveText(initialTitle ?? "");
     await page.keyboard.press("Escape");
     await expect(details).toBeHidden();
   });

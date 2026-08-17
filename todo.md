@@ -1239,3 +1239,10 @@
 - [x] Criar estado Nenhum resultado encontrado com botão para limpar filtros ativos.
 - [x] Adicionar botões Anterior e Próximo no modal usando a sequência filtrada.
 - [x] Validar histórico, estado vazio, modal, teclado, reduced motion, testes, build e checkpoint.
+
+## Atalhos, favorito no modal e transições — nova iteração
+
+- [x] Adicionar atalhos de setas esquerda/direita para navegar no modal.
+- [x] Permitir favoritar e desfavoritar o projeto diretamente no modal com persistência local.
+- [x] Animar suavemente a troca de projeto no modal, respeitando reduced motion.
+- [x] Validar teclado, favoritos, transições, reduced motion, testes, build e checkpoint.
