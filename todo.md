@@ -1276,3 +1276,11 @@
 - [x] Adicionar página e documentação pública de privacidade.
 - [x] Corrigir bandas vazias causadas por pintura adiada e validar ritmo editorial da homepage.
 - [x] Executar validação visual desktop/mobile, typecheck, Vitest, E2E e build.
+
+## Auditoria de integridade do pacote — nova rodada
+
+- [x] Auditar a presença real dos arquivos importados e comparar workspace com a cópia apontada no anexo.
+- [x] Confirmar/restaurar todas as features necessárias e eliminar imports quebrados.
+- [x] Separar dist, test-results e artefatos de debug da entrega de produção quando aplicável.
+- [x] Executar pnpm check, Vitest, Playwright e build, registrando os resultados.
+- [x] Salvar checkpoint íntegro e entregar relatório de integridade.
