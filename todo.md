@@ -1384,3 +1384,11 @@
 - [x] Corrigir o overflow horizontal e o enquadramento do modal audiovisual em telas estreitas, preservando vídeo, texto, ações e barras fixas.
 - [x] Validar o modal em 320, 390, 414 e 768 px, além de typecheck, testes, build e E2E público.
 - [x] Salvar checkpoint e republicar a correção mobile.
+
+## Interações do modal audiovisual — 2026-08-17
+
+- [x] Adicionar gesto de swipe no mobile para navegar entre itens do modal.
+- [x] Adicionar loading/skeleton suave durante abertura e troca de conteúdo do modal.
+- [x] Adicionar botão explícito de copiar link junto às opções de compartilhamento.
+- [x] Criar ou atualizar testes das interações e validar check, testes, build e E2E.
+- [x] Salvar checkpoint e publicar a versão validada.

@@ -170,6 +170,9 @@ test.describe("navegação pública e favoritos", () => {
     const favorite = details.locator('[data-project-modal-favorite="true"]');
     await favorite.click();
     await expect(favorite).toHaveAttribute("aria-pressed", "true");
+    const copyProjectLink = details.locator('[data-project-modal-copy-link="true"]');
+    await copyProjectLink.click();
+    await expect(copyProjectLink).toContainText(/link copiado|tentar novamente/i);
     await expect.poll(() => page.evaluate(() => JSON.parse(window.localStorage.getItem("pablo-portfolio-favorites") || "[]").length)).toBeGreaterThan(0);
     await details.locator('[data-project-modal-share="true"]').click();
     await expect(details.locator('[data-project-modal-share="true"]')).toContainText(/link copiado|tentar novamente/);
@@ -192,6 +195,23 @@ test.describe("navegação pública e favoritos", () => {
     await expect(title).toHaveText(initialTitle ?? "");
     await page.keyboard.press("Escape");
     await expect(details).toBeHidden();
+  });
+
+  test("navega entre projetos do modal com swipe horizontal no mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/#galeria-publica");
+    const firstProject = page.locator('[data-featured-project]').first();
+    await firstProject.click();
+    const dialog = page.locator('[data-project-details-dialog="true"]');
+    await expect(dialog).toBeVisible();
+    const title = dialog.getByRole("heading", { level: 2 });
+    const initialTitle = await title.textContent();
+    await dialog.evaluate((element) => {
+      const touch = (x) => new Touch({ identifier: 1, target: element, clientX: x, clientY: 420 });
+      element.dispatchEvent(new TouchEvent("touchstart", { bubbles: true, touches: [touch(300)] }));
+      element.dispatchEvent(new TouchEvent("touchend", { bubbles: true, changedTouches: [touch(100)] }));
+    });
+    await expect(title).not.toHaveText(initialTitle ?? "");
   });
 
   test("abre automaticamente um projeto ao acessar link direto", async ({ page }) => {

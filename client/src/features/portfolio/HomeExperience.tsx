@@ -550,6 +550,8 @@ export default function Home() {
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [projectDetailsLoading, setProjectDetailsLoading] = useState(false);
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
@@ -582,6 +584,7 @@ export default function Home() {
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
+  const projectDetailsSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
   const [lightboxZoom, setLightboxZoom] = useState(1);
   const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
@@ -639,7 +642,7 @@ export default function Home() {
     const sharedProjectId = new URLSearchParams(window.location.search).get("projeto");
     if (!sharedProjectId || selectedProject || !repositories.length) return;
     const sharedProject = repositories.find((repository) => repository.id === sharedProjectId);
-    if (sharedProject) setSelectedProject(sharedProject);
+    if (sharedProject) openProjectDetails(sharedProject);
   }, [repositories, selectedProject]);
 
   useEffect(() => {
@@ -1300,13 +1303,45 @@ export default function Home() {
     window.setTimeout(() => setSearchShareStatus("idle"), 2200);
   }
 
+  function openProjectDetails(project: Repository) {
+    setProjectDetailsLoading(true);
+    setSelectedProject(project);
+  }
   function navigateSelectedProject(direction: "next" | "previous") {
     const target = direction === "next" ? nextSelectedProject : previousSelectedProject;
     if (!target) return;
+    setProjectDetailsLoading(true);
     setProjectDetailsTransition(direction);
     setSelectedProject(target);
     window.setTimeout(() => setProjectDetailsTransition(null), 260);
   }
+  function handleProjectDetailsTouchStart(event: TouchEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("button, a, input, video, summary")) {
+      projectDetailsSwipeStartRef.current = null;
+      return;
+    }
+    if (event.touches.length === 1) projectDetailsSwipeStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+  }
+  function handleProjectDetailsTouchEnd(event: TouchEvent<HTMLDivElement>) {
+    const start = projectDetailsSwipeStartRef.current;
+    projectDetailsSwipeStartRef.current = null;
+    if (!start || event.changedTouches.length !== 1) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
+    if (deltaX < 0 && nextSelectedProject) navigateSelectedProject("next");
+    if (deltaX > 0 && previousSelectedProject) navigateSelectedProject("previous");
+  }
+  useEffect(() => {
+    if (!selectedProject) {
+      setProjectDetailsLoading(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setProjectDetailsLoading(false), 420);
+    return () => window.clearTimeout(timer);
+  }, [selectedProject]);
 
   function clearAllProjectFilters() {
     setActiveTechnology("Todos");
@@ -1379,19 +1414,35 @@ export default function Home() {
     window.setTimeout(() => setFavoriteImageStatus(""), 2600);
   }
 
-  async function shareSelectedProject() {
-    if (!selectedProject) return;
+  function getSelectedProjectUrl() {
+    if (!selectedProject) return "";
     const projectUrl = new URL(window.location.href);
     projectUrl.searchParams.delete("favorites");
     projectUrl.searchParams.set("projeto", selectedProject.id);
     projectUrl.hash = "projetos";
+    return projectUrl.toString();
+  }
+  async function shareSelectedProject() {
+    const projectUrl = getSelectedProjectUrl();
+    if (!projectUrl) return;
     try {
-      await navigator.clipboard.writeText(projectUrl.toString());
+      await navigator.clipboard.writeText(projectUrl);
       setProjectShareStatus("copied");
     } catch {
       setProjectShareStatus("error");
     }
     window.setTimeout(() => setProjectShareStatus("idle"), 2400);
+  }
+  async function copySelectedProjectLink() {
+    const projectUrl = getSelectedProjectUrl();
+    if (!projectUrl) return;
+    try {
+      await navigator.clipboard.writeText(projectUrl);
+      setProjectCopyStatus("copied");
+    } catch {
+      setProjectCopyStatus("error");
+    }
+    window.setTimeout(() => setProjectCopyStatus("idle"), 2400);
   }
 
   async function shareFavorites() {
@@ -2181,7 +2232,7 @@ export default function Home() {
               <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-3" aria-busy={!featuredCardsReady}>
                 <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? "Três projetos destacados disponíveis para abrir detalhes." : "Carregando projetos destacados."}</div>
                 {featuredCardsReady ? featuredRepositories.map((project) => (
-                  <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => setSelectedProject(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedProject(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
+                  <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => openProjectDetails(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProjectDetails(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
                     {project.cover && <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" />}
                     <div className="mt-4 flex items-center justify-between gap-3">
                       <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">{project.id}</p>
@@ -2411,7 +2462,7 @@ export default function Home() {
                       {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
-                      <button type="button" onClick={() => setSelectedProject(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
+                      <button type="button" onClick={() => openProjectDetails(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
                         {cardContent}
                       </button>
                     </div>
@@ -2799,7 +2850,8 @@ export default function Home() {
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
-          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} className={`w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
+          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
+            {projectDetailsLoading && <div data-project-details-loading="true" role="status" aria-live="polite" className="pointer-events-none absolute inset-x-0 top-0 z-20 grid gap-3 border-b border-[#67e8f9]/20 bg-[#071326]/90 p-4 backdrop-blur-sm sm:p-8"><div className="h-2 w-28 animate-pulse bg-[#3b82f6]/35" /><div className="h-9 w-4/5 animate-pulse bg-white/10" /><div className="h-3 w-full animate-pulse bg-white/10" /><div className="h-3 w-2/3 animate-pulse bg-white/10" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#9fc6e9]">carregando projeto…</span></div>}
             {selectedProject.kind === "video" && <video className="block h-auto max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata">Seu navegador não oferece suporte à reprodução audiovisual.</video>}
             {selectedProject.kind !== "video" && selectedProject.cover && <img src={selectedProject.cover} alt={`Imagem do projeto ${selectedProject.name}`} width="1200" height="800" className="max-h-[38svh] w-full max-w-full object-cover sm:max-h-[42svh]" />}
             <div className="min-h-0 min-w-0 overflow-x-hidden p-4 sm:p-8">
@@ -2810,7 +2862,8 @@ export default function Home() {
                 <div className="mt-5 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:items-center">
                   <button type="button" data-project-modal-favorite="true" onClick={(event) => toggleFavorite(selectedProject.id, event)} aria-pressed={favoriteProjectIdSet.has(selectedProject.id)} aria-label={favoriteProjectIdSet.has(selectedProject.id) ? `Remover ${selectedProject.name} dos projetos salvos` : `Salvar ${selectedProject.name} nos projetos favoritos`} className={`inline-flex min-h-10 items-center gap-2 self-start border px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteProjectIdSet.has(selectedProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#3b82f6]/35 text-[#cfe3ff] hover:border-[#70a6ff] hover:text-white"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(selectedProject.id) ? "fill-current" : ""}`} aria-hidden="true" />{favoriteProjectIdSet.has(selectedProject.id) ? "salvo nos favoritos" : "salvar nos favoritos"}</button>
                   <button type="button" data-project-modal-share="true" onClick={shareSelectedProject} aria-label={`Copiar link direto de ${selectedProject.name}`} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/35 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Share2 className="h-4 w-4" aria-hidden="true" />{projectShareStatus === "copied" ? "link copiado" : projectShareStatus === "error" ? "tentar novamente" : "compartilhar projeto"}</button>
-                  <span data-project-modal-share-status="true" role="status" aria-live="polite" className="sr-only">{projectShareStatus === "copied" ? "Link direto do projeto copiado." : projectShareStatus === "error" ? "Não foi possível copiar o link direto do projeto." : ""}</span>
+                  <button type="button" data-project-modal-copy-link="true" onClick={copySelectedProjectLink} aria-label={`Copiar link de ${selectedProject.name}`} className="inline-flex min-h-10 items-center gap-2 border border-[#67e8f9]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-4 w-4" aria-hidden="true" />{projectCopyStatus === "copied" ? "link copiado" : projectCopyStatus === "error" ? "tentar novamente" : "copiar link"}</button>
+                  <span data-project-modal-share-status="true" role="status" aria-live="polite" className="sr-only">{projectShareStatus === "copied" || projectCopyStatus === "copied" ? "Link direto do projeto copiado." : projectShareStatus === "error" || projectCopyStatus === "error" ? "Não foi possível copiar o link direto do projeto." : ""}</span>
                 </div>
               </DialogHeader>
               <div className="mt-7 grid gap-5 sm:grid-cols-3">
