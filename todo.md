@@ -1319,3 +1319,17 @@
 - [x] Reproduzir o erro no preview e comparar com o asset publicado/servido.
 - [x] Identificar o arquivo que está retornando HTML no lugar de JavaScript.
 - [x] Aplicar correção definitiva, validar no navegador e salvar checkpoint.
+
+## Exportação ZIP após correção do fallback
+
+- [x] Confirmar o checkpoint corrigido e o escopo do pacote de produção.
+- [x] Gerar ZIP limpo incluindo a feature portfolio e a correção de `server/_core/vite.ts`.
+- [x] Auditar o conteúdo compactado, checksum e ausência de artefatos temporários.
+
+## Auditoria final de produção e segurança em execução
+
+- [x] Auditar secrets, arquivos locais, rotas, documentação, lockfile e artefatos.
+- [x] Corrigir somente exposições, placeholders e referências obsoletas comprovadas.
+- [x] Confirmar ausência de secrets no bundle e imports íntegros.
+- [x] Executar instalação congelada, check, testes, build e Playwright.
+- [x] Limpar entrega, documentar resultados e salvar checkpoint.

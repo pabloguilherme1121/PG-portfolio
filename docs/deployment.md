@@ -34,10 +34,9 @@ Variáveis com prefixo `VITE_` são públicas por natureza. Use-as apenas para c
 | `/agenda` | Gestão de disponibilidade | Administrador |
 | `/favoritos` | Curadoria e exportação | Administrador |
 | `/curadoria` | Alias da curadoria | Administrador |
-| `/analytics` | Dashboard SimilarWeb | Administrador |
 
 ## Checklist de release
 
-Antes de publicar, execute `pnpm check`, `pnpm test`, `pnpm build` e, quando houver alterações de navegação ou interação, `pnpm test:e2e`. Verifique também as auditorias específicas em `scripts/audit/`, `scripts/validate/` e `scripts/performance/`.
+Antes de publicar, execute `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e, quando houver alterações de navegação ou interação, `pnpm test:e2e`. Verifique também as auditorias específicas em `scripts/audit/`, `scripts/validate/` e `scripts/performance/`.
 
 O build pode emitir avisos sobre placeholders de analytics do template quando as variáveis `VITE_ANALYTICS_ENDPOINT` e `VITE_ANALYTICS_WEBSITE_ID` não estão definidas. Esses avisos são independentes do módulo SimilarWeb, que usa chamadas server-side.
