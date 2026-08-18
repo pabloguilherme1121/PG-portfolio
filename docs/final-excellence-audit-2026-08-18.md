@@ -95,3 +95,31 @@ A prioridade crítica é repetir a medição no domínio publicado com cache fri
 > **PRODUÇÃO COM RESSALVAS.**
 
 O código passa typecheck, testes unitários, build e E2E público serial; a alteração de prioridade da Home é pequena e preserva as funcionalidades principais. O portfólio pode permanecer publicado, mas não deve ser apresentado como comprovadamente dentro de LCP < 2,5 s em mobile real até a nova medição publicada. Também permanece pendente a execução dos E2E autenticados com uma sessão real e a confirmação de anti-spam e headers de segurança adicionais.
+
+## Matriz publicada adicional — cache frio/quente e CPU 4×
+
+A medição publicada foi executada em 390×844, com 4G simulado, usando o domínio publicado. O cenário frio é mais representativo de primeira visita; o cenário quente mostra a variação após a navegação anterior. A instrumentação reporta bytes de cache como zero nos cenários quentes, portanto o tamanho transferido quente não deve ser comparado literalmente com a transferência fria.
+
+| Cenário | TTFB | HTML | First Paint | FCP | LCP | Elemento LCP | JS observado | CSS observado | Tasks | CLS | INP |
+|---|---:|---:|---:|---:|---:|---|---:|---:|---:|---:|---:|
+| Frio, CPU 1× | 638 ms | 1.174 ms | 6.756 ms | 7.180 ms | 8.908 ms | H1 “Aprendendo a construir…” | 199.057 B | 32.373 B | 4,78 s | 0,050 | 40 ms |
+| Quente, CPU 1× | 922 ms | 1.660 ms | 1.708 ms | 2.612 ms | 9.176 ms | imagem de retrato profissional AVIF | cache | cache | 6,22 s | 0 | indisponível |
+| Frio, CPU 4× | 950 ms | 707 ms | 2.816 ms | 4.300 ms | 5.872 ms | span “Pablo Guilherme” | 198.923 B | 32.373 B | 6,80 s | 0,033 | 24 ms |
+| Quente, CPU 4× | 367 ms | 647 ms | 10.604 ms | 10.684 ms | 17.228 ms | imagem de retrato profissional AVIF | cache | cache | 12,16 s | 0 | indisponível |
+
+O elemento LCP não é constante: em cache frio e CPU normal é o H1; em cache quente e nos cenários com imagem pronta mais tarde, é o retrato; em CPU 4× fria, é o nome do cartão de perfil. Isso confirma que o problema é composto por rede/edge, execução e mídia crítica, não por um único seletor CSS. Em todos os quatro cenários há dois recursos render-blocking identificados: a folha de fontes do Google e o CSS principal.
+
+A leitura crítica é: TTFB publicado variou de aproximadamente 367 a 950 ms; o JS medido em frio foi aproximadamente 199 KB; o CSS foi aproximadamente 32 KB; CLS permaneceu abaixo de 0,1; e INP ficou abaixo de 200 ms nos cenários em que houve interação observável. O objetivo de LCP < 2,5 s não foi atingido nesta medição severamente limitada. A intervenção de maior retorno e menor risco continua sendo reduzir a variabilidade do HTML/edge e medir a rota de storage das imagens críticas; remover o retrato ou alterar a identidade visual não é recomendado sem um asset substituto aprovado.
+
+## Waterfall textual e classificação
+
+A sequência comum observada foi: resposta HTML/TTFB; fontes e CSS bloqueantes; JavaScript inicial e chunks Home; imagens críticas do cartão/hero; execução/hydration; analytics não bloqueante. A imagem de retrato e o mark foram recursos longos em alguns cenários, com início depois do JS e conclusão vários segundos mais tarde. Analytics, Amplitude e Plausible foram classificados como não bloqueantes e não são candidatos prioritários para explicar o LCP renderizado.
+
+| Gargalo | Severidade | Evidência | Intervenção recomendada |
+|---|---|---|---|
+| Variabilidade de TTFB e HTML no domínio publicado | Crítico | TTFB de 367–950 ms e HTML de 647–1.660 ms na matriz publicada | Medir edge/cache e definir política segura de cache para HTML público |
+| Imagens críticas do cartão de perfil | Alto | Retrato apareceu como LCP em cenários quentes e teve conclusão tardia | Validar storage/CDN, `Content-Length`, cache e formato entregue antes de trocar o asset |
+| CSS/fontes render-blocking | Médio | Dois recursos blocking em todos os cenários | Auditar preload/subset de fontes e CSS crítico após confirmação de waterfall de campo |
+| Execução/hydration sob CPU 4× | Médio | Tasks de 6,80–12,16 s; script 0,72–0,84 s medido no navegador | Profiling de aparelho real antes de refatorar HomeExperience |
+
+As três intervenções de melhor relação ganho/risco são, portanto, **(1)** corrigir a variabilidade de cache/edge do HTML público, **(2)** validar e otimizar a entrega CDN da imagem de retrato crítica sem trocar a identidade, e **(3)** revisar preload/subset de fontes e CSS crítico. A terceira não foi aplicada nesta rodada por risco de alteração visual e por falta de confirmação em aparelho físico.

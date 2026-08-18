@@ -1480,21 +1480,21 @@
 
 ## Auditoria diagnóstica de LCP/TTFB — sem alterações — 2026-08-18
 
-- [ ] Medir 390x844 em 4G throttled com cache frio e cache quente.
-- [ ] Repetir os cenários com CPU 4x slowdown.
-- [ ] Identificar o elemento LCP e decompor TTFB, HTML, CSS, JS, execução, imagem, fontes, hydration e requests bloqueantes.
-- [ ] Gerar waterfall comparativo e classificar gargalos por severidade.
-- [ ] Propor no máximo três intervenções sem aplicar nenhuma alteração no projeto.
-- [ ] Limpar a instrumentação temporária e entregar o relatório diagnóstico.
+- [x] Medir 390x844 em 4G throttled com cache frio e cache quente.
+- [x] Repetir os cenários com CPU 4x slowdown.
+- [x] Identificar o elemento LCP e decompor TTFB, HTML, CSS, JS, execução, imagem, fontes, hydration e requests bloqueantes.
+- [x] Gerar waterfall comparativo e classificar gargalos por severidade.
+- [x] Propor no máximo três intervenções sem aplicar nenhuma alteração no projeto.
+- [x] Limpar a instrumentação temporária e entregar o relatório diagnóstico.
 
 ## Auditoria final de excelência — 2026-08-18
 
-- [ ] Consolidar baseline publicada de performance, UX, mobile, acessibilidade, SEO, segurança, cases, social e conversão.
-- [ ] Medir LCP, TTFB, JS execution, hydration/CSR, imagem LCP, CLS e INP em mobile e desktop.
-- [ ] Auditar o fluxo identidade → prova → case → serviço → contato e a clareza dos CTAs.
-- [ ] Auditar cases, mobile 320–414, WCAG 2.2 AA, SEO, social, curadoria e segurança sem inventar dados.
-- [ ] Aplicar somente melhorias comprovadas, medindo antes e depois de cada alteração.
-- [ ] Executar install frozen, check, test, build e Playwright; produzir relatório comparativo e veredito.
+- [x] Consolidar baseline publicada de performance, UX, mobile, acessibilidade, SEO, segurança, cases, social e conversão.
+- [x] Medir LCP, TTFB, JS execution, hydration/CSR, imagem LCP, CLS e INP em mobile e desktop.
+- [x] Auditar o fluxo identidade → prova → case → serviço → contato.
+- [x] Auditar cases, mobile 320–414, WCAG 2.2 AA, SEO, social, curadoria e segurança sem inventar dados.
+- [x] Aplicar somente melhorias comprovadas, medindo antes e depois de cada alteração.
+- [x] Executar install frozen, check, test, build e Playwright; produzir relatório comparativo e veredito.
 
 ## Auditoria final de excelência — sessão atual
 
@@ -1502,4 +1502,4 @@
 - [x] Priorizar o carregamento da Home removendo a lazy-load da rota pública inicial, sem alterar identidade, lightbox, modal ou navegação.
 - [x] Revalidar typecheck, Vitest, build e E2E público serial após a alteração.
 - [x] Registrar no relatório final a ressalva de TTFB/HTML e a limitação de E2E autenticado sem sessão real.
-- [ ] Salvar checkpoint publicado com a alteração mínima e entregar o relatório final de produção.
+- [x] Salvar checkpoint publicado com a alteração mínima e entregar o relatório final de produção.
