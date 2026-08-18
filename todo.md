@@ -1695,3 +1695,10 @@
 - [x] Apresentar um diff estimado com impacto e risco antes de ajustar disponibilidade, filtros ou feedback de favoritos.
 - [x] Aplicar somente os ajustes aprovados, preservando desktop, agenda, busca, lightbox, modais, compartilhamento, exportação e analytics.
 - [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Reset de agenda, projetos salvos e compartilhamento por WhatsApp
+
+- [x] Auditar controles existentes para limpar a agenda, filtrar projetos salvos e compartilhar projetos individuais, sem alterar código.
+- [x] Apresentar um diff estimado com impacto e risco antes de ajustar agenda, favoritos ou compartilhamento.
+- [x] Aplicar somente os ajustes aprovados, preservando desktop, busca, filtros, lightbox, modais, exportação e analytics.
+- [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.

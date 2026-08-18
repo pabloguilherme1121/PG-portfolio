@@ -1554,6 +1554,20 @@ export default function Home() {
     }, 240);
   }
 
+  function clearAvailabilitySelection() {
+    if (isAvailabilityRedirecting) return;
+    setAvailabilityDate(null);
+    setAvailabilityTime(null);
+  }
+
+  function shareRepositoryToWhatsApp(repository: Repository, event: React.MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    const projectUrl = buildProjectShareUrl(window.location.href, repository.id);
+    trackPortfolioEvent("share_project", { channel: "whatsapp", projectId: repository.id });
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${repository.name} — ${projectUrl}`)}`, "_blank", "noopener,noreferrer");
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -2226,9 +2240,11 @@ export default function Home() {
                   const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:right-5 sm:top-5 sm:h-10 sm:w-10 ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" />{favoriteProjectIdSet.has(repository.id) && <span aria-hidden="true" className="absolute -right-2 -top-2 border border-[#67e8f9] bg-[#071326] px-1.5 py-0.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[#c8f7ff]">salvo</span>}</button>;
                   const imageFavoriteButton = repository.cover ? <button type="button" data-image-favorite-control="true" aria-label={favoriteImageIdSet.has(repository.id) ? `Remover imagem de ${repository.name} da coleção pessoal` : `Salvar imagem de ${repository.name} na coleção pessoal`} aria-pressed={favoriteImageIdSet.has(repository.id)} onClick={(event) => toggleFavoriteImage(repository.id, event)} title={favoriteImageIdSet.has(repository.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`absolute right-[5.5rem] top-4 z-20 grid h-10 w-10 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:right-16 sm:top-5 ${favoriteImageIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#a5f3fc] shadow-[0_0_0_1px_rgba(103,232,249,0.25)]" : "border-[#67e8f9]/35 bg-[#07101e]/80 text-[#c8f7ff] hover:border-[#67e8f9] hover:bg-[#0b2746]"}`}><Heart className={`h-4 w-4 ${favoriteImageIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button> : null;
                   const lightboxButton = repository.cover ? <button type="button" onClick={(event) => openProjectLightbox(repository.id, event)} aria-label={`Ampliar imagem de ${repository.name}`} title="Ampliar imagem" className="absolute left-5 top-5 z-20 grid h-10 w-10 place-items-center border border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] transition-all hover:border-[#67e8f9] hover:bg-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-4 w-4" aria-hidden="true" /></button> : null;
+                  const whatsAppShareButton = <button type="button" data-project-whatsapp-share="true" onClick={(event) => shareRepositoryToWhatsApp(repository, event)} aria-label={`Compartilhar ${repository.name} no WhatsApp`} title="Compartilhar no WhatsApp" className="absolute left-[4.25rem] top-5 z-20 grid h-10 w-10 place-items-center border border-[#67e8f9]/35 bg-[#07101e]/80 text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /></button>;
                   return repository.kind === "video" ? (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {lightboxButton}
+                      {whatsAppShareButton}
                       {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
@@ -2239,6 +2255,7 @@ export default function Home() {
                   ) : (
                     <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
                       {lightboxButton}
+                      {whatsAppShareButton}
                       {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
@@ -2377,6 +2394,7 @@ export default function Home() {
                     {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate || isBlockedDatesError} onClick={() => setAvailabilityTime(time)} className={`min-h-11 border py-2 font-mono text-[10px] transition-colors sm:min-h-0 ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate && !isBlockedDatesError ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
+                {availabilityDate && <button type="button" data-clear-availability-selection="true" onClick={clearAvailabilitySelection} disabled={isAvailabilityRedirecting} className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc6d9] underline decoration-[#67e8f9]/45 underline-offset-4 transition-colors hover:text-[#e5fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-wait disabled:opacity-50"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar data e horário</button>}
                 {isAvailabilityConsultationReadyForUser && <div data-availability-selection-summary="true" role="status" aria-live="polite" className="mt-4 border border-[#67e8f9]/30 bg-[#0b2746]/70 px-3 py-3 text-left"><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8ddff3]">consulta selecionada</p><p className="mt-1 font-body text-sm font-medium text-[#e5fbff]">{selectedDateLabel} · {availabilityTime}</p></div>}
                 <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta">
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}

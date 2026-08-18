@@ -78,3 +78,21 @@ Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build
 | Favoritos | O estado mudava silenciosamente no cartão. | Salvar/remover exibe toast com o nome do projeto, sem dado pessoal nem novo evento analítico. | E2E confirma `aria-pressed` e o toast “Projeto salvo”. |
 
 Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. Os testes de lightbox, busca, filtros, agenda, exportação e acessibilidade permaneceram aprovados.
+
+## Auditoria de reset, projetos salvos e compartilhamento por WhatsApp — escopo pendente de aprovação
+
+| Pedido | Estado atual | Decisão de escopo |
+|---|---|---|
+| Limpar data e horário | A agenda possui estados independentes de data e horário e só os limpa por invalidação de data bloqueada; não expõe ação manual de reset. | Adicionar uma ação explícita que restaure ambos os estados, sem mudar o mês exibido nem o CTA principal. |
+| Filtrar projetos favoritados | Já existe o botão “projetos salvos”, que ativa `favoritesOnly`, mostra a seção dedicada e respeita a busca/ordenação. | Não duplicar um filtro que já está funcionando; apenas cobrir sua disponibilidade na regressão desta rodada. |
+| Compartilhar projeto por WhatsApp | O lightbox compartilha por WhatsApp, mas cada cartão da galeria não oferece acesso direto. | Acrescentar um botão de WhatsApp por cartão, reutilizando o deep link e o evento `share_project` já permitidos. |
+
+## Resultado do reset de agenda e compartilhamento por WhatsApp
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Agenda | Uma data ou horário escolhido só era removido ao selecionar outra opção ou quando a data se tornava indisponível. | A ação “limpar data e horário” aparece após escolher uma data e restaura os dois campos sem alterar o mês atual. | E2E seleciona data/hora, confirma a prévia e verifica a remoção da prévia e do controle após o reset. |
+| Projetos salvos | O filtro solicitado já existia como “projetos salvos”. | Nenhum segundo filtro foi criado; a ação existente continuou ativando a seção de itens salvos e foi coberta nesta rodada. | E2E favorita um projeto, aciona “projetos salvos” e confirma a seção dedicada. |
+| Compartilhamento por cartão | WhatsApp estava disponível no lightbox, não diretamente na galeria. | Cada cartão ganhou um botão de WhatsApp que compartilha nome e deep link do projeto, sem abrir detalhes. | E2E intercepta e confirma URL `wa.me` gerada pelo botão do cartão. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A implementação mantém somente o evento `share_project` com canal `whatsapp`; não adiciona PII nem eventos novos.

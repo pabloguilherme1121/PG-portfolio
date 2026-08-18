@@ -149,6 +149,9 @@ test.describe("navegação pública e favoritos", () => {
     await calendar.locator("button:not([disabled])").nth(2).click();
     await calendar.getByRole("button", { name: "10:00" }).click();
     await expect(calendar.locator('[data-availability-selection-summary="true"]')).toContainText(/consulta selecionada.*10:00/s);
+    await calendar.locator('[data-clear-availability-selection="true"]').click();
+    await expect(calendar.locator('[data-availability-selection-summary="true"]')).toHaveCount(0);
+    await expect(calendar.locator('[data-clear-availability-selection="true"]')).toHaveCount(0);
 
     const gallery = page.locator("#galeria-publica");
     await gallery.scrollIntoViewIfNeeded();
@@ -161,6 +164,17 @@ test.describe("navegação pública e favoritos", () => {
     await favorite.click();
     await expect(favorite).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByText("Projeto salvo")).toBeVisible();
+    await page.getByRole("button", { name: /projetos salvos/i }).click();
+    await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
+    await page.evaluate(() => {
+      window.open = ((url: string | URL) => {
+        document.body.dataset.projectShareUrl = String(url);
+        return window;
+      }) as typeof window.open;
+    });
+    const shareProject = page.locator('[data-project-whatsapp-share="true"]').first();
+    await shareProject.click();
+    await expect.poll(() => page.locator("body").getAttribute("data-project-share-url")).toContain("https://wa.me/?text=");
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
