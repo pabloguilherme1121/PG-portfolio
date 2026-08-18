@@ -1573,3 +1573,11 @@
 - [x] Tornar o tratamento de proxy do rate limit seguro e documentar limites por processo.
 - [x] Testar formulário, honeypot, rate limit, notificações, check, testes e build.
 - [x] Documentar antes/depois, riscos e publicar somente o hardening.
+
+## Performance profissional — medição e otimização
+
+- [x] Medir baseline publicada em 390x844 sob 4G com cache frio, quente e CPU 4x quando disponível.
+- [x] Identificar chunks, elemento LCP, requests, execução JS e gargalos por severidade.
+- [x] Implementar somente otimizações comprovadas fora do caminho crítico.
+- [ ] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
+- [ ] Documentar antes/depois, limites de infraestrutura e publicar a otimização.

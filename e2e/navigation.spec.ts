@@ -141,6 +141,21 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator("#social")).toContainText(/curadoria editorial|perfis reais/i);
   });
 
+  test("adia o pôster do showreel até a aproximação da seção", async ({ page }) => {
+    const showreelRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/showreel-(vertical-)?poster/.test(request.url())) showreelRequests.push(request.url());
+    });
+    await page.goto("/");
+    await page.waitForTimeout(500);
+    await expect(page.locator('[data-showreel-trigger="true"] img')).toHaveCount(0);
+    expect(showreelRequests).toHaveLength(0);
+
+    await page.locator('[data-showreel="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-showreel-trigger="true"] img')).toBeVisible({ timeout: 10000 });
+    await expect.poll(() => showreelRequests.length, { timeout: 10000 }).toBeGreaterThan(0);
+  });
+
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
     const canonical = page.locator('link[rel="canonical"]');
