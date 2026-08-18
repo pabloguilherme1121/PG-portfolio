@@ -1702,3 +1702,10 @@
 - [x] Apresentar um diff estimado com impacto e risco antes de ajustar agenda, favoritos ou compartilhamento.
 - [x] Aplicar somente os ajustes aprovados, preservando desktop, busca, filtros, lightbox, modais, exportação e analytics.
 - [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Estado vazio, mensagem de WhatsApp e feedback do reset da agenda
+
+- [x] Auditar o estado vazio de projetos salvos, a mensagem de compartilhamento por cartão e o reset da agenda, sem alterar código.
+- [x] Apresentar um diff estimado com impacto e risco antes de ajustar favoritos, compartilhamento ou transições.
+- [x] Aplicar somente os ajustes aprovados, preservando desktop, busca, filtros, lightbox, modais, exportação e analytics.
+- [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.

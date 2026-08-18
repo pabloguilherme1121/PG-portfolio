@@ -300,7 +300,7 @@ export default function Home() {
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
-  const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
+  const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
   const [showLightboxMobileDetails, setShowLightboxMobileDetails] = useState(false);
@@ -777,11 +777,13 @@ export default function Home() {
   const [availabilityDate, setAvailabilityDate] = useState<Date | null>(null);
   const [availabilityTime, setAvailabilityTime] = useState<string | null>(null);
   const [isAvailabilityRedirecting, setIsAvailabilityRedirecting] = useState(false);
+  const [isClearingAvailabilitySelection, setIsClearingAvailabilitySelection] = useState(false);
   const today = new Date();
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
   const galleryLoadingTimerRef = useRef<number | null>(null);
+  const availabilityClearTimerRef = useRef<number | null>(null);
   const favoriteExportTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
@@ -1037,6 +1039,7 @@ export default function Home() {
 
   useEffect(() => () => {
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
+    if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
   }, []);
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
@@ -1368,7 +1371,10 @@ export default function Home() {
     const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
     if (!favoriteProjects.length) return;
     if (favoriteExportTimerRef.current) window.clearTimeout(favoriteExportTimerRef.current);
-    setFavoriteExportStatus(format);
+    setFavoriteExportStatus(format === "pdf" ? "pdf-loading" : format);
+    if (format === "pdf") {
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+    }
     try {
       await exportFavoriteProjects(format, favoriteProjects, getRepositoryCategories);
     } catch {
@@ -1376,6 +1382,7 @@ export default function Home() {
       favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
       return;
     }
+    if (format === "pdf") setFavoriteExportStatus("pdf");
     favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
   }
 
@@ -1555,9 +1562,19 @@ export default function Home() {
   }
 
   function clearAvailabilitySelection() {
-    if (isAvailabilityRedirecting) return;
-    setAvailabilityDate(null);
-    setAvailabilityTime(null);
+    if (isAvailabilityRedirecting || isClearingAvailabilitySelection) return;
+    const clear = () => {
+      setAvailabilityDate(null);
+      setAvailabilityTime(null);
+      setIsClearingAvailabilitySelection(false);
+      toast("Seleção limpa", { description: "Escolha uma nova data e horário quando quiser." });
+    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      clear();
+      return;
+    }
+    setIsClearingAvailabilitySelection(true);
+    availabilityClearTimerRef.current = window.setTimeout(clear, 180);
   }
 
   function shareRepositoryToWhatsApp(repository: Repository, event: React.MouseEvent) {
@@ -1565,7 +1582,8 @@ export default function Home() {
     event.stopPropagation();
     const projectUrl = buildProjectShareUrl(window.location.href, repository.id);
     trackPortfolioEvent("share_project", { channel: "whatsapp", projectId: repository.id });
-    window.open(`https://wa.me/?text=${encodeURIComponent(`${repository.name} — ${projectUrl}`)}`, "_blank", "noopener,noreferrer");
+    const shareMessage = `Quero te mostrar ${repository.name} do portfólio de Pablo Guilherme. Veja os detalhes: ${projectUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, "_blank", "noopener,noreferrer");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -2076,7 +2094,7 @@ export default function Home() {
                 {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
               </aside>
               </div>
-              {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" aria-describedby="saved-projects-help" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p><p id="saved-projects-help" className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">arraste os cartões para ajustar sua ordem manual</p></div><div className="flex flex-wrap gap-2"><button type="button" data-saved-export-csv="true" onClick={() => void exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" />CSV</button><button type="button" data-saved-export-pdf="true" onClick={() => void exportFavorites("pdf")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><FileText className="h-3.5 w-3.5" aria-hidden="true" />PDF</button><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></div><p role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{favoriteExportStatus === "csv" ? "CSV preparado para download." : favoriteExportStatus === "pdf" ? "PDF preparado para download." : favoriteExportStatus === "error" ? "Não foi possível preparar a exportação." : ""}</p></section>}
+              {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" aria-describedby="saved-projects-help" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p><p id="saved-projects-help" className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">arraste os cartões para ajustar sua ordem manual</p></div><div className="flex flex-wrap gap-2"><button type="button" data-saved-export-csv="true" onClick={() => void exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" />CSV</button><button type="button" data-saved-export-pdf="true" onClick={() => void exportFavorites("pdf")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><FileText className="h-3.5 w-3.5" aria-hidden="true" />PDF</button><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></div>{!favoriteProjectIds.length && !sharedProjectIds?.length && <div data-saved-projects-empty="true" role="status" aria-live="polite" className="mt-5 border border-dashed border-[#67e8f9]/35 bg-[#07101e]/65 p-5"><Heart className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" /><h4 className="mt-3 font-display text-xl font-medium tracking-[-0.03em] text-white">Nenhum projeto salvo ainda.</h4><p className="mt-2 max-w-xl font-body text-sm leading-6 text-[#bad9e8]">Use o coração nos cartões da galeria para guardar referências e voltar a elas quando quiser.</p><button type="button" onClick={() => setFavoritesOnly(false)} className="mt-4 inline-flex min-h-11 items-center gap-2 border border-[#67e8f9]/35 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />ver todos os projetos</button></div>}<p role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{favoriteExportStatus === "csv" ? "CSV preparado para download." : favoriteExportStatus === "pdf-loading" ? "Preparando PDF para download." : favoriteExportStatus === "pdf" ? "PDF preparado para download." : favoriteExportStatus === "error" ? "Não foi possível preparar a exportação." : ""}</p></section>}
               <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>
             <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
@@ -2388,14 +2406,16 @@ export default function Home() {
                   })}
                 </div>
                 {isBlockedDatesError ? <div role="alert" className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-[11px] leading-5 text-amber-100">Não foi possível verificar as datas indisponíveis. A consulta está temporariamente desativada. <button type="button" onClick={() => void refetchBlockedDates()} className="font-semibold underline decoration-amber-200/60 underline-offset-2 hover:text-white">Tentar novamente</button></div> : blockedDates.length > 0 && <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-[11px] leading-5 text-rose-200">Datas riscadas em rosa estão indisponíveis para consulta.</p>}
+                <div data-availability-selection-content="true" aria-busy={isClearingAvailabilitySelection} className={`transition-[opacity,transform] duration-[180ms] motion-reduce:transition-none ${isClearingAvailabilitySelection ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
                 <div className="mt-5 border-t border-cyan-100/[0.12] pt-4">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad] light-muted-ink">{selectedDateLabel ? `horário desejado · ${selectedDateLabel}` : "escolha uma data útil"}</p>
                   <div className="mt-3 grid grid-cols-3 gap-2">
                     {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate || isBlockedDatesError} onClick={() => setAvailabilityTime(time)} className={`min-h-11 border py-2 font-mono text-[10px] transition-colors sm:min-h-0 ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate && !isBlockedDatesError ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
-                {availabilityDate && <button type="button" data-clear-availability-selection="true" onClick={clearAvailabilitySelection} disabled={isAvailabilityRedirecting} className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc6d9] underline decoration-[#67e8f9]/45 underline-offset-4 transition-colors hover:text-[#e5fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-wait disabled:opacity-50"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar data e horário</button>}
+                {availabilityDate && <button type="button" data-clear-availability-selection="true" onClick={clearAvailabilitySelection} disabled={isAvailabilityRedirecting || isClearingAvailabilitySelection} className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc6d9] underline decoration-[#67e8f9]/45 underline-offset-4 transition-colors hover:text-[#e5fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-wait disabled:opacity-50"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar data e horário</button>}
                 {isAvailabilityConsultationReadyForUser && <div data-availability-selection-summary="true" role="status" aria-live="polite" className="mt-4 border border-[#67e8f9]/30 bg-[#0b2746]/70 px-3 py-3 text-left"><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8ddff3]">consulta selecionada</p><p className="mt-1 font-body text-sm font-medium text-[#e5fbff]">{selectedDateLabel} · {availabilityTime}</p></div>}
+                </div>
                 <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta">
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>

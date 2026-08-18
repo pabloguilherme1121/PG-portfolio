@@ -96,3 +96,22 @@ Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build
 | Compartilhamento por cartão | WhatsApp estava disponível no lightbox, não diretamente na galeria. | Cada cartão ganhou um botão de WhatsApp que compartilha nome e deep link do projeto, sem abrir detalhes. | E2E intercepta e confirma URL `wa.me` gerada pelo botão do cartão. |
 
 Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A implementação mantém somente o evento `share_project` com canal `whatsapp`; não adiciona PII nem eventos novos.
+
+## Auditoria de estado vazio, mensagem de WhatsApp e feedback de reset — escopo pendente de aprovação
+
+| Área | Achado | Proposta a validar |
+|---|---|---|
+| Projetos salvos | O filtro existe e a seção dedicada aparece, mas quando a lista tem zero itens a galeria cai no estado vazio genérico, que não explica como salvar um projeto. | Exibir estado vazio específico, com instrução para usar o coração dos cartões e ação para voltar à vitrine. |
+| Compartilhamento por cartão | A mensagem atual contém somente título e URL. | Personalizar para mencionar o título e convidar explicitamente a ver os detalhes do projeto, preservando o mesmo deep link. |
+| Reset de agenda | O reset remove a seleção instantaneamente, sem transição perceptível. | Fazer a área selecionada desaparecer em até 200 ms e confirmar “Seleção limpa”; movimento reduzido mantém remoção imediata sem animação. |
+
+## Resultado do estado vazio, mensagem de WhatsApp e feedback de reset
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Projetos salvos | Sem itens, a área reutilizava o estado vazio genérico da galeria. | A seção dedicada mostra “Nenhum projeto salvo ainda”, orienta o uso do botão de salvar nos cartões e oferece retorno à vitrine. | E2E remove todos os favoritos, abre projetos salvos e confirma o estado específico e a ação de retorno. |
+| Compartilhamento por cartão | O WhatsApp recebia somente título e URL. | A mensagem agora convida a pessoa a ver os detalhes: “Quero te mostrar [título] do portfólio de Pablo Guilherme. Veja os detalhes: [URL]”. | E2E intercepta a URL `wa.me` e confirma a mensagem codificada e o deep link do projeto. |
+| Reset da agenda | A prévia desaparecia sem confirmação de ação. | A seleção usa uma saída de 180 ms e anuncia “Seleção limpa”; com movimento reduzido, o estado é removido imediatamente. | E2E confirma `aria-busy` durante a transição, a remoção da prévia e o toast; o cenário de movimento reduzido já permanece aprovado. |
+| Exportação em PDF | A importação dinâmica de `pdf-lib` podia não oferecer retorno antes da montagem do arquivo. | O botão informa “Preparando PDF” imediatamente e troca para o estado de conclusão quando a geração termina. | E2E aceita os dois estados reais de feedback, eliminando a condição de corrida observada na execução anterior. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial completo com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. Nenhuma regressão foi observada nos cenários de hero, busca, filtros, agenda, exportação, lightbox, acessibilidade ou favoritos.
