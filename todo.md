@@ -1591,3 +1591,11 @@
 - [x] Validar conteúdo, check, testes e build.
 - [x] Documentar a melhoria de prova profissional.
 - [x] Publicar a melhoria de prova profissional.
+
+## Analytics de conversão — Umami
+
+- [x] Inventariar eventos existentes, integração publicada e possíveis dados pessoais.
+- [x] Definir somente as lacunas necessárias entre quote_cta, whatsapp_click, briefing_started, briefing_completed, project_opened, share_project e download_project.
+- [x] Implementar eventos sem PII e sem duplicar instrumentação existente.
+- [x] Validar os eventos, privacidade, check, testes e build.
+- [x] Documentar e publicar a instrumentação de conversão.

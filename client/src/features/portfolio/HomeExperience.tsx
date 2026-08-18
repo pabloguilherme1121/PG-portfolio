@@ -72,6 +72,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
+import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
 function useNearViewport<T extends HTMLElement>(rootMargin = "720px") {
@@ -487,23 +488,6 @@ const sortOptions = [
   { value: "relevance", label: "relevância editorial" },
   { value: "added", label: "ordem de adição" },
 ] as const;
-function trackPortfolioEvent(eventName: string, properties: Record<string, string | number>) {
-  if (typeof window === "undefined") return;
-  const payload = { eventName, properties, url: window.location.href, websiteId: import.meta.env.VITE_ANALYTICS_WEBSITE_ID };
-  window.dispatchEvent(new CustomEvent("portfolio:analytics", { detail: payload }));
-  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT as string | undefined;
-  if (!endpoint) return;
-  const body = JSON.stringify(payload);
-  try {
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
-    } else {
-      void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => undefined);
-    }
-  } catch {
-    // Analytics must never interfere with the portfolio interaction.
-  }
-}
 
 function getRepositoryCategories(repository: Repository) {
   const categories = new Set<string>();
@@ -681,6 +665,7 @@ export default function Home() {
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
   const heroCtaRef = useRef<HTMLDivElement>(null);
+  const briefingStartedRef = useRef(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -787,6 +772,7 @@ export default function Home() {
       setShowSwipeHint(true);
       window.setTimeout(() => setShowSwipeHint(false), 3200);
     }
+    trackPortfolioEvent("project_opened", { projectId, surface: "lightbox" });
     setLightboxProjectId(projectId);
   };
 
@@ -1362,6 +1348,7 @@ export default function Home() {
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
     onSuccess: (result) => {
+      trackPortfolioEvent("briefing_completed");
       setFormSent(true);
       toast.success("Briefing recebido", {
         description: result.ownerNotified
@@ -1413,6 +1400,7 @@ export default function Home() {
   }
 
   function openProjectDetails(project: Repository) {
+    trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
     setProjectDetailsLoading(true);
     setProjectVideoNeedsPlay(false);
     if (window.innerWidth < 768 && !window.localStorage.getItem("pablo-portfolio-project-swipe-hint-seen")) {
@@ -1553,6 +1541,7 @@ export default function Home() {
     if (!projectUrl) return;
     try {
       await navigator.clipboard.writeText(projectUrl);
+      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
       setProjectShareStatus("copied");
     } catch {
       setProjectShareStatus("error");
@@ -1564,6 +1553,7 @@ export default function Home() {
     if (!projectUrl) return;
     try {
       await navigator.clipboard.writeText(projectUrl);
+      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
       setProjectCopyStatus("copied");
     } catch {
       setProjectCopyStatus("error");
@@ -1596,7 +1586,7 @@ export default function Home() {
       await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("link");
-      trackPortfolioEvent("portfolio_lightbox_copy", { action: "link", projectId: lightboxProject.id, projectName: lightboxProject.name });
+      trackPortfolioEvent("share_project", { channel: "copy_link", projectId: lightboxProject.id });
     } catch {
       setLightboxShareStatus("error");
     }
@@ -1618,7 +1608,7 @@ export default function Home() {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    trackPortfolioEvent("portfolio_image_download", { format, projectId: lightboxProject.id, projectName: lightboxProject.name });
+    trackPortfolioEvent("download_project", { format, projectId: lightboxProject.id });
   }
 
   async function copyLightboxProjectContext() {
@@ -1628,7 +1618,6 @@ export default function Home() {
       await navigator.clipboard.writeText(context);
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("context");
-      trackPortfolioEvent("portfolio_lightbox_copy", { action: "context", projectId: lightboxProject.id, projectName: lightboxProject.name });
     } catch {
       setLightboxShareStatus("error");
     }
@@ -1641,7 +1630,7 @@ export default function Home() {
     const projectName = lightboxProject.name;
     const shareText = `${projectName} — ${getLightboxShareUrl(lightboxProject)}`;
     setLightboxRedirectingChannel("whatsapp");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "whatsapp", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "whatsapp", projectId });
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
     window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
@@ -1649,9 +1638,8 @@ export default function Home() {
   function shareLightboxToLinkedIn() {
     if (!lightboxProject || lightboxRedirectingChannel) return;
     const projectId = lightboxProject.id;
-    const projectName = lightboxProject.name;
     setLightboxRedirectingChannel("linkedin");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "linkedin", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "linkedin", projectId });
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getLightboxShareUrl(lightboxProject))}`, "_blank", "noopener,noreferrer");
     window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
@@ -1659,12 +1647,11 @@ export default function Home() {
   function shareLightboxByEmail() {
     if (!lightboxProject || lightboxEmailStatus === "opening") return;
     const projectId = lightboxProject.id;
-    const projectName = lightboxProject.name;
     const projectUrl = getLightboxShareUrl(lightboxProject);
     const subject = `Projeto ${lightboxProject.name} — Pablo Guilherme`;
     const body = [`Olá,`, ``, `Quero compartilhar este projeto do portfólio de Pablo Guilherme: ${lightboxProject.name}.`, ``, lightboxProject.description, ``, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, ``, projectUrl].join("\n");
     setLightboxEmailStatus("opening");
-    trackPortfolioEvent("portfolio_lightbox_email", { channel: "email", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "email", projectId });
     window.setTimeout(() => setLightboxEmailStatus("idle"), 1800);
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
@@ -1680,7 +1667,7 @@ export default function Home() {
       try {
         await navigator.share(shareData);
         setLightboxShareStatus("shared");
-        trackPortfolioEvent("portfolio_lightbox_share", { channel: "native", projectId: lightboxProject.id, projectName: lightboxProject.name });
+        trackPortfolioEvent("share_project", { channel: "native", projectId: lightboxProject.id });
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
         setLightboxShareStatus("error");
@@ -1925,6 +1912,7 @@ export default function Home() {
     if (!availabilityWhatsAppUrl || isAvailabilityRedirecting || isBlockedDatesError) return;
 
     setIsAvailabilityRedirecting(true);
+    trackPortfolioEvent("whatsapp_click", { source: "availability" });
     window.setTimeout(() => {
       const whatsappWindow = window.open(availabilityWhatsAppUrl, "_blank", "noopener,noreferrer");
       if (!whatsappWindow) {
@@ -1956,6 +1944,12 @@ export default function Home() {
       },
       { onSuccess: () => form.reset() },
     );
+  }
+
+  function trackBriefingStarted() {
+    if (briefingStartedRef.current) return;
+    briefingStartedRef.current = true;
+    trackPortfolioEvent("briefing_started");
   }
 
   const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -2084,7 +2078,7 @@ export default function Home() {
                 </p>
                 <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.</p>
                 <div ref={heroCtaRef} data-hero-cta="true" className="flex flex-wrap items-center gap-3">
-                  <a href="#contato" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
+                  <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
                     solicitar orçamento <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
                   <a href="#projetos" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
@@ -2681,7 +2675,7 @@ export default function Home() {
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> agenda aberta para novos projetos — vamos começar pelo contexto</div>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <a href="#contato-briefing" className="inline-flex items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97]">preencher briefing <ArrowDown className="h-3.5 w-3.5" /></a>
-                <a href={whatsAppUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746]">abrir WhatsApp <MessageCircle className="h-3.5 w-3.5" /></a>
+                <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "contact" })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746]">abrir WhatsApp <MessageCircle className="h-3.5 w-3.5" /></a>
                 <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" className="group inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2746] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Send className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" /> canal público no Telegram</a>
               </div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
@@ -2751,7 +2745,7 @@ export default function Home() {
             </div>
 
             <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => setIsBriefingFieldFocused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
+              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => { setIsBriefingFieldFocused(true); trackBriefingStarted(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
@@ -2859,11 +2853,11 @@ export default function Home() {
         </section>
       </main>
 
-      <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
+      <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
-        <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
+        <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
         </a>

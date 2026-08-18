@@ -5,6 +5,27 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("navegação pública e favoritos", () => {
+  test("emite eventos de conversão essenciais sem incluir dados pessoais", async ({ page }) => {
+    await page.addInitScript(() => {
+      const events: unknown[] = [];
+      window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
+      Object.defineProperty(window, "__portfolioAnalyticsEvents", { value: events });
+    });
+    await page.goto("/");
+
+    await page.locator('a[href="#contato"]').filter({ hasText: /solicitar orçamento/i }).click();
+    await page.locator("#contato-briefing input").first().focus();
+    await page.locator("[data-featured-project]").first().click();
+
+    await expect.poll(() => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName))).toEqual(expect.arrayContaining([
+      "quote_cta",
+      "briefing_started",
+      "project_opened",
+    ]));
+    const propertyKeys = await page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ properties?: Record<string, unknown> }> }).__portfolioAnalyticsEvents.flatMap((event) => Object.keys(event.properties ?? {})));
+    expect(propertyKeys).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
+  });
+
   test("percorre as âncoras públicas e mantém a galeria acessível", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("main")).toBeVisible();

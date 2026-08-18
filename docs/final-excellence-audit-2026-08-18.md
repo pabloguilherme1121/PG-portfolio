@@ -243,3 +243,19 @@ O modal de detalhes existente agora mostra, quando há evidência suficiente no 
 | Campo iluminado — vista aérea | Captação horizontal noturna que explicita decisões de luz, escala, perspectiva e movimento. | Não há alegação de audiência, uso institucional ou métricas de vídeo. |
 
 Os CTAs **“solicitar orçamento”** e **“falar no WhatsApp”** foram preservados sem duplicação. A mudança não redesenha a página: aproveita o modal já existente e mantém favoritos, compartilhamento, navegação, vídeo, lightbox e filtros. A E2E pública confirma a presença da leitura de caso no modal; `pnpm check`, 31 testes Vitest e `pnpm build` foram aprovados.
+
+## Analytics de conversão — Umami
+
+A integração publicada já carregava o script do Umami a partir de `https://manus-analytics.com/umami`, com o identificador público do site configurado no HTML. Nesta rodada, a aplicação passou a centralizar a instrumentação em `portfolioAnalytics.ts`, usando prioritariamente a API nativa `window.umami.track()`. O adaptador também emite um evento local de observabilidade e preserva o fallback de transporte existente apenas quando a API ainda não está disponível, sem transformar analytics em dependência de navegação, contato ou envio do formulário.
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Taxonomia | Havia chamadas legadas específicas de lightbox e lacunas em CTAs e formulário. | Somente sete eventos de conversão: `quote_cta`, `whatsapp_click`, `briefing_started`, `briefing_completed`, `project_opened`, `share_project` e `download_project`. | União literal tipada `ConversionEventName`; busca no código não encontrou os nomes legados. |
+| Orçamento e briefing | Não havia medição centralizada da intenção e do início do briefing. | O CTA principal registra `quote_cta`; o primeiro foco no formulário registra `briefing_started` uma vez por visita; a mutação bem-sucedida registra `briefing_completed`. | `HomeExperience.tsx`; cobertura E2E pública. |
+| Interesse em trabalho | Aberturas e compartilhamentos não seguiam a taxonomia solicitada. | A abertura em lightbox e modal registra `project_opened`; cópia de link, Web Share, WhatsApp, LinkedIn e e-mail registram `share_project`; downloads registram `download_project`. | Handlers existentes preservados com apenas a troca de evento. |
+| Privacidade | Parte das propriedades legadas carregava nome de projeto no payload. | Os eventos enviam somente `projectId` interno e, quando necessário, `surface`, `source`, `channel` ou `format`. Nome, e-mail, telefone, texto do briefing, endereço e URL com parâmetros não são enviados. | Teste unitário do contrato e asserção E2E verificam as chaves de propriedades emitidas. |
+| WhatsApp | Pontos de contato não eram medidos de modo uniforme. | Disponibilidade, seção de contato, barra fixa e rodapé registram o mesmo evento `whatsapp_click`, distinguindo apenas a origem. | `HomeExperience.tsx` e `PortfolioFooter.tsx`. |
+
+O evento de início do briefing é protegido por `useRef`, portanto não é repetido quando o visitante alterna entre campos. Todos os eventos são acionados somente por uma ação explícita; não há rastreamento de digitação, conteúdo do formulário ou cliques genéricos. A chegada histórica no painel do Umami não foi inferida nesta auditoria sem acesso ao painel: a evidência desta rodada é a chamada à API nativa quando disponível e a validação pública do payload emitido no navegador.
+
+Validações do BLOCO 5: `pnpm check` aprovado; `pnpm test` aprovado com **32 testes em 10 arquivos**; `pnpm exec playwright test e2e/navigation.spec.ts --grep 'eventos de conversão essenciais' --workers=1` aprovado com **1 cenário**; `pnpm build` aprovado. Artefatos `dist/`, `test-results/` e `coverage/` foram removidos após a validação.
