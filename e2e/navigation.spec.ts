@@ -256,6 +256,7 @@ test.describe("navegação pública e favoritos", () => {
   });
 
   test("navega entre projetos do modal com swipe horizontal no mobile", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.removeItem("pablo-portfolio-project-swipe-hint-seen"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/#galeria-publica");
     const firstProject = page.locator('[data-featured-project]').first();

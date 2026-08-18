@@ -1599,3 +1599,11 @@
 - [x] Implementar eventos sem PII e sem duplicar instrumentação existente.
 - [x] Validar os eventos, privacidade, check, testes e build.
 - [x] Documentar e publicar a instrumentação de conversão.
+
+## Acessibilidade — auditoria e correções comprovadas
+
+- [x] Inventariar todas as imagens com `alt=""` e classificá-las como decorativas ou informativas.
+- [x] Executar a baseline automatizada de acessibilidade e inspecionar contraste de texto, labels, metadados, botões, links, overlays e estados.
+- [x] Validar teclado, foco, ESC, modais, movimento reduzido, alvos de toque e anúncios disponíveis a leitores de tela.
+- [x] Corrigir somente falhas comprovadas, sem redesign ou alteração do lightbox sem necessidade.
+- [x] Executar check, testes, build e E2E relevante; documentar e publicar o resultado.

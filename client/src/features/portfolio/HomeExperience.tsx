@@ -2131,7 +2131,7 @@ export default function Home() {
                 FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL<br />
                 ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
               </p>
-              <a href="#sobre" className="mt-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] sm:mt-0">
+              <a href="#sobre" className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">
                 ver repertório e skills <ArrowDown className="h-4 w-4" />
               </a>
             </div>
@@ -2190,15 +2190,15 @@ export default function Home() {
                   <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#7d94b8] light-muted-ink">coordenadas atuais</p>
                   <dl className="mt-5 space-y-5">
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">formação</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">formação</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Estudante de Tecnologia da Informação</dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">interesse</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">interesse</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Tecnologia, conteúdo e audiovisual</dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">modo de trabalho</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">modo de trabalho</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Criatividade, prática e melhoria contínua</dd>
                     </div>
                   </dl>
@@ -2339,7 +2339,7 @@ export default function Home() {
             <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
               <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
               <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
-              <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
+              <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
 
             <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
@@ -2441,12 +2441,12 @@ export default function Home() {
                   data-filter-scope="technology"
                   className={`inline-flex shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
                     activeTechnology === technology
-                      ? "border-[#3b82f6] bg-[#3b82f6] text-white"
+                      ? "border-[#3b82f6] bg-[#3b82f6] text-[#02111f]"
                       : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
                   }`}
                 >
                   <span>{technology}</span>
-                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#dffbff]" : "text-[#5e789d]"}`}>
+                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#02111f]" : "text-[#5e789d]"}`}>
                     {technology === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(technology)).length}
                   </span>
                 </button>
@@ -2979,7 +2979,7 @@ export default function Home() {
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
-          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
+          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-modal="true" aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
             {projectDetailsLoading && <div data-project-details-loading="true" role="status" aria-live="polite" className="pointer-events-none absolute inset-x-0 top-0 z-20 grid gap-3 border-b border-[#67e8f9]/20 bg-[#071326]/90 p-4 backdrop-blur-sm sm:p-8"><div className="h-2 w-28 animate-pulse bg-[#3b82f6]/35" /><div className="h-9 w-4/5 animate-pulse bg-white/10" /><div className="h-3 w-full animate-pulse bg-white/10" /><div className="h-3 w-2/3 animate-pulse bg-white/10" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#9fc6e9]">carregando projeto…</span></div>}
             {showProjectSwipeHint && <div data-project-swipe-hint="true" className="pointer-events-none absolute inset-x-4 top-4 z-30 flex justify-center sm:hidden" role="status" aria-live="polite"><span className="border border-[#67e8f9]/35 bg-[#06172f]/95 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_10px_28px_rgba(0,0,0,0.3)]">deslize para navegar</span></div>}
             {selectedProject.kind === "video" && <div className="relative bg-black"><video className="block h-auto max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata" onLoadedData={(event) => { event.currentTarget.play().catch(() => setProjectVideoNeedsPlay(true)); }} onPlay={() => setProjectVideoNeedsPlay(false)}>Seu navegador não oferece suporte à reprodução audiovisual.</video>{projectVideoNeedsPlay && <button type="button" data-project-video-play="true" onClick={(event) => { const video = event.currentTarget.parentElement?.querySelector("video"); video?.play().then(() => setProjectVideoNeedsPlay(false)).catch(() => setProjectVideoNeedsPlay(true)); }} className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 border border-[#a5f3fc]/55 bg-[#06172f]/90 px-4 py-3 font-mono text-[9px] uppercase tracking-[0.12em] text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] transition-colors hover:border-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Play className="h-4 w-4" aria-hidden="true" />tocar vídeo</button>}</div>}
