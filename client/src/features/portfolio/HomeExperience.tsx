@@ -487,7 +487,7 @@ export default function Home() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>();
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>();
-  const [showreelSectionRef, shouldLoadShowreelPoster] = useNearViewport<HTMLDivElement>("240px");
+  const [showreelSectionRef, shouldLoadShowreelPoster] = useNearViewport<HTMLDivElement>("0px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
