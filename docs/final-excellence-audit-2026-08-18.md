@@ -274,3 +274,16 @@ A auditoria automatizada passou a usar `@axe-core/playwright` somente como depen
 | Modal e teclado | O modal preservava foco e Escape, mas o atributo modal não era exposto diretamente. | O modal de detalhes declara `aria-modal="true"`, além de `role="dialog"`, título e descrição existentes. | E2E abre o modal, verifica semântica e confirma fechamento por `Escape`. |
 
 Também foram validados foco visível por teclado, o link de salto existente, `Escape` no modal de detalhes, comportamento de movimento reduzido (rolagem automática e transições minimizadas) e a semântica consumida por leitores de tela via DOM/Axe. Um leitor de tela físico não está disponível no ambiente automatizado; por isso, esta rodada não substitui uma revisão manual com NVDA, VoiceOver ou TalkBack. O lightbox não foi alterado.
+
+## Refatoração controlada de HomeExperience
+
+Esta rodada não procurou reduzir linhas artificialmente. Antes de cada extração, foi mapeado o estado compartilhado e foram preservados no componente os estados de interface, temporizadores, efeitos, chamadas de analytics e handlers de navegação. Hero, lightbox, estado principal da galeria, filtros, favoritos e formulário de orçamento não foram reescritos nem deslocados para componentes artificiais.
+
+| Responsabilidade | Antes | Depois | Evidência |
+|---|---|---|---|
+| Exportação | `HomeExperience` duplicava a geração de CSV, JSON e PDF, inclusive a criação do download. | O componente mantém apenas a seleção dos favoritos e o estado de feedback; a geração de arquivos usa `utils/exportFavorites.ts`. | Teste unitário cobre nomes dos arquivos, cabeçalho CSV, conteúdo JSON e categorias. |
+| Curadoria e compartilhamento | Regras puras de URL, contexto de projeto e payload de e-mail estavam duplicadas dentro dos handlers. | As regras foram centralizadas em `utils/shareProject.ts`; o componente retém somente status de cópia, analytics e abertura de canais. | Teste unitário cobre URL de projeto, favoritos, lightbox, contexto e e-mail. |
+| Contato | A seção completa envolve agenda, formulário, validação, disponibilidade e analytics, portanto tem alto acoplamento. | Somente o feedback independente de cópia do e-mail foi extraído para `utils/clipboardFeedback.ts`; a seção, formulário e agenda foram preservados. | Teste unitário cobre sucesso, falha e retorno ao estado inativo. |
+| Hook independente | A observação de proximidade da viewport ficava declarada no arquivo de página. | `useNearViewport` foi movido para `hooks/useNearViewport.ts`, mantendo a mesma API, margem padrão e fallback sem `IntersectionObserver`. | A E2E pública mantém a cobertura de dados e pôster adiados até a aproximação da seção. |
+
+As validações ocorreram após cada extração com `pnpm check` e `pnpm test`. Ao final, o build de produção foi aprovado e o Playwright serial aprovou **26/26 cenários**, cobrindo navegação pública, contato, curadoria, modal, lightbox, carregamento adiado e acessibilidade. Artefatos temporários de build e teste foram removidos após a execução.

@@ -73,30 +73,11 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
+import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload, buildLightboxShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
+import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
+import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
-
-function useNearViewport<T extends HTMLElement>(rootMargin = "720px") {
-  const targetRef = useRef<T | null>(null);
-  const [isNearViewport, setIsNearViewport] = useState(false);
-
-  useEffect(() => {
-    const target = targetRef.current;
-    if (!target) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setIsNearViewport(true);
-      return;
-    }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting) return;
-      setIsNearViewport(true);
-      observer.disconnect();
-    }, { rootMargin, threshold: 0 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [rootMargin]);
-
-  return [targetRef, isNearViewport] as const;
-}
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
@@ -1379,14 +1360,7 @@ export default function Home() {
   }
 
   async function copyContactEmail() {
-    const email = "mpjcreator@gmail.com";
-    try {
-      await navigator.clipboard.writeText(email);
-      setEmailCopyStatus("copied");
-    } catch {
-      setEmailCopyStatus("error");
-    }
-    window.setTimeout(() => setEmailCopyStatus("idle"), 2200);
+    await copyTextWithFeedback("mpjcreator@gmail.com", setEmailCopyStatus);
   }
 
   async function copyCurrentSearchLink() {
@@ -1530,11 +1504,7 @@ export default function Home() {
 
   function getSelectedProjectUrl() {
     if (!selectedProject) return "";
-    const projectUrl = new URL(window.location.href);
-    projectUrl.searchParams.delete("favorites");
-    projectUrl.searchParams.set("projeto", selectedProject.id);
-    projectUrl.hash = "projetos";
-    return projectUrl.toString();
+    return buildProjectShareUrl(window.location.href, selectedProject.id);
   }
   async function shareSelectedProject() {
     const projectUrl = getSelectedProjectUrl();
@@ -1563,7 +1533,7 @@ export default function Home() {
 
   async function shareFavorites() {
     if (!favoriteProjectIds.length) return;
-    const shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${encodeURIComponent(favoriteProjectIds.join(","))}#projetos`;
+    const shareUrl = buildFavoritesShareUrl(window.location.href, favoriteProjectIds);
     try {
       await navigator.clipboard.writeText(shareUrl);
       setShareStatus("copied");
@@ -1574,10 +1544,7 @@ export default function Home() {
   }
 
   function getLightboxShareUrl(project: Repository) {
-    const url = new URL(window.location.href);
-    url.searchParams.set("imagem", project.id);
-    url.hash = "projetos";
-    return url.toString();
+    return buildLightboxShareUrl(window.location.href, project.id);
   }
 
   async function copyLightboxProjectLink() {
@@ -1613,7 +1580,7 @@ export default function Home() {
 
   async function copyLightboxProjectContext() {
     if (!lightboxProject) return;
-    const context = [`${lightboxProject.name} — Pablo Guilherme`, lightboxProject.description, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, getLightboxShareUrl(lightboxProject)].join("\n\n");
+    const context = buildLightboxContext(lightboxProject, getLightboxShareUrl(lightboxProject));
     try {
       await navigator.clipboard.writeText(context);
       setLightboxShareStatus("copied");
@@ -1648,8 +1615,7 @@ export default function Home() {
     if (!lightboxProject || lightboxEmailStatus === "opening") return;
     const projectId = lightboxProject.id;
     const projectUrl = getLightboxShareUrl(lightboxProject);
-    const subject = `Projeto ${lightboxProject.name} — Pablo Guilherme`;
-    const body = [`Olá,`, ``, `Quero compartilhar este projeto do portfólio de Pablo Guilherme: ${lightboxProject.name}.`, ``, lightboxProject.description, ``, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, ``, projectUrl].join("\n");
+    const { subject, body } = buildLightboxEmailPayload(lightboxProject, projectUrl);
     setLightboxEmailStatus("opening");
     trackPortfolioEvent("share_project", { channel: "email", projectId });
     window.setTimeout(() => setLightboxEmailStatus("idle"), 1800);
@@ -1679,66 +1645,13 @@ export default function Home() {
     window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
-  async function exportFavorites(format: "csv" | "json" | "pdf") {
+  async function exportFavorites(format: FavoriteExportFormat) {
     const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
     if (!favoriteProjects.length) return;
     if (favoriteExportTimerRef.current) window.clearTimeout(favoriteExportTimerRef.current);
     setFavoriteExportStatus(format);
-    const exportRows = favoriteProjects.map((repository) => ({
-      id: repository.id,
-      nome: repository.name,
-      resumo: repository.description,
-      tecnologias: repository.technologies,
-      categorias: Array.from(getRepositoryCategories(repository)),
-      tipo: repository.kind,
-      link: repository.url,
-    }));
     try {
-      const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
-      if (format === "pdf") {
-        const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
-        const pdf = await PDFDocument.create();
-        const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
-        const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
-        const pageSize: [number, number] = [595.28, 841.89];
-        let page = pdf.addPage(pageSize);
-        let y = pageSize[1] - 48;
-        const drawLine = (text: string, bold = false, size = 10) => {
-          if (y < 46) { page = pdf.addPage(pageSize); y = pageSize[1] - 48; }
-          page.drawText(text.slice(0, 110), { x: 42, y, size, font: bold ? boldFont : regularFont, color: rgb(0.08, 0.14, 0.23) });
-          y -= size + 7;
-        };
-        drawLine("Pablo Guilherme — projetos favoritos", true, 16);
-        drawLine(`Arquivo exportado em ${new Date().toLocaleDateString("pt-BR")}`, false, 9);
-        y -= 8;
-        exportRows.forEach((row, index) => {
-          drawLine(`${String(index + 1).padStart(2, "0")}  ${row.nome}`, true, 12);
-          drawLine(`${row.id} · ${row.tipo}`, false, 9);
-          drawLine(`Tecnologias: ${row.tecnologias.join(", ")}`, false, 9);
-          drawLine(row.resumo, false, 9);
-          drawLine(row.link, false, 8);
-          y -= 8;
-        });
-        const bytes = await pdf.save();
-        const blob = new Blob([bytes as unknown as ArrayBuffer], { type: "application/pdf" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = downloadUrl;
-        anchor.download = "pablo-guilherme-favoritos.pdf";
-        document.body.appendChild(anchor); anchor.click(); anchor.remove();
-        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-      } else {
-        const content = format === "json"
-          ? JSON.stringify(exportRows, null, 2)
-          : ["id,nome,resumo,tecnologias,categorias,tipo,link", ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(","))].join("\n");
-        const blob = new Blob([format === "csv" ? `\uFEFF${content}` : content], { type: format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = downloadUrl;
-        anchor.download = `pablo-guilherme-favoritos.${format}`;
-        document.body.appendChild(anchor); anchor.click(); anchor.remove();
-        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-      }
+      await exportFavoriteProjects(format, favoriteProjects, getRepositoryCategories);
     } catch {
       setFavoriteExportStatus("error");
       favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);

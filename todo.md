@@ -1607,3 +1607,11 @@
 - [x] Validar teclado, foco, ESC, modais, movimento reduzido, alvos de toque e anúncios disponíveis a leitores de tela.
 - [x] Corrigir somente falhas comprovadas, sem redesign ou alteração do lightbox sem necessidade.
 - [x] Executar check, testes, build e E2E relevante; documentar e publicar o resultado.
+
+## Refatoração controlada de HomeExperience
+
+- [x] Mapear estado compartilhado e selecionar somente responsabilidades com baixo acoplamento.
+- [x] Extrair a lógica de exportação sem alterar formatos, downloads ou interface; adicionar testes e validar check/test.
+- [x] Extrair responsabilidades independentes de curadoria e contato sem alterar galeria, favoritos ou formulário; adicionar testes e validar check/test.
+- [x] Extrair apenas hooks independentes comprovados, preservando lightbox, hero e estado central da galeria; validar check/test após cada etapa.
+- [x] Executar build e Playwright completos, documentar o antes/depois e publicar o checkpoint.
