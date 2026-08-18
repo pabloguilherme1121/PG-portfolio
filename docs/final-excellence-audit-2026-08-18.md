@@ -131,3 +131,23 @@ A última rodada foi executada sem redesign, troca de stack ou alteração do li
 A decisão sobre **Eliane Fashion** foi manter o conteúdo inalterado. O projeto e as evidências citadas no arquivo anexado não existem no `portfolioData` atual nem no ZIP analisado. Não foram criados nome, stack, checkout, Stripe, autenticação, resultados ou métricas sem fonte verificável. Para transformar esse item em um case profissional, ainda são necessários os links, responsabilidades, tecnologias e resultados reais fornecidos pelo proprietário.
 
 A nova asserção E2E confirma que o bloco social não exibe estados técnicos de autorização/erro e apresenta a linguagem de curadoria real. Typecheck, testes unitários, build e a suíte E2E pública serial foram executados após as mudanças.
+
+## Melhorias inteligentes — rodada do arquivo `pasted_content_10.txt`
+
+A auditoria selecionou quatro mudanças de baixo risco e impacto direto. O viewport deixou de usar `maximum-scale=1`, devolvendo o zoom nativo aos usuários móveis. O formulário de orçamento recebeu um honeypot invisível validado no servidor; bots que o preenchem são filtrados antes da persistência e da notificação. O endpoint público passou a limitar cinco pedidos por identificador em uma janela de dez minutos, reduzindo spam de notificações sem introduzir CAPTCHA. Essa limitação é um mecanismo em memória por processo; em múltiplas instâncias, deve ser migrada para um store compartilhado antes de uma operação de alto volume.
+
+A camada de headers foi mantida e ampliada com `Content-Security-Policy-Report-Only`, usando uma política compatível com fontes Google, storage, mídia, analytics e APIs externas atuais sem bloquear a aplicação nesta etapa. `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Strict-Transport-Security` e a remoção de `X-Powered-By` continuam ativos. A CSP está em modo de observação para permitir revisão dos avisos reais antes de eventual endurecimento para enforcement.
+
+Não foram criados cases artificiais. O item Eliane Fashion continua pendente de dados verificáveis; o projeto e as evidências técnicas listadas no arquivo não estão presentes no `portfolioData` atual. Também não houve refatoração especulativa de `HomeExperience.tsx`, redesign, troca de stack ou alteração no lightbox/mobile.
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Acessibilidade móvel | Viewport limitava o zoom com `maximum-scale=1` | Zoom nativo preservado | `client/index.html` e E2E responsivo aprovado |
+| Formulário | Validação server-side, sem barreira específica contra bots | Honeypot + rate limit de 5/10 min antes de persistir/notificar | `server/routers.ts`, 26 testes Vitest aprovados |
+| Headers | Headers de segurança básicos | CSP report-only compatível + headers existentes preservados | Resposta local de produção confirmou os headers |
+| Performance | Bundle crítico preservado | Nenhum lazy-load novo em hero, primeiro conteúdo ou lightbox | Build aprovado; chunks principais mantidos |
+| Regressão | 21 E2E públicos aprovados no checkpoint anterior | 21 E2E públicos aprovados novamente; 2 autenticados ignorados sem sessão | `pnpm exec playwright test --workers=1` |
+
+### Validação desta rodada
+
+`pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e `pnpm exec playwright test --workers=1` foram executados. O resultado foi: instalação aprovada, typecheck aprovado, **26 testes unitários aprovados**, build aprovado, **21 E2E públicos aprovados** e **2 cenários autenticados ignorados** por ausência de `E2E_AUTH_STATE`. Os artefatos `dist`, `test-results` e `coverage` foram removidos ao final.

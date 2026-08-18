@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { quoteRequestInputSchema } from "./routers";
+import { consumeQuoteRequestRateLimit, isQuoteRequestHoneypotFilled, quoteRequestInputSchema } from "./routers";
 
 const validRequest = {
   name: "Cliente de teste",
@@ -21,5 +21,20 @@ describe("quoteRequestInputSchema", () => {
   it("rejeita pedidos sem as informações essenciais", () => {
     expect(quoteRequestInputSchema.safeParse({ ...validRequest, email: "sem-email" }).success).toBe(false);
     expect(quoteRequestInputSchema.safeParse({ ...validRequest, briefing: "curto" }).success).toBe(false);
+  });
+
+  it("aceita o honeypot vazio e identifica bots que o preenchem", () => {
+    expect(isQuoteRequestHoneypotFilled(undefined)).toBe(false);
+    expect(isQuoteRequestHoneypotFilled("   ")).toBe(false);
+    expect(isQuoteRequestHoneypotFilled("https://bot.example")).toBe(true);
+    expect(quoteRequestInputSchema.safeParse({ ...validRequest, website: "" }).success).toBe(true);
+  });
+
+  it("limita pedidos repetidos por identificador e libera uma nova janela", () => {
+    const identifier = `test-${Date.now()}-${Math.random()}`;
+    const now = 1_700_000_000_000;
+    expect(Array.from({ length: 5 }, () => consumeQuoteRequestRateLimit(identifier, now))).toEqual([true, true, true, true, true]);
+    expect(consumeQuoteRequestRateLimit(identifier, now)).toBe(false);
+    expect(consumeQuoteRequestRateLimit(identifier, now + 10 * 60 * 1000)).toBe(true);
   });
 });

@@ -1526,3 +1526,18 @@
 - [x] Corrigir somente regressões concretas encontradas.
 - [x] Atualizar a documentação e o relatório da rodada.
 - [x] Salvar checkpoint e entregar o estado atualizado.
+
+## ZIP do projeto atual
+
+- [x] Definir exclusões e conteúdo do pacote atual.
+- [x] Gerar ZIP limpo do estado atual.
+- [x] Validar integridade, ausência de secrets e artefatos temporários.
+- [x] Entregar o ZIP do projeto atual.
+
+## Melhorias inteligentes — instruções do arquivo anexado
+
+- [x] Ler e interpretar o arquivo anexado.
+- [x] Auditar o estado atual e selecionar mudanças justificadas.
+- [x] Implementar melhorias sem redesign ou remoção de funcionalidades.
+- [x] Validar testes, performance, acessibilidade e regressões.
+- [x] Atualizar documentação e publicar o resultado.

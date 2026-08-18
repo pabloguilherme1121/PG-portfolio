@@ -1,5 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { z } from "zod";
+import type { Request } from "express";
+import { TRPCError } from "@trpc/server";
 import { blockAvailabilityDate, createQuoteRequest, deleteFavoriteProjectMetadata, listBlockedDates, listFavoriteProjectMetadata, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate, upsertFavoriteProjectMetadata } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
@@ -16,7 +18,33 @@ export const quoteRequestInputSchema = z.object({
   delivery: z.string().trim().max(160).optional(),
   budget: z.string().trim().max(120).optional(),
   briefing: z.string().trim().min(12).max(5000),
+  website: z.string().trim().max(200).optional(),
 });
+
+const quoteRateLimitBuckets = new Map<string, { startedAt: number; count: number }>();
+const QUOTE_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
+const QUOTE_RATE_LIMIT_MAX = 5;
+
+export function isQuoteRequestHoneypotFilled(value: string | undefined) {
+  return Boolean(value?.trim());
+}
+
+export function consumeQuoteRequestRateLimit(identifier: string, now = Date.now()) {
+  const current = quoteRateLimitBuckets.get(identifier);
+  if (!current || now - current.startedAt >= QUOTE_RATE_LIMIT_WINDOW_MS) {
+    quoteRateLimitBuckets.set(identifier, { startedAt: now, count: 1 });
+    return true;
+  }
+  if (current.count >= QUOTE_RATE_LIMIT_MAX) return false;
+  current.count += 1;
+  return true;
+}
+
+function getRequestIdentifier(req: Request) {
+  const forwarded = req.headers["x-forwarded-for"];
+  const forwardedAddress = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
+  return (forwardedAddress || req.socket.remoteAddress || "unknown").trim().slice(0, 80);
+}
 
 export function isValidDateKey(value: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
@@ -56,7 +84,13 @@ export const appRouter = router({
     }),
   }),
   quoteRequest: router({
-    create: publicProcedure.input(quoteRequestInputSchema).mutation(async ({ input }) => {
+    create: publicProcedure.input(quoteRequestInputSchema).mutation(async ({ ctx, input }) => {
+      if (isQuoteRequestHoneypotFilled(input.website)) {
+        return { success: true, requestId: "filtered", ownerNotified: false } as const;
+      }
+      if (!consumeQuoteRequestRateLimit(getRequestIdentifier(ctx.req))) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Muitos pedidos em sequência. Aguarde alguns minutos e tente novamente." });
+      }
       const result = await createQuoteRequest({
         ...input,
         delivery: input.delivery || null,
