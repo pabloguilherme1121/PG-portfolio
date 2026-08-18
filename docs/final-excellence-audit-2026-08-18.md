@@ -325,3 +325,13 @@ Validação final desta rodada: `pnpm check` aprovado; `pnpm test` aprovado com 
 | Nomes e ARIA | As regras automatizadas de nomes de botões/links/campos, atributos ARIA válidos, exigidos e permitidos, e foco em conteúdo oculto não reportaram violações. | Nenhuma. |
 
 **Conclusão:** não houve barreira de acessibilidade confirmada nesta simulação. A pendência é de **validação manual auditiva**, particularmente da ordem de anúncios em regiões `status` e do retorno de foco após modais, em NVDA no Windows ou VoiceOver no macOS/iOS.
+
+## Fase 1 — fonte canônica de dados do portfólio
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Dados de vitrine | `HomeExperience.tsx` redeclarava projetos, estudos de caso, filtros, sinais de repertório, perfis de ordem, pares de comparação e imagens otimizadas. | `portfolioData.tsx` passou a exportar os dados compartilhados; `HomeExperience.tsx` apenas os importa. | A página caiu para **2.637 linhas** e não contém mais declarações locais de `repositories`, `optimizedLightboxImages`, `comparisonPairs`, filtros, sinais ou perfis. |
+| Tipagem de projetos | A tipagem do componente divergia da fonte externa e mantinha os estudos de caso apenas na página. | `Repository` agora contém `catalog` e `caseStudy` opcional na fonte canônica. | O contrato unitário confirma IDs únicos e que os estudos estão somente em `AUD.01`, `CNT.02` e `AUD.05`, todos projetos públicos. |
+| Gestão de favoritos | `portfolioCatalog.ts` repetia manualmente nomes, capas, descrições e tags dos sete projetos. | O catálogo administrativo é uma projeção derivada de `repositories`, usando `catalog.description` e `catalog.tags`. | O teste compara a projeção completa ao catálogo derivado, impedindo divergências futuras. |
+
+Validação da fase: `pnpm check` aprovado; `pnpm test` aprovado com **41/41** em **14** arquivos; `pnpm build` aprovado; Playwright serial com **29 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE` nesta execução. Não houve mudança intencional de interface, CTA, lightbox, favoritos, compartilhamento, download, analytics ou conteúdo público.

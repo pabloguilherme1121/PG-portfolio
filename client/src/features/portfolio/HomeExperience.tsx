@@ -11,7 +11,6 @@ import {
   ArrowDownRight,
   ArrowUp,
   ArrowUpRight,
-  Camera,
   CalendarDays,
   CheckCircle2,
   ChevronLeft,
@@ -40,7 +39,6 @@ import {
   Menu,
   Maximize2,
   MessageCircle,
-  Plane,
   Play,
   Search,
   Send,
@@ -77,6 +75,23 @@ import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/po
 import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload, buildLightboxShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
+import {
+  caseStudies,
+  categoryFilters,
+  comparisonPairs,
+  optimizedLightboxImages,
+  predefinedOrderProfiles,
+  processSteps,
+  repertoireSignals,
+  repositories,
+  serviceOffers,
+  skillTracks,
+  sortOptions,
+  tagFilters,
+  technologyFilters,
+  type ManualOrderProfile,
+  type Repository,
+} from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
@@ -110,126 +125,6 @@ const showreelVerticalPosterUrl = "/manus-storage/showreel-vertical-poster_e21c7
 const showreelVerticalPosterResponsive = {
   avif: "/manus-storage/showreel-vertical-poster-480w_e4656a6a.avif 480w, /manus-storage/showreel-vertical-poster-720w_7e009499.avif 720w",
   webp: "/manus-storage/showreel-vertical-poster-480w_092fa9d6.webp 480w, /manus-storage/showreel-vertical-poster-720w_d90358f3.webp 720w",
-};
-
-const skillTracks = [
-  {
-    number: "01",
-    title: "Tecnologia e produto",
-    text: "Lógica, interfaces e organização para transformar uma ideia em uma experiência clara e utilizável.",
-    tools: "HTML · CSS · JavaScript · Python",
-  },
-  {
-    number: "02",
-    title: "Conteúdo e narrativa",
-    text: "Roteiro, ritmo e edição para comunicar uma mensagem sem excesso e com intenção.",
-    tools: "Roteiro · edição · vídeo vertical · direção",
-  },
-  {
-    number: "03",
-    title: "Imagem aérea e terrestre",
-    text: "Enquadramento, movimento e leitura de espaço para registrar o que precisa ser percebido.",
-    tools: "Drone · câmera · composição · captação",
-  },
-];
-
-const serviceOffers = [
-  {
-    number: "01",
-    label: "drone / perspectiva aérea",
-    title: "Filmagem aérea",
-    text: "Perspectiva aérea para revelar escala, movimento e a energia que só aparece quando a câmera sobe.",
-    detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
-    delivery: "9:16 · 16:9",
-    duration: "15–60 s / 1–2 min",
-    Icon: Plane,
-  },
-  {
-    number: "02",
-    label: "câmera / registro em solo",
-    title: "Captação terrestre",
-    text: "Câmera no ponto certo para acompanhar pessoas, detalhes e o que realmente acontece no momento.",
-    detail: "PRESENÇA · RITMO · DETALHE",
-    delivery: "Reels · aftermovie",
-    duration: "30–90 s / 1–3 min",
-    Icon: Camera,
-  },
-  {
-    number: "03",
-    label: "narrativa / presença digital",
-    title: "Criação de conteúdo",
-    text: "Conteúdo que transforma um momento, uma marca ou uma ideia em material pronto para chamar atenção.",
-    detail: "IDEIA · REGISTRO · CONEXÃO",
-    delivery: "3–5 vídeos verticais",
-    duration: "15–60 s por peça",
-    Icon: Clapperboard,
-  },
-];
-
-const processSteps = [
-  {
-    number: "01",
-    title: "Alinhamos o objetivo",
-    text: "Contexto, público e resultado esperado entram na conversa antes de qualquer produção.",
-  },
-  {
-    number: "02",
-    title: "Escolhemos o formato",
-    text: "Referências, linguagem, data e entrega são definidos de forma simples e transparente.",
-  },
-  {
-    number: "03",
-    title: "Produzimos com clareza",
-    text: "O material é captado, organizado e entregue pronto para o próximo uso do projeto.",
-  },
-];
-
-const caseStudies = [
-  {
-    id: "ARQ.01",
-    title: "Chá da Eloise",
-    context: "Evento social com foco em atmosfera, pessoas e detalhes que ajudam a memória do dia.",
-    method: "Planos abertos, aproximações e movimentos suaves para equilibrar espaço e presença.",
-    learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
-    tags: ["Evento", "Vídeo", "Aéreo"],
-  },
-  {
-    id: "ARQ.02",
-    title: "RHAM — serviços no app",
-    context: "Conteúdo vertical para apresentar uma jornada de serviços com rapidez e clareza.",
-    method: "Sequência curta, leitura de tela e ritmo guiando cada etapa da experiência.",
-    learning: "Legibilidade e ritmo também são parte do produto final.",
-    tags: ["Interface", "Conteúdo", "Vertical"],
-  },
-];
-
-type Repository = {
-
-  id: string;
-  name: string;
-  description: string;
-  role: string;
-  process: string;
-  result: string;
-  technologies: string[];
-  url: string;
-  kind: "repository" | "video";
-  cover?: string;
-  featured?: boolean;
-  /** Ordem de entrada no arquivo visual, preservada pela sequência de cadastro dos projetos. */
-  addedOrder: number;
-  /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
-  relevance: number;
-  caseStudy?: {
-    context: string;
-    problem: string;
-    objective: string;
-    function: string;
-    process: string;
-    decisions: string;
-    result: string;
-    learning: string;
-  };
 };
 
 type SearchSuggestion = {
@@ -275,179 +170,6 @@ function renderSuggestionMatch(value: string, query: string, isActive: boolean) 
   return <>{characters.slice(0, characterStart).join("")}<strong data-suggestion-match="true" className={`font-bold ${isActive ? "text-[#02111f]" : "text-white"}`}>{characters.slice(characterStart, characterEnd).join("")}</strong>{characters.slice(characterEnd).join("")}</>;
 }
 
-/**
- * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
- * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
- */
-const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
-  "/manus-storage/cha-da-eloise-capa_0d17d433.jpg": { webp: "/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp", avif: "/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif" },
-  "/manus-storage/rham-interface-servicos-01_72f2d942.jpg": { webp: "/manus-storage/rham-interface-servicos-01-720w_f9038490.webp", avif: "/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif" },
-  "/manus-storage/rham-depoimento-02_c0845a39.jpg": { webp: "/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp", avif: "/manus-storage/rham-depoimento-02-720w_3f7b257b.avif" },
-  "/manus-storage/captacao-noturna-03_1033bede.jpg": { webp: "/manus-storage/captacao-noturna-03-720w_e51d98e0.webp", avif: "/manus-storage/captacao-noturna-03-720w_f24e9f42.avif" },
-  "/manus-storage/campo-iluminado-04_665a6d8f.jpg": { webp: "/manus-storage/campo-iluminado-04-1280w_bc353281.webp", avif: "/manus-storage/campo-iluminado-04-1280w_5f023100.avif" },
-  "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg": { webp: "/manus-storage/campo-iluminado-movimento-06-1280w_298c2385.webp", avif: "/manus-storage/campo-iluminado-movimento-06-1280w_7f75fd17.avif" },
-  "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg": { webp: "/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp", avif: "/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif" },
-};
-
-const comparisonPairs: Record<string, { before: string; after: string }> = {};
-
-const repositories: Repository[] = [
-  {
-    id: "AUD.01",
-    name: "Chá da Eloise",
-    description: "Registro audiovisual de evento social, com imagens amplas do ambiente e momentos da celebração.",
-    role: "Cobertura aérea e leitura do ambiente.",
-    process: "Planos abertos, aproximações e movimentos suaves.",
-    result: "Uma memória visual que preserva espaço, presença e atmosfera.",
-    technologies: ["Vídeo", "Drone", "Conteúdo"],
-    url: "/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4",
-    kind: "video",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
-    featured: true,
-    addedOrder: 7,
-    relevance: 100,
-    caseStudy: {
-      context: "Registro audiovisual de um evento social, reunindo ambiente, pessoas e momentos da celebração.",
-      problem: "Concentrar espaço, presença e detalhes em um registro breve sem perder a atmosfera do encontro.",
-      objective: "Construir uma memória visual que ajude a revisitar o ambiente e os momentos do dia.",
-      function: "Cobertura aérea e leitura do ambiente.",
-      process: "Planos abertos, aproximações e movimentos suaves durante o registro.",
-      decisions: "Equilibrar vistas amplas do espaço com aproximações das pessoas e dos detalhes da celebração.",
-      result: "Uma memória visual que preserva espaço, presença e atmosfera.",
-      learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
-    },
-  },
-  {
-    id: "CNT.02",
-    name: "RHAM — Serviços no app",
-    description: "Vídeo vertical de navegação por serviços em uma interface móvel da RHAM Águas Lindas.",
-    role: "Apresentação visual da jornada de serviços.",
-    process: "Sequência curta guiada por leitura de tela e ritmo.",
-    result: "Uma demonstração direta da navegação no aplicativo.",
-    technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
-    addedOrder: 6,
-    relevance: 88,
-    caseStudy: {
-      context: "Vídeo vertical público que percorre serviços em uma interface móvel da RHAM Águas Lindas.",
-      problem: "Apresentar uma jornada de serviços em pouco tempo, sem perder a leitura das etapas na tela.",
-      objective: "Demonstrar a navegação no aplicativo de forma direta e compreensível em formato vertical.",
-      function: "Apresentação visual da jornada de serviços.",
-      process: "Sequência curta guiada por leitura de tela e ritmo.",
-      decisions: "Organizar as etapas em uma ordem curta e usar o ritmo para priorizar o que precisa ser entendido primeiro.",
-      result: "Uma demonstração direta da navegação no aplicativo.",
-      learning: "Legibilidade e ritmo também são parte do produto final.",
-    },
-  },
-  {
-    id: "CNT.03",
-    name: "RHAM — Mensagem em vídeo",
-    description: "Registro vertical com apresentação diante da câmera para comunicação institucional.",
-    role: "Captação e organização de uma mensagem em vídeo.",
-    process: "Enquadramento vertical e condução direta diante da câmera.",
-    result: "Uma peça curta para comunicar uma mensagem com presença.",
-    technologies: ["Vídeo", "Conteúdo"],
-    url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
-    addedOrder: 5,
-    relevance: 76,
-  },
-  {
-    id: "AUD.04",
-    name: "Captação noturna — visão aérea",
-    description: "Registro vertical noturno com perspectiva elevada sobre o espaço e seus arredores.",
-    role: "Exploração aérea de espaço e entorno.",
-    process: "Captação noturna com perspectiva elevada e movimento controlado.",
-    result: "Um recorte vertical que valoriza escala e atmosfera.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
-    kind: "video",
-    cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
-    addedOrder: 4,
-    relevance: 82,
-  },
-  {
-    id: "AUD.05",
-    name: "Campo iluminado — vista aérea",
-    description: "Captação horizontal de campo esportivo à noite, valorizando escala, luz e movimento.",
-    role: "Construção de uma visão ampla do campo.",
-    process: "Enquadramento horizontal atento à luz, escala e movimento.",
-    result: "Uma imagem de contexto para apresentar o espaço com impacto.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
-    kind: "video",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
-    addedOrder: 3,
-    relevance: 84,
-    caseStudy: {
-      context: "Captação horizontal noturna de um campo esportivo, com foco em escala, luz e movimento.",
-      problem: "Apresentar o espaço à noite mantendo a leitura de escala e da iluminação disponível.",
-      objective: "Construir uma imagem de contexto que revele o campo por uma perspectiva aérea ampla.",
-      function: "Construção de uma visão ampla do campo.",
-      process: "Enquadramento horizontal atento à luz, escala e movimento.",
-      decisions: "Priorizar uma perspectiva aérea aberta e manter luz, escala e deslocamento como referências do enquadramento.",
-      result: "Uma imagem de contexto para apresentar o espaço com impacto.",
-      learning: "Em registros noturnos, luz e escala precisam orientar a leitura antes do movimento.",
-    },
-  },
-  {
-    id: "CNT.06",
-    name: "RHAM — Navegação de serviços",
-    description: "Segundo recorte vertical de interface móvel, focado na jornada de serviços do aplicativo.",
-    role: "Reforço visual da jornada de serviços.",
-    process: "Recorte vertical com foco nas etapas principais da interface.",
-    result: "Uma leitura complementar e rápida do fluxo do aplicativo.",
-    technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
-    addedOrder: 2,
-    relevance: 80,
-  },
-  {
-    id: "AUD.07",
-    name: "Campo iluminado — sequência aérea",
-    description: "Novo enquadramento horizontal do campo, explorando a perspectiva de voo e a atmosfera noturna.",
-    role: "Variação de perspectiva para ampliar o repertório do registro.",
-    process: "Movimento aéreo horizontal com atenção à atmosfera noturna.",
-    result: "Uma sequência alternativa para comparar escala e direção.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
-    kind: "video",
-    cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
-    addedOrder: 1,
-    relevance: 79,
-  },
-];
-const repertoireSignals = [
-  {
-    label: "escala e perspectiva",
-    title: "Imagem aérea",
-    text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
-  },
-  {
-    label: "clareza e ritmo",
-    title: "Interface em movimento",
-    text: "Registro de produto e serviço com foco no que a pessoa precisa entender primeiro.",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
-  },
-  {
-    label: "presença e detalhe",
-    title: "Registro de evento",
-    text: "Captação que aproxima o público da atmosfera, das pessoas e dos pequenos momentos.",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
-  },
-];
-
-const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
-const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
-const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
-type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
-
 function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback: string) {
   if (typeof window === "undefined") return fallback;
   const value = new URLSearchParams(window.location.search).get(key);
@@ -458,17 +180,6 @@ function getPortfolioUrlSearch() {
   if (typeof window === "undefined") return "";
   return new URLSearchParams(window.location.search).get("q") ?? "";
 }
-
-const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
-];
-
-const sortOptions = [
-  { value: "manual", label: "ordem manual" },
-  { value: "relevance", label: "relevância editorial" },
-  { value: "added", label: "ordem de adição" },
-] as const;
 
 function getRepositoryCategories(repository: Repository) {
   const categories = new Set<string>();
@@ -1953,7 +1664,7 @@ export default function Home() {
           </div>
           <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Tamanho da fonte"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">tamanho do texto</p><span className="font-mono text-[9px] text-[#9fb2ce]">{Math.round(fontScale * 100)}%</span></div><div className="mt-2 grid grid-cols-3 gap-2"><button type="button" onClick={() => setFontScale((value) => Math.max(0.92, Number((value - 0.04).toFixed(2))))} disabled={fontScale <= 0.92} aria-label="Diminuir tamanho da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9] disabled:opacity-40">A−</button><button type="button" onClick={() => setFontScale(1)} aria-label="Restaurar tamanho padrão da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9]">100%</button><button type="button" onClick={() => setFontScale((value) => Math.min(1.16, Number((value + 0.04).toFixed(2))))} disabled={fontScale >= 1.16} aria-label="Aumentar tamanho da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9] disabled:opacity-40">A+</button></div></div>
           <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Visualização dos projetos"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">visualização dos projetos</p><div className="mt-2 grid grid-cols-2 gap-2">{([['grid', 'Grade', LayoutGrid], ['list', 'Lista', List]] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setGalleryView(value)} aria-pressed={galleryView === value} className={`flex items-center justify-center gap-2 border px-2 py-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${galleryView === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" />{label}</button>)}</div></div>
-          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Perfis de ordenação"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">perfis de ordem</p>{activeOrderProfileId && <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#67e8f9]">ativo</span>}</div><p className="mt-2 font-body text-xs leading-5 text-[#9fb2ce]">Salve uma sequência para alternar entre audiovisual, tecnologia ou outros contextos.</p><div className="mt-3 space-y-2">{manualOrderProfiles.length > 0 ? manualOrderProfiles.map((profile) => <div key={profile.id} className="flex items-center gap-2"><button type="button" onClick={() => selectOrderProfile(profile)} aria-pressed={activeOrderProfileId === profile.id} data-profile-recently-activated={recentlyActivatedOrderProfileId === profile.id ? "true" : undefined} className={`min-w-0 flex-1 truncate border px-3 py-2 text-left font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${recentlyActivatedOrderProfileId === profile.id ? "profile-activation-pulse border-[#fbbf24] bg-[#17304d] text-[#fff7cc] shadow-[0_0_24px_rgba(251,191,36,0.3)]" : activeOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><span>{profile.name}</span>{profile.preset && <span className="ml-2 text-[8px] text-[#67e8f9]">base</span>}</button><button type="button" onClick={() => toggleOrderProfilePreview(profile.id)} aria-expanded={previewOrderProfileId === profile.id} aria-controls={`order-profile-preview-${profile.id}`} aria-label={`${previewOrderProfileId === profile.id ? "Ocultar" : "Ver"} prévia do perfil ${profile.name}`} title="Ver prévia" className={`grid h-9 w-9 shrink-0 place-items-center border text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${previewOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746]" : "border-[#67e8f9]/30"}`}><Eye className="h-3.5 w-3.5" aria-hidden="true" /></button><button type="button" onClick={() => duplicateOrderProfile(profile)} aria-label={`Duplicar perfil ${profile.name}`} title="Duplicar perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId === profile.id && !profile.preset && <button type="button" onClick={deleteActiveOrderProfile} aria-label={`Excluir perfil ${profile.name}`} title="Excluir perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-rose-300/30 text-rose-200 transition-colors hover:border-rose-300 hover:text-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>}<div id={`order-profile-preview-${profile.id}`} role="region" tabIndex={previewOrderProfileId === profile.id ? 0 : -1} aria-label={`Prévia do perfil ${profile.name}. Clique para ativar esta ordem.`} aria-hidden={previewOrderProfileId !== profile.id} data-preview-open={previewOrderProfileId === profile.id} onClick={() => { if (previewOrderProfileId === profile.id && activeOrderProfileId !== profile.id) selectOrderProfile(profile); }} onKeyDown={(event) => { if (previewOrderProfileId === profile.id && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); if (activeOrderProfileId !== profile.id) selectOrderProfile(profile); } }} className={`col-span-full cursor-pointer overflow-hidden border border-[#67e8f9]/20 bg-[#07101e]/70 p-2 transition-[max-height,opacity,transform] duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${previewOrderProfileId === profile.id ? "max-h-[500px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 border-transparent p-0 opacity-0"}`}><p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">primeiros projetos nesta ordem · clique para ativar</p><div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">{profile.order.slice(0, 5).map((projectId, previewIndex) => { const project = repositories.find((repository) => repository.id === projectId); return project ? <div key={project.id} className={`group relative min-w-0 border border-white/10 bg-[#0a1422] ${previewIndex >= 3 ? "hidden sm:block" : ""} ${previewOrderProfileId === profile.id ? "preview-stagger-item" : ""}`} style={{ "--preview-delay": `${previewIndex * 45}ms` } as React.CSSProperties} title={`${previewIndex + 1}. ${project.name}`}><div className="aspect-[4/3] overflow-hidden bg-[#0d1b2d]">{project.cover ? <img src={project.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-80" /> : <div className="grid h-full place-items-center font-mono text-[8px] text-[#7189ae]">sem capa</div>}</div><div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-1 bg-[#030b1e]/92 px-2 py-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"><p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#fef3c7]">{project.name}</p></div><p className="truncate px-2 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff]">{project.name}</p></div> : null; })}</div></div></div>) : <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>}</div><div className="mt-3 flex gap-2"><input value={profileNameDraft} onChange={(event) => setProfileNameDraft(event.target.value)} placeholder="ex.: audiovisual" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" /><button type="button" onClick={createOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Salvar novo perfil de ordenação" title="Salvar novo perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/40 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Save className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId && !activeOrderProfile?.preset && <button type="button" onClick={renameActiveOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Renomear perfil ativo" title="Renomear perfil ativo" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Pencil className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div></div>
+          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Perfis de ordenação"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">perfis de ordem</p>{activeOrderProfileId && <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#67e8f9]">ativo</span>}</div><p className="mt-2 font-body text-xs leading-5 text-[#9fb2ce]">Salve uma sequência para alternar entre audiovisual, tecnologia ou outros contextos.</p><div className="mt-3 space-y-2">{manualOrderProfiles.length > 0 ? manualOrderProfiles.map((profile) => <div key={profile.id} className="flex items-center gap-2"><button type="button" onClick={() => selectOrderProfile(profile)} aria-pressed={activeOrderProfileId === profile.id} data-profile-recently-activated={recentlyActivatedOrderProfileId === profile.id ? "true" : undefined} className={`min-w-0 flex-1 truncate border px-3 py-2 text-left font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${recentlyActivatedOrderProfileId === profile.id ? "profile-activation-pulse border-[#fbbf24] bg-[#17304d] text-[#fff7cc] shadow-[0_0_24px_rgba(251,191,36,0.3)]" : activeOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><span>{profile.name}</span>{profile.preset && <span className="ml-2 text-[8px] text-[#67e8f9]">base</span>}</button><button type="button" onClick={() => toggleOrderProfilePreview(profile.id)} aria-expanded={previewOrderProfileId === profile.id} aria-controls={`order-profile-preview-${profile.id}`} aria-label={`${previewOrderProfileId === profile.id ? "Ocultar" : "Ver"} prévia do perfil ${profile.name}`} title="Ver prévia" className={`grid h-9 w-9 shrink-0 place-items-center border text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${previewOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746]" : "border-[#67e8f9]/30"}`}><Eye className="h-3.5 w-3.5" aria-hidden="true" /></button><button type="button" onClick={() => duplicateOrderProfile(profile)} aria-label={`Duplicar perfil ${profile.name}`} title="Duplicar perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId === profile.id && !profile.preset && <button type="button" onClick={deleteActiveOrderProfile} aria-label={`Excluir perfil ${profile.name}`} title="Excluir perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-rose-300/30 text-rose-200 transition-colors hover:border-rose-300 hover:text-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>}<div id={`order-profile-preview-${profile.id}`} role="region" tabIndex={previewOrderProfileId === profile.id ? 0 : -1} aria-label={`Prévia do perfil ${profile.name}. Clique para ativar esta ordem.`} aria-hidden={previewOrderProfileId !== profile.id} data-preview-open={previewOrderProfileId === profile.id} onClick={() => { if (previewOrderProfileId === profile.id && activeOrderProfileId !== profile.id) selectOrderProfile(profile); }} onKeyDown={(event) => { if (previewOrderProfileId === profile.id && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); if (activeOrderProfileId !== profile.id) selectOrderProfile(profile); } }} className={`col-span-full cursor-pointer overflow-hidden border border-[#67e8f9]/20 bg-[#07101e]/70 p-2 transition-[max-height,opacity,transform] duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${previewOrderProfileId === profile.id ? "max-h-[500px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 border-transparent p-0 opacity-0"}`}><p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">primeiros projetos nesta ordem · clique para ativar</p><div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">{profile.order.slice(0, 5).map((projectId: string, previewIndex: number) => { const project = repositories.find((repository) => repository.id === projectId); return project ? <div key={project.id} className={`group relative min-w-0 border border-white/10 bg-[#0a1422] ${previewIndex >= 3 ? "hidden sm:block" : ""} ${previewOrderProfileId === profile.id ? "preview-stagger-item" : ""}`} style={{ "--preview-delay": `${previewIndex * 45}ms` } as React.CSSProperties} title={`${previewIndex + 1}. ${project.name}`}><div className="aspect-[4/3] overflow-hidden bg-[#0d1b2d]">{project.cover ? <img src={project.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-80" /> : <div className="grid h-full place-items-center font-mono text-[8px] text-[#7189ae]">sem capa</div>}</div><div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-1 bg-[#030b1e]/92 px-2 py-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"><p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#fef3c7]">{project.name}</p></div><p className="truncate px-2 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff]">{project.name}</p></div> : null; })}</div></div></div>) : <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>}</div><div className="mt-3 flex gap-2"><input value={profileNameDraft} onChange={(event) => setProfileNameDraft(event.target.value)} placeholder="ex.: audiovisual" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" /><button type="button" onClick={createOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Salvar novo perfil de ordenação" title="Salvar novo perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/40 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Save className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId && !activeOrderProfile?.preset && <button type="button" onClick={renameActiveOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Renomear perfil ativo" title="Renomear perfil ativo" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Pencil className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div></div>
           <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#7189ae]">tema aplicado agora: {theme === "dark" ? "escuro" : "claro"}</p>
         </div>}
       </header>

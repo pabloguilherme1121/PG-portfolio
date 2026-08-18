@@ -1645,3 +1645,25 @@
 - [x] Verificar a disponibilidade de NVDA, VoiceOver ou leitor de tela compatível no ambiente.
 - [x] Executar navegação assistiva detalhada pela ferramenta disponível, cobrindo landmarks, headings, controles, modais, formulários e atalhos.
 - [x] Documentar barreiras encontradas, evidências e limitações, sem aplicar correções automáticas.
+
+## Pacote-fonte para análise
+
+- [x] Gerar um ZIP do estado atual, excluindo dependências, builds, testes, credenciais e arquivos temporários.
+- [x] Verificar a integridade e o conteúdo seguro do ZIP antes da entrega.
+
+## Pacote para análise no Qwen Studio
+
+- [x] Criar um guia de contexto e instruções de análise para acompanhamento do código-fonte.
+- [x] Gerar um ZIP seguro do projeto com o guia, sem dependências, builds, credenciais ou artefatos temporários.
+- [x] Verificar e entregar o pacote compatível com Qwen Studio.
+
+## Dossiê Markdown para Qwen Studio
+
+- [x] Consolidar contexto, estrutura e arquivos de código mais relevantes em um único Markdown sem segredos.
+- [x] Verificar tamanho, integridade e ausência de credenciais antes da entrega.
+
+## Fase 1 — Consolidação de dados duplicados
+
+- [x] Confirmar as duplicações e divergências de tipos entre `HomeExperience.tsx`, `portfolioData.tsx` e `portfolioCatalog.ts`.
+- [x] Após aprovação explícita, tornar `portfolioData.tsx` a única fonte canônica e remover apenas as redeclarações inline equivalentes.
+- [x] Validar com check, testes, build, Playwright e comparação visual antes do checkpoint atômico.
