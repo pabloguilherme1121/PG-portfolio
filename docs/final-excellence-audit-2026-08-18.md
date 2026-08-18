@@ -310,3 +310,18 @@ Validação final: `pnpm check` aprovado; `pnpm test` aprovado com **38/38**; `p
 | Simulação de leitor de tela | Axe verificava regras WCAG, mas não havia teste explícito de árvore assistiva e nomes de controles. | A E2E inspeciona a árvore ARIA para landmarks, heading, botões e links e executa regras de nomes de botão/link/campo, atributos ARIA válidos, obrigatórios e permitidos, além de foco em elementos ocultos. Nenhuma correção adicional foi necessária. | Cenário aprovado; a validação automatizada não substitui NVDA, VoiceOver ou TalkBack em dispositivo real. |
 
 Validação final desta rodada: `pnpm check` aprovado; `pnpm test` aprovado com **38/38**; `pnpm build` aprovado; Playwright serial completo aprovado com **32/32** cenários, incluindo os **3** autenticados. A identidade de teste, o storageState de permissão 600, relatórios de análise e scripts temporários foram removidos antes da entrega.
+
+## Avaliação detalhada de navegação assistiva
+
+> **Limitação do ambiente:** a execução ocorre em Linux, sem NVDA, VoiceOver, Orca ou Speech Dispatcher instalados. Portanto, não é uma sessão manual de áudio com leitor de tela; trata-se de uma simulação detalhada pela árvore de acessibilidade do Chromium, complementada pela auditoria Axe já aprovada.
+
+| Fluxo avaliado | Evidência observada | Barreiras confirmadas |
+|---|---|---|
+| Entrada e navegação por teclado | Os primeiros 12 stops incluem o link “pular para o conteúdo”, marca de início, cinco âncoras, alternância de tema, PDF, contato e os dois CTAs do hero. | Nenhuma no fluxo inspecionado. |
+| Estrutura de leitura | A árvore apresentou `main`, navegações nomeadas, rodapé, headings em sequência e regiões de status. | Nenhuma estrutura sem landmark ou heading foi confirmada. O número de mensagens `status` merece escuta humana para avaliar verbosidade, mas não foi classificado como barreira sem um leitor de tela real. |
+| Busca de projetos | A checagem simplificada de atributos identificou um `input[type=search]` sem `aria-label`; a árvore calculada, porém, resolveu o nome composto “Pesquisar projetos por palavra-chave, nome, tecnologia ou descrição Limpar busca de trabalhos”. | Nenhuma. O resultado inicial foi falso positivo de inspeção de atributo, corrigido pela árvore calculada. |
+| Formulário de briefing | A árvore expõe nomes para todos os campos visíveis: nome, e-mail, serviço, tipo de projeto, local, data, entrega, investimento e briefing. O honeypot não foi considerado por estar fora do fluxo do visitante. | Nenhuma. |
+| Modal de projeto | O diálogo expõe `role=dialog`, `aria-modal=true`, conteúdo na árvore e fecha por Escape. | Nenhuma na abertura/fechamento. A confirmação auditiva de retorno de foco ao gatilho continua pendente de NVDA/VoiceOver. |
+| Nomes e ARIA | As regras automatizadas de nomes de botões/links/campos, atributos ARIA válidos, exigidos e permitidos, e foco em conteúdo oculto não reportaram violações. | Nenhuma. |
+
+**Conclusão:** não houve barreira de acessibilidade confirmada nesta simulação. A pendência é de **validação manual auditiva**, particularmente da ordem de anúncios em regiões `status` e do retorno de foco após modais, em NVDA no Windows ou VoiceOver no macOS/iOS.

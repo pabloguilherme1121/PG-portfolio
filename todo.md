@@ -1639,3 +1639,9 @@
 - [x] Medir o chunk principal e aplicar somente code splitting justificado, preservando hero, primeiro conteúdo, SEO e interações críticas.
 - [x] Simular leitor de tela pela árvore de acessibilidade e corrigir apenas atributos ARIA comprovadamente insuficientes.
 - [x] Executar check, testes, build e E2E completo; documentar antes/depois, limpar artefatos e publicar.
+
+## Avaliação detalhada com leitor de tela
+
+- [x] Verificar a disponibilidade de NVDA, VoiceOver ou leitor de tela compatível no ambiente.
+- [x] Executar navegação assistiva detalhada pela ferramenta disponível, cobrindo landmarks, headings, controles, modais, formulários e atalhos.
+- [x] Documentar barreiras encontradas, evidências e limitações, sem aplicar correções automáticas.
