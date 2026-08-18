@@ -238,6 +238,16 @@ type Repository = {
   addedOrder: number;
   /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
   relevance: number;
+  caseStudy?: {
+    context: string;
+    problem: string;
+    objective: string;
+    function: string;
+    process: string;
+    decisions: string;
+    result: string;
+    learning: string;
+  };
 };
 
 type SearchSuggestion = {
@@ -314,6 +324,16 @@ const repositories: Repository[] = [
     featured: true,
     addedOrder: 7,
     relevance: 100,
+    caseStudy: {
+      context: "Registro audiovisual de um evento social, reunindo ambiente, pessoas e momentos da celebração.",
+      problem: "Concentrar espaço, presença e detalhes em um registro breve sem perder a atmosfera do encontro.",
+      objective: "Construir uma memória visual que ajude a revisitar o ambiente e os momentos do dia.",
+      function: "Cobertura aérea e leitura do ambiente.",
+      process: "Planos abertos, aproximações e movimentos suaves durante o registro.",
+      decisions: "Equilibrar vistas amplas do espaço com aproximações das pessoas e dos detalhes da celebração.",
+      result: "Uma memória visual que preserva espaço, presença e atmosfera.",
+      learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
+    },
   },
   {
     id: "CNT.02",
@@ -328,6 +348,16 @@ const repositories: Repository[] = [
     cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
     addedOrder: 6,
     relevance: 88,
+    caseStudy: {
+      context: "Vídeo vertical público que percorre serviços em uma interface móvel da RHAM Águas Lindas.",
+      problem: "Apresentar uma jornada de serviços em pouco tempo, sem perder a leitura das etapas na tela.",
+      objective: "Demonstrar a navegação no aplicativo de forma direta e compreensível em formato vertical.",
+      function: "Apresentação visual da jornada de serviços.",
+      process: "Sequência curta guiada por leitura de tela e ritmo.",
+      decisions: "Organizar as etapas em uma ordem curta e usar o ritmo para priorizar o que precisa ser entendido primeiro.",
+      result: "Uma demonstração direta da navegação no aplicativo.",
+      learning: "Legibilidade e ritmo também são parte do produto final.",
+    },
   },
   {
     id: "CNT.03",
@@ -370,6 +400,16 @@ const repositories: Repository[] = [
     cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
     addedOrder: 3,
     relevance: 84,
+    caseStudy: {
+      context: "Captação horizontal noturna de um campo esportivo, com foco em escala, luz e movimento.",
+      problem: "Apresentar o espaço à noite mantendo a leitura de escala e da iluminação disponível.",
+      objective: "Construir uma imagem de contexto que revele o campo por uma perspectiva aérea ampla.",
+      function: "Construção de uma visão ampla do campo.",
+      process: "Enquadramento horizontal atento à luz, escala e movimento.",
+      decisions: "Priorizar uma perspectiva aérea aberta e manter luz, escala e deslocamento como referências do enquadramento.",
+      result: "Uma imagem de contexto para apresentar o espaço com impacto.",
+      learning: "Em registros noturnos, luz e escala precisam orientar a leitura antes do movimento.",
+    },
   },
   {
     id: "CNT.06",
@@ -2967,6 +3007,7 @@ export default function Home() {
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">processo</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.process || "Informação não registrada."}</p></div>
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">resultado</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.result || "Informação não registrada."}</p></div>
               </div>
+              {selectedProject.caseStudy && <section data-project-case-study="true" className="mt-7 border-t border-white/10 pt-5" aria-labelledby="project-case-study-title"><p id="project-case-study-title" className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">leitura do caso</p><dl className="mt-4 grid gap-5 sm:grid-cols-2"><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">contexto</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.context}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">problema</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.problem}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">objetivo</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.objective}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">minha função</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.function}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">processo</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.process}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">decisões</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.decisions}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">resultado</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.result}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">aprendizado</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.learning}</dd></div></dl></section>}
               <div className="mt-7 border-t border-white/10 pt-5"><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">tecnologias e repertório</p><div className="mt-3 flex flex-wrap gap-2">{selectedProject.technologies.map((technology) => <span key={technology} className="border border-[#3b82f6]/30 bg-[#0b2746] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#cfe3ff]">{technology}</span>)}</div></div>
               <div className="mt-7 grid grid-cols-1 gap-3 border-t border-white/10 pt-5 sm:flex sm:items-center sm:justify-between"><button type="button" data-project-modal-previous="true" onClick={() => navigateSelectedProject("previous")} disabled={!previousSelectedProject} aria-label={previousSelectedProject ? `Ver projeto anterior: ${previousSelectedProject.name}` : "Nenhum projeto anterior"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-4 w-4" aria-hidden="true" />anterior</button><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]" aria-live="polite">{selectedProjectIndex >= 0 ? `${String(selectedProjectIndex + 1).padStart(2, "0")} / ${String(visibleRepositories.length).padStart(2, "0")}` : ""}</span><button type="button" data-project-modal-next="true" onClick={() => navigateSelectedProject("next")} disabled={!nextSelectedProject} aria-label={nextSelectedProject ? `Ver próximo projeto: ${nextSelectedProject.name}` : "Nenhum próximo projeto"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35">próximo<ChevronRight className="h-4 w-4" aria-hidden="true" /></button></div>
             </div>

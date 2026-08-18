@@ -1582,3 +1582,12 @@
 - [x] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
 - [x] Documentar antes/depois e limites de infraestrutura.
 - [x] Publicar a otimização de performance.
+
+## Conversão e prova profissional — projetos públicos
+
+- [x] Inventariar somente os projetos públicos e as evidências factuais disponíveis.
+- [x] Definir campos de caso para contexto, problema, objetivo, função, processo, tecnologias, decisões, resultado qualitativo e aprendizado.
+- [x] Aplicar o conteúdo factual aos melhores projetos sem alterar CTAs, layout ou adicionar projetos.
+- [x] Validar conteúdo, check, testes e build.
+- [x] Documentar a melhoria de prova profissional.
+- [ ] Publicar a melhoria de prova profissional.

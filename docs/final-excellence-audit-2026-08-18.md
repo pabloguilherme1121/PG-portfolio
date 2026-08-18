@@ -229,3 +229,17 @@ Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx`, `e2e
 CLS atende a meta (< 0,1). A amostra de INP atende a meta (< 200 ms), inclusive com CPU 4× na pós-medição (144 ms). LCP não atende < 2,5 s na emulação 4G publicada: o gargalo dominante é TTFB/HTML e, em seguida, o carregamento de recursos pelo proxy de storage. A aplicação reduziu concorrência abaixo da dobra sem prejudicar o caminho crítico, mas não pode compensar sozinha a faixa de 3–6 s observada antes do início de CSS/JS/imagem.
 
 Validações da rodada: `pnpm check` aprovado; `pnpm test` com 31 testes aprovados; `pnpm build` aprovado; E2E relevante do pôster adiado aprovado. Não foram alterados design, conteúdo, hero, H1, primeiro projeto, lightbox, SEO, formulário, favoritos, compartilhamento ou funcionalidades administrativas.
+
+## Conversão e prova profissional — casos públicos
+
+Esta rodada trabalhou exclusivamente com os projetos já publicados na vitrine. A seleção foi limitada aos três destaques calculados pela própria galeria pública: **Chá da Eloise**, **RHAM — Serviços no app** e **Campo iluminado — vista aérea**. Nenhum projeto privado, não publicado ou Eliane Fashion foi incluído.
+
+O modal de detalhes existente agora mostra, quando há evidência suficiente no registro já público, uma leitura de caso com **contexto, problema, objetivo, minha função, processo, decisões, resultado e aprendizado**. Cada texto foi derivado de descrição, papel, processo, resultado e tecnologias que já existiam no projeto; não foram incluídos clientes adicionais, métricas, faturamento, usuários, conversões ou tecnologias novas. Os campos de resultado permanecem qualitativos e verificáveis pela peça pública.
+
+| Projeto público | Prova esclarecida | Limite factual preservado |
+|---|---|---|
+| Chá da Eloise | Cobertura aérea, leitura de ambiente, planos abertos e aproximações para registrar espaço, pessoas e atmosfera. | Não há alegação de cliente, alcance ou resultado comercial. |
+| RHAM — Serviços no app | Vídeo vertical de jornada de serviços, com leitura de tela e ritmo para demonstrar navegação. | Não há alegação sobre conversão, adoção ou dados do aplicativo. |
+| Campo iluminado — vista aérea | Captação horizontal noturna que explicita decisões de luz, escala, perspectiva e movimento. | Não há alegação de audiência, uso institucional ou métricas de vídeo. |
+
+Os CTAs **“solicitar orçamento”** e **“falar no WhatsApp”** foram preservados sem duplicação. A mudança não redesenha a página: aproveita o modal já existente e mantém favoritos, compartilhamento, navegação, vídeo, lightbox e filtros. A E2E pública confirma a presença da leitura de caso no modal; `pnpm check`, 31 testes Vitest e `pnpm build` foram aprovados.

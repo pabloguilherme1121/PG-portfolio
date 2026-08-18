@@ -108,6 +108,8 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-featured-project]').first()).toBeVisible({ timeout: 10000 });
     await page.locator('[data-featured-project]').first().click();
     const details = page.locator('[data-project-details-dialog="true"]');
+    await expect(details.locator('[data-project-case-study="true"]')).toBeVisible();
+    await expect(details.locator('[data-project-case-study="true"]')).toContainText(/contexto|problema|objetivo|minha função|processo|decisões|resultado|aprendizado/i);
     const title = details.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
     const next = details.locator('[data-project-modal-next="true"]');
