@@ -1615,3 +1615,19 @@
 - [x] Extrair responsabilidades independentes de curadoria e contato sem alterar galeria, favoritos ou formulário; adicionar testes e validar check/test.
 - [x] Extrair apenas hooks independentes comprovados, preservando lightbox, hero e estado central da galeria; validar check/test após cada etapa.
 - [x] Executar build e Playwright completos, documentar o antes/depois e publicar o checkpoint.
+
+## QA final — sem alterações iniciais
+
+- [x] Inspecionar a cobertura pública e autenticada existente, incluindo condições de skip.
+- [x] Executar `pnpm check`, `pnpm test` e `pnpm build` sem alterar código.
+- [x] Executar Playwright público e validar a matriz de viewports solicitada.
+- [x] Verificar se há sessão real de teste segura para login, painel, edição, restauração e logout; reportar cenários não validados.
+- [x] Consolidar o relatório factual de QA, sem correções automáticas.
+
+## Fechamento da QA — determinismo de testes
+
+- [x] Reproduzir e diagnosticar a instabilidade do cenário de analytics sem alterar o produto.
+- [x] Determinar o caráter opcional da dica de swipe e validar a navegação funcional isoladamente.
+- [x] Ajustar somente expectativas de teste comprovadamente frágeis, sem aumentar timeouts de modo cego.
+- [x] Verificar a disponibilidade de `E2E_AUTH_STATE` sem criar, simular ou versionar sessão; executar fluxos autenticados apenas se houver sessão segura.
+- [x] Reexecutar check, unitários, build e Playwright serial; documentar antes/depois e publicar.

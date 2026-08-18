@@ -5,7 +5,7 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("navegação pública e favoritos", () => {
-  test("emite eventos de conversão essenciais sem incluir dados pessoais", async ({ page }) => {
+  test("emite CTA de orçamento e início de briefing sem incluir dados pessoais", async ({ page }) => {
     await page.addInitScript(() => {
       const events: unknown[] = [];
       window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
@@ -13,15 +13,27 @@ test.describe("navegação pública e favoritos", () => {
     });
     await page.goto("/");
 
-    await page.locator('a[href="#contato"]').filter({ hasText: /solicitar orçamento/i }).click();
-    await page.locator("#contato-briefing input").first().focus();
-    await page.locator("[data-featured-project]").first().click();
+    const emittedEventNames = () => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName));
 
-    await expect.poll(() => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName))).toEqual(expect.arrayContaining([
-      "quote_cta",
-      "briefing_started",
-      "project_opened",
-    ]));
+    await page.locator('a[href="#contato"]').filter({ hasText: /solicitar orçamento/i }).click();
+    await expect.poll(emittedEventNames).toContain("quote_cta");
+    await page.locator("#contato-briefing input").first().focus();
+    await expect.poll(emittedEventNames).toContain("briefing_started");
+    const propertyKeys = await page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ properties?: Record<string, unknown> }> }).__portfolioAnalyticsEvents.flatMap((event) => Object.keys(event.properties ?? {})));
+    expect(propertyKeys).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
+  });
+
+  test("emite abertura de projeto sem incluir dados pessoais", async ({ page }) => {
+    await page.addInitScript(() => {
+      const events: unknown[] = [];
+      window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
+      Object.defineProperty(window, "__portfolioAnalyticsEvents", { value: events });
+    });
+    await page.goto("/");
+
+    await page.locator("[data-featured-project]").first().click();
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName))).toContain("project_opened");
     const propertyKeys = await page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ properties?: Record<string, unknown> }> }).__portfolioAnalyticsEvents.flatMap((event) => Object.keys(event.properties ?? {})));
     expect(propertyKeys).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
   });
@@ -256,14 +268,12 @@ test.describe("navegação pública e favoritos", () => {
   });
 
   test("navega entre projetos do modal com swipe horizontal no mobile", async ({ page }) => {
-    await page.addInitScript(() => window.localStorage.removeItem("pablo-portfolio-project-swipe-hint-seen"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/#galeria-publica");
     const firstProject = page.locator('[data-featured-project]').first();
     await firstProject.click();
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
-    await expect(page.locator('[data-project-swipe-hint="true"]')).toBeVisible();
     await expect(page.locator('[data-mobile-contact-bar="true"]')).toHaveCSS("opacity", "0");
     const title = dialog.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
