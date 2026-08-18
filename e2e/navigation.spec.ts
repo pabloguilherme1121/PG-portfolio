@@ -122,6 +122,23 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-availability-status="true"]')).toContainText("disponibilidade atual: sob consulta");
   });
 
+  test("adia dados abaixo da dobra até a aproximação da seção", async ({ page }) => {
+    const deferredRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/availability\.listBlocked|instagramFeed\.status/.test(request.url())) deferredRequests.push(request.url());
+    });
+    await page.goto("/");
+    await page.waitForTimeout(500);
+    expect(deferredRequests).toHaveLength(0);
+
+    await page.locator("#contato .availability-calendar").scrollIntoViewIfNeeded();
+    await expect.poll(() => deferredRequests.some((url) => url.includes("availability.listBlocked")), { timeout: 10000 }).toBeTruthy();
+
+    await page.locator("#social").scrollIntoViewIfNeeded();
+    await expect(page.locator(".social-filter-card").first()).toBeVisible({ timeout: 10000 });
+    await expect.poll(() => deferredRequests.some((url) => url.includes("instagramFeed.status")), { timeout: 10000 }).toBeTruthy();
+  });
+
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
     const canonical = page.locator('link[rel="canonical"]');

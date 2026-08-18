@@ -1449,3 +1449,25 @@
 ## Entrega do refinamento fechado do lightbox mobile
 
 - [x] Salvar checkpoint da rodada validada sem outras alterações.
+
+## ZIP para análise — checkpoint atual
+
+- [x] Gerar ZIP limpo do checkpoint atual sem dependências, builds, logs, resultados de testes ou secrets locais.
+- [x] Validar a integridade e o conteúdo do ZIP.
+- [x] Entregar o arquivo para análise.
+
+## Auditoria fechada de performance mobile — 2026-08-17
+
+- [x] Medir linha de base em 320x568, 390x844, 414x896, 768x900 e 1280x720, incluindo 4G simulado.
+- [x] Classificar recursos iniciais por viewport, scroll, interação e curadoria administrativa.
+- [x] Avaliar JS, CSS, imagens, fontes, vídeos, chunks e bibliotecas de exportação/curadoria.
+- [x] Aplicar somente otimizações de carregamento tardio de baixo risco, preservando lightbox, modal e interações.
+- [x] Medir antes/depois, executar check, testes, build e Playwright, e documentar recursos adiados e riscos não aplicados.
+
+## Aplicação das otimizações seguras da auditoria — 2026-08-17
+
+- [x] Adiar `availability.listBlocked` até proximidade/uso da seção de calendário.
+- [x] Adiar `instagramFeed.status` e o módulo social até proximidade da seção Social.
+- [x] Preservar lightbox, modal, navegação, identidade, interações e conteúdo crítico.
+- [ ] Medir antes/depois em 4G, validar scroll, erro, teclado, reduced motion, check, testes, build e Playwright.
+- [ ] Atualizar relatório, salvar checkpoint e republicar somente após aprovação.

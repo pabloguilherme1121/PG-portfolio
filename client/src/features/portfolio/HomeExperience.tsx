@@ -74,6 +74,29 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
+function useNearViewport<T extends HTMLElement>(rootMargin = "720px") {
+  const targetRef = useRef<T | null>(null);
+  const [isNearViewport, setIsNearViewport] = useState(false);
+
+  useEffect(() => {
+    const target = targetRef.current;
+    if (!target) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setIsNearViewport(true);
+      return;
+    }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) return;
+      setIsNearViewport(true);
+      observer.disconnect();
+    }, { rootMargin, threshold: 0 });
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [rootMargin]);
+
+  return [targetRef, isNearViewport] as const;
+}
+
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const heroResponsive = {
@@ -462,6 +485,8 @@ const navigationItems = [
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>();
+  const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>();
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -1010,7 +1035,7 @@ export default function Home() {
     data: blockedDates = [],
     isError: isBlockedDatesError,
     refetch: refetchBlockedDates,
-  } = trpc.availability.listBlocked.useQuery();
+  } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability });
 
   const normalizedProjectSearch = normalizeSearchText(projectSearch);
   const projectSearchSuggestions = useMemo<SearchSuggestion[]>(() => {
@@ -2564,7 +2589,8 @@ export default function Home() {
           </div>
         </section>
 
-        <Suspense fallback={<section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Carregando repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">carregando repertório social</div></section>}><InstagramRepertoire /></Suspense>
+        <div ref={socialSectionRef} aria-hidden="true" className="h-px w-full" />
+        {shouldLoadSocial ? <Suspense fallback={<section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Carregando repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">carregando repertório social</div></section>}><InstagramRepertoire /></Suspense> : <section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">repertório social será carregado ao rolar</div></section>}
 
         <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
@@ -2600,7 +2626,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="availability-calendar mt-5 max-w-md border border-cyan-100/[0.16] bg-[#06172f]/80 p-5">
+              <div ref={availabilitySectionRef} className="availability-calendar mt-5 max-w-md border border-cyan-100/[0.16] bg-[#06172f]/80 p-5">
                 <div className="flex items-center justify-between gap-4">
                   <div><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">consulta de disponibilidade</p><p className="mt-1 font-body text-xs leading-5 text-[#a6c7d8]">Segunda a sexta, das 08:00 às 18:00.</p></div>
                   <span className="grid h-9 w-9 place-items-center border border-cyan-100/[0.2] text-[#67e8f9]"><CalendarDays className="h-4 w-4" /></span>
