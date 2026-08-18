@@ -270,6 +270,41 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-id][draggable="true"]').first()).toBeVisible();
   });
 
+  test("mantém os CTAs do hero acima da barra fixa de contato", async ({ page }) => {
+    test.setTimeout(90000);
+    for (const viewport of [{ width: 320, height: 568 }, { width: 360, height: 800 }, { width: 375, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 430, height: 932 }, { width: 768, height: 900 }, { width: 1280, height: 720 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const heroCta = page.locator('[data-hero-cta="true"]');
+      const contactBar = page.locator('[data-mobile-contact-bar="true"]');
+      await expect(heroCta.getByRole("link", { name: /solicitar orçamento/i })).toBeVisible();
+      await expect(heroCta.getByRole("link", { name: /ver trabalhos/i })).toBeVisible();
+      const controlsDoNotOverlap = await page.evaluate(() => {
+        const cta = document.querySelector<HTMLElement>('[data-hero-cta="true"]');
+        const bar = document.querySelector<HTMLElement>('[data-mobile-contact-bar="true"]');
+        if (!cta || !bar) return false;
+        const style = window.getComputedStyle(bar);
+        const barVisible = Number.parseFloat(style.opacity) > 0.01 && style.visibility !== "hidden";
+        if (!barVisible) return true;
+        const barRect = bar.getBoundingClientRect();
+        return Array.from(cta.querySelectorAll<HTMLElement>("a")).every((link) => {
+          const rect = link.getBoundingClientRect();
+          const horizontallyOverlaps = rect.left < barRect.right && rect.right > barRect.left;
+          const verticallyOverlaps = rect.top < barRect.bottom && rect.bottom > barRect.top;
+          return !(horizontallyOverlaps && verticallyOverlaps);
+        });
+      });
+      expect(controlsDoNotOverlap, `CTA do hero ficou sob a barra fixa em ${viewport.width}x${viewport.height}`).toBeTruthy();
+      const heroCtaIsInViewport = await heroCta.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+      });
+      if (viewport.width < 1024 && heroCtaIsInViewport) {
+        await expect(contactBar).toHaveCSS("opacity", "0");
+      }
+    }
+  });
+
   test("mantém o lightbox e os modais audiovisuais utilizáveis em telas estreitas", async ({ page }) => {
     test.setTimeout(180000);
     for (const viewport of [{ width: 320, height: 568 }, { width: 360, height: 800 }, { width: 375, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 430, height: 932 }, { width: 768, height: 900 }, { width: 1280, height: 720 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {

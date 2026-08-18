@@ -1541,3 +1541,26 @@
 - [x] Implementar melhorias sem redesign ou remoção de funcionalidades.
 - [x] Validar testes, performance, acessibilidade e regressões.
 - [x] Atualizar documentação e publicar o resultado.
+
+## Novo ZIP do projeto atual
+
+- [x] Definir exclusões e conteúdo do pacote atual.
+- [x] Gerar ZIP limpo do estado atual.
+- [x] Validar integridade, ausência de secrets e artefatos temporários.
+- [x] Entregar o ZIP atual.
+
+## Auditoria completa sem alterações — versão atual publicada
+
+- [x] Registrar baseline e escopo sem modificar arquivos.
+- [x] Auditar arquitetura, UX, UI, mobile, lightbox, performance, SEO, acessibilidade, segurança, conversão, formulário, analytics, dependências, testes, build e estrutura.
+- [x] Classificar achados por severidade com arquivo, localização, impacto, solução e risco.
+- [x] Consolidar relatório e plano de execução sem implementar alterações.
+
+## Correção isolada do CTA mobile
+
+- [x] Medir a sobreposição da barra fixa sobre os CTAs do hero nos viewports solicitados.
+- [x] Aplicar a menor correção que preserve a barra fixa e o desktop.
+- [x] Adicionar asserção E2E para impedir que CTAs do hero fiquem sob elemento fixed.
+- [x] Validar os viewports, check, testes, build e E2E relevante.
+- [x] Documentar causa e evidências antes/depois.
+- [ ] Publicar a correção isolada.

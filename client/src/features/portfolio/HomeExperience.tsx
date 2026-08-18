@@ -581,6 +581,7 @@ export default function Home() {
   const [showProjectSwipeHint, setShowProjectSwipeHint] = useState(false);
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
+  const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
@@ -638,6 +639,7 @@ export default function Home() {
   const lightboxImageContainerRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
+  const heroCtaRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -648,6 +650,41 @@ export default function Home() {
   const lightboxNextProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex + 1) % lightboxProjects.length] : null;
   const lightboxPreviousProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null;
   const lightboxComparison = lightboxProject ? comparisonPairs[lightboxProject.id] ?? null : null;
+  const shouldHideContactFloat = Boolean(lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
+
+  useEffect(() => {
+    const target = heroCtaRef.current;
+    if (!target || typeof window === "undefined") return;
+
+    const mobileQuery = window.matchMedia("(max-width: 1023px)");
+    let animationFrame: number | null = null;
+
+    const syncVisibility = () => {
+      animationFrame = null;
+      if (!mobileQuery.matches) {
+        setIsHeroCtaVisible(false);
+        return;
+      }
+      const rect = target.getBoundingClientRect();
+      setIsHeroCtaVisible(rect.top < window.innerHeight && rect.bottom > 0);
+    };
+
+    const scheduleSync = () => {
+      if (animationFrame !== null) return;
+      animationFrame = window.requestAnimationFrame(syncVisibility);
+    };
+
+    scheduleSync();
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+    mobileQuery.addEventListener("change", scheduleSync);
+    return () => {
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      mobileQuery.removeEventListener("change", scheduleSync);
+    };
+  }, []);
 
   useEffect(() => {
     setLightboxImageLoading(Boolean(lightboxProject));
@@ -2005,7 +2042,7 @@ export default function Home() {
                   Um arquivo vivo de tecnologia, conteúdo e imagem — feito enquanto aprendo, testo e encontro formas mais claras de fazer uma ideia circular.
                 </p>
                 <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.</p>
-                <div className="flex flex-wrap items-center gap-3">
+                <div ref={heroCtaRef} data-hero-cta="true" className="flex flex-wrap items-center gap-3">
                   <a href="#contato" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
                     solicitar orçamento <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
@@ -2784,7 +2821,7 @@ export default function Home() {
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
+      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
         <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>

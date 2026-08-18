@@ -151,3 +151,18 @@ Não foram criados cases artificiais. O item Eliane Fashion continua pendente de
 ### Validação desta rodada
 
 `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e `pnpm exec playwright test --workers=1` foram executados. O resultado foi: instalação aprovada, typecheck aprovado, **26 testes unitários aprovados**, build aprovado, **21 E2E públicos aprovados** e **2 cenários autenticados ignorados** por ausência de `E2E_AUTH_STATE`. Os artefatos `dist`, `test-results` e `coverage` foram removidos ao final.
+
+## Correção isolada — CTA mobile e barra fixa
+
+A causa confirmada era visual: a barra `contact-float`, fixa na base da viewport, ocupava a mesma zona vertical dos CTAs “solicitar orçamento” e “ver trabalhos” no hero em telas compactas. Em 390×844, a barra sobrepunha parcialmente o botão de orçamento e o link secundário.
+
+A correção escolhida foi **ocultar temporariamente a barra de contato enquanto o grupo de CTAs do hero estiver dentro da viewport em telas abaixo de 1024 px**. Assim que essa região sai da viewport, a barra retorna. A partir de 1024 px, o comportamento desktop original permanece. Estados que já ocultavam a barra — lightbox, modal de projeto, preview de portfólio, busca focada, formulário focado e teclado móvel — foram preservados prioritariamente.
+
+| Evidência | Antes | Depois |
+|---|---|---|
+| Hero 390×844 | Barra fixa sobrepunha a região inferior dos CTAs | Botão e link ficam inteiros e acionáveis; a barra reaparece após a região do hero |
+| Tablet 768×900 | Barra lateral podia cruzar a área dos CTAs | Barra permanece oculta enquanto os CTAs estão visíveis |
+| Desktop 1280×720 | Comportamento original da barra fixa | Mantido |
+| Lightbox e modais | Barra deveria continuar oculta em overlays | Mantido e coberto por E2E |
+
+Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx` e `e2e/navigation.spec.ts`. A nova asserção E2E percorre 320×568, 360×800, 375×812, 390×844, 414×896, 430×932, 768×900 e 1280×720, verificando que nenhum CTA do hero fica sob a barra fixa. Validações reais: `pnpm check` aprovado; `pnpm test` com 26 testes aprovados; `pnpm build` aprovado; E2E específico do CTA e do lightbox aprovado em modo serial. Nenhuma mudança foi feita em identidade, CTA, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou formulário.
