@@ -1631,3 +1631,11 @@
 - [x] Ajustar somente expectativas de teste comprovadamente frágeis, sem aumentar timeouts de modo cego.
 - [x] Verificar a disponibilidade de `E2E_AUTH_STATE` sem criar, simular ou versionar sessão; executar fluxos autenticados apenas se houver sessão segura.
 - [x] Reexecutar check, unitários, build e Playwright serial; documentar antes/depois e publicar.
+
+## Autenticação E2E, bundle e semântica assistiva
+
+- [x] Mapear o contrato de sessão, a composição do chunk inicial e a cobertura ARIA existente antes de alterar código.
+- [x] Configurar identidade de teste isolada e não versionada para `E2E_AUTH_STATE`; validar login, painel, edição, restauração e logout.
+- [x] Medir o chunk principal e aplicar somente code splitting justificado, preservando hero, primeiro conteúdo, SEO e interações críticas.
+- [x] Simular leitor de tela pela árvore de acessibilidade e corrigir apenas atributos ARIA comprovadamente insuficientes.
+- [x] Executar check, testes, build e E2E completo; documentar antes/depois, limpar artefatos e publicar.

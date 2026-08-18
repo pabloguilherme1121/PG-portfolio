@@ -69,4 +69,33 @@ test.describe("acessibilidade pública", () => {
     const revealDuration = await page.locator(".reveal").first().evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration));
     expect(revealDuration).toBeLessThan(0.01);
   });
+
+  test("expõe landmarks, nomes e controles na árvore de acessibilidade", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("main")).toBeVisible();
+
+    const snapshot = await page.locator("body").ariaSnapshot();
+    expect(snapshot).toContain("main");
+    expect(snapshot).toContain("heading");
+    expect(snapshot).toContain("button");
+    expect(snapshot).toContain("link");
+
+    const nameResults = await new AxeBuilder({ page })
+      .withRules([
+        "button-name",
+        "link-name",
+        "label",
+        "aria-input-field-name",
+        "aria-command-name",
+        "aria-hidden-focus",
+        "aria-valid-attr",
+        "aria-required-attr",
+        "aria-allowed-attr",
+      ])
+      .analyze();
+    expect(nameResults.violations, nameResults.violations.map((violation) => ({
+      id: violation.id,
+      nodes: violation.nodes.map((node) => node.target),
+    }))).toEqual([]);
+  });
 });
