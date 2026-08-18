@@ -1581,4 +1581,4 @@
 - [x] Implementar somente otimizações comprovadas fora do caminho crítico.
 - [x] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
 - [x] Documentar antes/depois e limites de infraestrutura.
-- [ ] Publicar a otimização de performance.
+- [x] Publicar a otimização de performance.
