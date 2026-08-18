@@ -270,6 +270,26 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-id][draggable="true"]').first()).toBeVisible();
   });
 
+  test("mantém o título do hero legível e os CTAs íntegros em telas mobile estreitas", async ({ page }) => {
+    test.setTimeout(60000);
+    for (const viewport of [{ width: 320, height: 568 }, { width: 360, height: 800 }, { width: 390, height: 844 }, { width: 414, height: 896 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const heading = page.getByRole("heading", { level: 1 });
+      await expect(heading).toBeVisible();
+      const lineCount = await heading.evaluate((element) => {
+        const style = window.getComputedStyle(element);
+        const lineHeight = Number.parseFloat(style.lineHeight);
+        return Math.round(element.getBoundingClientRect().height / lineHeight);
+      });
+      expect(lineCount, `Título excedeu quatro linhas em ${viewport.width}px`).toBeLessThanOrEqual(4);
+      await expect(page.locator('[data-hero-cta="true"]')).toBeVisible();
+      await expect(page.locator('[data-hero-cta="true"] a[href="#contato"]')).toBeVisible();
+      await expect(page.locator('[data-hero-cta="true"] a[href="#projetos"]')).toBeVisible();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+  });
+
   test("mantém o lightbox e os modais audiovisuais utilizáveis em telas estreitas", async ({ page }) => {
     test.setTimeout(180000);
     for (const viewport of [{ width: 320, height: 568 }, { width: 360, height: 800 }, { width: 375, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 430, height: 932 }, { width: 768, height: 900 }, { width: 1280, height: 720 }, { width: 1440, height: 900 }, { width: 1920, height: 1080 }]) {

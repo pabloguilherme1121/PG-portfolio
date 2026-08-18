@@ -1989,12 +1989,14 @@ export default function Home() {
                 <span className="h-px w-10 bg-[#38bdf8]" />
                 01 / portfólio em movimento
               </div>
-              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.85rem,8.8vw,8.8rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white">
+              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
                 Aprendendo a construir.
                 <br />
-                Registrando o que
+                <span className="hidden min-[400px]:inline">Registrando o que</span>
+                <span className="min-[400px]:hidden">Registrando o</span>
                 <br />
-                faz sentido.
+                <span className="hidden min-[400px]:inline">faz sentido.</span>
+                <span className="whitespace-nowrap min-[400px]:hidden">que faz sentido.</span>
               </h1>
               <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
                 <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" /><img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" /></picture>

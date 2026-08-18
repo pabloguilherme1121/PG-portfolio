@@ -1541,3 +1541,10 @@
 - [x] Implementar melhorias sem redesign ou remoção de funcionalidades.
 - [x] Validar testes, performance, acessibilidade e regressões.
 - [x] Atualizar documentação e publicar o resultado.
+
+## Novo ZIP do projeto atual
+
+- [x] Definir exclusões e conteúdo do pacote atual.
+- [x] Gerar ZIP limpo do estado atual.
+- [x] Validar integridade, ausência de secrets e artefatos temporários.
+- [x] Entregar o ZIP atual.
