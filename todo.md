@@ -1517,7 +1517,7 @@
 - [x] Comparar as instruções com o ZIP e o estado atual do projeto.
 - [x] Implementar as alterações solicitadas sem remover funcionalidades existentes.
 - [x] Executar validações, testes e revisão de regressões.
-- [ ] Entregar o resultado atualizado ao usuário.
+- [x] Entregar o resultado atualizado ao usuário.
 
 ## Retomada do projeto — validação das instruções anexadas
 
@@ -1525,4 +1525,4 @@
 - [x] Concluir install frozen, check, test, build e Playwright serial.
 - [x] Corrigir somente regressões concretas encontradas.
 - [x] Atualizar a documentação e o relatório da rodada.
-- [ ] Salvar checkpoint e entregar o estado atualizado.
+- [x] Salvar checkpoint e entregar o estado atualizado.
