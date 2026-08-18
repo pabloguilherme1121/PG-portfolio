@@ -42,3 +42,21 @@ O ajuste foi limitado ao H1 abaixo de 400 px. A escala mínima foi reduzida de f
 | Feedback de operação | Atualização de filtros era majoritariamente semântica. | Operações reais de filtro e busca exibem “atualizando resultados” com transição curta; skeleton, carregar mais e envio seguem seus estados existentes. | O cenário E2E aciona filtro e confirma o status; `prefers-reduced-motion` continua coberto. |
 
 Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial limpo com **31 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A primeira execução serial perdeu a sessão do navegador durante exportação PDF após carga acumulada; o mesmo cenário passou isoladamente e também passou na repetição serial limpa.
+
+## Auditoria de agenda, filtros e favoritos — escopo pendente de aprovação
+
+| Área | Achado em 320 px | Impacto | Proposta a validar |
+|---|---|---|---|
+| Agenda | A grade de dias usa células de 32 px, setas de mês de 32 px e horários com apenas o espaçamento vertical `py-2`. A leitura está íntegra, mas os alvos ficam menores que os demais controles móveis. | Ergonomia de toque média, sobretudo na escolha de data e mês. | Usar 40 px nos dias e 44 px nas setas e horários; reduzir somente o espaçamento interno do cartão para absorver o aumento sem alargar a agenda. |
+| Filtros | Os rótulos técnicos “modo detalhado”, “modo compacto” e “refinar resultados” são corretos, mas longos para uma faixa de 320 px. | Densidade textual moderada, sem overflow confirmado. | No mobile, trocar o texto visível por “detalhes”, “compacto” e “filtros”; manter nomes ARIA descritivos e os textos longos no desktop. |
+| Favoritos nos cartões | A galeria já possui um botão funcional de favoritos no canto superior direito de cada item. Em 320 px ele mede 40 px e compete visualmente com os botões de imagem e ampliação. | O recurso existe, mas não é tão reconhecível nem confortável quanto poderia ser. | Não criar botão duplicado: aumentar o controle existente para 44 px e exibir “salvar” ou “salvo” no mobile; reposicionar o controle de imagem para evitar colisão. |
+
+## Resultado do refinamento de agenda, filtros e favoritos
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Agenda | Dias e setas mediam 32 px; horários não tinham altura mínima de toque. | Dias agora medem 40 px e as setas/horários 44 px abaixo de `sm`; o comportamento de datas e WhatsApp foi preservado. | E2E em 320 px mede todos os alvos e valida a ausência de overflow. |
+| Rótulos | “Refinar resultados” e “modo detalhado” ocupavam mais espaço visual no mobile. | Em telas estreitas, os textos visíveis são “filtros”, “detalhes” e “compacto”; os nomes ARIA e o desktop seguem descritivos. | E2E confirma texto curto e nome acessível completo. |
+| Favoritar | O coração por projeto media 40 px e a tentativa inicial de texto adjacente interferiu na ação de ampliar. | O controle existente foi ajustado para 44 px, com `aria-pressed`, rótulos completos e separação física da ação de imagem; não foi criado um duplicado. | E2E confirma toque, estado salvo e os dois testes de lightbox aprovados. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial limpo com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A interação de ampliar do lightbox foi repetida depois do ajuste de favoritos e manteve-se aprovada em todos os viewports cobertos.

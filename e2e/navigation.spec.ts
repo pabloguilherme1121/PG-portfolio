@@ -133,6 +133,32 @@ test.describe("navegação pública e favoritos", () => {
     expect(widths[0]).toBeGreaterThanOrEqual(widths[1] - 1);
   });
 
+  test("amplia a agenda e torna filtros e favoritos mais claros em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+    const calendar = page.locator(".availability-calendar");
+    await calendar.scrollIntoViewIfNeeded();
+    const previousMonth = calendar.getByRole("button", { name: "Mês anterior" });
+    const nextMonth = calendar.getByRole("button", { name: "Próximo mês" });
+    expect(await previousMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    expect(await nextMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    const dateHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(2, 9).map((element) => element.getBoundingClientRect().height));
+    expect(dateHeights.every((height) => height >= 40)).toBeTruthy();
+    const timeHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(-3).map((element) => element.getBoundingClientRect().height));
+    expect(timeHeights.every((height) => height >= 44)).toBeTruthy();
+
+    const gallery = page.locator("#galeria-publica");
+    await gallery.scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-mobile-gallery-refinement-toggle="true"]')).toHaveText(/filtros/i);
+    await expect(page.getByRole("button", { name: /Ativar visualização compacta/i })).toHaveText(/detalhes/i);
+    const favorite = page.locator('[data-favorite-control="true"]').first();
+    await expect(favorite).toHaveAttribute("aria-label", /Favoritar/i);
+    expect(await favorite.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+    await favorite.click();
+    await expect(favorite).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém ordenação na URL, mostra histórico e limpa todos os filtros", async ({ page }) => {
     await page.goto("/?technology=HTML&category=Interface&tag=Interface&sort=added&q=site#galeria-publica");
     const sort = page.locator('[data-sort-control="projects"]');

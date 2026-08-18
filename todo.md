@@ -1681,3 +1681,10 @@
 - [x] Apresentar um diff estimado com impacto e risco antes de mudar galeria, formulário ou feedbacks mobile.
 - [x] Aplicar somente os ajustes aprovados, preservando desktop, identidade visual, filtros, busca, lightbox, modais, favoritos e analytics.
 - [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Agenda, filtros e favoritos em telas estreitas
+
+- [x] Auditar em 320 px a legibilidade e os alvos de toque da agenda, os rótulos atuais dos filtros e o acesso a favoritos nos cartões da galeria, sem alterar código.
+- [x] Apresentar um diff estimado com impacto e risco antes de ajustar agenda, rótulos ou cartões mobile.
+- [x] Aplicar somente os ajustes aprovados, preservando desktop, filtros funcionais, busca, lightbox, modais, compartilhamento, exportação e analytics.
+- [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
