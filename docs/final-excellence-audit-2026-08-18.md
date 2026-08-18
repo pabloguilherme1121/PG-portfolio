@@ -194,3 +194,38 @@ A política CSP completa permanece em `Report-Only` porque a página precisa de 
 ### Validação desta rodada
 
 `pnpm check` foi aprovado. `pnpm test` foi aprovado com **9 arquivos e 31 testes**. `pnpm build` foi aprovado. O servidor de produção local confirmou os headers CSP efetivo e report-only; a requisição JSON acima do limite retornou `413`. O procedimento de formulário foi testado com mocks de banco e notificação para evitar a criação de briefing falso ou o disparo de alerta real ao proprietário. Não houve alteração em UX, design, mobile, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou fluxo visual do formulário.
+
+## Performance profissional — medição publicada e otimização baseada em evidência
+
+### Matriz de baseline e pós-otimização
+
+As medições foram feitas em 390×844 com emulação 4G (170 ms de latência, 1,6 Mbps de download, 0,75 Mbps de upload), em cache frio, cache quente e CPU 4×. INP é uma amostra da abertura/fechamento do menu móvel; CLS foi observado por `PerformanceObserver`. As variações de TTFB entre execuções são próprias do ambiente publicado e, por isso, devem ser lidas como faixa observada, não como promessa de SLA.
+
+| Cenário publicado | Requests antes/depois | Transferência antes/depois | LCP antes/depois | INP antes/depois | CLS antes/depois |
+|---|---:|---:|---:|---:|---:|
+| 4G, cache frio | 18 / **17** | 330,3 KB / 330,2 KB | 12,90 s / 15,99 s | 88 ms / 104 ms | 0 / 0 |
+| 4G, cache quente | 25 / **24** | 104,5 KB / 104,5 KB | 6,22 s / 4,92 s | 88 ms / 48 ms | 0 / 0 |
+| 4G, cache frio, CPU 4× | 16 / **16** | 330,2 KB / 330,3 KB | 28,81 s / 18,75 s | 184 ms / 144 ms | 0 / 0 |
+
+O request do pôster vertical do showreel estava presente em todos os cenários iniciais, começando entre 2,44 s e 8,19 s mesmo sem scroll e levando até 3,78 s para finalizar no cenário frio. Após a correção, o request não aparece antes da aproximação da seção. O `transferSize` desse recurso é informado como zero pelo navegador porque `/manus-storage/*` responde com redirect para URL assinada; a redução confirmada é de **um request iniciado antes da primeira interação**, não uma estimativa de bytes inventada.
+
+### Chunks e classificação
+
+| Severidade | Evidência | Diagnóstico | Decisão nesta rodada |
+|---|---|---|---|
+| **CRÍTICO** | TTFB frio observado entre 3,17 s e 6,16 s; HTML concluído entre 4,26 s e 6,68 s | O navegador não começa CSS, JS nem imagens antes da resposta HTML. Isso impede LCP abaixo de 2,5 s em cache frio sob esta 4G, independentemente de micro-otimizações no React. | Sem alteração cega no app. Requer análise de cache/edge/TTFB da infraestrutura Manus. |
+| **ALTO** | Chunk principal: 944,5 KB bruto / 214,7 KB gzip; carregado como ~148 KB transferidos na amostra 4G | `HomeExperience` concentra estado e interações públicas. O chunk contém o fluxo principal, lightbox e galeria, portanto uma extração ampla teria risco alto de regressão. | Não extraído sem fronteira independente comprovada. |
+| **ALTO** | Chunk de 435,6 KB bruto / 180,5 KB gzip | É a dependência `pdf-lib`, identificada por `PDFDocument`; ela já é importada dinamicamente apenas na exportação PDF. | Mantido: não participa do request inicial. |
+| **MÉDIO** | Pôster de showreel abaixo da primeira região iniciava cedo e concorria com hero | `loading="lazy"` nativo ainda acionava o recurso dentro da margem de pré-carregamento do navegador. | Corrigido com observação por viewport real; poster continua disponível ao chegar à seção. |
+| **BAIXO** | CSS ~32,8 KB transferidos e folha de Google Fonts ~1,2 KB; CLS 0 | Não há evidência de bloqueio ou deslocamento relevante desses recursos na amostra. | Mantidos. |
+| **BAIXO** | Rotas de disponibilidade, favoritos, curadoria e social já são lazy/deferidas; vídeo só inicia após clique | As prioridades de exportação, PDF, curadoria e ferramentas administrativas já estavam fora do caminho crítico. | Nenhuma alteração adicional. |
+
+### Alteração aplicada
+
+Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx`, `e2e/navigation.spec.ts` e esta documentação. O card mantém a mesma marcação, CTA e reprodução sob demanda; somente o pôster passa a existir quando a seção efetivamente entra na viewport. A asserção E2E verifica ausência da imagem e de request antes do scroll, e disponibilidade após `scrollIntoViewIfNeeded()`.
+
+### Veredito de metas
+
+CLS atende a meta (< 0,1). A amostra de INP atende a meta (< 200 ms), inclusive com CPU 4× na pós-medição (144 ms). LCP não atende < 2,5 s na emulação 4G publicada: o gargalo dominante é TTFB/HTML e, em seguida, o carregamento de recursos pelo proxy de storage. A aplicação reduziu concorrência abaixo da dobra sem prejudicar o caminho crítico, mas não pode compensar sozinha a faixa de 3–6 s observada antes do início de CSS/JS/imagem.
+
+Validações da rodada: `pnpm check` aprovado; `pnpm test` com 31 testes aprovados; `pnpm build` aprovado; E2E relevante do pôster adiado aprovado. Não foram alterados design, conteúdo, hero, H1, primeiro projeto, lightbox, SEO, formulário, favoritos, compartilhamento ou funcionalidades administrativas.

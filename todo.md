@@ -1579,5 +1579,6 @@
 - [x] Medir baseline publicada em 390x844 sob 4G com cache frio, quente e CPU 4x quando disponível.
 - [x] Identificar chunks, elemento LCP, requests, execução JS e gargalos por severidade.
 - [x] Implementar somente otimizações comprovadas fora do caminho crítico.
-- [ ] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
-- [ ] Documentar antes/depois, limites de infraestrutura e publicar a otimização.
+- [x] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
+- [x] Documentar antes/depois e limites de infraestrutura.
+- [ ] Publicar a otimização de performance.
