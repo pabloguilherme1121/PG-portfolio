@@ -5,6 +5,39 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("navegação pública e favoritos", () => {
+  test("emite CTA de orçamento e início de briefing sem incluir dados pessoais", async ({ page }) => {
+    await page.addInitScript(() => {
+      const events: unknown[] = [];
+      window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
+      Object.defineProperty(window, "__portfolioAnalyticsEvents", { value: events });
+    });
+    await page.goto("/");
+
+    const emittedEventNames = () => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName));
+
+    await page.locator('a[href="#contato"]').filter({ hasText: /solicitar orçamento/i }).click();
+    await expect.poll(emittedEventNames).toContain("quote_cta");
+    await page.locator("#contato-briefing input").first().focus();
+    await expect.poll(emittedEventNames).toContain("briefing_started");
+    const propertyKeys = await page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ properties?: Record<string, unknown> }> }).__portfolioAnalyticsEvents.flatMap((event) => Object.keys(event.properties ?? {})));
+    expect(propertyKeys).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
+  });
+
+  test("emite abertura de projeto sem incluir dados pessoais", async ({ page }) => {
+    await page.addInitScript(() => {
+      const events: unknown[] = [];
+      window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
+      Object.defineProperty(window, "__portfolioAnalyticsEvents", { value: events });
+    });
+    await page.goto("/");
+
+    await page.locator("[data-featured-project]").first().click();
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible();
+    await expect.poll(() => page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ eventName: string }> }).__portfolioAnalyticsEvents.map((event) => event.eventName))).toContain("project_opened");
+    const propertyKeys = await page.evaluate(() => (window as typeof window & { __portfolioAnalyticsEvents: Array<{ properties?: Record<string, unknown> }> }).__portfolioAnalyticsEvents.flatMap((event) => Object.keys(event.properties ?? {})));
+    expect(propertyKeys).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
+  });
+
   test("percorre as âncoras públicas e mantém a galeria acessível", async ({ page }) => {
     await page.goto("/");
     await expect(page.locator("main")).toBeVisible();
@@ -108,6 +141,8 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-featured-project]').first()).toBeVisible({ timeout: 10000 });
     await page.locator('[data-featured-project]').first().click();
     const details = page.locator('[data-project-details-dialog="true"]');
+    await expect(details.locator('[data-project-case-study="true"]')).toBeVisible();
+    await expect(details.locator('[data-project-case-study="true"]')).toContainText(/contexto|problema|objetivo|minha função|processo|decisões|resultado|aprendizado/i);
     const title = details.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
     const next = details.locator('[data-project-modal-next="true"]');
@@ -139,6 +174,21 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => deferredRequests.some((url) => url.includes("instagramFeed.status")), { timeout: 10000 }).toBeTruthy();
     await expect(page.locator("#social")).not.toContainText(/autorização da Meta|credenciais|required|feed temporariamente indisponível/i);
     await expect(page.locator("#social")).toContainText(/curadoria editorial|perfis reais/i);
+  });
+
+  test("adia o pôster do showreel até a aproximação da seção", async ({ page }) => {
+    const showreelRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/showreel-(vertical-)?poster/.test(request.url())) showreelRequests.push(request.url());
+    });
+    await page.goto("/");
+    await page.waitForTimeout(500);
+    await expect(page.locator('[data-showreel-trigger="true"] img')).toHaveCount(0);
+    expect(showreelRequests).toHaveLength(0);
+
+    await page.locator('[data-showreel="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-showreel-trigger="true"] img')).toBeVisible({ timeout: 10000 });
+    await expect.poll(() => showreelRequests.length, { timeout: 10000 }).toBeGreaterThan(0);
   });
 
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
@@ -224,7 +274,6 @@ test.describe("navegação pública e favoritos", () => {
     await firstProject.click();
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
-    await expect(page.locator('[data-project-swipe-hint="true"]')).toBeVisible();
     await expect(page.locator('[data-mobile-contact-bar="true"]')).toHaveCSS("opacity", "0");
     const title = dialog.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
@@ -287,6 +336,41 @@ test.describe("navegação pública e favoritos", () => {
       await expect(page.locator('[data-hero-cta="true"] a[href="#contato"]')).toBeVisible();
       await expect(page.locator('[data-hero-cta="true"] a[href="#projetos"]')).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+  });
+
+  test("mantém os CTAs do hero acima da barra fixa de contato", async ({ page }) => {
+    test.setTimeout(90000);
+    for (const viewport of [{ width: 320, height: 568 }, { width: 360, height: 800 }, { width: 375, height: 812 }, { width: 390, height: 844 }, { width: 414, height: 896 }, { width: 430, height: 932 }, { width: 768, height: 900 }, { width: 1280, height: 720 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const heroCta = page.locator('[data-hero-cta="true"]');
+      const contactBar = page.locator('[data-mobile-contact-bar="true"]');
+      await expect(heroCta.getByRole("link", { name: /solicitar orçamento/i })).toBeVisible();
+      await expect(heroCta.getByRole("link", { name: /ver trabalhos/i })).toBeVisible();
+      const controlsDoNotOverlap = await page.evaluate(() => {
+        const cta = document.querySelector<HTMLElement>('[data-hero-cta="true"]');
+        const bar = document.querySelector<HTMLElement>('[data-mobile-contact-bar="true"]');
+        if (!cta || !bar) return false;
+        const style = window.getComputedStyle(bar);
+        const barVisible = Number.parseFloat(style.opacity) > 0.01 && style.visibility !== "hidden";
+        if (!barVisible) return true;
+        const barRect = bar.getBoundingClientRect();
+        return Array.from(cta.querySelectorAll<HTMLElement>("a")).every((link) => {
+          const rect = link.getBoundingClientRect();
+          const horizontallyOverlaps = rect.left < barRect.right && rect.right > barRect.left;
+          const verticallyOverlaps = rect.top < barRect.bottom && rect.bottom > barRect.top;
+          return !(horizontallyOverlaps && verticallyOverlaps);
+        });
+      });
+      expect(controlsDoNotOverlap, `CTA do hero ficou sob a barra fixa em ${viewport.width}x${viewport.height}`).toBeTruthy();
+      const heroCtaIsInViewport = await heroCta.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.top < window.innerHeight && rect.bottom > 0;
+      });
+      if (viewport.width < 1024 && heroCtaIsInViewport) {
+        await expect(contactBar).toHaveCSS("opacity", "0");
+      }
     }
   });
 

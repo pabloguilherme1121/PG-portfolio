@@ -108,13 +108,28 @@ export type Repository = {
   addedOrder: number;
   /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
   relevance: number;
+  /** Projeção resumida usada na gestão de favoritos, com tags próprias já exibidas no painel. */
+  catalog: {
+    description: string;
+    tags: string[];
+  };
+  caseStudy?: {
+    context: string;
+    problem: string;
+    objective: string;
+    function: string;
+    process: string;
+    decisions: string;
+    result: string;
+    learning: string;
+  };
 };
 
 /**
  * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
  * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
  */
-const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
+export const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
   "/manus-storage/cha-da-eloise-capa_0d17d433.jpg": { webp: "/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp", avif: "/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif" },
   "/manus-storage/rham-interface-servicos-01_72f2d942.jpg": { webp: "/manus-storage/rham-interface-servicos-01-720w_f9038490.webp", avif: "/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif" },
   "/manus-storage/rham-depoimento-02_c0845a39.jpg": { webp: "/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp", avif: "/manus-storage/rham-depoimento-02-720w_3f7b257b.avif" },
@@ -124,9 +139,9 @@ const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = 
   "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg": { webp: "/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp", avif: "/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif" },
 };
 
-const comparisonPairs: Record<string, { before: string; after: string }> = {};
+export const comparisonPairs: Record<string, { before: string; after: string }> = {};
 
-const repositories: Repository[] = [
+export const repositories: Repository[] = [
   {
     id: "AUD.01",
     name: "Chá da Eloise",
@@ -141,6 +156,20 @@ const repositories: Repository[] = [
     featured: true,
     addedOrder: 7,
     relevance: 100,
+    catalog: {
+      description: "Registro audiovisual de evento social.",
+      tags: ["Drone", "Evento", "Conteúdo"],
+    },
+    caseStudy: {
+      context: "Registro audiovisual de um evento social, reunindo ambiente, pessoas e momentos da celebração.",
+      problem: "Concentrar espaço, presença e detalhes em um registro breve sem perder a atmosfera do encontro.",
+      objective: "Construir uma memória visual que ajude a revisitar o ambiente e os momentos do dia.",
+      function: "Cobertura aérea e leitura do ambiente.",
+      process: "Planos abertos, aproximações e movimentos suaves durante o registro.",
+      decisions: "Equilibrar vistas amplas do espaço com aproximações das pessoas e dos detalhes da celebração.",
+      result: "Uma memória visual que preserva espaço, presença e atmosfera.",
+      learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
+    },
   },
   {
     id: "CNT.02",
@@ -155,6 +184,20 @@ const repositories: Repository[] = [
     cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
     addedOrder: 6,
     relevance: 88,
+    catalog: {
+      description: "Vídeo vertical de navegação por serviços.",
+      tags: ["Interface", "Conteúdo"],
+    },
+    caseStudy: {
+      context: "Vídeo vertical público que percorre serviços em uma interface móvel da RHAM Águas Lindas.",
+      problem: "Apresentar uma jornada de serviços em pouco tempo, sem perder a leitura das etapas na tela.",
+      objective: "Demonstrar a navegação no aplicativo de forma direta e compreensível em formato vertical.",
+      function: "Apresentação visual da jornada de serviços.",
+      process: "Sequência curta guiada por leitura de tela e ritmo.",
+      decisions: "Organizar as etapas em uma ordem curta e usar o ritmo para priorizar o que precisa ser entendido primeiro.",
+      result: "Uma demonstração direta da navegação no aplicativo.",
+      learning: "Legibilidade e ritmo também são parte do produto final.",
+    },
   },
   {
     id: "CNT.03",
@@ -169,6 +212,10 @@ const repositories: Repository[] = [
     cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
     addedOrder: 5,
     relevance: 76,
+    catalog: {
+      description: "Registro vertical para comunicação institucional.",
+      tags: ["Conteúdo", "Vídeo"],
+    },
   },
   {
     id: "AUD.04",
@@ -183,6 +230,10 @@ const repositories: Repository[] = [
     cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
     addedOrder: 4,
     relevance: 82,
+    catalog: {
+      description: "Registro noturno com perspectiva elevada.",
+      tags: ["Drone", "Noturno", "Vídeo"],
+    },
   },
   {
     id: "AUD.05",
@@ -197,6 +248,20 @@ const repositories: Repository[] = [
     cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
     addedOrder: 3,
     relevance: 84,
+    catalog: {
+      description: "Captação horizontal de campo esportivo.",
+      tags: ["Drone", "Noturno", "Esporte"],
+    },
+    caseStudy: {
+      context: "Captação horizontal noturna de um campo esportivo, com foco em escala, luz e movimento.",
+      problem: "Apresentar o espaço à noite mantendo a leitura de escala e da iluminação disponível.",
+      objective: "Construir uma imagem de contexto que revele o campo por uma perspectiva aérea ampla.",
+      function: "Construção de uma visão ampla do campo.",
+      process: "Enquadramento horizontal atento à luz, escala e movimento.",
+      decisions: "Priorizar uma perspectiva aérea aberta e manter luz, escala e deslocamento como referências do enquadramento.",
+      result: "Uma imagem de contexto para apresentar o espaço com impacto.",
+      learning: "Em registros noturnos, luz e escala precisam orientar a leitura antes do movimento.",
+    },
   },
   {
     id: "CNT.06",
@@ -211,6 +276,10 @@ const repositories: Repository[] = [
     cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
     addedOrder: 2,
     relevance: 80,
+    catalog: {
+      description: "Recorte vertical de interface móvel.",
+      tags: ["Interface", "Conteúdo"],
+    },
   },
   {
     id: "AUD.07",
@@ -225,6 +294,10 @@ const repositories: Repository[] = [
     cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
     addedOrder: 1,
     relevance: 79,
+    catalog: {
+      description: "Sequência aérea com atmosfera noturna.",
+      tags: ["Drone", "Noturno", "Esporte"],
+    },
   },
 ];
 
@@ -264,5 +337,3 @@ export const sortOptions = [
   { value: "relevance", label: "relevância editorial" },
   { value: "added", label: "ordem de adição" },
 ] as const;
-
-export { comparisonPairs, optimizedLightboxImages, repositories };

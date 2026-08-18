@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { consumeQuoteRequestRateLimit, isQuoteRequestHoneypotFilled, quoteRequestInputSchema } from "./routers";
+import type { Request } from "express";
+import { consumeQuoteRequestRateLimit, getRequestIdentifier, isQuoteRequestHoneypotFilled, isTrustedProxyAddress, quoteRequestInputSchema } from "./routers";
 
 const validRequest = {
   name: "Cliente de teste",
@@ -36,5 +37,21 @@ describe("quoteRequestInputSchema", () => {
     expect(Array.from({ length: 5 }, () => consumeQuoteRequestRateLimit(identifier, now))).toEqual([true, true, true, true, true]);
     expect(consumeQuoteRequestRateLimit(identifier, now)).toBe(false);
     expect(consumeQuoteRequestRateLimit(identifier, now + 10 * 60 * 1000)).toBe(true);
+  });
+
+  it("aceita forwarded somente quando a conexão vem de proxy confiável", () => {
+    const directRequest = {
+      headers: { "x-forwarded-for": "203.0.113.50" },
+      socket: { remoteAddress: "198.51.100.18" },
+    } as unknown as Pick<Request, "headers" | "socket">;
+    const proxiedRequest = {
+      headers: { "x-forwarded-for": "203.0.113.50, 10.0.0.4" },
+      socket: { remoteAddress: "10.0.0.4" },
+    } as unknown as Pick<Request, "headers" | "socket">;
+
+    expect(isTrustedProxyAddress("10.0.0.4")).toBe(true);
+    expect(isTrustedProxyAddress("198.51.100.18")).toBe(false);
+    expect(getRequestIdentifier(directRequest)).toBe("198.51.100.18");
+    expect(getRequestIdentifier(proxiedRequest)).toBe("203.0.113.50");
   });
 });

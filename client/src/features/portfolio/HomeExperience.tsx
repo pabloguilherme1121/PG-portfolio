@@ -11,7 +11,6 @@ import {
   ArrowDownRight,
   ArrowUp,
   ArrowUpRight,
-  Camera,
   CalendarDays,
   CheckCircle2,
   ChevronLeft,
@@ -40,7 +39,6 @@ import {
   Menu,
   Maximize2,
   MessageCircle,
-  Plane,
   Play,
   Search,
   Send,
@@ -72,30 +70,29 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
+import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
+import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload, buildLightboxShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
+import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
+import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
+import {
+  caseStudies,
+  categoryFilters,
+  comparisonPairs,
+  optimizedLightboxImages,
+  predefinedOrderProfiles,
+  processSteps,
+  repertoireSignals,
+  repositories,
+  serviceOffers,
+  skillTracks,
+  sortOptions,
+  tagFilters,
+  technologyFilters,
+  type ManualOrderProfile,
+  type Repository,
+} from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
-
-function useNearViewport<T extends HTMLElement>(rootMargin = "720px") {
-  const targetRef = useRef<T | null>(null);
-  const [isNearViewport, setIsNearViewport] = useState(false);
-
-  useEffect(() => {
-    const target = targetRef.current;
-    if (!target) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setIsNearViewport(true);
-      return;
-    }
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry?.isIntersecting) return;
-      setIsNearViewport(true);
-      observer.disconnect();
-    }, { rootMargin, threshold: 0 });
-    observer.observe(target);
-    return () => observer.disconnect();
-  }, [rootMargin]);
-
-  return [targetRef, isNearViewport] as const;
-}
 
 const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
@@ -128,116 +125,6 @@ const showreelVerticalPosterUrl = "/manus-storage/showreel-vertical-poster_e21c7
 const showreelVerticalPosterResponsive = {
   avif: "/manus-storage/showreel-vertical-poster-480w_e4656a6a.avif 480w, /manus-storage/showreel-vertical-poster-720w_7e009499.avif 720w",
   webp: "/manus-storage/showreel-vertical-poster-480w_092fa9d6.webp 480w, /manus-storage/showreel-vertical-poster-720w_d90358f3.webp 720w",
-};
-
-const skillTracks = [
-  {
-    number: "01",
-    title: "Tecnologia e produto",
-    text: "Lógica, interfaces e organização para transformar uma ideia em uma experiência clara e utilizável.",
-    tools: "HTML · CSS · JavaScript · Python",
-  },
-  {
-    number: "02",
-    title: "Conteúdo e narrativa",
-    text: "Roteiro, ritmo e edição para comunicar uma mensagem sem excesso e com intenção.",
-    tools: "Roteiro · edição · vídeo vertical · direção",
-  },
-  {
-    number: "03",
-    title: "Imagem aérea e terrestre",
-    text: "Enquadramento, movimento e leitura de espaço para registrar o que precisa ser percebido.",
-    tools: "Drone · câmera · composição · captação",
-  },
-];
-
-const serviceOffers = [
-  {
-    number: "01",
-    label: "drone / perspectiva aérea",
-    title: "Filmagem aérea",
-    text: "Perspectiva aérea para revelar escala, movimento e a energia que só aparece quando a câmera sobe.",
-    detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
-    delivery: "9:16 · 16:9",
-    duration: "15–60 s / 1–2 min",
-    Icon: Plane,
-  },
-  {
-    number: "02",
-    label: "câmera / registro em solo",
-    title: "Captação terrestre",
-    text: "Câmera no ponto certo para acompanhar pessoas, detalhes e o que realmente acontece no momento.",
-    detail: "PRESENÇA · RITMO · DETALHE",
-    delivery: "Reels · aftermovie",
-    duration: "30–90 s / 1–3 min",
-    Icon: Camera,
-  },
-  {
-    number: "03",
-    label: "narrativa / presença digital",
-    title: "Criação de conteúdo",
-    text: "Conteúdo que transforma um momento, uma marca ou uma ideia em material pronto para chamar atenção.",
-    detail: "IDEIA · REGISTRO · CONEXÃO",
-    delivery: "3–5 vídeos verticais",
-    duration: "15–60 s por peça",
-    Icon: Clapperboard,
-  },
-];
-
-const processSteps = [
-  {
-    number: "01",
-    title: "Alinhamos o objetivo",
-    text: "Contexto, público e resultado esperado entram na conversa antes de qualquer produção.",
-  },
-  {
-    number: "02",
-    title: "Escolhemos o formato",
-    text: "Referências, linguagem, data e entrega são definidos de forma simples e transparente.",
-  },
-  {
-    number: "03",
-    title: "Produzimos com clareza",
-    text: "O material é captado, organizado e entregue pronto para o próximo uso do projeto.",
-  },
-];
-
-const caseStudies = [
-  {
-    id: "ARQ.01",
-    title: "Chá da Eloise",
-    context: "Evento social com foco em atmosfera, pessoas e detalhes que ajudam a memória do dia.",
-    method: "Planos abertos, aproximações e movimentos suaves para equilibrar espaço e presença.",
-    learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
-    tags: ["Evento", "Vídeo", "Aéreo"],
-  },
-  {
-    id: "ARQ.02",
-    title: "RHAM — serviços no app",
-    context: "Conteúdo vertical para apresentar uma jornada de serviços com rapidez e clareza.",
-    method: "Sequência curta, leitura de tela e ritmo guiando cada etapa da experiência.",
-    learning: "Legibilidade e ritmo também são parte do produto final.",
-    tags: ["Interface", "Conteúdo", "Vertical"],
-  },
-];
-
-type Repository = {
-
-  id: string;
-  name: string;
-  description: string;
-  role: string;
-  process: string;
-  result: string;
-  technologies: string[];
-  url: string;
-  kind: "repository" | "video";
-  cover?: string;
-  featured?: boolean;
-  /** Ordem de entrada no arquivo visual, preservada pela sequência de cadastro dos projetos. */
-  addedOrder: number;
-  /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
-  relevance: number;
 };
 
 type SearchSuggestion = {
@@ -283,149 +170,6 @@ function renderSuggestionMatch(value: string, query: string, isActive: boolean) 
   return <>{characters.slice(0, characterStart).join("")}<strong data-suggestion-match="true" className={`font-bold ${isActive ? "text-[#02111f]" : "text-white"}`}>{characters.slice(characterStart, characterEnd).join("")}</strong>{characters.slice(characterEnd).join("")}</>;
 }
 
-/**
- * Galeria de trabalhos reais. Novos repositórios e vídeos devem entrar aqui
- * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
- */
-const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
-  "/manus-storage/cha-da-eloise-capa_0d17d433.jpg": { webp: "/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp", avif: "/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif" },
-  "/manus-storage/rham-interface-servicos-01_72f2d942.jpg": { webp: "/manus-storage/rham-interface-servicos-01-720w_f9038490.webp", avif: "/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif" },
-  "/manus-storage/rham-depoimento-02_c0845a39.jpg": { webp: "/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp", avif: "/manus-storage/rham-depoimento-02-720w_3f7b257b.avif" },
-  "/manus-storage/captacao-noturna-03_1033bede.jpg": { webp: "/manus-storage/captacao-noturna-03-720w_e51d98e0.webp", avif: "/manus-storage/captacao-noturna-03-720w_f24e9f42.avif" },
-  "/manus-storage/campo-iluminado-04_665a6d8f.jpg": { webp: "/manus-storage/campo-iluminado-04-1280w_bc353281.webp", avif: "/manus-storage/campo-iluminado-04-1280w_5f023100.avif" },
-  "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg": { webp: "/manus-storage/campo-iluminado-movimento-06-1280w_298c2385.webp", avif: "/manus-storage/campo-iluminado-movimento-06-1280w_7f75fd17.avif" },
-  "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg": { webp: "/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp", avif: "/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif" },
-};
-
-const comparisonPairs: Record<string, { before: string; after: string }> = {};
-
-const repositories: Repository[] = [
-  {
-    id: "AUD.01",
-    name: "Chá da Eloise",
-    description: "Registro audiovisual de evento social, com imagens amplas do ambiente e momentos da celebração.",
-    role: "Cobertura aérea e leitura do ambiente.",
-    process: "Planos abertos, aproximações e movimentos suaves.",
-    result: "Uma memória visual que preserva espaço, presença e atmosfera.",
-    technologies: ["Vídeo", "Drone", "Conteúdo"],
-    url: "/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4",
-    kind: "video",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
-    featured: true,
-    addedOrder: 7,
-    relevance: 100,
-  },
-  {
-    id: "CNT.02",
-    name: "RHAM — Serviços no app",
-    description: "Vídeo vertical de navegação por serviços em uma interface móvel da RHAM Águas Lindas.",
-    role: "Apresentação visual da jornada de serviços.",
-    process: "Sequência curta guiada por leitura de tela e ritmo.",
-    result: "Uma demonstração direta da navegação no aplicativo.",
-    technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
-    addedOrder: 6,
-    relevance: 88,
-  },
-  {
-    id: "CNT.03",
-    name: "RHAM — Mensagem em vídeo",
-    description: "Registro vertical com apresentação diante da câmera para comunicação institucional.",
-    role: "Captação e organização de uma mensagem em vídeo.",
-    process: "Enquadramento vertical e condução direta diante da câmera.",
-    result: "Uma peça curta para comunicar uma mensagem com presença.",
-    technologies: ["Vídeo", "Conteúdo"],
-    url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
-    addedOrder: 5,
-    relevance: 76,
-  },
-  {
-    id: "AUD.04",
-    name: "Captação noturna — visão aérea",
-    description: "Registro vertical noturno com perspectiva elevada sobre o espaço e seus arredores.",
-    role: "Exploração aérea de espaço e entorno.",
-    process: "Captação noturna com perspectiva elevada e movimento controlado.",
-    result: "Um recorte vertical que valoriza escala e atmosfera.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
-    kind: "video",
-    cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
-    addedOrder: 4,
-    relevance: 82,
-  },
-  {
-    id: "AUD.05",
-    name: "Campo iluminado — vista aérea",
-    description: "Captação horizontal de campo esportivo à noite, valorizando escala, luz e movimento.",
-    role: "Construção de uma visão ampla do campo.",
-    process: "Enquadramento horizontal atento à luz, escala e movimento.",
-    result: "Uma imagem de contexto para apresentar o espaço com impacto.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
-    kind: "video",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
-    addedOrder: 3,
-    relevance: 84,
-  },
-  {
-    id: "CNT.06",
-    name: "RHAM — Navegação de serviços",
-    description: "Segundo recorte vertical de interface móvel, focado na jornada de serviços do aplicativo.",
-    role: "Reforço visual da jornada de serviços.",
-    process: "Recorte vertical com foco nas etapas principais da interface.",
-    result: "Uma leitura complementar e rápida do fluxo do aplicativo.",
-    technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
-    kind: "video",
-    cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
-    addedOrder: 2,
-    relevance: 80,
-  },
-  {
-    id: "AUD.07",
-    name: "Campo iluminado — sequência aérea",
-    description: "Novo enquadramento horizontal do campo, explorando a perspectiva de voo e a atmosfera noturna.",
-    role: "Variação de perspectiva para ampliar o repertório do registro.",
-    process: "Movimento aéreo horizontal com atenção à atmosfera noturna.",
-    result: "Uma sequência alternativa para comparar escala e direção.",
-    technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
-    kind: "video",
-    cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
-    addedOrder: 1,
-    relevance: 79,
-  },
-];
-const repertoireSignals = [
-  {
-    label: "escala e perspectiva",
-    title: "Imagem aérea",
-    text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
-  },
-  {
-    label: "clareza e ritmo",
-    title: "Interface em movimento",
-    text: "Registro de produto e serviço com foco no que a pessoa precisa entender primeiro.",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
-  },
-  {
-    label: "presença e detalhe",
-    title: "Registro de evento",
-    text: "Captação que aproxima o público da atmosfera, das pessoas e dos pequenos momentos.",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
-  },
-];
-
-const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
-const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
-const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
-type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
-
 function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback: string) {
   if (typeof window === "undefined") return fallback;
   const value = new URLSearchParams(window.location.search).get(key);
@@ -435,34 +179,6 @@ function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback
 function getPortfolioUrlSearch() {
   if (typeof window === "undefined") return "";
   return new URLSearchParams(window.location.search).get("q") ?? "";
-}
-
-const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
-];
-
-const sortOptions = [
-  { value: "manual", label: "ordem manual" },
-  { value: "relevance", label: "relevância editorial" },
-  { value: "added", label: "ordem de adição" },
-] as const;
-function trackPortfolioEvent(eventName: string, properties: Record<string, string | number>) {
-  if (typeof window === "undefined") return;
-  const payload = { eventName, properties, url: window.location.href, websiteId: import.meta.env.VITE_ANALYTICS_WEBSITE_ID };
-  window.dispatchEvent(new CustomEvent("portfolio:analytics", { detail: payload }));
-  const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT as string | undefined;
-  if (!endpoint) return;
-  const body = JSON.stringify(payload);
-  try {
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
-    } else {
-      void fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body, keepalive: true }).catch(() => undefined);
-    }
-  } catch {
-    // Analytics must never interfere with the portfolio interaction.
-  }
 }
 
 function getRepositoryCategories(repository: Repository) {
@@ -487,6 +203,7 @@ export default function Home() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>();
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>();
+  const [showreelSectionRef, shouldLoadShowreelPoster] = useNearViewport<HTMLDivElement>("0px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -581,6 +298,7 @@ export default function Home() {
   const [showProjectSwipeHint, setShowProjectSwipeHint] = useState(false);
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
+  const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf" | "error">("idle");
   const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
   const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
@@ -638,6 +356,8 @@ export default function Home() {
   const lightboxImageContainerRef = useRef<HTMLDivElement>(null);
   const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
   const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
+  const heroCtaRef = useRef<HTMLDivElement>(null);
+  const briefingStartedRef = useRef(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -648,6 +368,41 @@ export default function Home() {
   const lightboxNextProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex + 1) % lightboxProjects.length] : null;
   const lightboxPreviousProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null;
   const lightboxComparison = lightboxProject ? comparisonPairs[lightboxProject.id] ?? null : null;
+  const shouldHideContactFloat = Boolean(lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
+
+  useEffect(() => {
+    const target = heroCtaRef.current;
+    if (!target || typeof window === "undefined") return;
+
+    const mobileQuery = window.matchMedia("(max-width: 1023px)");
+    let animationFrame: number | null = null;
+
+    const syncVisibility = () => {
+      animationFrame = null;
+      if (!mobileQuery.matches) {
+        setIsHeroCtaVisible(false);
+        return;
+      }
+      const rect = target.getBoundingClientRect();
+      setIsHeroCtaVisible(rect.top < window.innerHeight && rect.bottom > 0);
+    };
+
+    const scheduleSync = () => {
+      if (animationFrame !== null) return;
+      animationFrame = window.requestAnimationFrame(syncVisibility);
+    };
+
+    scheduleSync();
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+    mobileQuery.addEventListener("change", scheduleSync);
+    return () => {
+      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      mobileQuery.removeEventListener("change", scheduleSync);
+    };
+  }, []);
 
   useEffect(() => {
     setLightboxImageLoading(Boolean(lightboxProject));
@@ -709,6 +464,7 @@ export default function Home() {
       setShowSwipeHint(true);
       window.setTimeout(() => setShowSwipeHint(false), 3200);
     }
+    trackPortfolioEvent("project_opened", { projectId, surface: "lightbox" });
     setLightboxProjectId(projectId);
   };
 
@@ -1284,6 +1040,7 @@ export default function Home() {
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
     onSuccess: (result) => {
+      trackPortfolioEvent("briefing_completed");
       setFormSent(true);
       toast.success("Briefing recebido", {
         description: result.ownerNotified
@@ -1314,14 +1071,7 @@ export default function Home() {
   }
 
   async function copyContactEmail() {
-    const email = "mpjcreator@gmail.com";
-    try {
-      await navigator.clipboard.writeText(email);
-      setEmailCopyStatus("copied");
-    } catch {
-      setEmailCopyStatus("error");
-    }
-    window.setTimeout(() => setEmailCopyStatus("idle"), 2200);
+    await copyTextWithFeedback("mpjcreator@gmail.com", setEmailCopyStatus);
   }
 
   async function copyCurrentSearchLink() {
@@ -1335,6 +1085,7 @@ export default function Home() {
   }
 
   function openProjectDetails(project: Repository) {
+    trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
     setProjectDetailsLoading(true);
     setProjectVideoNeedsPlay(false);
     if (window.innerWidth < 768 && !window.localStorage.getItem("pablo-portfolio-project-swipe-hint-seen")) {
@@ -1464,17 +1215,14 @@ export default function Home() {
 
   function getSelectedProjectUrl() {
     if (!selectedProject) return "";
-    const projectUrl = new URL(window.location.href);
-    projectUrl.searchParams.delete("favorites");
-    projectUrl.searchParams.set("projeto", selectedProject.id);
-    projectUrl.hash = "projetos";
-    return projectUrl.toString();
+    return buildProjectShareUrl(window.location.href, selectedProject.id);
   }
   async function shareSelectedProject() {
     const projectUrl = getSelectedProjectUrl();
     if (!projectUrl) return;
     try {
       await navigator.clipboard.writeText(projectUrl);
+      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
       setProjectShareStatus("copied");
     } catch {
       setProjectShareStatus("error");
@@ -1486,6 +1234,7 @@ export default function Home() {
     if (!projectUrl) return;
     try {
       await navigator.clipboard.writeText(projectUrl);
+      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
       setProjectCopyStatus("copied");
     } catch {
       setProjectCopyStatus("error");
@@ -1495,7 +1244,7 @@ export default function Home() {
 
   async function shareFavorites() {
     if (!favoriteProjectIds.length) return;
-    const shareUrl = `${window.location.origin}${window.location.pathname}?favorites=${encodeURIComponent(favoriteProjectIds.join(","))}#projetos`;
+    const shareUrl = buildFavoritesShareUrl(window.location.href, favoriteProjectIds);
     try {
       await navigator.clipboard.writeText(shareUrl);
       setShareStatus("copied");
@@ -1506,10 +1255,7 @@ export default function Home() {
   }
 
   function getLightboxShareUrl(project: Repository) {
-    const url = new URL(window.location.href);
-    url.searchParams.set("imagem", project.id);
-    url.hash = "projetos";
-    return url.toString();
+    return buildLightboxShareUrl(window.location.href, project.id);
   }
 
   async function copyLightboxProjectLink() {
@@ -1518,7 +1264,7 @@ export default function Home() {
       await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("link");
-      trackPortfolioEvent("portfolio_lightbox_copy", { action: "link", projectId: lightboxProject.id, projectName: lightboxProject.name });
+      trackPortfolioEvent("share_project", { channel: "copy_link", projectId: lightboxProject.id });
     } catch {
       setLightboxShareStatus("error");
     }
@@ -1540,17 +1286,16 @@ export default function Home() {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    trackPortfolioEvent("portfolio_image_download", { format, projectId: lightboxProject.id, projectName: lightboxProject.name });
+    trackPortfolioEvent("download_project", { format, projectId: lightboxProject.id });
   }
 
   async function copyLightboxProjectContext() {
     if (!lightboxProject) return;
-    const context = [`${lightboxProject.name} — Pablo Guilherme`, lightboxProject.description, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, getLightboxShareUrl(lightboxProject)].join("\n\n");
+    const context = buildLightboxContext(lightboxProject, getLightboxShareUrl(lightboxProject));
     try {
       await navigator.clipboard.writeText(context);
       setLightboxShareStatus("copied");
       setLightboxCopiedAction("context");
-      trackPortfolioEvent("portfolio_lightbox_copy", { action: "context", projectId: lightboxProject.id, projectName: lightboxProject.name });
     } catch {
       setLightboxShareStatus("error");
     }
@@ -1563,7 +1308,7 @@ export default function Home() {
     const projectName = lightboxProject.name;
     const shareText = `${projectName} — ${getLightboxShareUrl(lightboxProject)}`;
     setLightboxRedirectingChannel("whatsapp");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "whatsapp", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "whatsapp", projectId });
     window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
     window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
@@ -1571,9 +1316,8 @@ export default function Home() {
   function shareLightboxToLinkedIn() {
     if (!lightboxProject || lightboxRedirectingChannel) return;
     const projectId = lightboxProject.id;
-    const projectName = lightboxProject.name;
     setLightboxRedirectingChannel("linkedin");
-    trackPortfolioEvent("portfolio_lightbox_share", { channel: "linkedin", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "linkedin", projectId });
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getLightboxShareUrl(lightboxProject))}`, "_blank", "noopener,noreferrer");
     window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
   }
@@ -1581,12 +1325,10 @@ export default function Home() {
   function shareLightboxByEmail() {
     if (!lightboxProject || lightboxEmailStatus === "opening") return;
     const projectId = lightboxProject.id;
-    const projectName = lightboxProject.name;
     const projectUrl = getLightboxShareUrl(lightboxProject);
-    const subject = `Projeto ${lightboxProject.name} — Pablo Guilherme`;
-    const body = [`Olá,`, ``, `Quero compartilhar este projeto do portfólio de Pablo Guilherme: ${lightboxProject.name}.`, ``, lightboxProject.description, ``, `Papel: ${lightboxProject.role}`, `Processo: ${lightboxProject.process}`, `Resultado: ${lightboxProject.result}`, ``, projectUrl].join("\n");
+    const { subject, body } = buildLightboxEmailPayload(lightboxProject, projectUrl);
     setLightboxEmailStatus("opening");
-    trackPortfolioEvent("portfolio_lightbox_email", { channel: "email", projectId, projectName });
+    trackPortfolioEvent("share_project", { channel: "email", projectId });
     window.setTimeout(() => setLightboxEmailStatus("idle"), 1800);
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
@@ -1602,7 +1344,7 @@ export default function Home() {
       try {
         await navigator.share(shareData);
         setLightboxShareStatus("shared");
-        trackPortfolioEvent("portfolio_lightbox_share", { channel: "native", projectId: lightboxProject.id, projectName: lightboxProject.name });
+        trackPortfolioEvent("share_project", { channel: "native", projectId: lightboxProject.id });
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;
         setLightboxShareStatus("error");
@@ -1614,66 +1356,13 @@ export default function Home() {
     window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
-  async function exportFavorites(format: "csv" | "json" | "pdf") {
+  async function exportFavorites(format: FavoriteExportFormat) {
     const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
     if (!favoriteProjects.length) return;
     if (favoriteExportTimerRef.current) window.clearTimeout(favoriteExportTimerRef.current);
     setFavoriteExportStatus(format);
-    const exportRows = favoriteProjects.map((repository) => ({
-      id: repository.id,
-      nome: repository.name,
-      resumo: repository.description,
-      tecnologias: repository.technologies,
-      categorias: Array.from(getRepositoryCategories(repository)),
-      tipo: repository.kind,
-      link: repository.url,
-    }));
     try {
-      const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
-      if (format === "pdf") {
-        const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
-        const pdf = await PDFDocument.create();
-        const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
-        const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
-        const pageSize: [number, number] = [595.28, 841.89];
-        let page = pdf.addPage(pageSize);
-        let y = pageSize[1] - 48;
-        const drawLine = (text: string, bold = false, size = 10) => {
-          if (y < 46) { page = pdf.addPage(pageSize); y = pageSize[1] - 48; }
-          page.drawText(text.slice(0, 110), { x: 42, y, size, font: bold ? boldFont : regularFont, color: rgb(0.08, 0.14, 0.23) });
-          y -= size + 7;
-        };
-        drawLine("Pablo Guilherme — projetos favoritos", true, 16);
-        drawLine(`Arquivo exportado em ${new Date().toLocaleDateString("pt-BR")}`, false, 9);
-        y -= 8;
-        exportRows.forEach((row, index) => {
-          drawLine(`${String(index + 1).padStart(2, "0")}  ${row.nome}`, true, 12);
-          drawLine(`${row.id} · ${row.tipo}`, false, 9);
-          drawLine(`Tecnologias: ${row.tecnologias.join(", ")}`, false, 9);
-          drawLine(row.resumo, false, 9);
-          drawLine(row.link, false, 8);
-          y -= 8;
-        });
-        const bytes = await pdf.save();
-        const blob = new Blob([bytes as unknown as ArrayBuffer], { type: "application/pdf" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = downloadUrl;
-        anchor.download = "pablo-guilherme-favoritos.pdf";
-        document.body.appendChild(anchor); anchor.click(); anchor.remove();
-        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-      } else {
-        const content = format === "json"
-          ? JSON.stringify(exportRows, null, 2)
-          : ["id,nome,resumo,tecnologias,categorias,tipo,link", ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(","))].join("\n");
-        const blob = new Blob([format === "csv" ? `\uFEFF${content}` : content], { type: format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8" });
-        const downloadUrl = URL.createObjectURL(blob);
-        const anchor = document.createElement("a");
-        anchor.href = downloadUrl;
-        anchor.download = `pablo-guilherme-favoritos.${format}`;
-        document.body.appendChild(anchor); anchor.click(); anchor.remove();
-        window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
-      }
+      await exportFavoriteProjects(format, favoriteProjects, getRepositoryCategories);
     } catch {
       setFavoriteExportStatus("error");
       favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
@@ -1847,6 +1536,7 @@ export default function Home() {
     if (!availabilityWhatsAppUrl || isAvailabilityRedirecting || isBlockedDatesError) return;
 
     setIsAvailabilityRedirecting(true);
+    trackPortfolioEvent("whatsapp_click", { source: "availability" });
     window.setTimeout(() => {
       const whatsappWindow = window.open(availabilityWhatsAppUrl, "_blank", "noopener,noreferrer");
       if (!whatsappWindow) {
@@ -1878,6 +1568,12 @@ export default function Home() {
       },
       { onSuccess: () => form.reset() },
     );
+  }
+
+  function trackBriefingStarted() {
+    if (briefingStartedRef.current) return;
+    briefingStartedRef.current = true;
+    trackPortfolioEvent("briefing_started");
   }
 
   const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -1968,7 +1664,7 @@ export default function Home() {
           </div>
           <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Tamanho da fonte"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">tamanho do texto</p><span className="font-mono text-[9px] text-[#9fb2ce]">{Math.round(fontScale * 100)}%</span></div><div className="mt-2 grid grid-cols-3 gap-2"><button type="button" onClick={() => setFontScale((value) => Math.max(0.92, Number((value - 0.04).toFixed(2))))} disabled={fontScale <= 0.92} aria-label="Diminuir tamanho da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9] disabled:opacity-40">A−</button><button type="button" onClick={() => setFontScale(1)} aria-label="Restaurar tamanho padrão da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9]">100%</button><button type="button" onClick={() => setFontScale((value) => Math.min(1.16, Number((value + 0.04).toFixed(2))))} disabled={fontScale >= 1.16} aria-label="Aumentar tamanho da fonte" className="border border-white/10 px-2 py-3 font-mono text-xs text-[#d9fbff] transition-colors hover:border-[#67e8f9] disabled:opacity-40">A+</button></div></div>
           <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Visualização dos projetos"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">visualização dos projetos</p><div className="mt-2 grid grid-cols-2 gap-2">{([['grid', 'Grade', LayoutGrid], ['list', 'Lista', List]] as const).map(([value, label, Icon]) => <button key={value} type="button" onClick={() => setGalleryView(value)} aria-pressed={galleryView === value} className={`flex items-center justify-center gap-2 border px-2 py-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${galleryView === value ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><Icon className="h-4 w-4" aria-hidden="true" />{label}</button>)}</div></div>
-          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Perfis de ordenação"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">perfis de ordem</p>{activeOrderProfileId && <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#67e8f9]">ativo</span>}</div><p className="mt-2 font-body text-xs leading-5 text-[#9fb2ce]">Salve uma sequência para alternar entre audiovisual, tecnologia ou outros contextos.</p><div className="mt-3 space-y-2">{manualOrderProfiles.length > 0 ? manualOrderProfiles.map((profile) => <div key={profile.id} className="flex items-center gap-2"><button type="button" onClick={() => selectOrderProfile(profile)} aria-pressed={activeOrderProfileId === profile.id} data-profile-recently-activated={recentlyActivatedOrderProfileId === profile.id ? "true" : undefined} className={`min-w-0 flex-1 truncate border px-3 py-2 text-left font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${recentlyActivatedOrderProfileId === profile.id ? "profile-activation-pulse border-[#fbbf24] bg-[#17304d] text-[#fff7cc] shadow-[0_0_24px_rgba(251,191,36,0.3)]" : activeOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><span>{profile.name}</span>{profile.preset && <span className="ml-2 text-[8px] text-[#67e8f9]">base</span>}</button><button type="button" onClick={() => toggleOrderProfilePreview(profile.id)} aria-expanded={previewOrderProfileId === profile.id} aria-controls={`order-profile-preview-${profile.id}`} aria-label={`${previewOrderProfileId === profile.id ? "Ocultar" : "Ver"} prévia do perfil ${profile.name}`} title="Ver prévia" className={`grid h-9 w-9 shrink-0 place-items-center border text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${previewOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746]" : "border-[#67e8f9]/30"}`}><Eye className="h-3.5 w-3.5" aria-hidden="true" /></button><button type="button" onClick={() => duplicateOrderProfile(profile)} aria-label={`Duplicar perfil ${profile.name}`} title="Duplicar perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId === profile.id && !profile.preset && <button type="button" onClick={deleteActiveOrderProfile} aria-label={`Excluir perfil ${profile.name}`} title="Excluir perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-rose-300/30 text-rose-200 transition-colors hover:border-rose-300 hover:text-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>}<div id={`order-profile-preview-${profile.id}`} role="region" tabIndex={previewOrderProfileId === profile.id ? 0 : -1} aria-label={`Prévia do perfil ${profile.name}. Clique para ativar esta ordem.`} aria-hidden={previewOrderProfileId !== profile.id} data-preview-open={previewOrderProfileId === profile.id} onClick={() => { if (previewOrderProfileId === profile.id && activeOrderProfileId !== profile.id) selectOrderProfile(profile); }} onKeyDown={(event) => { if (previewOrderProfileId === profile.id && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); if (activeOrderProfileId !== profile.id) selectOrderProfile(profile); } }} className={`col-span-full cursor-pointer overflow-hidden border border-[#67e8f9]/20 bg-[#07101e]/70 p-2 transition-[max-height,opacity,transform] duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${previewOrderProfileId === profile.id ? "max-h-[500px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 border-transparent p-0 opacity-0"}`}><p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">primeiros projetos nesta ordem · clique para ativar</p><div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">{profile.order.slice(0, 5).map((projectId, previewIndex) => { const project = repositories.find((repository) => repository.id === projectId); return project ? <div key={project.id} className={`group relative min-w-0 border border-white/10 bg-[#0a1422] ${previewIndex >= 3 ? "hidden sm:block" : ""} ${previewOrderProfileId === profile.id ? "preview-stagger-item" : ""}`} style={{ "--preview-delay": `${previewIndex * 45}ms` } as React.CSSProperties} title={`${previewIndex + 1}. ${project.name}`}><div className="aspect-[4/3] overflow-hidden bg-[#0d1b2d]">{project.cover ? <img src={project.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-80" /> : <div className="grid h-full place-items-center font-mono text-[8px] text-[#7189ae]">sem capa</div>}</div><div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-1 bg-[#030b1e]/92 px-2 py-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"><p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#fef3c7]">{project.name}</p></div><p className="truncate px-2 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff]">{project.name}</p></div> : null; })}</div></div></div>) : <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>}</div><div className="mt-3 flex gap-2"><input value={profileNameDraft} onChange={(event) => setProfileNameDraft(event.target.value)} placeholder="ex.: audiovisual" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" /><button type="button" onClick={createOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Salvar novo perfil de ordenação" title="Salvar novo perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/40 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Save className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId && !activeOrderProfile?.preset && <button type="button" onClick={renameActiveOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Renomear perfil ativo" title="Renomear perfil ativo" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Pencil className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div></div>
+          <div className="mt-5 border-t border-white/10 pt-4" role="group" aria-label="Perfis de ordenação"><div className="flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">perfis de ordem</p>{activeOrderProfileId && <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#67e8f9]">ativo</span>}</div><p className="mt-2 font-body text-xs leading-5 text-[#9fb2ce]">Salve uma sequência para alternar entre audiovisual, tecnologia ou outros contextos.</p><div className="mt-3 space-y-2">{manualOrderProfiles.length > 0 ? manualOrderProfiles.map((profile) => <div key={profile.id} className="flex items-center gap-2"><button type="button" onClick={() => selectOrderProfile(profile)} aria-pressed={activeOrderProfileId === profile.id} data-profile-recently-activated={recentlyActivatedOrderProfileId === profile.id ? "true" : undefined} className={`min-w-0 flex-1 truncate border px-3 py-2 text-left font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${recentlyActivatedOrderProfileId === profile.id ? "profile-activation-pulse border-[#fbbf24] bg-[#17304d] text-[#fff7cc] shadow-[0_0_24px_rgba(251,191,36,0.3)]" : activeOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746] text-[#d9fbff]" : "border-white/10 text-[#9fb2ce] hover:border-[#67e8f9]/60 hover:text-[#d9fbff]"}`}><span>{profile.name}</span>{profile.preset && <span className="ml-2 text-[8px] text-[#67e8f9]">base</span>}</button><button type="button" onClick={() => toggleOrderProfilePreview(profile.id)} aria-expanded={previewOrderProfileId === profile.id} aria-controls={`order-profile-preview-${profile.id}`} aria-label={`${previewOrderProfileId === profile.id ? "Ocultar" : "Ver"} prévia do perfil ${profile.name}`} title="Ver prévia" className={`grid h-9 w-9 shrink-0 place-items-center border text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${previewOrderProfileId === profile.id ? "border-[#67e8f9] bg-[#0b2746]" : "border-[#67e8f9]/30"}`}><Eye className="h-3.5 w-3.5" aria-hidden="true" /></button><button type="button" onClick={() => duplicateOrderProfile(profile)} aria-label={`Duplicar perfil ${profile.name}`} title="Duplicar perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Copy className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId === profile.id && !profile.preset && <button type="button" onClick={deleteActiveOrderProfile} aria-label={`Excluir perfil ${profile.name}`} title="Excluir perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-rose-300/30 text-rose-200 transition-colors hover:border-rose-300 hover:text-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3.5 w-3.5" aria-hidden="true" /></button>}<div id={`order-profile-preview-${profile.id}`} role="region" tabIndex={previewOrderProfileId === profile.id ? 0 : -1} aria-label={`Prévia do perfil ${profile.name}. Clique para ativar esta ordem.`} aria-hidden={previewOrderProfileId !== profile.id} data-preview-open={previewOrderProfileId === profile.id} onClick={() => { if (previewOrderProfileId === profile.id && activeOrderProfileId !== profile.id) selectOrderProfile(profile); }} onKeyDown={(event) => { if (previewOrderProfileId === profile.id && (event.key === "Enter" || event.key === " ")) { event.preventDefault(); if (activeOrderProfileId !== profile.id) selectOrderProfile(profile); } }} className={`col-span-full cursor-pointer overflow-hidden border border-[#67e8f9]/20 bg-[#07101e]/70 p-2 transition-[max-height,opacity,transform] duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${previewOrderProfileId === profile.id ? "max-h-[500px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 border-transparent p-0 opacity-0"}`}><p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">primeiros projetos nesta ordem · clique para ativar</p><div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-5">{profile.order.slice(0, 5).map((projectId: string, previewIndex: number) => { const project = repositories.find((repository) => repository.id === projectId); return project ? <div key={project.id} className={`group relative min-w-0 border border-white/10 bg-[#0a1422] ${previewIndex >= 3 ? "hidden sm:block" : ""} ${previewOrderProfileId === profile.id ? "preview-stagger-item" : ""}`} style={{ "--preview-delay": `${previewIndex * 45}ms` } as React.CSSProperties} title={`${previewIndex + 1}. ${project.name}`}><div className="aspect-[4/3] overflow-hidden bg-[#0d1b2d]">{project.cover ? <img src={project.cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-80" /> : <div className="grid h-full place-items-center font-mono text-[8px] text-[#7189ae]">sem capa</div>}</div><div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-1 bg-[#030b1e]/92 px-2 py-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100"><p className="truncate font-mono text-[8px] uppercase tracking-[0.08em] text-[#fef3c7]">{project.name}</p></div><p className="truncate px-2 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff]">{project.name}</p></div> : null; })}</div></div></div>) : <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>}</div><div className="mt-3 flex gap-2"><input value={profileNameDraft} onChange={(event) => setProfileNameDraft(event.target.value)} placeholder="ex.: audiovisual" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" /><button type="button" onClick={createOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Salvar novo perfil de ordenação" title="Salvar novo perfil" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/40 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Save className="h-3.5 w-3.5" aria-hidden="true" /></button>{activeOrderProfileId && !activeOrderProfile?.preset && <button type="button" onClick={renameActiveOrderProfile} disabled={!profileNameDraft.trim()} aria-label="Renomear perfil ativo" title="Renomear perfil ativo" className="grid h-9 w-9 shrink-0 place-items-center border border-[#67e8f9]/30 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Pencil className="h-3.5 w-3.5" aria-hidden="true" /></button>}</div></div>
           <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#7189ae]">tema aplicado agora: {theme === "dark" ? "escuro" : "claro"}</p>
         </div>}
       </header>
@@ -2007,8 +1703,8 @@ export default function Home() {
                   Um arquivo vivo de tecnologia, conteúdo e imagem — feito enquanto aprendo, testo e encontro formas mais claras de fazer uma ideia circular.
                 </p>
                 <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.</p>
-                <div className="flex flex-wrap items-center gap-3">
-                  <a href="#contato" className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
+                <div ref={heroCtaRef} data-hero-cta="true" className="flex flex-wrap items-center gap-3">
+                  <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]">
                     solicitar orçamento <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
                   </a>
                   <a href="#projetos" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
@@ -2032,7 +1728,7 @@ export default function Home() {
                     <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">orçamento e disponibilidade</span>
                   </a>
                 </nav>
-                <div className="showreel-card mt-6 overflow-hidden border border-[#67e8f9]/25 bg-[#050c16]/90" data-showreel="true">
+                <div ref={showreelSectionRef} className="showreel-card mt-6 overflow-hidden border border-[#67e8f9]/25 bg-[#050c16]/90" data-showreel="true">
                   <div className="flex items-center justify-between gap-4 border-b border-white/[0.1] px-4 py-3">
                     <div>
                       <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo em movimento</p>
@@ -2042,7 +1738,7 @@ export default function Home() {
                   </div>
                   <div className={`relative bg-[#07111f] ${isDesktopViewport ? "aspect-video" : "aspect-[9/16]"}`}>
                     {!showreelRequested && <button type="button" onClick={() => { setShowreelError(false); setShowreelRequested(true); }} className="showreel-poster group absolute inset-0 grid place-items-center text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]" aria-label="Carregar e reproduzir o showreel" data-showreel-trigger="true">
-                      <picture className="absolute inset-0"><source type="image/avif" srcSet={isDesktopViewport ? showreelPosterResponsive.avif : showreelVerticalPosterResponsive.avif} sizes="(min-width: 1024px) 900px, 100vw" /><source type="image/webp" srcSet={isDesktopViewport ? showreelPosterResponsive.webp : showreelVerticalPosterResponsive.webp} sizes="(min-width: 1024px) 900px, 100vw" /><img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" /></picture>
+                      {shouldLoadShowreelPoster && <picture className="absolute inset-0"><source type="image/avif" srcSet={isDesktopViewport ? showreelPosterResponsive.avif : showreelVerticalPosterResponsive.avif} sizes="(min-width: 1024px) 900px, 100vw" /><source type="image/webp" srcSet={isDesktopViewport ? showreelPosterResponsive.webp : showreelVerticalPosterResponsive.webp} sizes="(min-width: 1024px) 900px, 100vw" /><img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" /></picture>}
                       <span className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,20,0.82),rgba(3,11,20,0.18))]" />
                       <span className="showreel-play-button relative ml-5 inline-flex items-center gap-3 rounded-full border border-[#a5f3fc]/80 bg-[#38bdf8] px-3 py-2 text-[#02111f] shadow-[0_0_28px_rgba(56,189,248,0.35)] transition-transform duration-200 group-hover:scale-[1.03] motion-reduce:transition-none" data-showreel-play="true"><span className="grid h-10 w-10 place-items-center rounded-full border border-[#02111f]/25 bg-[#a5f3fc]/80"><Play className="ml-0.5 h-4 w-4" fill="currentColor" aria-hidden="true" /></span><span className="pr-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">play</span></span>
                       <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel {isDesktopViewport ? "horizontal" : "vertical"} · 00:09</span>
@@ -2061,7 +1757,7 @@ export default function Home() {
                 FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL<br />
                 ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
               </p>
-              <a href="#sobre" className="mt-6 inline-flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] sm:mt-0">
+              <a href="#sobre" className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">
                 ver repertório e skills <ArrowDown className="h-4 w-4" />
               </a>
             </div>
@@ -2120,15 +1816,15 @@ export default function Home() {
                   <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#7d94b8] light-muted-ink">coordenadas atuais</p>
                   <dl className="mt-5 space-y-5">
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">formação</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">formação</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Estudante de Tecnologia da Informação</dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">interesse</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">interesse</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Tecnologia, conteúdo e audiovisual</dd>
                     </div>
                     <div>
-                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">modo de trabalho</dt>
+                      <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">modo de trabalho</dt>
                       <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Criatividade, prática e melhoria contínua</dd>
                     </div>
                   </dl>
@@ -2269,7 +1965,7 @@ export default function Home() {
             <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
               <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
               <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
-              <a href="#sobre" className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
+              <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
             </div>
 
             <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
@@ -2371,12 +2067,12 @@ export default function Home() {
                   data-filter-scope="technology"
                   className={`inline-flex shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
                     activeTechnology === technology
-                      ? "border-[#3b82f6] bg-[#3b82f6] text-white"
+                      ? "border-[#3b82f6] bg-[#3b82f6] text-[#02111f]"
                       : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
                   }`}
                 >
                   <span>{technology}</span>
-                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#dffbff]" : "text-[#5e789d]"}`}>
+                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#02111f]" : "text-[#5e789d]"}`}>
                     {technology === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(technology)).length}
                   </span>
                 </button>
@@ -2605,7 +2301,7 @@ export default function Home() {
               <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> agenda aberta para novos projetos — vamos começar pelo contexto</div>
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
                 <a href="#contato-briefing" className="inline-flex items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97]">preencher briefing <ArrowDown className="h-3.5 w-3.5" /></a>
-                <a href={whatsAppUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746]">abrir WhatsApp <MessageCircle className="h-3.5 w-3.5" /></a>
+                <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "contact" })} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746]">abrir WhatsApp <MessageCircle className="h-3.5 w-3.5" /></a>
                 <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" className="group inline-flex items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#c9f8ff] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2746] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Send className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" /> canal público no Telegram</a>
               </div>
               <div className="mt-7 grid max-w-md gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
@@ -2675,7 +2371,7 @@ export default function Home() {
             </div>
 
             <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => setIsBriefingFieldFocused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
+              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => { setIsBriefingFieldFocused(true); trackBriefingStarted(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
@@ -2783,11 +2479,11 @@ export default function Home() {
         </section>
       </main>
 
-      <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
+      <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
-        <a href={whatsAppUrl} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
+      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
+        <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
         </a>
@@ -2909,7 +2605,7 @@ export default function Home() {
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
-          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
+          <DialogContent data-project-details-dialog="true" data-project-details-transition={projectDetailsTransition ?? "idle"} aria-modal="true" aria-busy={projectDetailsLoading} onTouchStart={handleProjectDetailsTouchStart} onTouchEnd={handleProjectDetailsTouchEnd} className={`touch-pan-y w-[calc(100vw-1rem)] max-w-[calc(100vw-1rem)] sm:max-w-3xl h-[calc(100svh-1rem)] min-h-0 max-h-[calc(100svh-1rem)] overflow-x-hidden overflow-y-auto overscroll-contain border-[#3b82f6]/30 bg-[#071326] p-0 text-[#e6f2ff] shadow-[0_24px_90px_rgba(0,0,0,0.6)] transition-[opacity,transform] duration-260 motion-reduce:transition-none ${projectDetailsTransition === "next" ? "translate-x-1 opacity-90" : projectDetailsTransition === "previous" ? "-translate-x-1 opacity-90" : "translate-x-0 opacity-100"}`}>
             {projectDetailsLoading && <div data-project-details-loading="true" role="status" aria-live="polite" className="pointer-events-none absolute inset-x-0 top-0 z-20 grid gap-3 border-b border-[#67e8f9]/20 bg-[#071326]/90 p-4 backdrop-blur-sm sm:p-8"><div className="h-2 w-28 animate-pulse bg-[#3b82f6]/35" /><div className="h-9 w-4/5 animate-pulse bg-white/10" /><div className="h-3 w-full animate-pulse bg-white/10" /><div className="h-3 w-2/3 animate-pulse bg-white/10" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#9fc6e9]">carregando projeto…</span></div>}
             {showProjectSwipeHint && <div data-project-swipe-hint="true" className="pointer-events-none absolute inset-x-4 top-4 z-30 flex justify-center sm:hidden" role="status" aria-live="polite"><span className="border border-[#67e8f9]/35 bg-[#06172f]/95 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_10px_28px_rgba(0,0,0,0.3)]">deslize para navegar</span></div>}
             {selectedProject.kind === "video" && <div className="relative bg-black"><video className="block h-auto max-h-[38svh] w-full max-w-full bg-black object-contain sm:max-h-[42svh]" src={selectedProject.url} poster={selectedProject.cover} controls autoPlay playsInline preload="metadata" onLoadedData={(event) => { event.currentTarget.play().catch(() => setProjectVideoNeedsPlay(true)); }} onPlay={() => setProjectVideoNeedsPlay(false)}>Seu navegador não oferece suporte à reprodução audiovisual.</video>{projectVideoNeedsPlay && <button type="button" data-project-video-play="true" onClick={(event) => { const video = event.currentTarget.parentElement?.querySelector("video"); video?.play().then(() => setProjectVideoNeedsPlay(false)).catch(() => setProjectVideoNeedsPlay(true)); }} className="absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 border border-[#a5f3fc]/55 bg-[#06172f]/90 px-4 py-3 font-mono text-[9px] uppercase tracking-[0.12em] text-white shadow-[0_12px_32px_rgba(0,0,0,0.35)] transition-colors hover:border-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Play className="h-4 w-4" aria-hidden="true" />tocar vídeo</button>}</div>}
@@ -2931,6 +2627,7 @@ export default function Home() {
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">processo</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.process || "Informação não registrada."}</p></div>
                 <div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">resultado</p><p className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.result || "Informação não registrada."}</p></div>
               </div>
+              {selectedProject.caseStudy && <section data-project-case-study="true" className="mt-7 border-t border-white/10 pt-5" aria-labelledby="project-case-study-title"><p id="project-case-study-title" className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">leitura do caso</p><dl className="mt-4 grid gap-5 sm:grid-cols-2"><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">contexto</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.context}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">problema</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.problem}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">objetivo</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.objective}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">minha função</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.function}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">processo</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.process}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">decisões</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.decisions}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">resultado</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.result}</dd></div><div><dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">aprendizado</dt><dd className="mt-2 font-body text-sm leading-6 text-[#d9e9f8]">{selectedProject.caseStudy.learning}</dd></div></dl></section>}
               <div className="mt-7 border-t border-white/10 pt-5"><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#60a5fa]">tecnologias e repertório</p><div className="mt-3 flex flex-wrap gap-2">{selectedProject.technologies.map((technology) => <span key={technology} className="border border-[#3b82f6]/30 bg-[#0b2746] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#cfe3ff]">{technology}</span>)}</div></div>
               <div className="mt-7 grid grid-cols-1 gap-3 border-t border-white/10 pt-5 sm:flex sm:items-center sm:justify-between"><button type="button" data-project-modal-previous="true" onClick={() => navigateSelectedProject("previous")} disabled={!previousSelectedProject} aria-label={previousSelectedProject ? `Ver projeto anterior: ${previousSelectedProject.name}` : "Nenhum projeto anterior"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35"><ChevronLeft className="h-4 w-4" aria-hidden="true" />anterior</button><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]" aria-live="polite">{selectedProjectIndex >= 0 ? `${String(selectedProjectIndex + 1).padStart(2, "0")} / ${String(visibleRepositories.length).padStart(2, "0")}` : ""}</span><button type="button" data-project-modal-next="true" onClick={() => navigateSelectedProject("next")} disabled={!nextSelectedProject} aria-label={nextSelectedProject ? `Ver próximo projeto: ${nextSelectedProject.name}` : "Nenhum próximo projeto"} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35">próximo<ChevronRight className="h-4 w-4" aria-hidden="true" /></button></div>
             </div>

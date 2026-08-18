@@ -10,6 +10,42 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { registerSeoRoutes } from "../seo";
 
+const PUBLIC_BODY_LIMIT = "100kb";
+
+function getCspOrigin(value: string | undefined) {
+  if (!value) return null;
+  try {
+    const origin = new URL(value).origin;
+    return origin.startsWith("https://") ? origin : null;
+  } catch {
+    return null;
+  }
+}
+
+function getReportOnlyCsp() {
+  const analyticsOrigin = getCspOrigin(process.env.VITE_ANALYTICS_ENDPOINT);
+  const scriptSources = ["'self'", "'unsafe-inline'", "https://files.manuscdn.com"];
+  const connectSources = ["'self'"];
+  if (analyticsOrigin) {
+    scriptSources.push(analyticsOrigin);
+    connectSources.push(analyticsOrigin);
+  }
+  return [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'self'",
+    "img-src 'self' data: blob:",
+    "media-src 'self' blob:",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    `script-src ${scriptSources.join(" ")}`,
+    `connect-src ${connectSources.join(" ")}`,
+    "frame-src 'self'",
+    "manifest-src 'self'",
+  ].join("; ");
+}
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
     const server = net.createServer();
@@ -38,14 +74,16 @@ async function startServer() {
     res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
     if (process.env.NODE_ENV === "production") {
       res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-      res.setHeader("Content-Security-Policy-Report-Only", "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: blob:; media-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; script-src 'self' 'unsafe-inline' https:; connect-src 'self' https: wss:; frame-src 'self' https:;");
+      res.setHeader("Content-Security-Policy", "base-uri 'self'; object-src 'none'; frame-ancestors 'self'");
+      res.setHeader("Content-Security-Policy-Report-Only", getReportOnlyCsp());
     }
     next();
   });
   const server = createServer(app);
-  // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  // Os endpoints públicos atuais recebem somente payloads textuais validados por Zod;
+  // uploads usam storage assinado e não passam por este parser global.
+  app.use(express.json({ limit: PUBLIC_BODY_LIMIT }));
+  app.use(express.urlencoded({ limit: PUBLIC_BODY_LIMIT, extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerSeoRoutes(app);

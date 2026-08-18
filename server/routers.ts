@@ -40,10 +40,27 @@ export function consumeQuoteRequestRateLimit(identifier: string, now = Date.now(
   return true;
 }
 
-function getRequestIdentifier(req: Request) {
+function normalizeNetworkAddress(value: string | undefined) {
+  return (value || "unknown").trim().replace(/^::ffff:/, "").slice(0, 80);
+}
+
+export function isTrustedProxyAddress(address: string | undefined) {
+  const normalized = normalizeNetworkAddress(address).toLowerCase();
+  if (normalized === "127.0.0.1" || normalized === "::1") return true;
+  if (/^10\./.test(normalized) || /^192\.168\./.test(normalized)) return true;
+  if (/^172\.(1[6-9]|2\d|3[01])\./.test(normalized)) return true;
+  if (/^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(normalized)) return true;
+  return normalized.startsWith("fc") || normalized.startsWith("fd") || normalized.startsWith("fe80:");
+}
+
+export function getRequestIdentifier(req: Pick<Request, "headers" | "socket">) {
+  const peerAddress = normalizeNetworkAddress(req.socket.remoteAddress);
+  // O cabeçalho forwarded só é aceito quando a conexão chega de uma faixa local/privada
+  // típica de proxy gerenciado. Conexões diretas não podem escolher o próprio identificador.
+  if (!isTrustedProxyAddress(peerAddress)) return peerAddress;
   const forwarded = req.headers["x-forwarded-for"];
   const forwardedAddress = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
-  return (forwardedAddress || req.socket.remoteAddress || "unknown").trim().slice(0, 80);
+  return normalizeNetworkAddress(forwardedAddress || peerAddress);
 }
 
 export function isValidDateKey(value: string) {

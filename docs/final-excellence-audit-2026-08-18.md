@@ -151,3 +151,187 @@ Não foram criados cases artificiais. O item Eliane Fashion continua pendente de
 ### Validação desta rodada
 
 `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e `pnpm exec playwright test --workers=1` foram executados. O resultado foi: instalação aprovada, typecheck aprovado, **26 testes unitários aprovados**, build aprovado, **21 E2E públicos aprovados** e **2 cenários autenticados ignorados** por ausência de `E2E_AUTH_STATE`. Os artefatos `dist`, `test-results` e `coverage` foram removidos ao final.
+
+## Correção isolada — CTA mobile e barra fixa
+
+A causa confirmada era visual: a barra `contact-float`, fixa na base da viewport, ocupava a mesma zona vertical dos CTAs “solicitar orçamento” e “ver trabalhos” no hero em telas compactas. Em 390×844, a barra sobrepunha parcialmente o botão de orçamento e o link secundário.
+
+A correção escolhida foi **ocultar temporariamente a barra de contato enquanto o grupo de CTAs do hero estiver dentro da viewport em telas abaixo de 1024 px**. Assim que essa região sai da viewport, a barra retorna. A partir de 1024 px, o comportamento desktop original permanece. Estados que já ocultavam a barra — lightbox, modal de projeto, preview de portfólio, busca focada, formulário focado e teclado móvel — foram preservados prioritariamente.
+
+| Evidência | Antes | Depois |
+|---|---|---|
+| Hero 390×844 | Barra fixa sobrepunha a região inferior dos CTAs | Botão e link ficam inteiros e acionáveis; a barra reaparece após a região do hero |
+| Tablet 768×900 | Barra lateral podia cruzar a área dos CTAs | Barra permanece oculta enquanto os CTAs estão visíveis |
+| Desktop 1280×720 | Comportamento original da barra fixa | Mantido |
+| Lightbox e modais | Barra deveria continuar oculta em overlays | Mantido e coberto por E2E |
+
+Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx` e `e2e/navigation.spec.ts`. A nova asserção E2E percorre 320×568, 360×800, 375×812, 390×844, 414×896, 430×932, 768×900 e 1280×720, verificando que nenhum CTA do hero fica sob a barra fixa. Validações reais: `pnpm check` aprovado; `pnpm test` com 26 testes aprovados; `pnpm build` aprovado; E2E específico do CTA e do lightbox aprovado em modo serial. Nenhuma mudança foi feita em identidade, CTA, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou formulário.
+
+## Hardening de segurança — A-03, A-04 e A-05
+
+### Inventário antes da alteração
+
+Não há endpoint público de upload no projeto. O storage público é servido por `GET /manus-storage/*`; uploads assinados são helpers server-side e não passam pelo parser global. Os procedimentos públicos aceitam apenas campos textuais validados por Zod; o maior campo é `briefing`, limitado a 5.000 caracteres. OAuth usa callback `GET`, e o router de sistema aceita apenas timestamp ou mensagens administrativas curtas. Portanto, não foi encontrada integração legítima que justificasse o limite global de 50 MB.
+
+As origens reais observadas na página publicada foram: o próprio domínio para SPA, tRPC, storage e vídeo; `https://fonts.googleapis.com` para folha de estilos de fonte; `https://fonts.gstatic.com` para arquivos de fonte; `https://manus-analytics.com` para Umami; e `https://files.manuscdn.com` para o dispatcher de edição injetado pelo hosting. Não foi encontrada chamada browser para WebSocket, origem genérica `https:` ou upload público. Links externos e metadados JSON-LD não exigem permissão CSP de carregamento.
+
+### Antes e depois
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Parser global | JSON e URL-encoded aceitavam 50 MB globalmente | Limite reduzido para 100 KB, acima dos payloads textuais atuais e abaixo de abuso desnecessário | POST JSON de 110 KB ao servidor de produção local retornou `413` |
+| CSP efetiva | Somente `Content-Security-Policy-Report-Only`; `script-src https:` e `connect-src https: wss:` genéricos | Enforcement aplicado apenas a `base-uri 'self'`, `object-src 'none'` e `frame-ancestors 'self'`; política completa segue em report-only com origens exatas | Headers locais de produção confirmaram ausência de curingas de origem |
+| Fontes e scripts | Origens genéricas em report-only | Google Fonts, analytics e dispatcher de hosting explicitamente enumerados | HTML publicado e header de produção local |
+| Rate limit | Map por processo e primeiro `x-forwarded-for` aceito sem avaliar o peer | Map por processo preservado; `x-forwarded-for` aceito somente quando a conexão vem de loopback/faixa privada típica de proxy | Testes de proxy confiável e direto aprovados |
+| Formulário | Testes de schema, honeypot e contador | Procedimento público exercitado com persistência/notificação simuladas: envio, falha de notificação, honeypot e sexto pedido bloqueado | 31 testes Vitest aprovados, sem gravar pedido de teste nem alertar o proprietário |
+
+### Riscos e limites remanescentes
+
+O rate limit continua **local ao processo**, por decisão deliberada: não há store com TTL ou infraestrutura compartilhada comprovadamente disponível e não foi adicionada nova dependência. Em múltiplas instâncias ou após reinício, contadores não são compartilhados. Além disso, a lista de proxies confiáveis é conservadora; se o proxy de produção encaminhar conexões por endereço público fora das faixas permitidas, o identificador passará a ser o IP do peer. Esse comportamento é seguro contra spoofing, mas deve ser observado em produção para evitar bucket compartilhado.
+
+A política CSP completa permanece em `Report-Only` porque a página precisa de script inline para metadados dinâmicos, analytics e dispatcher de hosting. As diretivas de baixo risco já passaram para enforcement. Antes de promover `script-src`, `connect-src`, `style-src`, `font-src`, `img-src`, `media-src` ou `frame-src`, é necessário coletar violações em produção e manter as origens explícitas.
+
+### Validação desta rodada
+
+`pnpm check` foi aprovado. `pnpm test` foi aprovado com **9 arquivos e 31 testes**. `pnpm build` foi aprovado. O servidor de produção local confirmou os headers CSP efetivo e report-only; a requisição JSON acima do limite retornou `413`. O procedimento de formulário foi testado com mocks de banco e notificação para evitar a criação de briefing falso ou o disparo de alerta real ao proprietário. Não houve alteração em UX, design, mobile, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou fluxo visual do formulário.
+
+## Performance profissional — medição publicada e otimização baseada em evidência
+
+### Matriz de baseline e pós-otimização
+
+As medições foram feitas em 390×844 com emulação 4G (170 ms de latência, 1,6 Mbps de download, 0,75 Mbps de upload), em cache frio, cache quente e CPU 4×. INP é uma amostra da abertura/fechamento do menu móvel; CLS foi observado por `PerformanceObserver`. As variações de TTFB entre execuções são próprias do ambiente publicado e, por isso, devem ser lidas como faixa observada, não como promessa de SLA.
+
+| Cenário publicado | Requests antes/depois | Transferência antes/depois | LCP antes/depois | INP antes/depois | CLS antes/depois |
+|---|---:|---:|---:|---:|---:|
+| 4G, cache frio | 18 / **17** | 330,3 KB / 330,2 KB | 12,90 s / 15,99 s | 88 ms / 104 ms | 0 / 0 |
+| 4G, cache quente | 25 / **24** | 104,5 KB / 104,5 KB | 6,22 s / 4,92 s | 88 ms / 48 ms | 0 / 0 |
+| 4G, cache frio, CPU 4× | 16 / **16** | 330,2 KB / 330,3 KB | 28,81 s / 18,75 s | 184 ms / 144 ms | 0 / 0 |
+
+O request do pôster vertical do showreel estava presente em todos os cenários iniciais, começando entre 2,44 s e 8,19 s mesmo sem scroll e levando até 3,78 s para finalizar no cenário frio. Após a correção, o request não aparece antes da aproximação da seção. O `transferSize` desse recurso é informado como zero pelo navegador porque `/manus-storage/*` responde com redirect para URL assinada; a redução confirmada é de **um request iniciado antes da primeira interação**, não uma estimativa de bytes inventada.
+
+### Chunks e classificação
+
+| Severidade | Evidência | Diagnóstico | Decisão nesta rodada |
+|---|---|---|---|
+| **CRÍTICO** | TTFB frio observado entre 3,17 s e 6,16 s; HTML concluído entre 4,26 s e 6,68 s | O navegador não começa CSS, JS nem imagens antes da resposta HTML. Isso impede LCP abaixo de 2,5 s em cache frio sob esta 4G, independentemente de micro-otimizações no React. | Sem alteração cega no app. Requer análise de cache/edge/TTFB da infraestrutura Manus. |
+| **ALTO** | Chunk principal: 944,5 KB bruto / 214,7 KB gzip; carregado como ~148 KB transferidos na amostra 4G | `HomeExperience` concentra estado e interações públicas. O chunk contém o fluxo principal, lightbox e galeria, portanto uma extração ampla teria risco alto de regressão. | Não extraído sem fronteira independente comprovada. |
+| **ALTO** | Chunk de 435,6 KB bruto / 180,5 KB gzip | É a dependência `pdf-lib`, identificada por `PDFDocument`; ela já é importada dinamicamente apenas na exportação PDF. | Mantido: não participa do request inicial. |
+| **MÉDIO** | Pôster de showreel abaixo da primeira região iniciava cedo e concorria com hero | `loading="lazy"` nativo ainda acionava o recurso dentro da margem de pré-carregamento do navegador. | Corrigido com observação por viewport real; poster continua disponível ao chegar à seção. |
+| **BAIXO** | CSS ~32,8 KB transferidos e folha de Google Fonts ~1,2 KB; CLS 0 | Não há evidência de bloqueio ou deslocamento relevante desses recursos na amostra. | Mantidos. |
+| **BAIXO** | Rotas de disponibilidade, favoritos, curadoria e social já são lazy/deferidas; vídeo só inicia após clique | As prioridades de exportação, PDF, curadoria e ferramentas administrativas já estavam fora do caminho crítico. | Nenhuma alteração adicional. |
+
+### Alteração aplicada
+
+Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx`, `e2e/navigation.spec.ts` e esta documentação. O card mantém a mesma marcação, CTA e reprodução sob demanda; somente o pôster passa a existir quando a seção efetivamente entra na viewport. A asserção E2E verifica ausência da imagem e de request antes do scroll, e disponibilidade após `scrollIntoViewIfNeeded()`.
+
+### Veredito de metas
+
+CLS atende a meta (< 0,1). A amostra de INP atende a meta (< 200 ms), inclusive com CPU 4× na pós-medição (144 ms). LCP não atende < 2,5 s na emulação 4G publicada: o gargalo dominante é TTFB/HTML e, em seguida, o carregamento de recursos pelo proxy de storage. A aplicação reduziu concorrência abaixo da dobra sem prejudicar o caminho crítico, mas não pode compensar sozinha a faixa de 3–6 s observada antes do início de CSS/JS/imagem.
+
+Validações da rodada: `pnpm check` aprovado; `pnpm test` com 31 testes aprovados; `pnpm build` aprovado; E2E relevante do pôster adiado aprovado. Não foram alterados design, conteúdo, hero, H1, primeiro projeto, lightbox, SEO, formulário, favoritos, compartilhamento ou funcionalidades administrativas.
+
+## Conversão e prova profissional — casos públicos
+
+Esta rodada trabalhou exclusivamente com os projetos já publicados na vitrine. A seleção foi limitada aos três destaques calculados pela própria galeria pública: **Chá da Eloise**, **RHAM — Serviços no app** e **Campo iluminado — vista aérea**. Nenhum projeto privado, não publicado ou Eliane Fashion foi incluído.
+
+O modal de detalhes existente agora mostra, quando há evidência suficiente no registro já público, uma leitura de caso com **contexto, problema, objetivo, minha função, processo, decisões, resultado e aprendizado**. Cada texto foi derivado de descrição, papel, processo, resultado e tecnologias que já existiam no projeto; não foram incluídos clientes adicionais, métricas, faturamento, usuários, conversões ou tecnologias novas. Os campos de resultado permanecem qualitativos e verificáveis pela peça pública.
+
+| Projeto público | Prova esclarecida | Limite factual preservado |
+|---|---|---|
+| Chá da Eloise | Cobertura aérea, leitura de ambiente, planos abertos e aproximações para registrar espaço, pessoas e atmosfera. | Não há alegação de cliente, alcance ou resultado comercial. |
+| RHAM — Serviços no app | Vídeo vertical de jornada de serviços, com leitura de tela e ritmo para demonstrar navegação. | Não há alegação sobre conversão, adoção ou dados do aplicativo. |
+| Campo iluminado — vista aérea | Captação horizontal noturna que explicita decisões de luz, escala, perspectiva e movimento. | Não há alegação de audiência, uso institucional ou métricas de vídeo. |
+
+Os CTAs **“solicitar orçamento”** e **“falar no WhatsApp”** foram preservados sem duplicação. A mudança não redesenha a página: aproveita o modal já existente e mantém favoritos, compartilhamento, navegação, vídeo, lightbox e filtros. A E2E pública confirma a presença da leitura de caso no modal; `pnpm check`, 31 testes Vitest e `pnpm build` foram aprovados.
+
+## Analytics de conversão — Umami
+
+A integração publicada já carregava o script do Umami a partir de `https://manus-analytics.com/umami`, com o identificador público do site configurado no HTML. Nesta rodada, a aplicação passou a centralizar a instrumentação em `portfolioAnalytics.ts`, usando prioritariamente a API nativa `window.umami.track()`. O adaptador também emite um evento local de observabilidade e preserva o fallback de transporte existente apenas quando a API ainda não está disponível, sem transformar analytics em dependência de navegação, contato ou envio do formulário.
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Taxonomia | Havia chamadas legadas específicas de lightbox e lacunas em CTAs e formulário. | Somente sete eventos de conversão: `quote_cta`, `whatsapp_click`, `briefing_started`, `briefing_completed`, `project_opened`, `share_project` e `download_project`. | União literal tipada `ConversionEventName`; busca no código não encontrou os nomes legados. |
+| Orçamento e briefing | Não havia medição centralizada da intenção e do início do briefing. | O CTA principal registra `quote_cta`; o primeiro foco no formulário registra `briefing_started` uma vez por visita; a mutação bem-sucedida registra `briefing_completed`. | `HomeExperience.tsx`; cobertura E2E pública. |
+| Interesse em trabalho | Aberturas e compartilhamentos não seguiam a taxonomia solicitada. | A abertura em lightbox e modal registra `project_opened`; cópia de link, Web Share, WhatsApp, LinkedIn e e-mail registram `share_project`; downloads registram `download_project`. | Handlers existentes preservados com apenas a troca de evento. |
+| Privacidade | Parte das propriedades legadas carregava nome de projeto no payload. | Os eventos enviam somente `projectId` interno e, quando necessário, `surface`, `source`, `channel` ou `format`. Nome, e-mail, telefone, texto do briefing, endereço e URL com parâmetros não são enviados. | Teste unitário do contrato e asserção E2E verificam as chaves de propriedades emitidas. |
+| WhatsApp | Pontos de contato não eram medidos de modo uniforme. | Disponibilidade, seção de contato, barra fixa e rodapé registram o mesmo evento `whatsapp_click`, distinguindo apenas a origem. | `HomeExperience.tsx` e `PortfolioFooter.tsx`. |
+
+O evento de início do briefing é protegido por `useRef`, portanto não é repetido quando o visitante alterna entre campos. Todos os eventos são acionados somente por uma ação explícita; não há rastreamento de digitação, conteúdo do formulário ou cliques genéricos. A chegada histórica no painel do Umami não foi inferida nesta auditoria sem acesso ao painel: a evidência desta rodada é a chamada à API nativa quando disponível e a validação pública do payload emitido no navegador.
+
+Validações do BLOCO 5: `pnpm check` aprovado; `pnpm test` aprovado com **32 testes em 10 arquivos**; `pnpm exec playwright test e2e/navigation.spec.ts --grep 'eventos de conversão essenciais' --workers=1` aprovado com **1 cenário**; `pnpm build` aprovado. Artefatos `dist/`, `test-results/` e `coverage/` foram removidos após a validação.
+
+## Acessibilidade — auditoria WCAG 2.2 AA
+
+A auditoria automatizada passou a usar `@axe-core/playwright` somente como dependência de desenvolvimento, sem impacto no bundle público. A varredura percorre as seções públicas carregadas sob demanda e aplica as regras `wcag2a`, `wcag2aa`, `wcag21aa` e `wcag22aa`. A baseline encontrou três violações graves, todas de contraste; não foram encontradas violações graves ou críticas de imagens sem texto alternativo, nome acessível, estrutura de diálogo, teclado ou movimento reduzido.
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Texto alternativo | 13 ocorrências de `alt=""` no código da feature. | Todas foram classificadas como **decorativas** e permaneceram vazias: imagem de fundo do hero, texturas, marcas gráficas repetidas, miniatura redundante da prévia e logomarca acompanhada de identificação textual. Imagens informativas — retrato, projetos, cards salvos, lightbox e miniaturas navegáveis — já possuem descrições curtas e objetivas. | Inventário: 8 ocorrências em `HomeExperience`, 1 no rodapé e 4 no componente narrativo não utilizado pela rota pública. |
+| Metadados no perfil | `#536887` sobre `#0a0f18` apresentava contraste de **3,37:1** em “formação”, “interesse” e “modo de trabalho”. | Metadados migrados para `#7b91b3`, preservando o azul editorial e atingindo o limiar AA. | Axe, regra `color-contrast`. |
+| Filtro ativo | Texto branco sobre o azul `#3b82f6` apresentava contraste de **3,67:1**. | Texto e contador do filtro de tecnologia ativo usam `#02111f` sobre o mesmo azul, sem alteração de layout ou interação. | Axe, regra `color-contrast`. |
+| Rodapé | Metadado “arquivo pessoal / em atualização contínua” usava `#526783` sobre `#06080d`, com **3,45:1**. | Cor elevada para `#7b91b3`, mantendo a hierarquia discreta e aprovada pelo Axe. | Axe, regra `color-contrast`. |
+| Alvos de toque | Três links textuais eram menores que 24 px em mobile. | “ver repertório e skills”, “conhecer percurso” e “privacidade” agora possuem área mínima de 44 px; o primeiro também recebeu foco visível. | E2E em 390×844; todos os controles interativos visíveis atendem ao mínimo de 24 px da WCAG 2.2 AA. |
+| Modal e teclado | O modal preservava foco e Escape, mas o atributo modal não era exposto diretamente. | O modal de detalhes declara `aria-modal="true"`, além de `role="dialog"`, título e descrição existentes. | E2E abre o modal, verifica semântica e confirma fechamento por `Escape`. |
+
+Também foram validados foco visível por teclado, o link de salto existente, `Escape` no modal de detalhes, comportamento de movimento reduzido (rolagem automática e transições minimizadas) e a semântica consumida por leitores de tela via DOM/Axe. Um leitor de tela físico não está disponível no ambiente automatizado; por isso, esta rodada não substitui uma revisão manual com NVDA, VoiceOver ou TalkBack. O lightbox não foi alterado.
+
+## Refatoração controlada de HomeExperience
+
+Esta rodada não procurou reduzir linhas artificialmente. Antes de cada extração, foi mapeado o estado compartilhado e foram preservados no componente os estados de interface, temporizadores, efeitos, chamadas de analytics e handlers de navegação. Hero, lightbox, estado principal da galeria, filtros, favoritos e formulário de orçamento não foram reescritos nem deslocados para componentes artificiais.
+
+| Responsabilidade | Antes | Depois | Evidência |
+|---|---|---|---|
+| Exportação | `HomeExperience` duplicava a geração de CSV, JSON e PDF, inclusive a criação do download. | O componente mantém apenas a seleção dos favoritos e o estado de feedback; a geração de arquivos usa `utils/exportFavorites.ts`. | Teste unitário cobre nomes dos arquivos, cabeçalho CSV, conteúdo JSON e categorias. |
+| Curadoria e compartilhamento | Regras puras de URL, contexto de projeto e payload de e-mail estavam duplicadas dentro dos handlers. | As regras foram centralizadas em `utils/shareProject.ts`; o componente retém somente status de cópia, analytics e abertura de canais. | Teste unitário cobre URL de projeto, favoritos, lightbox, contexto e e-mail. |
+| Contato | A seção completa envolve agenda, formulário, validação, disponibilidade e analytics, portanto tem alto acoplamento. | Somente o feedback independente de cópia do e-mail foi extraído para `utils/clipboardFeedback.ts`; a seção, formulário e agenda foram preservados. | Teste unitário cobre sucesso, falha e retorno ao estado inativo. |
+| Hook independente | A observação de proximidade da viewport ficava declarada no arquivo de página. | `useNearViewport` foi movido para `hooks/useNearViewport.ts`, mantendo a mesma API, margem padrão e fallback sem `IntersectionObserver`. | A E2E pública mantém a cobertura de dados e pôster adiados até a aproximação da seção. |
+
+As validações ocorreram após cada extração com `pnpm check` e `pnpm test`. Ao final, o build de produção foi aprovado e o Playwright serial aprovou **26/26 cenários**, cobrindo navegação pública, contato, curadoria, modal, lightbox, carregamento adiado e acessibilidade. Artefatos temporários de build e teste foram removidos após a execução.
+
+## Fechamento da QA — determinismo de testes
+
+| Teste | Resultado antes | Resultado depois | Causa | Correção |
+|---|---|---|---|---|
+| Analytics de conversão | O cenário combinado falhou em uma execução serial e em 1 de 5 repetições, embora a sequência isolada emitisse `quote_cta`, `briefing_started` e `project_opened`. | Os dois cenários separados passaram em **10/10 repetições** (cinco para CTA/briefing e cinco para abertura de projeto). A suíte pública serial passou em **28/28**. | Um único cenário combinava navegação por âncora, foco no briefing e abertura de projeto; a última asserção observava três eventos depois de várias transições de interface. | O teste passou a sincronizar cada evento com a ação que o produz e separou a abertura de projeto em contexto novo. Não houve mudança na emissão de analytics, timeouts ou produto. |
+| Swipe em modal | O teste falhava ao exigir a presença de `data-project-swipe-hint`, mesmo após limpar a preferência de onboarding. A navegação por swipe isolada alterou “Chá da Eloise” para “RHAM — Serviços no app”. | O swipe funcional passou em **5/5 repetições** e na suíte serial. | A dica é onboarding temporário, não requisito funcional da navegação; sua exibição depende de estado/timing de primeira visita. | A expectativa frágil da dica foi removida. O teste continua exigindo abertura do modal, ocultação da barra móvel e mudança efetiva de projeto após o gesto. |
+| Fluxos autenticados | Os dois cenários de favoritos protegidos estavam ignorados por ausência de `E2E_AUTH_STATE`. | Continuam **2 skipped**, sem aprovação. | Não há `E2E_AUTH_STATE` no ambiente; o navegador também apresentou a tela “Entre para continuar” na rota protegida. | Nenhuma sessão foi criada, simulada, armazenada ou versionada. Login, painel, edição, restauração e logout permanecem não validados. |
+| Build | Build aprovado com aviso de chunk principal de 955,61 kB. | Build continua aprovado com o mesmo aviso. | Otimização de bundle está fora do escopo desta rodada. | Nenhuma alteração de chunking foi aplicada. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` aprovado com **38/38**; `pnpm build` aprovado; Playwright público serial aprovado com **28/28**. **FLUXOS AUTENTICADOS NÃO VALIDADOS — E2E_AUTH_STATE AUSENTE.** Artefatos temporários foram removidos após a execução.
+
+## Sessão E2E isolada, build de produção e leitura assistiva
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Fluxos protegidos | `E2E_AUTH_STATE` estava ausente e os cenários administrativos eram ignorados. | Uma identidade administrativa **isolada**, sem e-mail e com duração de 15 minutos, foi criada apenas durante a execução. Ela usou o token de sessão assinado pelo contrato existente, dois IDs de projetos públicos e limpeza explícita de metadata, ordenação, usuário e storageState ao final. | Os **3/3** cenários autenticados aprovaram abertura de sessão no painel, busca, edição, restauração e logout. A autenticação é real para o contrato da aplicação; o único atalho é a criação local da identidade efêmera, não uma credencial ou conta de produção. |
+| Logout local | O logout limpava o cookie em HTTP local com `SameSite=None`, combinação rejeitada pelos navegadores modernos quando `Secure` não está ativo. | Em HTTPS continua `SameSite=None; Secure`; em HTTP local passa a `SameSite=Lax`, mantendo o cookie de teste disponível e removível. | E2E entra no painel, abre o menu de conta, aciona “Sair” e retorna ao estado “Entre para continuar”. |
+| Build e chunk principal | O script `build` herdava `NODE_ENV=development` do ambiente, incluindo `react-dom-client.development` no bundle. O entry reportado era **955,61 kB** (215,93 kB gzip). | O build fixa `NODE_ENV=production`; o entry direto caiu primeiro para **594,49 kB** (152,33 kB gzip). Em seguida, React, primitives Radix, utilitários e dados foram separados em chunks estáveis; o entry ficou em **325,95 kB** (64,59 kB gzip), sem aviso de chunk acima de 500 kB. | Análise do bundle: a versão de desenvolvimento incluía cerca de 931,8 kB de React dev. A divisão final prioriza cache e análise paralela; como vendors críticos continuam preloaded, o ganho de transferência total não deve ser inferido apenas pelo menor entry. |
+| HTML injetado pelo hosting | O documento compilado aparentava 372 kB, sem atribuição de origem. | A análise identificou 367.116 bytes no script inline `manus-runtime`; não foi removido por ser infraestrutura do hosting. | O HTML segue com 372,22 kB (106,81 kB gzip); essa parcela não é código de `HomeExperience`. |
+| Simulação de leitor de tela | Axe verificava regras WCAG, mas não havia teste explícito de árvore assistiva e nomes de controles. | A E2E inspeciona a árvore ARIA para landmarks, heading, botões e links e executa regras de nomes de botão/link/campo, atributos ARIA válidos, obrigatórios e permitidos, além de foco em elementos ocultos. Nenhuma correção adicional foi necessária. | Cenário aprovado; a validação automatizada não substitui NVDA, VoiceOver ou TalkBack em dispositivo real. |
+
+Validação final desta rodada: `pnpm check` aprovado; `pnpm test` aprovado com **38/38**; `pnpm build` aprovado; Playwright serial completo aprovado com **32/32** cenários, incluindo os **3** autenticados. A identidade de teste, o storageState de permissão 600, relatórios de análise e scripts temporários foram removidos antes da entrega.
+
+## Avaliação detalhada de navegação assistiva
+
+> **Limitação do ambiente:** a execução ocorre em Linux, sem NVDA, VoiceOver, Orca ou Speech Dispatcher instalados. Portanto, não é uma sessão manual de áudio com leitor de tela; trata-se de uma simulação detalhada pela árvore de acessibilidade do Chromium, complementada pela auditoria Axe já aprovada.
+
+| Fluxo avaliado | Evidência observada | Barreiras confirmadas |
+|---|---|---|
+| Entrada e navegação por teclado | Os primeiros 12 stops incluem o link “pular para o conteúdo”, marca de início, cinco âncoras, alternância de tema, PDF, contato e os dois CTAs do hero. | Nenhuma no fluxo inspecionado. |
+| Estrutura de leitura | A árvore apresentou `main`, navegações nomeadas, rodapé, headings em sequência e regiões de status. | Nenhuma estrutura sem landmark ou heading foi confirmada. O número de mensagens `status` merece escuta humana para avaliar verbosidade, mas não foi classificado como barreira sem um leitor de tela real. |
+| Busca de projetos | A checagem simplificada de atributos identificou um `input[type=search]` sem `aria-label`; a árvore calculada, porém, resolveu o nome composto “Pesquisar projetos por palavra-chave, nome, tecnologia ou descrição Limpar busca de trabalhos”. | Nenhuma. O resultado inicial foi falso positivo de inspeção de atributo, corrigido pela árvore calculada. |
+| Formulário de briefing | A árvore expõe nomes para todos os campos visíveis: nome, e-mail, serviço, tipo de projeto, local, data, entrega, investimento e briefing. O honeypot não foi considerado por estar fora do fluxo do visitante. | Nenhuma. |
+| Modal de projeto | O diálogo expõe `role=dialog`, `aria-modal=true`, conteúdo na árvore e fecha por Escape. | Nenhuma na abertura/fechamento. A confirmação auditiva de retorno de foco ao gatilho continua pendente de NVDA/VoiceOver. |
+| Nomes e ARIA | As regras automatizadas de nomes de botões/links/campos, atributos ARIA válidos, exigidos e permitidos, e foco em conteúdo oculto não reportaram violações. | Nenhuma. |
+
+**Conclusão:** não houve barreira de acessibilidade confirmada nesta simulação. A pendência é de **validação manual auditiva**, particularmente da ordem de anúncios em regiões `status` e do retorno de foco após modais, em NVDA no Windows ou VoiceOver no macOS/iOS.
+
+## Fase 1 — fonte canônica de dados do portfólio
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Dados de vitrine | `HomeExperience.tsx` redeclarava projetos, estudos de caso, filtros, sinais de repertório, perfis de ordem, pares de comparação e imagens otimizadas. | `portfolioData.tsx` passou a exportar os dados compartilhados; `HomeExperience.tsx` apenas os importa. | A página caiu para **2.637 linhas** e não contém mais declarações locais de `repositories`, `optimizedLightboxImages`, `comparisonPairs`, filtros, sinais ou perfis. |
+| Tipagem de projetos | A tipagem do componente divergia da fonte externa e mantinha os estudos de caso apenas na página. | `Repository` agora contém `catalog` e `caseStudy` opcional na fonte canônica. | O contrato unitário confirma IDs únicos e que os estudos estão somente em `AUD.01`, `CNT.02` e `AUD.05`, todos projetos públicos. |
+| Gestão de favoritos | `portfolioCatalog.ts` repetia manualmente nomes, capas, descrições e tags dos sete projetos. | O catálogo administrativo é uma projeção derivada de `repositories`, usando `catalog.description` e `catalog.tags`. | O teste compara a projeção completa ao catálogo derivado, impedindo divergências futuras. |
+
+Validação da fase: `pnpm check` aprovado; `pnpm test` aprovado com **41/41** em **14** arquivos; `pnpm build` aprovado; Playwright serial com **29 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE` nesta execução. Não houve mudança intencional de interface, CTA, lightbox, favoritos, compartilhamento, download, analytics ou conteúdo público.

@@ -1548,3 +1548,129 @@
 - [x] Gerar ZIP limpo do estado atual.
 - [x] Validar integridade, ausência de secrets e artefatos temporários.
 - [x] Entregar o ZIP atual.
+
+## Auditoria completa sem alterações — versão atual publicada
+
+- [x] Registrar baseline e escopo sem modificar arquivos.
+- [x] Auditar arquitetura, UX, UI, mobile, lightbox, performance, SEO, acessibilidade, segurança, conversão, formulário, analytics, dependências, testes, build e estrutura.
+- [x] Classificar achados por severidade com arquivo, localização, impacto, solução e risco.
+- [x] Consolidar relatório e plano de execução sem implementar alterações.
+
+## Correção isolada do CTA mobile
+
+- [x] Medir a sobreposição da barra fixa sobre os CTAs do hero nos viewports solicitados.
+- [x] Aplicar a menor correção que preserve a barra fixa e o desktop.
+- [x] Adicionar asserção E2E para impedir que CTAs do hero fiquem sob elemento fixed.
+- [x] Validar os viewports, check, testes, build e E2E relevante.
+- [x] Documentar causa e evidências antes/depois.
+- [x] Publicar a correção isolada.
+
+## Hardening de segurança — A-03, A-04 e A-05
+
+- [x] Mapear payloads públicos, uploads, integrações, origens e modelo de instância/proxy.
+- [x] Reduzir o body parser somente se não houver consumidor legítimo de payload grande.
+- [x] Endurecer CSP somente nas diretivas comprovadamente compatíveis.
+- [x] Tornar o tratamento de proxy do rate limit seguro e documentar limites por processo.
+- [x] Testar formulário, honeypot, rate limit, notificações, check, testes e build.
+- [x] Documentar antes/depois, riscos e publicar somente o hardening.
+
+## Performance profissional — medição e otimização
+
+- [x] Medir baseline publicada em 390x844 sob 4G com cache frio, quente e CPU 4x quando disponível.
+- [x] Identificar chunks, elemento LCP, requests, execução JS e gargalos por severidade.
+- [x] Implementar somente otimizações comprovadas fora do caminho crítico.
+- [x] Repetir matriz de métricas e validar check, testes, build e Playwright relevante.
+- [x] Documentar antes/depois e limites de infraestrutura.
+- [x] Publicar a otimização de performance.
+
+## Conversão e prova profissional — projetos públicos
+
+- [x] Inventariar somente os projetos públicos e as evidências factuais disponíveis.
+- [x] Definir campos de caso para contexto, problema, objetivo, função, processo, tecnologias, decisões, resultado qualitativo e aprendizado.
+- [x] Aplicar o conteúdo factual aos melhores projetos sem alterar CTAs, layout ou adicionar projetos.
+- [x] Validar conteúdo, check, testes e build.
+- [x] Documentar a melhoria de prova profissional.
+- [x] Publicar a melhoria de prova profissional.
+
+## Analytics de conversão — Umami
+
+- [x] Inventariar eventos existentes, integração publicada e possíveis dados pessoais.
+- [x] Definir somente as lacunas necessárias entre quote_cta, whatsapp_click, briefing_started, briefing_completed, project_opened, share_project e download_project.
+- [x] Implementar eventos sem PII e sem duplicar instrumentação existente.
+- [x] Validar os eventos, privacidade, check, testes e build.
+- [x] Documentar e publicar a instrumentação de conversão.
+
+## Acessibilidade — auditoria e correções comprovadas
+
+- [x] Inventariar todas as imagens com `alt=""` e classificá-las como decorativas ou informativas.
+- [x] Executar a baseline automatizada de acessibilidade e inspecionar contraste de texto, labels, metadados, botões, links, overlays e estados.
+- [x] Validar teclado, foco, ESC, modais, movimento reduzido, alvos de toque e anúncios disponíveis a leitores de tela.
+- [x] Corrigir somente falhas comprovadas, sem redesign ou alteração do lightbox sem necessidade.
+- [x] Executar check, testes, build e E2E relevante; documentar e publicar o resultado.
+
+## Refatoração controlada de HomeExperience
+
+- [x] Mapear estado compartilhado e selecionar somente responsabilidades com baixo acoplamento.
+- [x] Extrair a lógica de exportação sem alterar formatos, downloads ou interface; adicionar testes e validar check/test.
+- [x] Extrair responsabilidades independentes de curadoria e contato sem alterar galeria, favoritos ou formulário; adicionar testes e validar check/test.
+- [x] Extrair apenas hooks independentes comprovados, preservando lightbox, hero e estado central da galeria; validar check/test após cada etapa.
+- [x] Executar build e Playwright completos, documentar o antes/depois e publicar o checkpoint.
+
+## QA final — sem alterações iniciais
+
+- [x] Inspecionar a cobertura pública e autenticada existente, incluindo condições de skip.
+- [x] Executar `pnpm check`, `pnpm test` e `pnpm build` sem alterar código.
+- [x] Executar Playwright público e validar a matriz de viewports solicitada.
+- [x] Verificar se há sessão real de teste segura para login, painel, edição, restauração e logout; reportar cenários não validados.
+- [x] Consolidar o relatório factual de QA, sem correções automáticas.
+
+## Fechamento da QA — determinismo de testes
+
+- [x] Reproduzir e diagnosticar a instabilidade do cenário de analytics sem alterar o produto.
+- [x] Determinar o caráter opcional da dica de swipe e validar a navegação funcional isoladamente.
+- [x] Ajustar somente expectativas de teste comprovadamente frágeis, sem aumentar timeouts de modo cego.
+- [x] Verificar a disponibilidade de `E2E_AUTH_STATE` sem criar, simular ou versionar sessão; executar fluxos autenticados apenas se houver sessão segura.
+- [x] Reexecutar check, unitários, build e Playwright serial; documentar antes/depois e publicar.
+
+## Autenticação E2E, bundle e semântica assistiva
+
+- [x] Mapear o contrato de sessão, a composição do chunk inicial e a cobertura ARIA existente antes de alterar código.
+- [x] Configurar identidade de teste isolada e não versionada para `E2E_AUTH_STATE`; validar login, painel, edição, restauração e logout.
+- [x] Medir o chunk principal e aplicar somente code splitting justificado, preservando hero, primeiro conteúdo, SEO e interações críticas.
+- [x] Simular leitor de tela pela árvore de acessibilidade e corrigir apenas atributos ARIA comprovadamente insuficientes.
+- [x] Executar check, testes, build e E2E completo; documentar antes/depois, limpar artefatos e publicar.
+
+## Avaliação detalhada com leitor de tela
+
+- [x] Verificar a disponibilidade de NVDA, VoiceOver ou leitor de tela compatível no ambiente.
+- [x] Executar navegação assistiva detalhada pela ferramenta disponível, cobrindo landmarks, headings, controles, modais, formulários e atalhos.
+- [x] Documentar barreiras encontradas, evidências e limitações, sem aplicar correções automáticas.
+
+## Pacote-fonte para análise
+
+- [x] Gerar um ZIP do estado atual, excluindo dependências, builds, testes, credenciais e arquivos temporários.
+- [x] Verificar a integridade e o conteúdo seguro do ZIP antes da entrega.
+
+## Pacote para análise no Qwen Studio
+
+- [x] Criar um guia de contexto e instruções de análise para acompanhamento do código-fonte.
+- [x] Gerar um ZIP seguro do projeto com o guia, sem dependências, builds, credenciais ou artefatos temporários.
+- [x] Verificar e entregar o pacote compatível com Qwen Studio.
+
+## Dossiê Markdown para Qwen Studio
+
+- [x] Consolidar contexto, estrutura e arquivos de código mais relevantes em um único Markdown sem segredos.
+- [x] Verificar tamanho, integridade e ausência de credenciais antes da entrega.
+
+## Fase 1 — Consolidação de dados duplicados
+
+- [x] Confirmar as duplicações e divergências de tipos entre `HomeExperience.tsx`, `portfolioData.tsx` e `portfolioCatalog.ts`.
+- [x] Após aprovação explícita, tornar `portfolioData.tsx` a única fonte canônica e remover apenas as redeclarações inline equivalentes.
+- [x] Validar com check, testes, build, Playwright e comparação visual antes do checkpoint atômico.
+
+## Auditoria e melhoria incremental da experiência mobile
+
+- [x] Auditar navegação, hero, cards, galeria, formulário e rodapé nos viewports 320×568, 360×800, 375×812, 390×844, 414×896 e 430×932 sem alterar código.
+- [x] Apresentar diff estimado, critérios de aceite e risco de regressão para cada correção mobile antes de implementar.
+- [ ] Aplicar somente as correções mobile aprovadas, preservando desktop, identidade Arquivo Profundo, hero, lightbox, modais, favoritos, compartilhamento e busca.
+- [ ] Validar responsividade, zero overflow horizontal, alvos de toque, acessibilidade, `pnpm check`, testes, build e E2E antes do checkpoint.
