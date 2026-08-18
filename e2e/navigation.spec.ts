@@ -146,9 +146,13 @@ test.describe("navegação pública e favoritos", () => {
     expect(dateHeights.every((height) => height >= 40)).toBeTruthy();
     const timeHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(-3).map((element) => element.getBoundingClientRect().height));
     expect(timeHeights.every((height) => height >= 44)).toBeTruthy();
+    await calendar.locator("button:not([disabled])").nth(2).click();
+    await calendar.getByRole("button", { name: "10:00" }).click();
+    await expect(calendar.locator('[data-availability-selection-summary="true"]')).toContainText(/consulta selecionada.*10:00/s);
 
     const gallery = page.locator("#galeria-publica");
     await gallery.scrollIntoViewIfNeeded();
+    await expect.poll(() => page.locator('[data-filter-scope="category"]').evaluateAll((elements) => elements.map((element) => element.querySelector("span")?.textContent?.trim()))).toEqual(["Todos", "Aéreo", "Conteúdo", "Noturno", "Interface", "Eventos"]);
     await expect(page.locator('[data-mobile-gallery-refinement-toggle="true"]')).toHaveText(/filtros/i);
     await expect(page.getByRole("button", { name: /Ativar visualização compacta/i })).toHaveText(/detalhes/i);
     const favorite = page.locator('[data-favorite-control="true"]').first();
@@ -156,6 +160,7 @@ test.describe("navegação pública e favoritos", () => {
     expect(await favorite.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     await favorite.click();
     await expect(favorite).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByText("Projeto salvo")).toBeVisible();
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 

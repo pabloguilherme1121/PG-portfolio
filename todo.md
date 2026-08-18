@@ -1688,3 +1688,10 @@
 - [x] Apresentar um diff estimado com impacto e risco antes de ajustar agenda, rótulos ou cartões mobile.
 - [x] Aplicar somente os ajustes aprovados, preservando desktop, filtros funcionais, busca, lightbox, modais, compartilhamento, exportação e analytics.
 - [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Disponibilidade, prioridade de filtros e feedback de favoritos
+
+- [x] Auditar o resumo de data e horário antes do WhatsApp, a ordem de filtros baseada em evidência disponível e o feedback após favoritar, sem alterar código.
+- [x] Apresentar um diff estimado com impacto e risco antes de ajustar disponibilidade, filtros ou feedback de favoritos.
+- [x] Aplicar somente os ajustes aprovados, preservando desktop, agenda, busca, lightbox, modais, compartilhamento, exportação e analytics.
+- [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.

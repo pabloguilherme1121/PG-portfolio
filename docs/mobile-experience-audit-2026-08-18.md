@@ -60,3 +60,21 @@ Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build
 | Favoritar | O coração por projeto media 40 px e a tentativa inicial de texto adjacente interferiu na ação de ampliar. | O controle existente foi ajustado para 44 px, com `aria-pressed`, rótulos completos e separação física da ação de imagem; não foi criado um duplicado. | E2E confirma toque, estado salvo e os dois testes de lightbox aprovados. |
 
 Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial limpo com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A interação de ampliar do lightbox foi repetida depois do ajuste de favoritos e manteve-se aprovada em todos os viewports cobertos.
+
+## Auditoria de prévia, prioridade de filtros e feedback de favoritos — escopo pendente de aprovação
+
+| Área | Achado | Limite de evidência | Proposta a validar |
+|---|---|---|---|
+| Disponibilidade | A agenda já deriva `selectedDateLabel`, horário e URL do WhatsApp, mas só apresenta a seleção no rótulo discreto “horário desejado”. | Não é necessário alterar a mensagem ou o redirecionamento para expor uma confirmação útil antes do clique. | Mostrar uma prévia visível de data e hora acima do CTA somente quando ambas estiverem selecionadas. |
+| Ordem de filtros | A taxonomia canônica está em ordem manual. A instrumentação permitida não registra uso de filtros; portanto, não há dado de popularidade de visitantes. | Não é correto alegar que filtros são mais usados sem um evento que não faz parte da taxonomia aprovada. | Priorizar por cobertura factual do catálogo público: Aéreo e Conteúdo (4), Noturno (3), Interface (2), Eventos (1), mantendo “Todos” primeiro e desempate pela ordem editorial atual. |
+| Favoritos | Favorito de projeto persiste no navegador e atualiza `aria-pressed`, mas não fornece retorno visual; a coleção de imagens já mantém status temporário. | O produto já usa `toast` no envio de briefing, sem necessidade de nova dependência. | Reutilizar o toast existente ao salvar ou remover projeto, com nome do trabalho e sem analytics ou PII adicionais. |
+
+## Resultado da prévia, prioridade de filtros e feedback de favoritos
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Consulta de disponibilidade | Data e horário escolhidos apareciam apenas no rótulo do seletor. | Uma prévia “consulta selecionada” apresenta data e horário acima do CTA de WhatsApp quando ambos estão definidos. | E2E seleciona uma data e 10:00, confirma a prévia e preserva o botão de consulta. |
+| Ordem de categorias | A sequência era editorial e não refletia a cobertura do catálogo. | A ordem é `Todos`, `Aéreo`, `Conteúdo`, `Noturno`, `Interface`, `Eventos`, usando a quantidade factual de projetos (4, 4, 3, 2, 1), sem afirmar uso de visitantes. | E2E confirma a sequência renderizada e os filtros continuam URL-compartilháveis. |
+| Favoritos | O estado mudava silenciosamente no cartão. | Salvar/remover exibe toast com o nome do projeto, sem dado pessoal nem novo evento analítico. | E2E confirma `aria-pressed` e o toast “Projeto salvo”. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. Os testes de lightbox, busca, filtros, agenda, exportação e acessibilidade permaneceram aprovados.

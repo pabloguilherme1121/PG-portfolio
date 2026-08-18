@@ -1201,7 +1201,14 @@ export default function Home() {
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
     event.preventDefault();
     event.stopPropagation();
+    const isAlreadySaved = favoriteProjectIdSet.has(projectId);
+    const projectName = repositories.find((repository) => repository.id === projectId)?.name ?? "Projeto";
     setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
+    if (isAlreadySaved) {
+      toast("Projeto removido", { description: `${projectName} foi removido dos projetos salvos.` });
+    } else {
+      toast.success("Projeto salvo", { description: `${projectName} está disponível em projetos salvos.` });
+    }
   }
 
   function toggleFavoriteImage(projectId: string, event?: React.MouseEvent | React.KeyboardEvent) {
@@ -2370,6 +2377,7 @@ export default function Home() {
                     {availableTimes.map((time) => <button key={time} type="button" disabled={!availabilityDate || isBlockedDatesError} onClick={() => setAvailabilityTime(time)} className={`min-h-11 border py-2 font-mono text-[10px] transition-colors sm:min-h-0 ${availabilityTime === time ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : availabilityDate && !isBlockedDatesError ? "border-cyan-100/[0.16] text-[#b9dfef] hover:border-[#67e8f9]/55 hover:text-[#67e8f9]" : "cursor-not-allowed border-white/[0.06] text-[#4b677a]"}`}>{time}</button>)}
                   </div>
                 </div>
+                {isAvailabilityConsultationReadyForUser && <div data-availability-selection-summary="true" role="status" aria-live="polite" className="mt-4 border border-[#67e8f9]/30 bg-[#0b2746]/70 px-3 py-3 text-left"><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8ddff3]">consulta selecionada</p><p className="mt-1 font-body text-sm font-medium text-[#e5fbff]">{selectedDateLabel} · {availabilityTime}</p></div>}
                 <button type="button" disabled={!isAvailabilityConsultationReadyForUser || isAvailabilityRedirecting} onClick={consultAvailabilityOnWhatsApp} aria-busy={isAvailabilityRedirecting} aria-describedby="availability-feedback" className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta">
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>
