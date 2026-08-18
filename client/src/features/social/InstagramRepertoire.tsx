@@ -70,13 +70,8 @@ export default function InstagramRepertoire() {
           </div>
           <div>
             <p className="max-w-2xl font-body text-base leading-8 text-[#b9ddec]">Os perfis concentram registros, estudos e projetos audiovisuais. Entre por onde fizer mais sentido e acompanhe as próximas peças diretamente na origem.</p>
-            <div className="mt-4 max-w-2xl border-l border-[#67e8f9]/50 pl-3 font-mono text-[9px] uppercase leading-5 tracking-[0.12em] text-[#6e8aa8]" role={feedState === "query_error" || feedState === "error" ? "alert" : "status"} aria-live="polite">
-              {feedState === "loading" && "verificando conexão do feed · preparando o repertório visual"}
-              {feedState === "query_error" && "feed temporariamente indisponível · os perfis continuam acessíveis pelos links abaixo"}
-              {feedState === "credentials_required" && "feed aguardando autorização da Meta · os links reais permanecem ativos enquanto isso"}
-              {feedState === "empty" && "feed conectado, mas ainda sem publicações para exibir · acompanhe os perfis na origem"}
-              {feedState === "error" && "a fonte do feed retornou um erro · a seleção visual continua disponível como fallback"}
-              {feedState === "available" && hasLiveItems && "feed atualizado · publicações recentes carregadas da origem"}
+            <div className="mt-4 max-w-2xl border-l border-[#67e8f9]/50 pl-3 font-mono text-[9px] uppercase leading-5 tracking-[0.12em] text-[#6e8aa8]" role="status" aria-live="polite">
+              {feedState === "available" && hasLiveItems ? "publicações recentes · acompanhe os perfis na origem" : "curadoria editorial · perfis reais · referências selecionadas"}
             </div>
           </div>
         </div>
@@ -157,8 +152,8 @@ export default function InstagramRepertoire() {
         )}
 
         <div className="mt-6 flex flex-col gap-3 border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <p className="max-w-3xl font-body text-sm leading-6 text-[#c8e5f0]">A conexão automática depende de uma conta profissional e de autorização Meta. O bloco continua útil enquanto isso: os perfis estão acessíveis, as imagens vêm do arquivo real e nenhum post é simulado.</p>
-          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[#67e8f9] transition-colors hover:text-white">Instagram <ArrowUpRight className="h-3.5 w-3.5" /></a>
+          <p className="max-w-3xl font-body text-sm leading-6 text-[#c8e5f0]">Uma seleção editorial de perfis e trabalhos reais para acompanhar processos, bastidores e novas referências visuais. As imagens vêm do arquivo publicado e nenhuma publicação é simulada.</p>
+          <a href="https://www.instagram.com/mpjstoryworks/" target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[#67e8f9] transition-colors hover:text-white">abrir repertório <ArrowUpRight className="h-3.5 w-3.5" /></a>
         </div>
       </div>
     </section>

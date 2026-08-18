@@ -1503,3 +1503,26 @@
 - [x] Revalidar typecheck, Vitest, build e E2E público serial após a alteração.
 - [x] Registrar no relatório final a ressalva de TTFB/HTML e a limitação de E2E autenticado sem sessão real.
 - [x] Salvar checkpoint publicado com a alteração mínima e entregar o relatório final de produção.
+
+## ZIP para análise — checkpoint 044f4856
+
+- [x] Definir exclusões e conteúdo do pacote-fonte.
+- [x] Gerar ZIP limpo do projeto a partir do checkpoint publicado.
+- [x] Validar integridade, ausência de secrets e ausência de artefatos temporários.
+- [x] Entregar o ZIP para análise.
+
+## Instruções do arquivo anexado
+
+- [x] Ler e interpretar integralmente o arquivo anexado.
+- [x] Comparar as instruções com o ZIP e o estado atual do projeto.
+- [x] Implementar as alterações solicitadas sem remover funcionalidades existentes.
+- [x] Executar validações, testes e revisão de regressões.
+- [ ] Entregar o resultado atualizado ao usuário.
+
+## Retomada do projeto — validação das instruções anexadas
+
+- [x] Verificar o estado da execução interrompida e os processos temporários.
+- [x] Concluir install frozen, check, test, build e Playwright serial.
+- [x] Corrigir somente regressões concretas encontradas.
+- [x] Atualizar a documentação e o relatório da rodada.
+- [ ] Salvar checkpoint e entregar o estado atualizado.

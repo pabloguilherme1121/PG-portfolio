@@ -123,3 +123,11 @@ A sequência comum observada foi: resposta HTML/TTFB; fontes e CSS bloqueantes; 
 | Execução/hydration sob CPU 4× | Médio | Tasks de 6,80–12,16 s; script 0,72–0,84 s medido no navegador | Profiling de aparelho real antes de refatorar HomeExperience |
 
 As três intervenções de melhor relação ganho/risco são, portanto, **(1)** corrigir a variabilidade de cache/edge do HTML público, **(2)** validar e otimizar a entrega CDN da imagem de retrato crítica sem trocar a identidade, e **(3)** revisar preload/subset de fontes e CSS crítico. A terceira não foi aplicada nesta rodada por risco de alteração visual e por falta de confirmação em aparelho físico.
+
+## Aplicação das instruções do arquivo anexado — rodada complementar
+
+A última rodada foi executada sem redesign, troca de stack ou alteração do lightbox/mobile. Três ajustes concretos foram aplicados. O CTA primário da Home passou de “pedir orçamento” para **“solicitar orçamento”**, mantendo o mesmo destino e hierarquia visual. O bloco social deixou de exibir mensagens técnicas como autorização Meta, credenciais ou erro de feed quando a integração não está disponível; agora se apresenta como curadoria editorial de perfis e referências reais, mantendo os links e os filtros. Também foram adicionados headers de baixo risco no servidor: `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, remoção de `X-Powered-By` e `Strict-Transport-Security` em produção.
+
+A decisão sobre **Eliane Fashion** foi manter o conteúdo inalterado. O projeto e as evidências citadas no arquivo anexado não existem no `portfolioData` atual nem no ZIP analisado. Não foram criados nome, stack, checkout, Stripe, autenticação, resultados ou métricas sem fonte verificável. Para transformar esse item em um case profissional, ainda são necessários os links, responsabilidades, tecnologias e resultados reais fornecidos pelo proprietário.
+
+A nova asserção E2E confirma que o bloco social não exibe estados técnicos de autorização/erro e apresenta a linguagem de curadoria real. Typecheck, testes unitários, build e a suíte E2E pública serial foram executados após as mudanças.

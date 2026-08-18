@@ -137,6 +137,8 @@ test.describe("navegação pública e favoritos", () => {
     await page.locator("#social").scrollIntoViewIfNeeded();
     await expect(page.locator(".social-filter-card").first()).toBeVisible({ timeout: 10000 });
     await expect.poll(() => deferredRequests.some((url) => url.includes("instagramFeed.status")), { timeout: 10000 }).toBeTruthy();
+    await expect(page.locator("#social")).not.toContainText(/autorização da Meta|credenciais|required|feed temporariamente indisponível/i);
+    await expect(page.locator("#social")).toContainText(/curadoria editorial|perfis reais/i);
   });
 
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
