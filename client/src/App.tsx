@@ -6,8 +6,7 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { lazy, Suspense } from "react";
-
-const Home = lazy(() => import("./pages/Home"));
+import Home from "./pages/Home";
 const AvailabilityManager = lazy(() => import("./pages/AvailabilityManager"));
 const FavoritesManagement = lazy(() => import("./pages/FavoritesManagement"));
 const Privacy = lazy(() => import("./pages/Privacy"));
