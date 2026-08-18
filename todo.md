@@ -1590,4 +1590,4 @@
 - [x] Aplicar o conteúdo factual aos melhores projetos sem alterar CTAs, layout ou adicionar projetos.
 - [x] Validar conteúdo, check, testes e build.
 - [x] Documentar a melhoria de prova profissional.
-- [ ] Publicar a melhoria de prova profissional.
+- [x] Publicar a melhoria de prova profissional.
