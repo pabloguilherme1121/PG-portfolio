@@ -1469,5 +1469,5 @@
 - [x] Adiar `availability.listBlocked` até proximidade/uso da seção de calendário.
 - [x] Adiar `instagramFeed.status` e o módulo social até proximidade da seção Social.
 - [x] Preservar lightbox, modal, navegação, identidade, interações e conteúdo crítico.
-- [ ] Medir antes/depois em 4G, validar scroll, erro, teclado, reduced motion, check, testes, build e Playwright.
-- [ ] Atualizar relatório, salvar checkpoint e republicar somente após aprovação.
+- [x] Medir antes/depois em 4G, validar scroll, erro, teclado, reduced motion, check, testes, build e Playwright.
+- [x] Atualizar relatório, salvar checkpoint e republicar somente após aprovação.
