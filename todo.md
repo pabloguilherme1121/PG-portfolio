@@ -1672,5 +1672,5 @@
 
 - [x] Auditar navegação, hero, cards, galeria, formulário e rodapé nos viewports 320×568, 360×800, 375×812, 390×844, 414×896 e 430×932 sem alterar código.
 - [x] Apresentar diff estimado, critérios de aceite e risco de regressão para cada correção mobile antes de implementar.
-- [ ] Aplicar somente as correções mobile aprovadas, preservando desktop, identidade Arquivo Profundo, hero, lightbox, modais, favoritos, compartilhamento e busca.
-- [ ] Validar responsividade, zero overflow horizontal, alvos de toque, acessibilidade, `pnpm check`, testes, build e E2E antes do checkpoint.
+- [x] Aplicar somente as correções mobile aprovadas, preservando desktop, identidade Arquivo Profundo, hero, lightbox, modais, favoritos, compartilhamento e busca.
+- [x] Validar responsividade, zero overflow horizontal, alvos de toque, acessibilidade, `pnpm check`, testes, build e E2E antes do checkpoint.
