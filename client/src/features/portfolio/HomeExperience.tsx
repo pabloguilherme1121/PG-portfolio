@@ -264,6 +264,7 @@ export default function Home() {
   const [featuredCardsReady, setFeaturedCardsReady] = useState(false);
   const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
   const [isCompactGallery, setIsCompactGallery] = useState(false);
+  const [isMobileGalleryRefinementOpen, setIsMobileGalleryRefinementOpen] = useState(false);
   const [galleryView, setGalleryView] = useState<"grid" | "list">(() => {
     if (typeof window === "undefined") return "grid";
     return window.localStorage.getItem("pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
@@ -2029,12 +2030,22 @@ export default function Home() {
                   <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>projetos salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
                   <button type="button" data-image-collection-toggle="true" onClick={() => setIsImageCollectionOpen((current) => !current)} aria-expanded={isImageCollectionOpen} aria-controls="curadoria-pessoal" className={`inline-flex items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${isImageCollectionOpen ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIds.length ? "fill-[#67e8f9] text-[#67e8f9]" : ""}`} aria-hidden="true" /><span>minhas imagens</span><span aria-hidden="true">{favoriteImageIds.length}</span></button>
                   <span role="status" aria-live="polite" className="sr-only">{favoriteImageStatus}</span>
-                  <span className="hidden h-5 w-px bg-white/10 sm:block" aria-hidden="true" />
-                  <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
-                  <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
+                  <div className="hidden items-center gap-2 sm:flex">
+                    <span className="h-5 w-px bg-white/10" aria-hidden="true" />
+                    <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
+                    <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
                     <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em CSV"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>CSV</span></button>
                     <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
-                  </span>
+                    </span>
+                  </div>
+                  <details className="relative sm:hidden">
+                    <summary data-mobile-gallery-secondary-actions-toggle="true" className="flex min-h-11 list-none items-center gap-2 border border-[#67e8f9]/25 bg-[#07101e] px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] [&::-webkit-details-marker]:hidden"><Settings2 className="h-3.5 w-3.5" aria-hidden="true" />mais ações<ChevronDown className="h-3.5 w-3.5" aria-hidden="true" /></summary>
+                    <div data-mobile-gallery-secondary-actions="true" className="absolute right-0 z-30 mt-2 grid min-w-44 gap-1 border border-[#67e8f9]/35 bg-[#061226] p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.36)]">
+                      <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Share2 className="h-3.5 w-3.5" aria-hidden="true" />{shareStatus === "copied" ? "copiado" : "compartilhar"}</button>
+                      <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Download className="h-3.5 w-3.5" aria-hidden="true" />baixar CSV</button>
+                      <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Download className="h-3.5 w-3.5" aria-hidden="true" />baixar JSON</button>
+                    </div>
+                  </details>
                   <span role="status" aria-live="polite" className="sr-only">{shareStatus === "copied" ? "Link dos favoritos copiado." : shareStatus === "error" ? "Não foi possível copiar o link dos favoritos." : ""}</span>
 
                 </div>
@@ -2052,11 +2063,12 @@ export default function Home() {
                   return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
                 })}
               </div>
-              <div className="mt-3 flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria pública por tags">
+              <div className={`${isMobileGalleryRefinementOpen ? "flex" : "hidden"} mt-3 max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden`} aria-label="Filtrar galeria pública por tags">
                 {tagFilters.map((tag) => <button type="button" key={tag} onClick={() => selectTag(tag)} aria-pressed={activeTag === tag} data-filter-scope="tag" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeTag === tag ? "border-[#a5f3fc] bg-[#0b3156] text-[#dffbff]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{tag}</span><span aria-hidden="true" className="text-[8px] text-[#5e789d]">{tag === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(tag) || getRepositoryCategories(repository).has(tag)).length}</span></button>)}
               </div>
+              <button type="button" data-mobile-gallery-refinement-toggle="true" onClick={() => setIsMobileGalleryRefinementOpen((current) => !current)} aria-expanded={isMobileGalleryRefinementOpen} aria-controls="mobile-gallery-refinements" className="mt-3 inline-flex min-h-11 w-full items-center justify-between border border-[#67e8f9]/25 bg-[#07101e] px-3 font-mono text-[9px] uppercase tracking-[0.11em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"><span className="flex items-center gap-2"><Settings2 className="h-3.5 w-3.5" aria-hidden="true" />refinar resultados</span><ChevronDown className={`h-4 w-4 transition-transform duration-200 motion-reduce:transition-none ${isMobileGalleryRefinementOpen ? "rotate-180" : ""}`} aria-hidden="true" /></button>
             <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar repositórios por tecnologia">
+              <div id="mobile-gallery-refinements" className={`${isMobileGalleryRefinementOpen ? "flex" : "hidden"} max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden`} aria-label="Filtrar repositórios por tecnologia">
               {technologyFilters.map((technology) => (
                 <button
                   type="button"
@@ -2087,6 +2099,10 @@ export default function Home() {
               >
                 <Layers2 className="h-3.5 w-3.5" /> {isCompactGallery ? "modo compacto" : "modo detalhado"}
               </button>
+            </div>
+
+            <div className="mt-3 min-h-5" aria-live="polite">
+              <span data-gallery-loading-status="true" aria-hidden={!(isProjectFilterTransitioning || isGalleryLoading)} className={`inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8edff0] transition-[opacity,transform] duration-200 motion-reduce:transition-none ${isProjectFilterTransitioning || isGalleryLoading ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"}`}><Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />atualizando resultados</span>
             </div>
 
             <div data-project-search-panel="true" className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -2371,7 +2387,7 @@ export default function Home() {
             </div>
 
             <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-              <form id="contato-briefing" onSubmit={handleSubmit} onFocusCapture={() => { setIsBriefingFieldFocused(true); trackBriefingStarted(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
+              <form id="contato-briefing" aria-busy={quoteRequestMutation.isPending} onSubmit={handleSubmit} onFocusCapture={() => { setIsBriefingFieldFocused(true); trackBriefingStarted(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsBriefingFieldFocused(false); }} className="max-w-xl scroll-mt-24">
                 <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
                   <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
@@ -2384,17 +2400,17 @@ export default function Home() {
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
-                      <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
-                      <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                   </div>
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                      <select required name="service" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <select required name="service" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="" disabled>Selecione um serviço</option>
                         <option>Filmagem aérea com drone</option>
                         <option>Captação terrestre</option>
@@ -2405,7 +2421,7 @@ export default function Home() {
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                      <select required name="projectType" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <select required name="projectType" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="" disabled>Selecione uma opção</option>
                         <option>Evento social</option>
                         <option>Evento corporativo</option>
@@ -2419,17 +2435,17 @@ export default function Home() {
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local do projeto *</span>
-                      <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                      <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
-                      <input type="date" name="date" onFocus={(event) => { event.currentTarget.style.outline = "2px solid #a5f3fc"; event.currentTarget.style.outlineOffset = "3px"; event.currentTarget.style.boxShadow = "0 0 0 4px rgba(165, 243, 252, 0.28)"; }} onBlur={(event) => { event.currentTarget.style.outline = ""; event.currentTarget.style.outlineOffset = ""; event.currentTarget.style.boxShadow = ""; }} className="mt-3 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
+                      <input type="date" name="date" onFocus={(event) => { event.currentTarget.style.outline = "2px solid #a5f3fc"; event.currentTarget.style.outlineOffset = "3px"; event.currentTarget.style.boxShadow = "0 0 0 4px rgba(165, 243, 252, 0.28)"; }} onBlur={(event) => { event.currentTarget.style.outline = ""; event.currentTarget.style.outlineOffset = ""; event.currentTarget.style.boxShadow = ""; }} className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
                     </label>
                   </div>
                   <div className="grid gap-7 sm:grid-cols-2">
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                      <select name="delivery" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <select name="delivery" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="">A definir</option>
                         <option>Vertical 9:16 para Reels</option>
                         <option>Horizontal 16:9</option>
@@ -2439,7 +2455,7 @@ export default function Home() {
                     </label>
                     <label className="block">
                       <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                      <select name="budget" defaultValue="" className="mt-3 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <select name="budget" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                         <option value="">Prefiro conversar</option>
                         <option>Até R$ 500</option>
                         <option>R$ 500 a R$ 1.000</option>
@@ -2454,7 +2470,7 @@ export default function Home() {
                   </label>
                 </div>
                 <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <Button disabled={quoteRequestMutation.isPending} type="submit" className="h-auto w-fit rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70">
+                  <Button data-briefing-submit="true" disabled={quoteRequestMutation.isPending} type="submit" className="min-h-12 w-full justify-center rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
                     {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
                   </Button>
                   <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f] light-muted-ink">seus dados ficam apenas neste pedido</p>

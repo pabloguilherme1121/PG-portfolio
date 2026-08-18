@@ -1674,3 +1674,10 @@
 - [x] Apresentar diff estimado, critérios de aceite e risco de regressão para cada correção mobile antes de implementar.
 - [x] Aplicar somente as correções mobile aprovadas, preservando desktop, identidade Arquivo Profundo, hero, lightbox, modais, favoritos, compartilhamento e busca.
 - [x] Validar responsividade, zero overflow horizontal, alvos de toque, acessibilidade, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Ergonomia mobile — galeria, formulário e feedbacks de carregamento
+
+- [x] Auditar em 320 px a densidade dos controles da galeria, o tamanho dos alvos de toque do formulário e os feedbacks durante navegação/carregamento, sem alterar código.
+- [x] Apresentar um diff estimado com impacto e risco antes de mudar galeria, formulário ou feedbacks mobile.
+- [x] Aplicar somente os ajustes aprovados, preservando desktop, identidade visual, filtros, busca, lightbox, modais, favoritos e analytics.
+- [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.

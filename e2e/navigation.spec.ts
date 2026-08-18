@@ -105,6 +105,34 @@ test.describe("navegação pública e favoritos", () => {
     await expect(sort).toHaveValue("added");
   });
 
+  test("reduz a densidade da galeria e amplia os alvos do briefing em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/#galeria-publica");
+    const gallery = page.locator("#galeria-publica");
+    await gallery.scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-filter-scope="category"]').first()).toBeVisible();
+    await expect(page.locator('[data-filter-scope="tag"]').first()).toBeHidden();
+    const refine = page.locator('[data-mobile-gallery-refinement-toggle="true"]');
+    await expect(refine).toBeVisible();
+    await refine.click();
+    await expect(page.locator('[data-filter-scope="tag"]').first()).toBeVisible();
+    await expect(page.locator('[data-filter-scope="technology"]').first()).toBeVisible();
+    const moreActions = page.locator('[data-mobile-gallery-secondary-actions-toggle="true"]');
+    await moreActions.click();
+    await expect(page.locator('[data-mobile-gallery-secondary-actions="true"]')).toBeVisible();
+    await page.locator('[data-filter-scope="category"]').filter({ hasText: "Aéreo" }).click();
+    await expect(page.locator('[data-gallery-loading-status="true"]')).toContainText("atualizando resultados");
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+
+    const form = page.locator("#contato-briefing");
+    await form.scrollIntoViewIfNeeded();
+    const inputHeights = await form.locator("input:not([name='website']), select").evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
+    expect(inputHeights.every((height) => height >= 48)).toBeTruthy();
+    const submit = form.locator('[data-briefing-submit="true"]');
+    const widths = await Promise.all([submit.evaluate((element) => element.getBoundingClientRect().width), form.evaluate((element) => element.getBoundingClientRect().width)]);
+    expect(widths[0]).toBeGreaterThanOrEqual(widths[1] - 1);
+  });
+
   test("mantém ordenação na URL, mostra histórico e limpa todos os filtros", async ({ page }) => {
     await page.goto("/?technology=HTML&category=Interface&tag=Interface&sort=added&q=site#galeria-publica");
     const sort = page.locator('[data-sort-control="projects"]');

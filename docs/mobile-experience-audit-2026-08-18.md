@@ -23,3 +23,22 @@ O ajuste foi limitado ao H1 abaixo de 400 px. A escala mínima foi reduzida de f
 | E2E mobile novo + proteção de CTA | **2/2** aprovados |
 | Axe isolado | Aprovado, sem violações graves ou críticas |
 | Playwright serial completo | **30 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`; execução limpa concluída em 9,6 min. |
+
+## Auditoria de ergonomia da galeria e do formulário — escopo pendente de aprovação
+
+| Área | Achado | Impacto em 320 px | Proposta a validar |
+|---|---|---|---|
+| Filtros da galeria | Categoria, tag e tecnologia já usam faixas horizontais independentes, mas cada grupo mantém todos os chips expostos, além dos controles de modo, busca, ordenação, cópia e limpeza. | Alta densidade de decisões antes do primeiro cartão; não há corte horizontal comprovado. | Priorizar o primeiro grupo e recolher os dois grupos secundários em divulgação progressiva somente no mobile. |
+| Ações de favoritos | Salvos, imagens, compartilhar, CSV e JSON aparecem no mesmo bloco antes dos filtros. | Pressão visual para uma ação secundária de uso pouco frequente. | Manter salvos/imagens aparentes; transferir compartilhar e exportações para uma área “mais ações” mobile. |
+| Formulário | Campos usam `py-3` e o botão de envio usa largura de conteúdo. Há spinner no envio e retorno de sucesso/erro. | Os campos já têm altura funcional, mas o botão principal não ocupa toda a largura disponível e os alvos não têm mínima explícita. | Estabelecer mínimo de 48 px para controles e botão de largura total em mobile, preservando o desktop. |
+| Carregamento | Busca, “carregar mais”, skeleton da galeria e envio do formulário já oferecem estados; filtros expõem apenas `aria-busy` e a transição da galeria. | O feedback visual no toque de filtro é discreto demais. | Adicionar um status visual curto de atualização e transições de opacidade/transformação, respeitando movimento reduzido. |
+
+## Resultado do refinamento de ergonomia mobile
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Densidade da galeria | Tags, tecnologias e ações secundárias disputavam atenção antes dos cartões. | Categoria, busca e modo permanecem diretos; tags e tecnologias entram em “refinar resultados” e compartilhar/exportar em “mais ações” abaixo de 640 px. | E2E em 320 px confirma a divulgação progressiva, os controles disponíveis e zero overflow horizontal. |
+| Formulário | Campos e selects dependiam apenas do espaçamento vertical; o envio tinha largura de conteúdo. | Inputs e selects têm mínimo de 48 px; o botão ocupa a largura mobile e preserva o formato compacto a partir de `sm`. | E2E mede os controles visíveis com pelo menos 48 px e a largura do submit no formulário. |
+| Feedback de operação | Atualização de filtros era majoritariamente semântica. | Operações reais de filtro e busca exibem “atualizando resultados” com transição curta; skeleton, carregar mais e envio seguem seus estados existentes. | O cenário E2E aciona filtro e confirma o status; `prefers-reduced-motion` continua coberto. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial limpo com **31 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. A primeira execução serial perdeu a sessão do navegador durante exportação PDF após carga acumulada; o mesmo cenário passou isoladamente e também passou na repetição serial limpa.
