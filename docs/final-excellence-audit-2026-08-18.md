@@ -166,3 +166,31 @@ A correção escolhida foi **ocultar temporariamente a barra de contato enquanto
 | Lightbox e modais | Barra deveria continuar oculta em overlays | Mantido e coberto por E2E |
 
 Foram alterados somente `client/src/features/portfolio/HomeExperience.tsx` e `e2e/navigation.spec.ts`. A nova asserção E2E percorre 320×568, 360×800, 375×812, 390×844, 414×896, 430×932, 768×900 e 1280×720, verificando que nenhum CTA do hero fica sob a barra fixa. Validações reais: `pnpm check` aprovado; `pnpm test` com 26 testes aprovados; `pnpm build` aprovado; E2E específico do CTA e do lightbox aprovado em modo serial. Nenhuma mudança foi feita em identidade, CTA, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou formulário.
+
+## Hardening de segurança — A-03, A-04 e A-05
+
+### Inventário antes da alteração
+
+Não há endpoint público de upload no projeto. O storage público é servido por `GET /manus-storage/*`; uploads assinados são helpers server-side e não passam pelo parser global. Os procedimentos públicos aceitam apenas campos textuais validados por Zod; o maior campo é `briefing`, limitado a 5.000 caracteres. OAuth usa callback `GET`, e o router de sistema aceita apenas timestamp ou mensagens administrativas curtas. Portanto, não foi encontrada integração legítima que justificasse o limite global de 50 MB.
+
+As origens reais observadas na página publicada foram: o próprio domínio para SPA, tRPC, storage e vídeo; `https://fonts.googleapis.com` para folha de estilos de fonte; `https://fonts.gstatic.com` para arquivos de fonte; `https://manus-analytics.com` para Umami; e `https://files.manuscdn.com` para o dispatcher de edição injetado pelo hosting. Não foi encontrada chamada browser para WebSocket, origem genérica `https:` ou upload público. Links externos e metadados JSON-LD não exigem permissão CSP de carregamento.
+
+### Antes e depois
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Parser global | JSON e URL-encoded aceitavam 50 MB globalmente | Limite reduzido para 100 KB, acima dos payloads textuais atuais e abaixo de abuso desnecessário | POST JSON de 110 KB ao servidor de produção local retornou `413` |
+| CSP efetiva | Somente `Content-Security-Policy-Report-Only`; `script-src https:` e `connect-src https: wss:` genéricos | Enforcement aplicado apenas a `base-uri 'self'`, `object-src 'none'` e `frame-ancestors 'self'`; política completa segue em report-only com origens exatas | Headers locais de produção confirmaram ausência de curingas de origem |
+| Fontes e scripts | Origens genéricas em report-only | Google Fonts, analytics e dispatcher de hosting explicitamente enumerados | HTML publicado e header de produção local |
+| Rate limit | Map por processo e primeiro `x-forwarded-for` aceito sem avaliar o peer | Map por processo preservado; `x-forwarded-for` aceito somente quando a conexão vem de loopback/faixa privada típica de proxy | Testes de proxy confiável e direto aprovados |
+| Formulário | Testes de schema, honeypot e contador | Procedimento público exercitado com persistência/notificação simuladas: envio, falha de notificação, honeypot e sexto pedido bloqueado | 31 testes Vitest aprovados, sem gravar pedido de teste nem alertar o proprietário |
+
+### Riscos e limites remanescentes
+
+O rate limit continua **local ao processo**, por decisão deliberada: não há store com TTL ou infraestrutura compartilhada comprovadamente disponível e não foi adicionada nova dependência. Em múltiplas instâncias ou após reinício, contadores não são compartilhados. Além disso, a lista de proxies confiáveis é conservadora; se o proxy de produção encaminhar conexões por endereço público fora das faixas permitidas, o identificador passará a ser o IP do peer. Esse comportamento é seguro contra spoofing, mas deve ser observado em produção para evitar bucket compartilhado.
+
+A política CSP completa permanece em `Report-Only` porque a página precisa de script inline para metadados dinâmicos, analytics e dispatcher de hosting. As diretivas de baixo risco já passaram para enforcement. Antes de promover `script-src`, `connect-src`, `style-src`, `font-src`, `img-src`, `media-src` ou `frame-src`, é necessário coletar violações em produção e manter as origens explícitas.
+
+### Validação desta rodada
+
+`pnpm check` foi aprovado. `pnpm test` foi aprovado com **9 arquivos e 31 testes**. `pnpm build` foi aprovado. O servidor de produção local confirmou os headers CSP efetivo e report-only; a requisição JSON acima do limite retornou `413`. O procedimento de formulário foi testado com mocks de banco e notificação para evitar a criação de briefing falso ou o disparo de alerta real ao proprietário. Não houve alteração em UX, design, mobile, lightbox, modal, swipe, pinch, zoom, favoritos, compartilhamento ou fluxo visual do formulário.

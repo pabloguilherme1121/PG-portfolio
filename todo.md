@@ -1564,3 +1564,12 @@
 - [x] Validar os viewports, check, testes, build e E2E relevante.
 - [x] Documentar causa e evidências antes/depois.
 - [x] Publicar a correção isolada.
+
+## Hardening de segurança — A-03, A-04 e A-05
+
+- [x] Mapear payloads públicos, uploads, integrações, origens e modelo de instância/proxy.
+- [x] Reduzir o body parser somente se não houver consumidor legítimo de payload grande.
+- [x] Endurecer CSP somente nas diretivas comprovadamente compatíveis.
+- [x] Tornar o tratamento de proxy do rate limit seguro e documentar limites por processo.
+- [x] Testar formulário, honeypot, rate limit, notificações, check, testes e build.
+- [ ] Documentar antes/depois, riscos e publicar somente o hardening.
