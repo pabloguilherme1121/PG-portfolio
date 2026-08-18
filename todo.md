@@ -1563,4 +1563,4 @@
 - [x] Adicionar asserção E2E para impedir que CTAs do hero fiquem sob elemento fixed.
 - [x] Validar os viewports, check, testes, build e E2E relevante.
 - [x] Documentar causa e evidências antes/depois.
-- [ ] Publicar a correção isolada.
+- [x] Publicar a correção isolada.
