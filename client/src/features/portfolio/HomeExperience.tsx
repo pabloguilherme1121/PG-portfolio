@@ -53,7 +53,7 @@ import {
   LayoutGrid,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { favoriteImageStorageKey, normalizeFavoriteImageIds, toggleFavoriteImageId } from "@/lib/imageFavorites";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
@@ -447,7 +447,7 @@ export default function Home() {
     };
   }, [lightboxProjectId, lightboxZoom]);
 
-  const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
+  const openProjectLightbox = useCallback((projectId: string, event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setShowLightboxMobileDetails(false);
     lightboxReturnFocusRef.current = event.currentTarget;
@@ -467,9 +467,9 @@ export default function Home() {
     }
     trackPortfolioEvent("project_opened", { projectId, surface: "lightbox" });
     setLightboxProjectId(projectId);
-  };
+  }, []);
 
-  const closeProjectLightbox = () => {
+  const closeProjectLightbox = useCallback(() => {
     if (lightboxClosing) return;
     setLightboxClosing(true);
     if (document.fullscreenElement) void document.exitFullscreen?.();
@@ -481,9 +481,9 @@ export default function Home() {
       setLightboxOffset({ x: 0, y: 0 });
       lightboxReturnFocusRef.current?.focus();
     }, 180);
-  };
+  }, [lightboxClosing]);
 
-  const toggleLightboxFullscreen = async () => {
+  const toggleLightboxFullscreen = useCallback(async () => {
     const modal = lightboxModalRef.current;
     if (!modal) return;
     try {
@@ -499,9 +499,9 @@ export default function Home() {
       return;
     }
     setLightboxFullscreen(Boolean(document.fullscreenElement));
-  };
+  }, []);
 
-  const setProjectZoom = (nextZoom: number, announceLimit = true) => {
+  const setProjectZoom = useCallback((nextZoom: number, announceLimit = true) => {
     const clampedZoom = Math.min(3, Math.max(1, nextZoom));
     const hitLimit = announceLimit && (nextZoom <= 1 || nextZoom >= 3);
     if (hitLimit) {
@@ -516,28 +516,28 @@ export default function Home() {
     if (zoomFeedbackTimerRef.current) window.clearTimeout(zoomFeedbackTimerRef.current);
     zoomFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomFeedback(null), 900);
     if (clampedZoom === 1) setLightboxOffset({ x: 0, y: 0 });
-  };
+  }, []);
 
-  const resetProjectZoom = () => {
+  const resetProjectZoom = useCallback(() => {
     setLightboxResetting(true);
     setProjectZoom(1, false);
     setLightboxOffset({ x: 0, y: 0 });
     window.setTimeout(() => setLightboxResetting(false), 320);
-  };
+  }, [setProjectZoom]);
 
-  const revealShortcutLegend = () => {
+  const revealShortcutLegend = useCallback(() => {
     setShowLightboxShortcutLegend(true);
     if (shortcutLegendTimerRef.current) window.clearTimeout(shortcutLegendTimerRef.current);
     shortcutLegendTimerRef.current = window.setTimeout(() => setShowLightboxShortcutLegend(false), 3600);
-  };
+  }, []);
 
-  const clearLightboxSessionPreferences = () => {
+  const clearLightboxSessionPreferences = useCallback(() => {
     try { window.sessionStorage.removeItem("arquivo-profundo-lightbox-zoom"); } catch { /* sessionStorage pode estar indisponível */ }
     resetProjectZoom();
     revealShortcutLegend();
-  };
+  }, [resetProjectZoom, revealShortcutLegend]);
 
-  const getTouchDistance = (touches: TouchEvent<HTMLImageElement>["touches"]) => {
+  const getTouchDistance = useCallback((touches: TouchEvent<HTMLImageElement>["touches"]) => {
     const first = touches[0];
     const second = touches[1];
     return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
