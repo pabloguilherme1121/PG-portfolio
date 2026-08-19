@@ -415,6 +415,23 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-context-navigation-status="true"]')).toContainText(/projetos salvos em foco/i);
   });
 
+  test("compartilha uma coleção salva e abre a pré-visualização sem sair da lista", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(["AUD.01", "CNT.02"]));
+      Object.defineProperty(navigator, "share", { configurable: true, value: async (data: { url: string }) => { document.body.dataset.savedShareUrl = data.url; } });
+    });
+    await page.goto("/#galeria-publica");
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
+    await page.locator('[data-saved-projects-share="true"]').click();
+    await expect.poll(() => page.locator("body").getAttribute("data-saved-share-url")).toContain("favorites=AUD.01%2CCNT.02");
+    await expect(page.locator('[data-saved-projects-share="true"]')).toContainText(/compartilhado/i);
+    await page.locator('[data-project-id="CNT.02"] button.project-gallery-card').click();
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible();
+    await expect(page.locator('[data-project-details-dialog="true"]')).toContainText(/RHAM/i);
+    await page.keyboard.press("Escape");
+    await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
+  });
+
   test("expõe exportação offline e instrução de reordenação nos favoritos", async ({ page }) => {
     await page.addInitScript(() => window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(["AUD.01"])))
     await page.goto("/#galeria-publica");

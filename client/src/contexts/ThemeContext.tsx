@@ -60,7 +60,7 @@ export function ThemeProvider({
     if (typeof window !== "undefined") {
       const root = document.documentElement;
       root.classList.add("theme-transitioning");
-      window.setTimeout(() => root.classList.remove("theme-transitioning"), 360);
+      window.setTimeout(() => root.classList.remove("theme-transitioning"), 220);
     }
     setPreference(nextPreference);
   };

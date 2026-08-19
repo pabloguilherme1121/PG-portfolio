@@ -24,6 +24,16 @@
     <link rel="icon" type="image/png" href="/manus-storage/pablo-pg-mark_3a636084.png" />
     <title>Pablo Guilherme — Tecnologia, Conteúdo e Repertório Visual</title>
     <script>
+      try {
+        const storedTheme = localStorage.getItem("theme-preference") || localStorage.getItem("theme") || "dark";
+        const resolvedTheme = storedTheme === "system"
+          ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+          : storedTheme;
+        document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
+        document.documentElement.dataset.themePreference = storedTheme;
+      } catch {
+        document.documentElement.classList.add("dark");
+      }
       const publicPath = window.location.pathname === "/" ? "/" : window.location.pathname;
       const publicUrl = new URL(publicPath, window.location.origin).href;
       const canonicalLink = document.querySelector('link[data-canonical-url="true"]');

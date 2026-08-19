@@ -1727,3 +1727,15 @@
 - [x] Auditar e propor refinamentos mobile pontuais de densidade, alvos de toque, foco, estados vazios e hierarquia visual, preservando identidade, hero, lightbox, modais, CTAs e barra de contato.
 - [x] Apresentar plano de diff, impacto e risco e aguardar aprovação explícita antes de alterar o produto.
 - [x] Implementar somente os ajustes aprovados e validar `pnpm check`, testes, build, E2E e mobile antes do checkpoint.
+
+## Plano aprovado: performance, compartilhamento, tema e pré-visualização
+
+- [x] Medir a baseline de LCP, TTFB, recursos críticos, CLS, INP e ergonomia por viewport antes de qualquer otimização de performance.
+- [x] Converter/precarregar o hero, adicionar preconnect de fontes e reservar dimensões de mídia somente quando a baseline comprovar o ganho e o recurso correto.
+- [x] Auditar e corrigir exclusivamente controles interativos remanescentes abaixo de 44×44 px.
+- [x] Adicionar compartilhamento seguro de coleção de projetos salvos com Web Share API e fallback de cópia, sem PII, duplicação ou eventos analíticos fora da taxonomia.
+- [x] Reutilizar o modal existente como pré-visualização rápida dos projetos salvos, preservando foco, teclado, Escape, retorno de foco e lightbox.
+- [x] Auditar e fortalecer o controle de tema existente, persistência, preferência de sistema, contraste e reduced motion sem criar um segundo toggle.
+- [x] Aplicar somente refinamentos mobile confirmados para hierarquia, safe areas, alvos e feedback visual, preservando identidade, hero, CTAs, agenda, modais e barra de contato.
+- [x] Documentar a decisão técnica entre SSR incremental, PWA e migração para Next.js sem executar uma migração arquitetural sem aprovação específica.
+- [ ] Validar `pnpm check`, testes, build, E2E público, métricas antes/depois e publicar somente com todos os critérios críticos aprovados.

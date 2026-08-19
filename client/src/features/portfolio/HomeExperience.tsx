@@ -296,7 +296,7 @@ export default function Home() {
   const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
-  const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
+  const [shareStatus, setShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectDetailsLoading, setProjectDetailsLoading] = useState(false);
@@ -1267,8 +1267,24 @@ export default function Home() {
   async function shareFavorites() {
     if (!favoriteProjectIds.length) return;
     const shareUrl = buildFavoritesShareUrl(window.location.href, favoriteProjectIds);
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: "Projetos salvos — Pablo Guilherme",
+          text: "Confira esta seleção de projetos do portfólio de Pablo Guilherme.",
+          url: shareUrl,
+        });
+        trackPortfolioEvent("share_project", { channel: "native" });
+        setShareStatus("shared");
+        window.setTimeout(() => setShareStatus("idle"), 2600);
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
     try {
       await navigator.clipboard.writeText(shareUrl);
+      trackPortfolioEvent("share_project", { channel: "copy_link" });
       setShareStatus("copied");
     } catch {
       setShareStatus("error");
@@ -1710,7 +1726,7 @@ export default function Home() {
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
-          <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
+            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
         </div>
         {menuOpen && (
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
@@ -1760,7 +1776,7 @@ export default function Home() {
                 <span className="h-px w-10 bg-[#38bdf8]" />
                 01 / portfólio em movimento
               </div>
-              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
+              <h1 className="mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
                 Aprendendo a construir.
                 <br />
                 <span className="hidden min-[400px]:inline">Registrando o que</span>
@@ -2135,7 +2151,7 @@ export default function Home() {
                   <div>
                     <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">revisar projetos salvos</p>
                     <p className="mt-1 font-body text-xs leading-5 text-[#a8c9da]">Filtre esta lista sem alterar a busca ou a ordenação da vitrine pública.</p>
-                    <button type="button" data-saved-to-availability="true" onClick={() => navigateSavedAgendaContext("agenda")} className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />ver agenda</button>
+                    <div className="mt-3 flex flex-wrap gap-2"><button type="button" data-saved-to-availability="true" onClick={() => navigateSavedAgendaContext("agenda")} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />ver agenda</button><button type="button" data-saved-projects-share="true" onClick={() => void shareFavorites()} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Share2 className="h-3.5 w-3.5" aria-hidden="true" />{shareStatus === "shared" ? "compartilhado" : shareStatus === "copied" ? "link copiado" : shareStatus === "error" ? "tentar novamente" : "compartilhar lista"}</button></div>
                   </div>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
@@ -2328,9 +2344,11 @@ export default function Home() {
                       {imageFavoriteButton}
                       {favoriteButton}
                       {reorderControls}
-                      <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
+                      {favoritesOnly ? <button type="button" data-saved-project-preview={repository.id} onClick={() => openProjectDetails(repository)} style={{ animationDelay: `${index * 45}ms` }} aria-label={`Pré-visualizar ${repository.name} sem sair dos projetos salvos`} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
                         {cardContent}
-                      </a>
+                      </button> : <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
+                        {cardContent}
+                      </a>}
                     </div>
                   );
                 })}
@@ -2733,6 +2751,7 @@ export default function Home() {
                   <button type="button" data-project-modal-favorite="true" onClick={(event) => toggleFavorite(selectedProject.id, event)} aria-pressed={favoriteProjectIdSet.has(selectedProject.id)} aria-label={favoriteProjectIdSet.has(selectedProject.id) ? `Remover ${selectedProject.name} dos projetos salvos` : `Salvar ${selectedProject.name} nos projetos favoritos`} className={`inline-flex min-h-10 items-center gap-2 self-start border px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteProjectIdSet.has(selectedProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#3b82f6]/35 text-[#cfe3ff] hover:border-[#70a6ff] hover:text-white"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(selectedProject.id) ? "fill-current" : ""}`} aria-hidden="true" />{favoriteProjectIdSet.has(selectedProject.id) ? "salvo nos favoritos" : "salvar nos favoritos"}</button>
                   <button type="button" data-project-modal-share="true" onClick={shareSelectedProject} aria-label={`Copiar link direto de ${selectedProject.name}`} className="inline-flex min-h-10 items-center gap-2 border border-[#3b82f6]/35 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#70a6ff] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Share2 className="h-4 w-4" aria-hidden="true" />{projectShareStatus === "copied" ? "link copiado" : projectShareStatus === "error" ? "tentar novamente" : "compartilhar projeto"}</button>
                   <button type="button" data-project-modal-copy-link="true" onClick={copySelectedProjectLink} aria-label={`Copiar link de ${selectedProject.name}`} className="inline-flex min-h-10 items-center gap-2 border border-[#67e8f9]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-4 w-4" aria-hidden="true" />{projectCopyStatus === "copied" ? "link copiado" : projectCopyStatus === "error" ? "tentar novamente" : "copiar link"}</button>
+                  {selectedProject.kind !== "video" && <a href={selectedProject.url} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 border border-[#67e8f9]/30 px-3.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><ArrowUpRight className="h-4 w-4" aria-hidden="true" />abrir projeto</a>}
                   <span data-project-modal-share-status="true" role="status" aria-live="polite" className="sr-only">{projectShareStatus === "copied" || projectCopyStatus === "copied" ? "Link direto do projeto copiado." : projectShareStatus === "error" || projectCopyStatus === "error" ? "Não foi possível copiar o link direto do projeto." : ""}</span>
                 </div>
               </DialogHeader>
