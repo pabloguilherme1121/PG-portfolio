@@ -541,9 +541,9 @@ export default function Home() {
     const first = touches[0];
     const second = touches[1];
     return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-  };
+  }, []);
 
-  const getPanBounds = () => {
+  const getPanBounds = useCallback(() => {
     const image = lightboxImageRef.current;
     const container = lightboxImageContainerRef.current;
     if (!image || !container || !image.naturalWidth || !image.naturalHeight) return { x: 0, y: 0 };
@@ -552,12 +552,12 @@ export default function Home() {
     const fitWidth = Math.min(containerRect.width, containerRect.height * aspectRatio);
     const fitHeight = fitWidth / aspectRatio;
     return { x: Math.max(0, (fitWidth * lightboxZoom - containerRect.width) / 2), y: Math.max(0, (fitHeight * lightboxZoom - containerRect.height) / 2) };
-  };
+  }, [lightboxZoom]);
 
-  const clampPanOffset = (x: number, y: number) => {
+  const clampPanOffset = useCallback((x: number, y: number) => {
     const bounds = getPanBounds();
     return { x: Math.min(bounds.x, Math.max(-bounds.x, x)), y: Math.min(bounds.y, Math.max(-bounds.y, y)) };
-  };
+  }, [getPanBounds]);
 
   const handleMiniMapPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -1386,36 +1386,37 @@ export default function Home() {
     favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
   }
 
-  function selectCategory(category: string) {
+  const selectCategory = useCallback((category: string) => {
     if (category === activeCategory) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     setActiveCategory(category);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
+  }, [activeCategory]);
 
-  function selectSort(mode: (typeof sortOptions)[number]["value"]) {
+  const selectSort = useCallback((mode: (typeof sortOptions)[number]["value"]) => {
     if (mode === sortMode) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     setSortMode(mode);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
+  }, [sortMode]);
 
-  function selectTag(tag: (typeof tagFilters)[number]) {
+  const selectTag = useCallback((tag: (typeof tagFilters)[number]) => {
     if (tag === activeTag) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     setActiveTag(tag);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
-  function selectTechnology(technology: string) {
+  }, [activeTag]);
+
+  const selectTechnology = useCallback((technology: string) => {
     if (technology === activeTechnology) return;
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     setActiveTechnology(technology);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
+  }, [activeTechnology]);
 
   function createOrderProfile() {
     const name = profileNameDraft.trim();
@@ -1469,21 +1470,21 @@ export default function Home() {
     setManualOrderStatus(deletedProfile ? `Perfil ${deletedProfile.name} excluído.` : "Perfil excluído.");
   }
 
-  function moveProject(projectId: string, direction: -1 | 1) {
+  const moveProject = useCallback((projectId: string, direction: -1 | 1) => {
     setManualProjectOrder((currentOrder) => {
       return moveProjectInOrder(currentOrder, projectId, direction);
     });
     if (sortMode !== "manual") setSortMode("manual");
     const movedRepository = repositories.find((repository) => repository.id === projectId);
     setManualOrderStatus(movedRepository ? `${movedRepository.name} movido ${direction < 0 ? "para cima" : "para baixo"}.` : "Ordem manual atualizada.");
-  }
+  }, [sortMode]);
 
-  function startProjectDrag(projectId: string) {
+  const startProjectDrag = useCallback((projectId: string) => {
     setDraggedProjectId(projectId);
     if (sortMode !== "manual") setSortMode("manual");
-  }
+  }, [sortMode]);
 
-  function dropProject(projectId: string) {
+  const dropProject = useCallback((projectId: string) => {
     if (!draggedProjectId || draggedProjectId === projectId) {
       setDraggedProjectId(null);
       return;
@@ -1495,9 +1496,9 @@ export default function Home() {
     const movedRepository = repositories.find((repository) => repository.id === draggedProjectId);
     const targetRepository = repositories.find((repository) => repository.id === projectId);
     setManualOrderStatus(movedRepository && targetRepository ? `${movedRepository.name} movido antes de ${targetRepository.name}.` : "Ordem manual atualizada.");
-  }
+  }, [draggedProjectId]);
 
-  function loadMoreProjects() {
+  const loadMoreProjects = useCallback(() => {
     if (!hasMoreRepositories || isGalleryLoading) return;
     setIsGalleryLoading(true);
     if (galleryLoadingTimerRef.current) window.clearTimeout(galleryLoadingTimerRef.current);
@@ -1505,23 +1506,23 @@ export default function Home() {
       setVisibleProjectLimit((current) => Math.min(current + projectPageSize, visibleRepositories.length));
       setIsGalleryLoading(false);
     }, 220);
-  }
+  }, [hasMoreRepositories, isGalleryLoading, visibleRepositories.length]);
 
-  function applyProjectSearchSuggestion(suggestion: SearchSuggestion) {
+  const applyProjectSearchSuggestion = useCallback((suggestion: SearchSuggestion) => {
     setProjectSearch(suggestion.value);
     setActiveSearchSuggestionIndex(-1);
     setIsProjectSearchFocused(false);
     window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
-  }
+  }, []);
 
-  function clearProjectSearch() {
+  const clearProjectSearch = useCallback(() => {
     setProjectSearch("");
     setActiveSearchSuggestionIndex(-1);
     setIsProjectSearchFocused(false);
     window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
-  }
+  }, []);
 
-  function handleProjectSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+  const handleProjectSearchKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Escape") {
       if (projectSearch) {
         event.preventDefault();
@@ -1545,9 +1546,9 @@ export default function Home() {
       event.preventDefault();
       applyProjectSearchSuggestion(visibleSearchSuggestions[activeSearchSuggestionIndex]);
     }
-  }
+  }, [projectSearch, visibleSearchSuggestions.length, activeSearchSuggestionIndex, clearProjectSearch, applyProjectSearchSuggestion]);
 
-  function consultAvailabilityOnWhatsApp() {
+  const consultAvailabilityOnWhatsApp = useCallback(() => {
     if (!availabilityWhatsAppUrl || isAvailabilityRedirecting || isBlockedDatesError) return;
 
     setIsAvailabilityRedirecting(true);
@@ -1559,9 +1560,9 @@ export default function Home() {
       }
       setIsAvailabilityRedirecting(false);
     }, 240);
-  }
+  }, [availabilityWhatsAppUrl, isAvailabilityRedirecting, isBlockedDatesError]);
 
-  function clearAvailabilitySelection() {
+  const clearAvailabilitySelection = useCallback(() => {
     if (isAvailabilityRedirecting || isClearingAvailabilitySelection) return;
     const clear = () => {
       setAvailabilityDate(null);
@@ -1575,18 +1576,18 @@ export default function Home() {
     }
     setIsClearingAvailabilitySelection(true);
     availabilityClearTimerRef.current = window.setTimeout(clear, 180);
-  }
+  }, [isAvailabilityRedirecting, isClearingAvailabilitySelection]);
 
-  function shareRepositoryToWhatsApp(repository: Repository, event: React.MouseEvent) {
+  const shareRepositoryToWhatsApp = useCallback((repository: Repository, event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
     const projectUrl = buildProjectShareUrl(window.location.href, repository.id);
     trackPortfolioEvent("share_project", { channel: "whatsapp", projectId: repository.id });
     const shareMessage = `Quero te mostrar ${repository.name} do portfólio de Pablo Guilherme. Veja os detalhes: ${projectUrl}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, "_blank", "noopener,noreferrer");
-  }
+  }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  const handleSubmit = useCallback((event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -1608,13 +1609,13 @@ export default function Home() {
       },
       { onSuccess: () => form.reset() },
     );
-  }
+  }, []);
 
-  function trackBriefingStarted() {
+  const trackBriefingStarted = useCallback(() => {
     if (briefingStartedRef.current) return;
     briefingStartedRef.current = true;
     trackPortfolioEvent("briefing_started");
-  }
+  }, []);
 
   const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
