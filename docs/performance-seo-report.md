@@ -91,3 +91,51 @@ A próxima medição deve registrar LCP, INP, CLS, TTFB, tamanho transferido, ca
 [2]: `client/index.html` — metadados, canonical, Open Graph, Twitter Card e JSON-LD.  
 [3]: `server/seo.ts` — geração de robots.txt e sitemap.xml.  
 [4]: `e2e/navigation.spec.ts` — cobertura pública de navegação, responsividade, modais e SEO.
+
+## Rodada medida — 19 de agosto de 2026
+
+### Método e leitura responsável
+
+Esta rodada repetiu a navegação publicada em 390×844, com perfil de 4G simulado, cache frio, cache quente e CPU 4×. São amostras headless, portanto adequadas para localizar gargalos e regressões, mas não para atribuir uma meta absoluta de campo. A medição confirmou que o **H1** é o maior elemento de conteúdo nas amostras frias e que a resposta inicial do domínio continua dominando o caminho crítico.
+
+| Cenário | Antes: TTFB | Depois: TTFB | Antes: LCP | Depois: LCP | CLS antes/depois | Leitura |
+|---|---:|---:|---:|---:|---:|---|
+| 4G frio | 3.797 ms | 4.038 ms | 9.684 ms | 9.968 ms | 0 / 0 | A variação acompanha o TTFB; não houve ganho de LCP atribuível ao aplicativo. |
+| 4G frio + CPU 4× | 3.220 ms | 3.022 ms | 6.464 ms | 6.904 ms | 0,00085 / 0,00086 | O HTML chegou mais cedo, mas o LCP não melhorou de modo consistente. |
+| 4G quente | 2.181 ms | 1.722 ms | 6.380 ms | não conclusivo nesta amostra | 0 / 0 | A coleta quente não produziu entrada LCP confiável; não foi usada para alegação de ganho. |
+
+> A tentativa de remover a animação de entrada do H1 foi revertida. A comparação não demonstrou ganho reproduzível depois de controlar a variação de TTFB, e a animação editorial existente foi preservada.
+
+### Recursos críticos auditados
+
+| Recurso / hipótese | Evidência observada | Decisão |
+|---|---|---|
+| Hero | Já seleciona AVIF responsivo de 480 px no viewport 390 px, mantém fallback WebP, dimensões 1920×1080, `loading="eager"` e `fetchPriority="high"`. Não foi o LCP nas amostras. | Não adicionar preload concorrente: ele competiria com CSS e JS sem evidência de ganho em LCP. |
+| Fontes | `preconnect` para `fonts.googleapis.com` e `fonts.gstatic.com` já estava presente; o CSS de fontes chegou em aproximadamente 247–271 ms após o início de recursos. | Manter a configuração existente; não duplicar preconnect. |
+| Estabilidade visual | Hero e retrato já têm dimensões explícitas; CLS permaneceu praticamente nulo em todas as amostras. | Não alterar proporções nem inserir atributos redundantes. |
+| JavaScript crítico | Em cache frio, os chunks iniciais começaram após o TTFB, com o principal em cerca de 67 KB transferidos e React em cerca de 60 KB. | Preservar a divisão atual; PDF, rotas administrativas, disponibilidade e repertório já permanecem tardios. |
+
+### Entregas de experiência premium
+
+| Área | Resultado implementado |
+|---|---|
+| Coleção de projetos salvos | O compartilhamento usa Web Share API quando o dispositivo oferece suporte e copia o link como fallback. A URL contém apenas IDs públicos, e o evento continua limitado a `share_project` com canal técnico permitido. |
+| Pré-visualização | Cartões salvos abrem o modal de detalhes existente, mantendo foco, Escape, retorno à coleção, navegação entre itens visíveis e acesso externo quando o projeto possui URL. |
+| Tema | O modo escuro existente foi preservado e reforçado: a preferência persistida é aplicada antes da hidratação, a transição de cores dura 180 ms e respeita movimento reduzido; o controle móvel agora mede 44×44 px. |
+| Mobile | A auditoria em 390 px confirmou ausência de overflow horizontal; a nova ação de compartilhar fica junto à agenda dentro da coleção salva, com alvo mínimo de 44 px. |
+
+### Decisão SSR, PWA e Next.js
+
+O portfólio mantém SEO técnico de base, mas continua uma SPA: o HTML inicial público contém uma casca antes da execução do React. Se uma futura auditoria de crawler provar que o corpo, as rotas de case ou os previews sociais precisam de HTML completo no primeiro byte, a recomendação é **SSR incremental no stack React/Vite/Express atual**, mantendo rotas autenticadas como client-only e `noindex`. Uma migração para Next.js não é justificada por esta rodada, pois adicionaria risco de hydration e custo de reestruturação sem resolver o TTFB de infraestrutura demonstrado na amostra. PWA também fica adiado até existir política explícita de cache e atualização, para não servir um portfólio desatualizado offline.
+
+### Validação de encerramento
+
+| Verificação | Resultado |
+|---|---|
+| `pnpm check` | Aprovado |
+| `pnpm test` | **41/41** aprovados em 14 arquivos |
+| `pnpm build` | Aprovado |
+| Playwright dirigido — tema, coleção e pré-visualização | **2/2** aprovados |
+| Playwright serial final | **34 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE` |
+
+A primeira execução serial após a limpeza de artefatos apresentou duas expirações de espera — analytics do CTA e final da transição de busca — que passaram isoladamente. A repetição integral em ambiente limpo aprovou todos os cenários públicos; por isso, a evidência final registrada é a repetição de **34/34 públicos**.

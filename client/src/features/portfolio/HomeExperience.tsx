@@ -1776,7 +1776,7 @@ export default function Home() {
                 <span className="h-px w-10 bg-[#38bdf8]" />
                 01 / portfólio em movimento
               </div>
-              <h1 className="mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
+              <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
                 Aprendendo a construir.
                 <br />
                 <span className="hidden min-[400px]:inline">Registrando o que</span>

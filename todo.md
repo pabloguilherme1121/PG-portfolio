@@ -1738,4 +1738,4 @@
 - [x] Auditar e fortalecer o controle de tema existente, persistência, preferência de sistema, contraste e reduced motion sem criar um segundo toggle.
 - [x] Aplicar somente refinamentos mobile confirmados para hierarquia, safe areas, alvos e feedback visual, preservando identidade, hero, CTAs, agenda, modais e barra de contato.
 - [x] Documentar a decisão técnica entre SSR incremental, PWA e migração para Next.js sem executar uma migração arquitetural sem aprovação específica.
-- [ ] Validar `pnpm check`, testes, build, E2E público, métricas antes/depois e publicar somente com todos os critérios críticos aprovados.
+- [x] Validar `pnpm check`, testes, build, E2E público, métricas antes/depois e publicar somente com todos os critérios críticos aprovados.
