@@ -1709,3 +1709,11 @@
 - [x] Apresentar um diff estimado com impacto e risco antes de ajustar favoritos, compartilhamento ou transições.
 - [x] Aplicar somente os ajustes aprovados, preservando desktop, busca, filtros, lightbox, modais, exportação e analytics.
 - [x] Validar toque, teclado, reduced motion, ausência de overflow, `pnpm check`, testes, build e E2E antes do checkpoint.
+
+## Projetos salvos, transição de agenda e acessibilidade assistiva manual
+
+- [x] Auditar a lista de projetos salvos para definir filtros e ordenação compatíveis com busca, favoritos, URL e exportação existentes.
+- [x] Auditar a troca entre projetos salvos e agenda para definir transições suaves, reversíveis e compatíveis com `prefers-reduced-motion`.
+- [x] Executar uma revisão manual assistiva viável no ambiente, documentando navegação por teclado, árvore de acessibilidade, foco, landmarks, formulários, status e limitações de leitor de tela real.
+- [x] Apresentar plano de diff, impacto e risco e aguardar aprovação explícita antes de alterar o produto.
+- [x] Implementar somente os ajustes aprovados e validar `pnpm check`, testes, build, E2E e acessibilidade antes do checkpoint.

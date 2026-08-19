@@ -290,6 +290,10 @@ export default function Home() {
   const [isImageCollectionOpen, setIsImageCollectionOpen] = useState(false);
   const [favoriteImageStatus, setFavoriteImageStatus] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [savedProjectSearch, setSavedProjectSearch] = useState("");
+  const [savedProjectSortMode, setSavedProjectSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
+  const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
+  const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -784,6 +788,7 @@ export default function Home() {
   const projectFilterTimerRef = useRef<number | null>(null);
   const galleryLoadingTimerRef = useRef<number | null>(null);
   const availabilityClearTimerRef = useRef<number | null>(null);
+  const contextTransitionTimerRef = useRef<number | null>(null);
   const favoriteExportTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
@@ -797,6 +802,9 @@ export default function Home() {
   } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability });
 
   const normalizedProjectSearch = normalizeSearchText(projectSearch);
+  const normalizedSavedProjectSearch = normalizeSearchText(savedProjectSearch);
+  const activeProjectSearch = favoritesOnly ? normalizedSavedProjectSearch : normalizedProjectSearch;
+  const activeProjectSortMode = favoritesOnly ? savedProjectSortMode : sortMode;
   const projectSearchSuggestions = useMemo<SearchSuggestion[]>(() => {
     const candidates = new Map<string, SearchSuggestion>();
     const addCandidate = (value: string, source: SearchSuggestion["source"]) => {
@@ -833,11 +841,11 @@ export default function Home() {
       const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
       const matchesTag = activeTag === "Todos" || repository.technologies.includes(activeTag) || getRepositoryCategories(repository).has(activeTag);
       const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
-      const matchesSearch = !normalizedProjectSearch || searchableProjectText.includes(normalizedProjectSearch);
+      const matchesSearch = !activeProjectSearch || searchableProjectText.includes(activeProjectSearch);
       const matchesFavorites = !favoritesOnly || (sharedProjectIds ? sharedProjectIdSet.has(repository.id) : favoriteProjectIdSet.has(repository.id));
       return matchesTechnology && matchesCategory && matchesTag && matchesSearch && matchesFavorites;
     })
-    .sort((first, second) => sortMode === "manual" ? 0 : sortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
+    .sort((first, second) => activeProjectSortMode === "manual" ? 0 : activeProjectSortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
   const selectedProjectIndex = selectedProject ? visibleRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
   const previousSelectedProject = selectedProjectIndex > 0 ? visibleRepositories[selectedProjectIndex - 1] : null;
@@ -859,7 +867,7 @@ export default function Home() {
 
   useEffect(() => {
     setVisibleProjectLimit(projectPageSize);
-  }, [activeTechnology, activeCategory, activeTag, sortMode, normalizedProjectSearch, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
+  }, [activeTechnology, activeCategory, activeTag, sortMode, normalizedProjectSearch, savedProjectSearch, savedProjectSortMode, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -1040,6 +1048,7 @@ export default function Home() {
   useEffect(() => () => {
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
+    if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
   }, []);
 
   const quoteRequestMutation = trpc.quoteRequest.create.useMutation({
@@ -1400,6 +1409,24 @@ export default function Home() {
     setSortMode(mode);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
+  }
+
+  function navigateSavedAgendaContext(target: "saved" | "agenda") {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
+    if (target === "saved") setFavoritesOnly(true);
+    setContextTransitionTarget(target);
+    setContextNavigationStatus(target === "saved" ? "Projetos salvos em foco." : "Agenda de disponibilidade em foco.");
+
+    window.requestAnimationFrame(() => {
+      const targetElement = target === "saved"
+        ? document.querySelector<HTMLElement>("[data-saved-projects-controls='true']")
+        : availabilitySectionRef.current;
+      if (!targetElement) return;
+      targetElement.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      targetElement.focus({ preventScroll: true });
+      contextTransitionTimerRef.current = window.setTimeout(() => setContextTransitionTarget(null), reduceMotion ? 0 : 180);
+    });
   }
 
   function selectTag(tag: (typeof tagFilters)[number]) {
@@ -2095,6 +2122,21 @@ export default function Home() {
               </aside>
               </div>
               {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" aria-describedby="saved-projects-help" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p><p id="saved-projects-help" className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">arraste os cartões para ajustar sua ordem manual</p></div><div className="flex flex-wrap gap-2"><button type="button" data-saved-export-csv="true" onClick={() => void exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" />CSV</button><button type="button" data-saved-export-pdf="true" onClick={() => void exportFavorites("pdf")} disabled={!favoriteProjectIds.length} className="inline-flex shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><FileText className="h-3.5 w-3.5" aria-hidden="true" />PDF</button><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></div>{!favoriteProjectIds.length && !sharedProjectIds?.length && <div data-saved-projects-empty="true" role="status" aria-live="polite" className="mt-5 border border-dashed border-[#67e8f9]/35 bg-[#07101e]/65 p-5"><Heart className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" /><h4 className="mt-3 font-display text-xl font-medium tracking-[-0.03em] text-white">Nenhum projeto salvo ainda.</h4><p className="mt-2 max-w-xl font-body text-sm leading-6 text-[#bad9e8]">Use o coração nos cartões da galeria para guardar referências e voltar a elas quando quiser.</p><button type="button" onClick={() => setFavoritesOnly(false)} className="mt-4 inline-flex min-h-11 items-center gap-2 border border-[#67e8f9]/35 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />ver todos os projetos</button></div>}<p role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{favoriteExportStatus === "csv" ? "CSV preparado para download." : favoriteExportStatus === "pdf-loading" ? "Preparando PDF para download." : favoriteExportStatus === "pdf" ? "PDF preparado para download." : favoriteExportStatus === "error" ? "Não foi possível preparar a exportação." : ""}</p></section>}
+              {favoritesOnly && <section data-saved-projects-controls="true" tabIndex={-1} aria-label="Filtrar e ordenar projetos salvos" aria-busy={contextTransitionTarget === "saved"} className={`mb-5 scroll-mt-24 border border-[#67e8f9]/25 bg-[#07101e]/70 p-4 outline-none transition-[opacity,transform] duration-[180ms] motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${contextTransitionTarget === "saved" ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">revisar projetos salvos</p>
+                    <p className="mt-1 font-body text-xs leading-5 text-[#a8c9da]">Filtre esta lista sem alterar a busca ou a ordenação da vitrine pública.</p>
+                    <button type="button" data-saved-to-availability="true" onClick={() => navigateSavedAgendaContext("agenda")} className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />ver agenda</button>
+                  </div>
+                </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                  <label className="block"><span className="sr-only">Filtrar projetos salvos por título, tecnologia ou descrição</span><input data-saved-projects-search="true" type="search" value={savedProjectSearch} onChange={(event) => setSavedProjectSearch(event.target.value)} placeholder="filtrar projetos salvos" aria-describedby="saved-projects-filter-status" className="min-h-11 w-full border border-[#67e8f9]/25 bg-[#061226] px-3 font-mono text-[10px] uppercase tracking-[0.08em] text-white placeholder:text-[#6e8bad] focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc]" /></label>
+                  <label className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2]"><span>ordenar</span><select data-saved-projects-sort="true" value={savedProjectSortMode} onChange={(event) => setSavedProjectSortMode(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos salvos" className="min-h-11 border border-[#67e8f9]/25 bg-[#061226] px-2.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff] outline-none focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>
+                </div>
+                <p id="saved-projects-filter-status" data-saved-projects-result-count="true" role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto salvo encontrado" : "projetos salvos encontrados"}{savedProjectSearch ? ` para “${savedProjectSearch}”` : ""}</p>
+              </section>}
+              {!favoritesOnly && <>
               <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>
             <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
@@ -2219,6 +2261,7 @@ export default function Home() {
             </div>
 
             {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <span key={term} className="inline-flex max-w-full items-center border border-white/[0.1] bg-[#07101e] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2]"><button type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="truncate px-2.5 py-1.5 text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]">{term}<span className="sr-only">, repetir busca</span></button><button type="button" onClick={() => removeRecentSearch(term)} aria-label={`Excluir busca recente ${term}`} title={`Excluir ${term}`} className="grid h-7 w-7 shrink-0 place-items-center border-l border-white/[0.1] text-[#7189ae] transition-colors hover:bg-red-400/10 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]"><Trash2 className="h-3 w-3" aria-hidden="true" /></button></span>)}<button type="button" onClick={clearRecentSearches} aria-label="Limpar todo o histórico de buscas" className="inline-flex items-center gap-1.5 border border-amber-300/25 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar histórico</button></div>}
+              </>}
 
             <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning || isGalleryLoading} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
             {isGalleryLoading ? (
@@ -2383,10 +2426,10 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div ref={availabilitySectionRef} className="availability-calendar mt-5 max-w-md border border-cyan-100/[0.16] bg-[#06172f]/80 p-5">
+              <div ref={availabilitySectionRef} data-availability-context="true" tabIndex={-1} aria-busy={contextTransitionTarget === "agenda"} className={`availability-calendar mt-5 max-w-md scroll-mt-24 border border-cyan-100/[0.16] bg-[#06172f]/80 p-5 outline-none transition-[opacity,transform] duration-[180ms] motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${contextTransitionTarget === "agenda" ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
                 <div className="flex items-center justify-between gap-4">
                   <div><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">consulta de disponibilidade</p><p className="mt-1 font-body text-xs leading-5 text-[#a6c7d8]">Segunda a sexta, das 08:00 às 18:00.</p></div>
-                  <span className="grid h-9 w-9 place-items-center border border-cyan-100/[0.2] text-[#67e8f9]"><CalendarDays className="h-4 w-4" /></span>
+                  <div className="flex items-center gap-2"><button type="button" data-availability-to-saved="true" onClick={() => navigateSavedAgendaContext("saved")} aria-label="Ir para projetos salvos" className="min-h-11 border border-cyan-100/[0.2] px-2.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">projetos salvos</button><span className="grid h-9 w-9 place-items-center border border-cyan-100/[0.2] text-[#67e8f9]"><CalendarDays className="h-4 w-4" /></span></div>
                 </div>
                 <div className="mt-5 flex items-center justify-between border-y border-cyan-100/[0.12] py-3">
                   <button type="button" onClick={() => setCalendarMonth(new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() - 1, 1))} aria-label="Mês anterior" className="grid h-11 w-11 place-items-center text-[#b9dfef] transition-colors hover:bg-cyan-100/10 hover:text-[#67e8f9] sm:h-8 sm:w-8"><ChevronLeft className="h-4 w-4" /></button>
@@ -2402,7 +2445,7 @@ export default function Home() {
                     const isAvailableDate = !isBlockedDatesError && isSelectableAvailabilityDate(day, todayStart, blockedDateKeys);
                     const isSelected = selectedDateKey === dateKey;
                     const dayLabel = day.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-                    return <button key={dateKey} type="button" disabled={!isAvailableDate} onClick={() => { setAvailabilityDate(day); setAvailabilityTime(null); }} aria-label={isBlockedDate ? `${dayLabel}, indisponível` : dayLabel} title={isBlockedDate ? "Data indisponível" : undefined} className={`mx-auto grid h-10 w-full max-w-10 place-items-center rounded-full font-mono text-[10px] transition-all sm:h-8 sm:w-8 ${isSelected ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]" : isBlockedDate ? "cursor-not-allowed border border-rose-400/55 bg-rose-400/10 text-rose-300 line-through" : isAvailableDate ? "text-[#d7eff9] hover:bg-cyan-100/15 hover:text-[#67e8f9]" : "cursor-not-allowed text-[#385367] line-through"}`}>{day.getDate()}</button>;
+                    return <button key={dateKey} data-availability-date="true" type="button" disabled={!isAvailableDate} onClick={() => { setAvailabilityDate(day); setAvailabilityTime(null); }} aria-label={isBlockedDate ? `${dayLabel}, indisponível` : dayLabel} title={isBlockedDate ? "Data indisponível" : undefined} className={`mx-auto grid h-10 w-full max-w-10 place-items-center rounded-full font-mono text-[10px] transition-all sm:h-8 sm:w-8 ${isSelected ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]" : isBlockedDate ? "cursor-not-allowed border border-rose-400/55 bg-rose-400/10 text-rose-300 line-through" : isAvailableDate ? "text-[#d7eff9] hover:bg-cyan-100/15 hover:text-[#67e8f9]" : "cursor-not-allowed text-[#385367] line-through"}`}>{day.getDate()}</button>;
                   })}
                 </div>
                 {isBlockedDatesError ? <div role="alert" className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-[11px] leading-5 text-amber-100">Não foi possível verificar as datas indisponíveis. A consulta está temporariamente desativada. <button type="button" onClick={() => void refetchBlockedDates()} className="font-semibold underline decoration-amber-200/60 underline-offset-2 hover:text-white">Tentar novamente</button></div> : blockedDates.length > 0 && <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-[11px] leading-5 text-rose-200">Datas riscadas em rosa estão indisponíveis para consulta.</p>}
@@ -2420,6 +2463,7 @@ export default function Home() {
                   {isAvailabilityRedirecting ? <><Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> {getAvailabilityButtonLabel(true)}</> : isBlockedDatesError ? <>indisponível no momento</> : <><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /> {getAvailabilityButtonLabel(false)}</>}
                 </button>
                 <span id="availability-feedback" role="status" aria-live="polite" className="sr-only">{isAvailabilityRedirecting ? "Abrindo o WhatsApp com sua data e horário selecionados." : ""}</span>
+                <span data-context-navigation-status="true" role="status" aria-live="polite" className="sr-only">{contextNavigationStatus}</span>
                 <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">A gente confirma a data e o horário diretamente com você, sem compromisso.</p>
               </div>
               <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">

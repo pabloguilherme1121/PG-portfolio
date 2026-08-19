@@ -142,11 +142,11 @@ test.describe("navegação pública e favoritos", () => {
     const nextMonth = calendar.getByRole("button", { name: "Próximo mês" });
     expect(await previousMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     expect(await nextMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-    const dateHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(2, 9).map((element) => element.getBoundingClientRect().height));
+    const dateHeights = await calendar.locator('[data-availability-date="true"]').evaluateAll((elements) => elements.slice(0, 7).map((element) => element.getBoundingClientRect().height));
     expect(dateHeights.every((height) => height >= 40)).toBeTruthy();
     const timeHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(-3).map((element) => element.getBoundingClientRect().height));
     expect(timeHeights.every((height) => height >= 44)).toBeTruthy();
-    await calendar.locator("button:not([disabled])").nth(2).click();
+    await calendar.locator('[data-availability-date="true"]:not([disabled])').first().click();
     await calendar.getByRole("button", { name: "10:00" }).click();
     await expect(calendar.locator('[data-availability-selection-summary="true"]')).toContainText(/consulta selecionada.*10:00/s);
     await calendar.locator('[data-clear-availability-selection="true"]').click();
@@ -165,7 +165,7 @@ test.describe("navegação pública e favoritos", () => {
     await favorite.click();
     await expect(favorite).toHaveAttribute("aria-pressed", "true");
     await expect(page.getByText("Projeto salvo")).toBeVisible();
-    await page.getByRole("button", { name: /projetos salvos/i }).click();
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
     await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
     await page.evaluate(() => {
       window.open = ((url: string | URL) => {
@@ -328,7 +328,7 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-favorite-control="true"][aria-pressed="true"]').first()).toBeVisible();
     await page.getByRole("button", { name: /projetos salvos/i }).first().click();
     await expect(page.locator('[data-saved-projects-section="true"]')).toBeVisible();
-    await expect(page.locator('[data-sort-control="projects"]')).toBeVisible();
+    await expect(page.locator('[data-saved-projects-sort="true"]')).toBeVisible();
     await page.getByRole("button", { name: /projetos salvos/i }).first().click();
     await expect(page.locator('[data-featured-project]').first()).toBeVisible({ timeout: 10000 });
     await page.locator('[data-featured-project]').first().click();
@@ -380,6 +380,35 @@ test.describe("navegação pública e favoritos", () => {
     await page.goto("/?projeto=AUD.01#projetos");
     await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 30000 });
     await expect(page.locator('[data-project-details-dialog="true"] [data-project-modal-share="true"]')).toBeVisible();
+  });
+
+  test("filtra e ordena projetos salvos sem alterar a galeria pública e alterna para a agenda", async ({ page }) => {
+    await page.addInitScript(() => window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(["AUD.01", "CNT.02"])));
+    await page.goto("/#galeria-publica");
+    await page.getByRole("button", { name: /projetos salvos/i }).first().click();
+    const savedControls = page.locator('[data-saved-projects-controls="true"]');
+    await expect(savedControls).toBeVisible();
+    await expect(page.locator('[data-project-search="true"]')).toHaveCount(0);
+
+    const savedSearch = page.locator('[data-saved-projects-search="true"]');
+    await savedSearch.fill("RHAM");
+    await expect(page.locator('[data-saved-projects-result-count="true"]')).toContainText(/1 projeto salvo encontrado.*RHAM/i);
+    await expect(page.locator('[data-project-id="CNT.02"]')).toBeVisible();
+    await expect(page.locator('[data-project-id="AUD.01"]')).toHaveCount(0);
+
+    const savedSort = page.locator('[data-saved-projects-sort="true"]');
+    await savedSort.selectOption("added");
+    await expect(savedSort).toHaveValue("added");
+    await savedSearch.fill("");
+    await expect(page.locator('[data-saved-projects-result-count="true"]')).toContainText(/2 projetos salvos encontrados/i);
+
+    await page.locator('[data-saved-to-availability="true"]').click();
+    const calendar = page.locator('[data-availability-context="true"]');
+    await expect(calendar).toBeFocused();
+    await expect(page.locator('[data-context-navigation-status="true"]')).toContainText(/agenda de disponibilidade em foco/i);
+    await page.locator('[data-availability-to-saved="true"]').click();
+    await expect(savedControls).toBeFocused();
+    await expect(page.locator('[data-context-navigation-status="true"]')).toContainText(/projetos salvos em foco/i);
   });
 
   test("expõe exportação offline e instrução de reordenação nos favoritos", async ({ page }) => {
