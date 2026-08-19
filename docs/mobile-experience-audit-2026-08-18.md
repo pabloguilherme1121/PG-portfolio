@@ -115,3 +115,14 @@ Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build
 | Exportação em PDF | A importação dinâmica de `pdf-lib` podia não oferecer retorno antes da montagem do arquivo. | O botão informa “Preparando PDF” imediatamente e troca para o estado de conclusão quando a geração termina. | E2E aceita os dois estados reais de feedback, eliminando a condição de corrida observada na execução anterior. |
 
 Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; Playwright serial completo com **32 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. Nenhuma regressão foi observada nos cenários de hero, busca, filtros, agenda, exportação, lightbox, acessibilidade ou favoritos.
+
+## Resultado de limpeza, CSV contextual e refinamento mobile de projetos salvos
+
+| Área | Antes | Depois | Evidência |
+|---|---|---|---|
+| Reset de controles salvos | A busca e a ordenação próprias podiam permanecer ativas sem uma restauração conjunta. | “Limpar busca e ordem” aparece somente quando necessário e restaura busca vazia e relevância, sem remover favoritos ou alterar a vitrine pública. | E2E aplica busca e ordenação, aciona o reset e confirma os valores padrão e os dois projetos favoritos visíveis. |
+| CSV de projetos salvos | CSV já existia junto às ações de exportação da seção. | A exportação foi preservada sem duplicar download, mantendo estado desabilitado e retorno de arquivo preparado. | E2E confirma a ação CSV e o feedback de exportação; o conteúdo e o contrato de exportação seguem inalterados. |
+| Feedback ao favoritar | Toast de salvar já existia; a remoção não possuía asserção explícita. | Os toasts “Projeto salvo” e “Projeto removido” permanecem contextuais, sem PII ou novo evento analítico, e agora são cobertos na mesma jornada. | E2E confirma o estado ARIA, o toast de salvar, o toast de remover e o estado vazio resultante. |
+| Mobile da seção salva | Busca e ordenação atendiam ao fluxo, mas o conjunto poderia condensar controles em telas estreitas. | Campo, seletor e reset usam alvos de 48 px, ação de reset em coluna própria e hierarquia vertical que preserva leitura e a barra de contato. | Cobertura 320 px e Playwright serial final confirmam zero overflow persistente, CTAs, agenda, lightbox e modais preservados. |
+
+Validação final: `pnpm check` aprovado; `pnpm test` com **41/41**; `pnpm build` aprovado; E2E dirigida **3/3**; Playwright serial final com **33 aprovados** e **3 ignorados** por ausência deliberada de `E2E_AUTH_STATE`. Uma execução serial anterior apresentou overflow transitório no hero sob carga; a repetição isolada e a repetição serial limpa passaram integralmente.

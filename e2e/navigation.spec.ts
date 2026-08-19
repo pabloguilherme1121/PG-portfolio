@@ -150,7 +150,7 @@ test.describe("navegação pública e favoritos", () => {
     await calendar.getByRole("button", { name: "10:00" }).click();
     await expect(calendar.locator('[data-availability-selection-summary="true"]')).toContainText(/consulta selecionada.*10:00/s);
     await calendar.locator('[data-clear-availability-selection="true"]').click();
-    await expect(calendar.locator('[data-availability-selection-content="true"]')).toHaveAttribute("aria-busy", "true");
+    await expect(page.getByText("Seleção limpa")).toBeVisible();
     await expect(calendar.locator('[data-availability-selection-summary="true"]')).toHaveCount(0);
     await expect(calendar.locator('[data-clear-availability-selection="true"]')).toHaveCount(0);
 
@@ -178,6 +178,7 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.locator("body").getAttribute("data-project-share-url")).toContain("https://wa.me/?text=");
     await expect.poll(() => page.locator("body").getAttribute("data-project-share-url")).toContain(encodeURIComponent("Quero te mostrar"));
     await favorite.click();
+    await expect(page.getByText("Projeto removido")).toBeVisible();
     await expect(page.locator('[data-saved-projects-empty="true"]')).toBeVisible();
     await expect(page.locator('[data-saved-projects-empty="true"]')).toContainText(/use o coração/i);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
@@ -399,7 +400,10 @@ test.describe("navegação pública e favoritos", () => {
     const savedSort = page.locator('[data-saved-projects-sort="true"]');
     await savedSort.selectOption("added");
     await expect(savedSort).toHaveValue("added");
-    await savedSearch.fill("");
+    await expect(page.locator('[data-saved-projects-clear-controls="true"]')).toBeVisible();
+    await page.locator('[data-saved-projects-clear-controls="true"]').click();
+    await expect(savedSearch).toHaveValue("");
+    await expect(savedSort).toHaveValue("relevance");
     await expect(page.locator('[data-saved-projects-result-count="true"]')).toContainText(/2 projetos salvos encontrados/i);
 
     await page.locator('[data-saved-to-availability="true"]').click();

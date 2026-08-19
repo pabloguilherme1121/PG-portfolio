@@ -292,6 +292,7 @@ export default function Home() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [savedProjectSearch, setSavedProjectSearch] = useState("");
   const [savedProjectSortMode, setSavedProjectSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
+  const [savedProjectControlStatus, setSavedProjectControlStatus] = useState("");
   const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
@@ -805,6 +806,7 @@ export default function Home() {
   const normalizedSavedProjectSearch = normalizeSearchText(savedProjectSearch);
   const activeProjectSearch = favoritesOnly ? normalizedSavedProjectSearch : normalizedProjectSearch;
   const activeProjectSortMode = favoritesOnly ? savedProjectSortMode : sortMode;
+  const hasActiveSavedProjectControls = Boolean(savedProjectSearch.trim()) || savedProjectSortMode !== "relevance";
   const projectSearchSuggestions = useMemo<SearchSuggestion[]>(() => {
     const candidates = new Map<string, SearchSuggestion>();
     const addCandidate = (value: string, source: SearchSuggestion["source"]) => {
@@ -1409,6 +1411,12 @@ export default function Home() {
     setSortMode(mode);
     setIsProjectFilterTransitioning(true);
     projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
+  }
+
+  function clearSavedProjectControls() {
+    setSavedProjectSearch("");
+    setSavedProjectSortMode("relevance");
+    setSavedProjectControlStatus("Busca e ordenação dos projetos salvos foram limpas.");
   }
 
   function navigateSavedAgendaContext(target: "saved" | "agenda") {
@@ -2131,10 +2139,10 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <label className="block"><span className="sr-only">Filtrar projetos salvos por título, tecnologia ou descrição</span><input data-saved-projects-search="true" type="search" value={savedProjectSearch} onChange={(event) => setSavedProjectSearch(event.target.value)} placeholder="filtrar projetos salvos" aria-describedby="saved-projects-filter-status" className="min-h-11 w-full border border-[#67e8f9]/25 bg-[#061226] px-3 font-mono text-[10px] uppercase tracking-[0.08em] text-white placeholder:text-[#6e8bad] focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc]" /></label>
-                  <label className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2]"><span>ordenar</span><select data-saved-projects-sort="true" value={savedProjectSortMode} onChange={(event) => setSavedProjectSortMode(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos salvos" className="min-h-11 border border-[#67e8f9]/25 bg-[#061226] px-2.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff] outline-none focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>
+                  <label className="block"><span className="sr-only">Filtrar projetos salvos por título, tecnologia ou descrição</span><input data-saved-projects-search="true" type="search" value={savedProjectSearch} onChange={(event) => { setSavedProjectSearch(event.target.value); setSavedProjectControlStatus(""); }} placeholder="filtrar projetos salvos" aria-describedby="saved-projects-filter-status" className="min-h-12 w-full border border-[#67e8f9]/25 bg-[#061226] px-3 font-mono text-[10px] uppercase tracking-[0.08em] text-white placeholder:text-[#6e8bad] focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc]" /></label>
+                  <div className="flex flex-col gap-2 sm:min-w-52"><label className="flex min-h-12 items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2]"><span>ordenar</span><select data-saved-projects-sort="true" value={savedProjectSortMode} onChange={(event) => { setSavedProjectSortMode(event.target.value as (typeof sortOptions)[number]["value"]); setSavedProjectControlStatus(""); }} aria-label="Ordenar projetos salvos" className="min-h-12 border border-[#67e8f9]/25 bg-[#061226] px-2.5 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff] outline-none focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>{hasActiveSavedProjectControls && <button type="button" data-saved-projects-clear-controls="true" onClick={clearSavedProjectControls} className="inline-flex min-h-12 items-center justify-center gap-2 border border-amber-300/35 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar busca e ordem</button>}</div>
                 </div>
-                <p id="saved-projects-filter-status" data-saved-projects-result-count="true" role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto salvo encontrado" : "projetos salvos encontrados"}{savedProjectSearch ? ` para “${savedProjectSearch}”` : ""}</p>
+                <p id="saved-projects-filter-status" data-saved-projects-result-count="true" role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto salvo encontrado" : "projetos salvos encontrados"}{savedProjectSearch ? ` para “${savedProjectSearch}”` : ""}</p><span role="status" aria-live="polite" className="sr-only">{savedProjectControlStatus}</span>
               </section>}
               {!favoritesOnly && <>
               <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>

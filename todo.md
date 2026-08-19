@@ -1717,3 +1717,13 @@
 - [x] Executar uma revisão manual assistiva viável no ambiente, documentando navegação por teclado, árvore de acessibilidade, foco, landmarks, formulários, status e limitações de leitor de tela real.
 - [x] Apresentar plano de diff, impacto e risco e aguardar aprovação explícita antes de alterar o produto.
 - [x] Implementar somente os ajustes aprovados e validar `pnpm check`, testes, build, E2E e acessibilidade antes do checkpoint.
+
+## Limpeza, exportação e refinamento mobile de projetos salvos
+
+- [x] Auditar os filtros, ordenação, exportação e feedback de favoritos existentes para evitar controles duplicados.
+- [x] Definir um botão de limpeza da busca e ordenação exclusivas dos projetos salvos, preservando a vitrine pública e o estado dos favoritos.
+- [x] Confirmar ou aprimorar o feedback por toast ao salvar e remover projetos sem criar eventos analíticos nem PII adicionais.
+- [x] Manter uma exportação CSV acessível e contextual na seção de projetos salvos, sem duplicar downloads existentes.
+- [x] Auditar e propor refinamentos mobile pontuais de densidade, alvos de toque, foco, estados vazios e hierarquia visual, preservando identidade, hero, lightbox, modais, CTAs e barra de contato.
+- [x] Apresentar plano de diff, impacto e risco e aguardar aprovação explícita antes de alterar o produto.
+- [x] Implementar somente os ajustes aprovados e validar `pnpm check`, testes, build, E2E e mobile antes do checkpoint.
