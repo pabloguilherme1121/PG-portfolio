@@ -2,7 +2,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { lazy, Suspense } from "react";
@@ -11,7 +11,7 @@ const AvailabilityManager = lazy(() => import("./pages/AvailabilityManager"));
 const FavoritesManagement = lazy(() => import("./pages/FavoritesManagement"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
-function Router() {
+function AppRoutes() {
   // make sure to consider if you need authentication for certain routes
   return (
     <Suspense fallback={<div className="grid min-h-screen place-items-center bg-[#030b1e] px-6 font-mono text-xs uppercase tracking-[0.14em] text-[#a5f3fc]">carregando agenda…</div>}>
@@ -34,7 +34,7 @@ function App() {
       <ThemeProvider defaultTheme="dark" switchable>
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}><AppRoutes /></WouterRouter>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
