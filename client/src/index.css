@@ -1077,3 +1077,42 @@ html.theme-transitioning .arquivo-page * {
     transition: none;
   }
 }
+
+
+/* Auditoria de interface — foco, leitura e comportamento touch sem alterar a identidade visual. */
+.arquivo-page :where(a, button, input, textarea, select):focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: 3px;
+}
+
+.arquivo-page :where(p, li, dd) {
+  text-wrap: pretty;
+}
+
+.arquivo-page :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+@media (hover: none) {
+  .archive-entry::before,
+  .evidence-card::before {
+    opacity: 0;
+  }
+
+  .archive-quick-route,
+  .featured-project-card,
+  .contact-float-link,
+  .resume-header-cta {
+    transform: none !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .arquivo-page {
+    --ring: oklch(0.92 0.12 210);
+  }
+
+  .arquivo-page :where(a, button, input, textarea, select):focus-visible {
+    outline-width: 3px;
+  }
+}

@@ -82,7 +82,7 @@
       if (endpoint && websiteId) {
         const analytics = document.createElement("script");
         analytics.defer = true;
-        analytics.src = `${endpoint.replace(/\\/$/, "")}/umami`;
+        analytics.src = endpoint.replace(/\/$/, "") + "/umami";
         analytics.dataset.websiteId = websiteId;
         document.body.appendChild(analytics);
       }

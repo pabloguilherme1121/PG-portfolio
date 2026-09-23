@@ -3,6 +3,8 @@ name: Deploy portfolio to GitHub Pages
 on:
   push:
     branches: ["main"]
+  pull_request:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -33,8 +35,16 @@ jobs:
         run: pnpm check
       - name: Unit tests
         run: pnpm test
+      - name: Validate static Pages build
+        env:
+          VITE_DEPLOY_TARGET: github-pages
+          VITE_STATIC_DEPLOY: "true"
+        run: |
+          pnpm exec vite build
+          node scripts/prepare-github-pages.mjs
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: quality
     environment:
       name: github-pages
