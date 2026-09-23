@@ -35,6 +35,13 @@ jobs:
         run: pnpm check
       - name: Unit tests
         run: pnpm test
+      - name: Validate static Pages build
+        env:
+          VITE_DEPLOY_TARGET: github-pages
+          VITE_STATIC_DEPLOY: "true"
+        run: |
+          pnpm exec vite build
+          node scripts/prepare-github-pages.mjs
 
   deploy:
     if: github.event_name != 'pull_request'
