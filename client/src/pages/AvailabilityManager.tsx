@@ -58,7 +58,7 @@ function AvailabilityManagerContent() {
         <p className="mt-5 font-mono text-xs uppercase tracking-[0.16em] text-cyan-200">acesso restrito</p>
         <h1 className="mt-3 font-display text-3xl font-semibold text-white">Gestão reservada ao proprietário.</h1>
         <p className="mt-4 font-body leading-7 text-slate-300">Entre com a conta proprietária do portfólio para bloquear ou liberar datas da agenda.</p>
-        <a href="/" className="mt-7 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> voltar ao portfólio</a>
+        <a href={import.meta.env.BASE_URL} className="mt-7 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> voltar ao portfólio</a>
       </section>
     );
   }
@@ -71,7 +71,7 @@ function AvailabilityManagerContent() {
           <h1 className="mt-3 font-display text-4xl font-semibold tracking-tight">Datas indisponíveis</h1>
           <p className="mt-3 max-w-2xl font-body leading-7 text-slate-300">Bloqueie férias, feriados ou compromissos. A alteração aparece automaticamente no calendário público.</p>
         </div>
-        <a href="/" className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> ver portfólio</a>
+        <a href={import.meta.env.BASE_URL} className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.12em] text-cyan-300 hover:text-cyan-100"><ArrowLeft className="h-4 w-4" /> ver portfólio</a>
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 grid gap-5 border border-cyan-100/15 bg-[#06172f] p-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)_auto] sm:items-end">
