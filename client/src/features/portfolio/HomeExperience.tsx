@@ -112,6 +112,7 @@ const portraitResponsive = {
 };
 const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf";
 const whatsAppNumber = "5561992903029";
+const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
 const showreelUrl = "/manus-storage/showreel_e887bf6f.mp4";
@@ -800,7 +801,7 @@ export default function Home() {
     data: blockedDates = [],
     isError: isBlockedDatesError,
     refetch: refetchBlockedDates,
-  } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability });
+  } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability && !isStaticDeploy });
 
   const normalizedProjectSearch = normalizeSearchText(projectSearch);
   const normalizedSavedProjectSearch = normalizeSearchText(savedProjectSearch);
@@ -1644,6 +1645,27 @@ export default function Home() {
     const eventDate = String(data.get("date") || "");
     setFormError(null);
     setFormSent(false);
+
+    if (isStaticDeploy) {
+      const briefing = [
+        "Olá, Pablo! Vim pelo portfólio e gostaria de conversar sobre um projeto.",
+        `Nome: ${String(data.get("name") || "")}`,
+        `E-mail: ${String(data.get("email") || "")}`,
+        `Serviço: ${String(data.get("service") || "")}`,
+        `Tipo de projeto: ${String(data.get("projectType") || "")}`,
+        `Local: ${String(data.get("location") || "")}`,
+        eventDate ? `Data: ${eventDate}` : "",
+        data.get("delivery") ? `Prazo: ${String(data.get("delivery"))}` : "",
+        data.get("budget") ? `Orçamento: ${String(data.get("budget"))}` : "",
+        `Briefing: ${String(data.get("briefing") || "")}`,
+      ].filter(Boolean).join("\\n");
+      trackPortfolioEvent("briefing_completed", { channel: "whatsapp" });
+      window.open(`https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(briefing)}`, "_blank", "noopener,noreferrer");
+      setFormSent(true);
+      form.reset();
+      return;
+    }
+
     quoteRequestMutation.mutate(
       {
         name: String(data.get("name") || ""),
@@ -2097,7 +2119,7 @@ export default function Home() {
             <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
               <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>
               <a href="#favoritos-pessoais" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">meus favoritos</a>
-              <a href="/favoritos" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8edff0] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">gestão de favoritos</a>
+              <a href={`${import.meta.env.BASE_URL}favoritos`} className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8edff0] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">gestão de favoritos</a>
             </nav>
             <div className="mt-8 border-y border-white/[0.1] py-4">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
