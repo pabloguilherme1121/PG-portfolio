@@ -159,6 +159,8 @@ const plugins = [
 ];
 
 export default defineConfig({
+  // GitHub Pages serves project sites from /<repository>/; local/Manus builds stay at root.
+  base: process.env.VITE_DEPLOY_TARGET === "github-pages" ? "/pablo-guilherme-portfolio/" : "/",
   plugins,
   resolve: {
     alias: {
