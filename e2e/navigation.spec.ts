@@ -682,6 +682,9 @@ test.describe("navegação pública e favoritos", () => {
   test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
     await page.goto("/");
 
+    const viewportContent = await page.locator('meta[name="viewport"]').getAttribute("content");
+    expect(viewportContent).toContain("viewport-fit=cover");
+
     const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
     expect(manifestHref).toBeTruthy();
 
