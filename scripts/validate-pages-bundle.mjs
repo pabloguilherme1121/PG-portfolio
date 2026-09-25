@@ -4,11 +4,14 @@ import path from "node:path";
 
 const root = path.resolve("dist/public");
 const read = (file) => readFile(path.join(root, file), "utf8");
-const [home, privacy, fallback] = await Promise.all([
+const [home, privacy, fallback, manifestSource, serviceWorker] = await Promise.all([
   read("index.html"),
   read("privacidade/index.html"),
   read("404.html"),
+  read("manifest.webmanifest"),
+  read("sw.js"),
 ]);
+const manifest = JSON.parse(manifestSource);
 
 assert.ok(home.includes('rel="canonical" href="https://pabloguilherme1121.github.io/PG-portfolio/"'));
 assert.ok(privacy.includes('rel="canonical" href="https://pabloguilherme1121.github.io/PG-portfolio/privacidade/"'));
@@ -21,6 +24,14 @@ assert.equal(JSON.parse(structuredData).url, "https://pabloguilherme1121.github.
 assert.ok(!home.includes("%BASE_URL%"), "The favicon URL was not expanded by Vite");
 assert.ok(!home.includes("import.meta"), "The Pages HTML contains unresolved import.meta syntax");
 assert.ok(home.includes('href="/PG-portfolio/favicon.svg"'));
+assert.ok(home.includes('rel="manifest" href="/PG-portfolio/manifest.webmanifest"'));
+assert.equal(manifest.display, "standalone");
+assert.equal(manifest.start_url, "./");
+assert.equal(manifest.scope, "./");
+assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose === "maskable"));
+assert.ok(serviceWorker.includes('self.addEventListener("install"'));
+assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
+assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).includes("<svg"));
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));
 assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));
