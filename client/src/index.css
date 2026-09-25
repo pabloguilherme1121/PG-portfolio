@@ -842,6 +842,21 @@ html.theme-transitioning .arquivo-page * {
     letter-spacing: 0.035em;
   }
   .contact-float-link svg { flex: 0 0 auto; }
+
+  [data-project-search="true"],
+  [data-sort-control="projects"],
+  [data-saved-projects-search="true"],
+  [data-saved-projects-sort="true"] {
+    font-size: 1rem !important;
+  }
+
+  [data-project-modal-favorite="true"],
+  [data-project-modal-share="true"],
+  [data-project-modal-copy-link="true"] {
+    min-height: 48px !important;
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .featured-project-card {

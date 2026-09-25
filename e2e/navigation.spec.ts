@@ -624,6 +624,47 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("evita zoom de formulário no iOS e mantém ações secundárias tocáveis no mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const gallery = page.locator("#galeria-publica");
+    await gallery.scrollIntoViewIfNeeded();
+
+    const search = page.locator('[data-project-search="true"]');
+    const sort = page.locator('[data-sort-control="projects"]');
+    const mobileFontSizes = await Promise.all([
+      search.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+      sort.evaluate((element) => Number.parseFloat(getComputedStyle(element).fontSize)),
+    ]);
+    expect(mobileFontSizes.every((size) => size >= 16)).toBeTruthy();
+
+    await search.fill("drone");
+    const compactGalleryActions = [
+      page.getByRole("button", { name: /projetos salvos/i }).first(),
+      page.getByRole("button", { name: /minhas imagens/i }),
+      page.getByRole("button", { name: /Copiar link da busca atual/i }),
+      page.getByRole("button", { name: /Limpar todos os filtros de projetos/i }),
+      page.getByRole("button", { name: /Limpar busca de trabalhos/i }),
+    ];
+    for (const control of compactGalleryActions) {
+      await expect(control).toBeVisible();
+      const rect = await control.evaluate((element) => element.getBoundingClientRect());
+      expect(rect.height).toBeGreaterThanOrEqual(44);
+    }
+
+    await search.fill("");
+    const preview = page.locator("[data-featured-project]").first();
+    await preview.scrollIntoViewIfNeeded();
+    await preview.click();
+    const projectDialog = page.locator('[data-project-details-dialog="true"]');
+    await expect(projectDialog).toBeVisible();
+    const modalActionHeights = await projectDialog
+      .locator('[data-project-modal-favorite="true"], [data-project-modal-share="true"], [data-project-modal-copy-link="true"]')
+      .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
+    expect(modalActionHeights.every((height) => height >= 44)).toBeTruthy();
+  });
+
   test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
     await page.goto("/");
 
