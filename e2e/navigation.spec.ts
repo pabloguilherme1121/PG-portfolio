@@ -671,12 +671,16 @@ test.describe("navegação pública e favoritos", () => {
       .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
     expect(modalActionHeights.every((height) => height >= 44)).toBeTruthy();
 
-    const modalNavigationHeights = await Promise.all([
-      projectDialog.locator('[data-project-modal-previous="true"]').evaluate((element) => element.getBoundingClientRect().height),
-      projectDialog.locator('[data-project-modal-next="true"]').evaluate((element) => element.getBoundingClientRect().height),
-      projectDialog.locator('[data-slot="dialog-close"]').evaluate((element) => element.getBoundingClientRect().height),
-    ]);
-    expect(modalNavigationHeights.every((height) => height >= 44)).toBeTruthy();
+    const modalNavigationTargets = [
+      { name: "anterior", locator: projectDialog.locator('[data-project-modal-previous="true"]') },
+      { name: "próximo", locator: projectDialog.locator('[data-project-modal-next="true"]') },
+      { name: "fechar", locator: projectDialog.locator('[data-slot="dialog-close"]') },
+    ];
+    for (const target of modalNavigationTargets) {
+      const rect = await target.locator.evaluate((element) => element.getBoundingClientRect());
+      expect(rect.height, `${target.name} ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+      expect(rect.width, `${target.name} ficou com ${rect.width}px de largura`).toBeGreaterThanOrEqual(44);
+    }
   });
 
   test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
