@@ -84,15 +84,15 @@ export default function PortfolioHero({
               Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.
             </p>
 
-            <div ref={heroCtaRef} data-hero-cta="true" className="flex flex-wrap items-center gap-3">
+            <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
                 href="#contato"
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
-                className="group inline-flex items-center gap-3 bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97]"
+                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
               >
                 solicitar orçamento <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
-              <a href="#projetos" className="inline-flex items-center gap-2 px-2 py-3 font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:text-white">
+              <a href="#projetos" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
                 ver trabalhos <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
