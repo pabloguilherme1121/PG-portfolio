@@ -624,6 +624,37 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém a barra flutuante legível e contida em mobile e landscape", async ({ page }) => {
+    test.setTimeout(60000);
+    for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+
+      const contactBar = page.locator('[data-mobile-contact-bar="true"]');
+      await expect(contactBar).toBeVisible();
+      await expect(contactBar).toHaveCSS("opacity", "1");
+
+      const barRect = await contactBar.evaluate((element) => element.getBoundingClientRect());
+      expect(barRect.left, `barra saiu pela esquerda em ${viewport.width}x${viewport.height}`).toBeGreaterThanOrEqual(0);
+      expect(barRect.right, `barra saiu pela direita em ${viewport.width}x${viewport.height}`).toBeLessThanOrEqual(viewport.width);
+
+      const linkMetrics = await contactBar.locator(".contact-float-link").evaluateAll((elements) =>
+        elements.map((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            height: rect.height,
+            fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+          };
+        }),
+      );
+      expect(linkMetrics.length).toBe(3);
+      expect(linkMetrics.every(({ height }) => height >= 44)).toBeTruthy();
+      expect(linkMetrics.every(({ fontSize }) => fontSize >= 10)).toBeTruthy();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+  });
+
   test("evita zoom de formulário no iOS e mantém ações secundárias tocáveis no mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
