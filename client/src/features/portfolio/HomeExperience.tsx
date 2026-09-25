@@ -70,6 +70,8 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
+import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
+import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -78,7 +80,6 @@ import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
-  caseStudies,
   categoryFilters,
   comparisonPairs,
   optimizedLightboxImages,
@@ -1776,64 +1777,14 @@ export default function Home() {
 
         <section id="projetos" className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
-            <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
-              <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / trabalhos selecionados</p>
-                <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Repertório em uso,<br className="hidden sm:block" /> não só na vitrine.</h2>
-                <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
-              </div>
-              <div className="max-w-sm">
-                <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
-                <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
-              </div>
-            </div>
-
-            <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
-              <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
-              <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
-              <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
-            </div>
-
-            <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
-              <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6">
-                <div>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">entrada / três evidências</p>
-                  <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">O trabalho antes do filtro.</h3>
-                </div>
-                <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar rapidamente o papel, o processo e o resultado de cada registro.</p>
-              </div>
-              <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-3" aria-busy={!featuredCardsReady}>
-                <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? "Três projetos destacados disponíveis para abrir detalhes." : "Carregando projetos destacados."}</div>
-                {featuredCardsReady ? featuredRepositories.map((project) => (
-                  <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => openProjectDetails(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProjectDetails(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
-                    {project.cover && <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" />}
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">{project.id}</p>
-                      <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">{project.kind === "video" ? "vídeo" : "repositório"}</span>
-                    </div>
-                    <h4 id={`featured-title-${project.id}`} className="mt-2 break-words font-display text-xl font-medium leading-tight tracking-[-0.035em] text-white">{project.name}</h4>
-                    <dl className="mt-4 grid gap-3 text-sm leading-5">
-                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">papel</dt><dd className="mt-1 text-[#c4d9ee]">{project.role}</dd></div>
-                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">processo</dt><dd className="mt-1 text-[#c4d9ee]">{project.process}</dd></div>
-                      <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">resultado</dt><dd className="mt-1 text-[#c4d9ee]">{project.result}</dd></div>
-                    </dl>
-                    <span className="mt-5 inline-flex font-mono text-[9px] uppercase tracking-[0.12em] text-[#8db8ff] transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none">abrir detalhes <ArrowUpRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" /></span>
-                  </article>
-                )) : Array.from({ length: 3 }).map((_, index) => (
-                  <div key={`featured-skeleton-${index}`} aria-hidden="true" className="featured-project-card min-h-[430px] animate-pulse bg-[#0a1422] p-4 sm:p-5 motion-reduce:animate-none">
-                    <div className="aspect-[16/10] w-full bg-[#163354]" />
-                    <div className="mt-5 space-y-3"><div className="h-2 w-16 bg-[#294568]" /><div className="h-7 w-4/5 bg-[#294568]" /><div className="h-3 w-full bg-[#1c3454]" /><div className="h-3 w-2/3 bg-[#1c3454]" /></div>
-                    <div className="mt-6 space-y-3"><div className="h-2 w-12 bg-[#294568]" /><div className="h-3 w-full bg-[#1c3454]" /><div className="h-2 w-16 bg-[#294568]" /><div className="h-3 w-4/5 bg-[#1c3454]" /></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
-              <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>
-              <a href="#favoritos-pessoais" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">meus favoritos</a>
-              <a href={`${import.meta.env.BASE_URL}favoritos`} className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8edff0] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">gestão de favoritos</a>
-            </nav>
+            <PortfolioProjectsOverview
+              markUrl={markUrl}
+              portraitUrl={portraitUrl}
+              portraitResponsive={portraitResponsive}
+              featuredCardsReady={featuredCardsReady}
+              featuredRepositories={featuredRepositories}
+              openProjectDetails={openProjectDetails}
+            />
             <div className="mt-8 border-y border-white/[0.1] py-4">
               <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 {sharedProjectIds && <aside role="region" aria-labelledby="shared-list-title" className="mb-5 flex flex-col gap-4 border border-[#67e8f9]/35 bg-[#062342]/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
@@ -2124,29 +2075,7 @@ export default function Home() {
             )}
             </div>
 
-            <div className="mt-16 border-t border-cyan-100/[0.12] pt-8 sm:pt-10">
-              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-                <div>
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">por trás dos trabalhos</p>
-                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.5rem)] font-medium leading-none tracking-[-0.05em] text-white">Contexto, escolha e resultado.</h3>
-                </div>
-                <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Cada estudo resume o que precisava ser resolvido, qual caminho foi escolhido e o que a entrega comprova.</p>
-              </div>
-              <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2">
-                {caseStudies.map((study) => (
-                  <article key={study.id} className="relative bg-[#071326] p-6 sm:p-8">
-                    <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
-                    <h4 className="mt-7 font-display text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
-                    <dl className="mt-6 grid gap-5 font-body text-sm leading-7 text-[#bcd9e7]">
-                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">contexto</dt><dd className="mt-1">{study.context}</dd></div>
-                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">como resolvi</dt><dd className="mt-1">{study.method}</dd></div>
-                      <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">o que aprendi</dt><dd className="mt-1 text-[#d9f4ff]">{study.learning}</dd></div>
-                    </dl>
-                    <div className="mt-7 flex flex-wrap gap-2">{study.tags.map((tag) => <span key={tag} className="border border-cyan-100/[0.16] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5dff4]">{tag}</span>)}</div>
-                  </article>
-                ))}
-              </div>
-            </div>
+            <PortfolioCaseStudies />
           </div>
         </section>
 
