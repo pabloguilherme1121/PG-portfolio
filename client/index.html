@@ -43,7 +43,8 @@
       if (canonicalLink) canonicalLink.setAttribute("href", publicUrl);
       const ogUrl = document.querySelector('#og-url');
       if (ogUrl) ogUrl.setAttribute("content", publicUrl);
-      const routePath = window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ""), "") || "/";
+      const baseUrl = "%BASE_URL%";
+      const routePath = window.location.pathname.replace(baseUrl.replace(/\/$/, ""), "") || "/";
       if (/^\/(favoritos|curadoria)(\/|$)/.test(routePath)) {
         document.querySelector('#robots-meta')?.setAttribute("content", "noindex, nofollow");
       }
