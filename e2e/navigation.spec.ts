@@ -635,16 +635,24 @@ test.describe("navegação pública e favoritos", () => {
     const recentSearches = page.locator('[data-recent-searches="true"]');
     await expect(recentSearches).toBeVisible();
 
-    const repeatSearch = recentSearches.getByRole("button", { name: /drone, repetir busca/i });
-    const deleteSearch = recentSearches.getByRole("button", { name: /Excluir busca recente drone/i });
-    const clearHistory = recentSearches.getByRole("button", { name: /Limpar todo o histórico de buscas/i });
+    const metrics = await recentSearches.locator("button").evaluateAll((elements) =>
+      elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          label: element.getAttribute("aria-label") || element.textContent?.trim() || "controle sem rótulo",
+          width: rect.width,
+          height: rect.height,
+        };
+      }),
+    );
 
-    for (const control of [repeatSearch, deleteSearch, clearHistory]) {
-      const rect = await control.evaluate((element) => element.getBoundingClientRect());
-      expect(rect.height, `${await control.getAttribute("aria-label") ?? await control.textContent()} ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    expect(metrics.length).toBeGreaterThanOrEqual(5);
+    for (const metric of metrics) {
+      expect(metric.height, `${metric.label} ficou com ${metric.height}px de altura`).toBeGreaterThanOrEqual(44);
+      if (metric.label.startsWith("Excluir busca recente")) {
+        expect(metric.width, `${metric.label} ficou com ${metric.width}px de largura`).toBeGreaterThanOrEqual(44);
+      }
     }
-    const deleteRect = await deleteSearch.evaluate((element) => element.getBoundingClientRect());
-    expect(deleteRect.width, `Excluir busca recente ficou com ${deleteRect.width}px de largura`).toBeGreaterThanOrEqual(44);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
