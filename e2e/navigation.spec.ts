@@ -624,6 +624,36 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém ações rápidas dos cards com alvo de toque mínimo em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+    await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+
+    const firstProject = page.locator("[data-project-id]").first();
+    await expect(firstProject).toBeVisible();
+
+    const quickActions = firstProject.locator(
+      '[aria-label^="Ampliar imagem"], [data-project-whatsapp-share="true"], [data-image-favorite-control="true"], [data-favorite-control="true"], button[aria-label^="Mover "]',
+    );
+    const metrics = await quickActions.evaluateAll((elements) =>
+      elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          label: element.getAttribute("aria-label"),
+          width: rect.width,
+          height: rect.height,
+        };
+      }),
+    );
+
+    expect(metrics.length).toBeGreaterThanOrEqual(5);
+    for (const metric of metrics) {
+      expect(metric.width, `${metric.label} ficou com ${metric.width}px de largura`).toBeGreaterThanOrEqual(44);
+      expect(metric.height, `${metric.label} ficou com ${metric.height}px de altura`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém a barra flutuante legível e contida em mobile e landscape", async ({ page }) => {
     test.setTimeout(60000);
     for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
