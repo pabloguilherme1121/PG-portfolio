@@ -103,6 +103,13 @@ export function PortfolioContact({
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
   }, []);
 
+  useEffect(() => {
+    if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
+      setAvailabilityDate(null);
+      setAvailabilityTime(null);
+    }
+  }, [availabilityDate, blockedDateKeys, isBlockedDatesError]);
+
   function consultAvailabilityOnWhatsApp() {
     if (!availabilityWhatsAppUrl || isAvailabilityRedirecting || isBlockedDatesError) return;
 
