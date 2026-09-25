@@ -273,7 +273,10 @@ test.describe("navegação pública e favoritos", () => {
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
     const canonical = page.locator('link[rel="canonical"]');
-    await expect(canonical).toHaveAttribute("href", `${new URL(baseURL).origin}/`);
+    const currentUrl = new URL(page.url());
+    currentUrl.search = "";
+    currentUrl.hash = "";
+    await expect(canonical).toHaveAttribute("href", currentUrl.href);
     const robots = await request.get("/robots.txt");
     expect(robots.ok()).toBeTruthy();
     expect(await robots.text()).toContain("Sitemap:");
