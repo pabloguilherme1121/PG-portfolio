@@ -48,6 +48,7 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Browser tests
         env:
+          E2E_BASE_URL: "http://127.0.0.1:4173"
           E2E_SERVE_PAGES: "true"
         run: pnpm test:e2e
       - name: Share validated build
