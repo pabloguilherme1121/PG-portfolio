@@ -1630,18 +1630,21 @@ export default function Home() {
             </a>
           </nav>
 
-          <button
-            ref={menuButtonRef}
-            type="button"
-            onClick={() => setMenuOpen((open) => !open)}
-            className="grid h-10 w-10 place-items-center border border-white/10 text-[#d8e6fa] md:hidden"
-            aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-navigation"
-          >
-            {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] md:hidden">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
+          <div className="flex shrink-0 items-center gap-2 md:hidden">
+            <button
+              ref={menuButtonRef}
+              type="button"
+              data-mobile-menu-toggle="true"
+              onClick={() => setMenuOpen((open) => !open)}
+              className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-navigation"
+            >
+              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
+          </div>
         </div>
         {menuOpen && (
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
@@ -1777,11 +1780,11 @@ export default function Home() {
             <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
                 {categoryFilters.map((category) => {
                   const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
-                  return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
+                  return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex min-h-11 shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
                 })}
               </div>
               <div className={`${isMobileGalleryRefinementOpen ? "flex" : "hidden"} mt-3 max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden`} aria-label="Filtrar galeria pública por tags">
-                {tagFilters.map((tag) => <button type="button" key={tag} onClick={() => selectTag(tag)} aria-pressed={activeTag === tag} data-filter-scope="tag" className={`inline-flex shrink-0 items-center gap-2 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeTag === tag ? "border-[#a5f3fc] bg-[#0b3156] text-[#dffbff]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{tag}</span><span aria-hidden="true" className="text-[8px] text-[#5e789d]">{tag === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(tag) || getRepositoryCategories(repository).has(tag)).length}</span></button>)}
+                {tagFilters.map((tag) => <button type="button" key={tag} onClick={() => selectTag(tag)} aria-pressed={activeTag === tag} data-filter-scope="tag" className={`inline-flex min-h-11 shrink-0 items-center gap-2 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeTag === tag ? "border-[#a5f3fc] bg-[#0b3156] text-[#dffbff]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{tag}</span><span aria-hidden="true" className="text-[8px] text-[#5e789d]">{tag === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(tag) || getRepositoryCategories(repository).has(tag)).length}</span></button>)}
               </div>
               <button type="button" data-mobile-gallery-refinement-toggle="true" onClick={() => setIsMobileGalleryRefinementOpen((current) => !current)} aria-label="Refinar resultados" aria-expanded={isMobileGalleryRefinementOpen} aria-controls="mobile-gallery-refinements" className="mt-3 inline-flex min-h-11 w-full items-center justify-between border border-[#67e8f9]/25 bg-[#07101e] px-3 font-mono text-[9px] uppercase tracking-[0.11em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"><span className="flex items-center gap-2"><Settings2 className="h-3.5 w-3.5" aria-hidden="true" />filtros</span><ChevronDown className={`h-4 w-4 transition-transform duration-200 motion-reduce:transition-none ${isMobileGalleryRefinementOpen ? "rotate-180" : ""}`} aria-hidden="true" /></button>
             <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
@@ -1794,7 +1797,7 @@ export default function Home() {
                   aria-busy={isProjectFilterTransitioning}
                   aria-pressed={activeTechnology === technology}
                   data-filter-scope="technology"
-                  className={`inline-flex shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
+                  className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
                     activeTechnology === technology
                       ? "border-[#3b82f6] bg-[#3b82f6] text-[#02111f]"
                       : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
@@ -1812,7 +1815,7 @@ export default function Home() {
                 onClick={() => setIsCompactGallery((current) => !current)}
                 aria-pressed={isCompactGallery}
                 aria-label={isCompactGallery ? "Voltar para visualização detalhada" : "Ativar visualização compacta"}
-                className={`inline-flex shrink-0 items-center justify-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${isCompactGallery ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/60 hover:text-white"}`}
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${isCompactGallery ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/60 hover:text-white"}`}
               >
                 <Layers2 className="h-3.5 w-3.5" /> <span className="sm:hidden">{isCompactGallery ? "compacto" : "detalhes"}</span><span className="hidden sm:inline">{isCompactGallery ? "modo compacto" : "modo detalhado"}</span>
               </button>
