@@ -1,4 +1,6 @@
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
+
+const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 import { Camera, Clapperboard, Plane } from "lucide-react";
 
 export const skillTracks = [
@@ -143,6 +145,35 @@ export const optimizedLightboxImages: Record<string, { webp: string; avif: strin
 export const comparisonPairs: Record<string, { before: string; after: string }> = {};
 
 export const repositories: Repository[] = [
+  {
+    id: "TEC.08",
+    name: "PG — Site vendendo enquanto você dorme",
+    description: "Peça vertical curta sobre aquisição digital, apresentando o site como um ativo que continua trabalhando para transformar visitas em oportunidades.",
+    role: "Conceito, direção e composição de conteúdo.",
+    process: "Roteiro enxuto, identidade PG, mensagem de conversão e apoio de IA na construção visual.",
+    result: "Uma peça de 8 segundos pensada para comunicar valor rapidamente em canais verticais.",
+    technologies: ["Vídeo", "Conteúdo", "IA", "Web"],
+    url: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
+    kind: "video",
+    cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
+    featured: true,
+    addedOrder: 8,
+    relevance: 94,
+    catalog: {
+      description: "Conteúdo vertical de aquisição digital.",
+      tags: ["Conteúdo", "Vídeo", "IA", "Web"],
+    },
+    caseStudy: {
+      context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
+      problem: "Explicar uma proposta de valor digital em poucos segundos sem transformar a mensagem em uma tela carregada.",
+      objective: "Apresentar uma ideia de site como ativo de aquisição com leitura imediata em formato vertical.",
+      function: "Conceito, direção e composição de conteúdo.",
+      process: "Roteiro enxuto, identidade visual PG, hierarquia tipográfica e apoio de IA na construção e iteração visual.",
+      decisions: "Concentrar a mensagem em uma promessa principal, usar contraste alto e fechar com uma chamada clara para transformar visitantes em clientes.",
+      result: "Uma peça curta e legível, pensada para Reels e Stories, conectando tecnologia e conteúdo.",
+      learning: "Em formatos de poucos segundos, uma única promessa forte e uma chamada clara comunicam melhor do que vários argumentos simultâneos.",
+    },
+  },
   {
     id: "AUD.01",
     name: "Chá da Eloise",
@@ -363,14 +394,14 @@ export const repertoireSignals = [
   },
 ];
 
-export const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
+export const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "IA", "Web", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
 export const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
 export const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
+  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "TEC.08", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
+  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.08", "CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
 ];
 
 export const sortOptions = [

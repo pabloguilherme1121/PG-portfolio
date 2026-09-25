@@ -349,6 +349,31 @@ test.describe("navegação pública e favoritos", () => {
     await expect(details).toBeHidden();
   });
 
+  test("integra a nova identidade visual e o case PG de aquisição digital", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const heroPortrait = page.locator(".hero-portrait-card img");
+    await expect(heroPortrait).toHaveAttribute("src", /portfolio-media\/pablo-profile-2026\.webp/);
+
+    const gallery = page.locator("#galeria-publica");
+    await gallery.scrollIntoViewIfNeeded();
+    const search = page.locator('[data-project-search="true"]');
+    await search.fill("vendendo");
+
+    const project = page.locator('[data-project-id="TEC.08"]');
+    await expect(project).toBeVisible();
+    await expect(project).toContainText(/Site vendendo enquanto você dorme/i);
+    await project.locator("button.project-gallery-card").click();
+
+    const dialog = page.locator('[data-project-details-dialog="true"]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading", { level: 2 })).toContainText(/Site vendendo enquanto você dorme/i);
+    const video = dialog.locator("video");
+    await expect(video).toHaveAttribute("src", /portfolio-media\/pg-site-vendendo-2026\.mp4/);
+    await expect(video).toHaveAttribute("poster", /portfolio-media\/pg-site-vendendo-2026-poster\.webp/);
+  });
+
   test("navega entre projetos do modal com swipe horizontal no mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/#galeria-publica");
