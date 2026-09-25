@@ -1,10 +1,11 @@
+import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowUpRight } from "lucide-react";
 import { processSteps, repertoireSignals, serviceOffers, skillTracks } from "../portfolioData";
 
-const textureUrl = "/manus-storage/pablo-systems-texture_cf9aade1.png";
+const textureUrl = publicMediaPath("/manus-storage/pablo-systems-texture_cf9aade1.png");
 const textureResponsive = {
-  avif: "/manus-storage/pablo-systems-texture-480w_5a6395b2.avif 480w, /manus-storage/pablo-systems-texture-768w_8d43ab9a.avif 768w, /manus-storage/pablo-systems-texture-1200w_bd814e99.avif 1200w, /manus-storage/pablo-systems-texture-1600w_37d28a1c.avif 1600w, /manus-storage/pablo-systems-texture-1920w_743d3758.avif 1920w",
-  webp: "/manus-storage/pablo-systems-texture-480w_ec71c815.webp 480w, /manus-storage/pablo-systems-texture-768w_c701324d.webp 768w, /manus-storage/pablo-systems-texture-1200w_4041e6bf.webp 1200w, /manus-storage/pablo-systems-texture-1600w_c56f3109.webp 1600w, /manus-storage/pablo-systems-texture-1920w_89c6d1bd.webp 1920w",
+  avif: publicMediaPath("/manus-storage/pablo-systems-texture-480w_5a6395b2.avif 480w, /manus-storage/pablo-systems-texture-768w_8d43ab9a.avif 768w, /manus-storage/pablo-systems-texture-1200w_bd814e99.avif 1200w, /manus-storage/pablo-systems-texture-1600w_37d28a1c.avif 1600w, /manus-storage/pablo-systems-texture-1920w_743d3758.avif 1920w"),
+  webp: publicMediaPath("/manus-storage/pablo-systems-texture-480w_ec71c815.webp 480w, /manus-storage/pablo-systems-texture-768w_c701324d.webp 768w, /manus-storage/pablo-systems-texture-1200w_4041e6bf.webp 1200w, /manus-storage/pablo-systems-texture-1600w_c56f3109.webp 1600w, /manus-storage/pablo-systems-texture-1920w_89c6d1bd.webp 1920w"),
 };
 
 export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewport: boolean; markUrl: string }) {
