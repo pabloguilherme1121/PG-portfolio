@@ -624,6 +624,27 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
+    await page.goto("/");
+
+    const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
+    expect(manifestHref).toBeTruthy();
+
+    const manifestResponse = await page.request.get(manifestHref!);
+    expect(manifestResponse.ok()).toBeTruthy();
+    const manifest = await manifestResponse.json();
+    expect(manifest.name).toContain("Pablo Guilherme");
+    expect(manifest.display).toBe("standalone");
+    expect(manifest.start_url).toBe("./");
+    expect(manifest.scope).toBe("./");
+    expect(manifest.icons?.some((icon: { sizes?: string }) => icon.sizes === "any")).toBeTruthy();
+
+    const baseUrl = new URL(page.url()).pathname.replace(/[^/]*$/, "");
+    const workerResponse = await page.request.get(baseUrl + "sw.js");
+    expect(workerResponse.ok()).toBeTruthy();
+    expect(await workerResponse.text()).toContain("self.addEventListener");
+  });
+
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);
