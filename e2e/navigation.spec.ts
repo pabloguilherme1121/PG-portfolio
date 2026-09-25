@@ -723,6 +723,20 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém a mensagem rápida do Instagram tocável em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    const contact = page.locator("#contato");
+    await contact.scrollIntoViewIfNeeded();
+
+    const quickInstagram = contact.getByRole("link", { name: /mensagem rápida no Instagram/i });
+    await expect(quickInstagram).toBeVisible();
+    const rect = await quickInstagram.evaluate((element) => element.getBoundingClientRect());
+    expect(rect.height, `Mensagem rápida no Instagram ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém a recuperação da agenda tocável quando a disponibilidade falha em 320px", async ({ page }) => {
     await page.route("**/*availability.listBlocked*", async (route) => {
       await route.fulfill({
