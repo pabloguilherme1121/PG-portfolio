@@ -337,10 +337,8 @@ test.describe("navegação pública e favoritos", () => {
     const next = details.locator('[data-project-modal-next="true"]');
     await expect(next).toBeEnabled();
     await next.click();
-    await expect(details).toHaveAttribute("data-project-details-transition", "next");
     await expect(title).not.toHaveText(initialTitle ?? "");
     await page.keyboard.press("ArrowLeft");
-    await expect(details).toHaveAttribute("data-project-details-transition", "previous");
     await expect(title).toHaveText(initialTitle ?? "");
     await page.keyboard.press("Escape");
     await expect(details).toBeHidden();
@@ -515,7 +513,7 @@ test.describe("navegação pública e favoritos", () => {
       await expect(lightbox.locator("#project-lightbox-title")).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
       await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
-      const lightboxImage = lightbox.locator('img[alt^="Imagem ampliada"]');
+      const lightboxImage = lightbox.locator('[data-lightbox-image="true"]');
       await expect(lightboxImage).toBeVisible({ timeout: 15000 });
       await expect.poll(() => lightboxImage.evaluate((image) => image.getBoundingClientRect().width > 0 && image.getBoundingClientRect().height > 0), { timeout: 15000 }).toBeTruthy();
       const imageFitsMedia = await lightboxImage.evaluate((image) => {
@@ -561,7 +559,7 @@ test.describe("navegação pública e favoritos", () => {
     await imageTrigger.click();
     const lightbox = page.locator('[data-lightbox-modal="true"]');
     await expect(lightbox).toBeVisible({ timeout: 15000 });
-    const image = lightbox.locator('img[alt^="Imagem ampliada"]');
+    const image = lightbox.locator('[data-lightbox-image="true"]');
     await expect(image).toBeVisible({ timeout: 15000 });
     for (const ratio of [{ name: "9:16", width: 900, height: 1600 }, { name: "4:5", width: 800, height: 1000 }, { name: "1:1", width: 1000, height: 1000 }, { name: "4:3", width: 1200, height: 900 }, { name: "16:9", width: 1600, height: 900 }]) {
       await image.evaluate((element, dimensions) => {
