@@ -323,7 +323,7 @@ export const repertoireSignals = [
 ];
 
 export const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
-export const categoryFilters = ["Todos", "Aéreo", "Conteúdo", "Noturno", "Interface", "Eventos"];
+export const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
 export const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
