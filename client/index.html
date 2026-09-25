@@ -34,16 +34,17 @@
       } catch {
         document.documentElement.classList.add("dark");
       }
-      const publicPath = window.location.pathname === "/" ? "/" : window.location.pathname;
+      const publicPath = window.location.pathname;
       const publicUrl = new URL(publicPath, window.location.origin).href;
       const canonicalLink = document.querySelector('link[data-canonical-url="true"]');
       if (canonicalLink) canonicalLink.setAttribute("href", publicUrl);
       const ogUrl = document.querySelector('#og-url');
       if (ogUrl) ogUrl.setAttribute("content", publicUrl);
-      const socialImageUrl = new URL("/manus-storage/pablo-hero-archive_fbc55c04.png", window.location.origin).href;
+      const socialImageUrl = new URL(import.meta.env.BASE_URL + "manus-storage/pablo-hero-archive_fbc55c04.png", window.location.origin).href;
       document.querySelector('#og-image')?.setAttribute("content", socialImageUrl);
       document.querySelector('#twitter-image')?.setAttribute("content", socialImageUrl);
-      if (/^\/(favoritos|curadoria)(\/|$)/.test(window.location.pathname)) {
+      const routePath = window.location.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ""), "") || "/";
+      if (/^\/(favoritos|curadoria)(\/|$)/.test(routePath)) {
         document.querySelector('#robots-meta')?.setAttribute("content", "noindex, nofollow");
       }
     </script>
