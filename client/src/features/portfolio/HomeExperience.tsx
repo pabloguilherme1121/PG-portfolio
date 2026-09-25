@@ -80,7 +80,6 @@ import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
-  caseStudies,
   categoryFilters,
   comparisonPairs,
   optimizedLightboxImages,
