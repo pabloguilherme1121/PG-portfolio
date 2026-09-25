@@ -19,6 +19,7 @@ const structuredData = home.match(/<script type="application\/ld\+json">([\s\S]*
 assert.ok(structuredData, "Person structured data is missing");
 assert.equal(JSON.parse(structuredData).url, "https://pabloguilherme1121.github.io/PG-portfolio/");
 assert.ok(!home.includes("%BASE_URL%"), "The favicon URL was not expanded by Vite");
+assert.ok(!home.includes("import.meta"), "The Pages HTML contains unresolved import.meta syntax");
 assert.ok(home.includes('href="/PG-portfolio/favicon.svg"'));
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));

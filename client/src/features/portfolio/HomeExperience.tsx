@@ -1790,11 +1790,11 @@ export default function Home() {
                 01 / portfólio em movimento
               </div>
               <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
-                Aprendendo a construir.
+                Ideias com
                 <br />
-                Registrando o que
+                tecnologia,
                 <br />
-                faz sentido.
+                conteúdo e imagem.
               </h1>
               <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
                 <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" /><img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" /></picture>
@@ -1802,7 +1802,7 @@ export default function Home() {
               </figure>
               <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
                 <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-                  Um arquivo vivo de tecnologia, conteúdo e imagem — feito enquanto aprendo, testo e encontro formas mais claras de fazer uma ideia circular.
+                  Um portfólio que conecta tecnologia, conteúdo e imagem para transformar ideias em interfaces, registros e peças visuais mais claras.
                 </p>
                 <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">Vídeos, imagens aéreas e conteúdo visual para eventos, marcas e projetos que precisam ser vistos com clareza.</p>
                 <div ref={heroCtaRef} data-hero-cta="true" className="flex flex-wrap items-center gap-3">
@@ -1855,7 +1855,7 @@ export default function Home() {
 
             <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
               <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
-                STATUS: aprendendo na prática<br />
+                ARQUIVO: em evolução<br />
                 FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL<br />
                 ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
               </p>
