@@ -142,8 +142,13 @@ test.describe("navegação pública e favoritos", () => {
     const nextMonth = calendar.getByRole("button", { name: "Próximo mês" });
     expect(await previousMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
     expect(await nextMonth.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
-    const dateHeights = await calendar.locator('[data-availability-date="true"]').evaluateAll((elements) => elements.slice(0, 7).map((element) => element.getBoundingClientRect().height));
-    expect(dateHeights.every((height) => height >= 40)).toBeTruthy();
+    const dateTargets = await calendar.locator('[data-availability-date="true"]').evaluateAll((elements) =>
+      elements.slice(0, 7).map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }),
+    );
+    expect(dateTargets.every(({ width, height }) => width >= 44 && height >= 44)).toBeTruthy();
     const timeHeights = await calendar.locator("button").evaluateAll((elements) => elements.slice(-3).map((element) => element.getBoundingClientRect().height));
     expect(timeHeights.every((height) => height >= 44)).toBeTruthy();
     await calendar.locator('[data-availability-date="true"]:not([disabled])').first().click();
