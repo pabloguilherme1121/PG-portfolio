@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Check public media inventory
-        run: pnpm audit:assets
+        run: pnpm audit:assets --strict-if-present
       - name: Typecheck
         run: pnpm check
       - name: Unit tests

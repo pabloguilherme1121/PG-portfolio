@@ -21,6 +21,8 @@ assert.equal(JSON.parse(structuredData).url, "https://pabloguilherme1121.github.
 assert.ok(!home.includes("%BASE_URL%"), "The favicon URL was not expanded by Vite");
 assert.ok(home.includes('href="/PG-portfolio/favicon.svg"'));
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
+assert.ok(!home.includes('src="/manus-storage/"'));
+assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));
 const preview = await readFile(path.join(root, "social-preview.png"));
 assert.ok(preview.length > 10_000, "Social preview is missing or empty");
 assert.ok(Buffer.byteLength(home) < 50_000, "Unexpected inline runtime in the Pages HTML");

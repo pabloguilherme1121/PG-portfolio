@@ -1,3 +1,4 @@
+import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowUpRight, Instagram } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { trpc } from "@/lib/trpc";
@@ -11,7 +12,7 @@ const profiles = [
     label: "arquivo pessoal",
     description: "Bastidores, estudos e registros que ajudam a acompanhar o processo.",
     url: "https://www.instagram.com/pablogui000/",
-    cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
+    cover: publicMediaPath("/manus-storage/rham-depoimento-02_c0845a39.jpg"),
     position: "object-[center_35%]",
     formats: ["bastidores"],
   },
@@ -20,7 +21,7 @@ const profiles = [
     label: "storyworks",
     description: "Projetos audiovisuais, captação e narrativas pensadas para circular.",
     url: "https://www.instagram.com/mpjstoryworks/",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
+    cover: publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg"),
     position: "object-center",
     formats: ["eventos", "bastidores"],
   },
@@ -29,7 +30,7 @@ const profiles = [
     label: "repertório em movimento",
     description: "A seleção completa de trabalhos fica no portfólio; o Instagram mostra o que está acontecendo agora.",
     url: "https://www.instagram.com/mpjstoryworks/",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+    cover: publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg"),
     position: "object-[center_58%]",
     formats: ["drone"],
   },

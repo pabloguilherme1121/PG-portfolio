@@ -166,6 +166,11 @@ export default defineConfig({
   plugins,
   define: {
     __PORTFOLIO_RESUME_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf"))),
+    __PORTFOLIO_HERO_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/pablo-hero-archive_fbc55c04.png"))),
+    __PORTFOLIO_SHOWREEL_AVAILABLE__: JSON.stringify([
+      "showreel_e887bf6f.mp4",
+      "showreel-vertical_00d4c92f.mp4",
+    ].every((file) => fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage", file)))),
   },
   resolve: {
     alias: {

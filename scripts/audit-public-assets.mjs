@@ -38,4 +38,7 @@ if (missing.length) {
 if (process.env.GITHUB_STEP_SUMMARY) {
   await appendFile(process.env.GITHUB_STEP_SUMMARY, `### Arquivos públicos\n\n${message}\n\n`);
 }
-if (missing.length && process.argv.includes("--strict")) process.exitCode = 1;
+if (missing.length && (process.argv.includes("--strict") ||
+    (process.argv.includes("--strict-if-present") && referencedAssets.size > missing.length))) {
+  process.exitCode = 1;
+}

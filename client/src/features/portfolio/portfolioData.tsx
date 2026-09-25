@@ -1,3 +1,4 @@
+import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { Camera, Clapperboard, Plane } from "lucide-react";
 
 export const skillTracks = [
@@ -130,13 +131,13 @@ export type Repository = {
  * somente quando Pablo fornecer os respectivos links ou arquivos verdadeiros.
  */
 export const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {
-  "/manus-storage/cha-da-eloise-capa_0d17d433.jpg": { webp: "/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp", avif: "/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif" },
-  "/manus-storage/rham-interface-servicos-01_72f2d942.jpg": { webp: "/manus-storage/rham-interface-servicos-01-720w_f9038490.webp", avif: "/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif" },
-  "/manus-storage/rham-depoimento-02_c0845a39.jpg": { webp: "/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp", avif: "/manus-storage/rham-depoimento-02-720w_3f7b257b.avif" },
-  "/manus-storage/captacao-noturna-03_1033bede.jpg": { webp: "/manus-storage/captacao-noturna-03-720w_e51d98e0.webp", avif: "/manus-storage/captacao-noturna-03-720w_f24e9f42.avif" },
-  "/manus-storage/campo-iluminado-04_665a6d8f.jpg": { webp: "/manus-storage/campo-iluminado-04-1280w_bc353281.webp", avif: "/manus-storage/campo-iluminado-04-1280w_5f023100.avif" },
-  "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg": { webp: "/manus-storage/campo-iluminado-movimento-06-1280w_298c2385.webp", avif: "/manus-storage/campo-iluminado-movimento-06-1280w_7f75fd17.avif" },
-  "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg": { webp: "/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp", avif: "/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif" },
+  [publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg")]: { webp: publicMediaPath("/manus-storage/cha-da-eloise-capa-1920w_9c3ac5f3.webp"), avif: publicMediaPath("/manus-storage/cha-da-eloise-capa-1920w_a7d6987c.avif") },
+  [publicMediaPath("/manus-storage/rham-interface-servicos-01_72f2d942.jpg")]: { webp: publicMediaPath("/manus-storage/rham-interface-servicos-01-720w_f9038490.webp"), avif: publicMediaPath("/manus-storage/rham-interface-servicos-01-720w_f8e84767.avif") },
+  [publicMediaPath("/manus-storage/rham-depoimento-02_c0845a39.jpg")]: { webp: publicMediaPath("/manus-storage/rham-depoimento-02-720w_3e5f42e1.webp"), avif: publicMediaPath("/manus-storage/rham-depoimento-02-720w_3f7b257b.avif") },
+  [publicMediaPath("/manus-storage/captacao-noturna-03_1033bede.jpg")]: { webp: publicMediaPath("/manus-storage/captacao-noturna-03-720w_e51d98e0.webp"), avif: publicMediaPath("/manus-storage/captacao-noturna-03-720w_f24e9f42.avif") },
+  [publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg")]: { webp: publicMediaPath("/manus-storage/campo-iluminado-04-1280w_bc353281.webp"), avif: publicMediaPath("/manus-storage/campo-iluminado-04-1280w_5f023100.avif") },
+  [publicMediaPath("/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg")]: { webp: publicMediaPath("/manus-storage/campo-iluminado-movimento-06-1280w_298c2385.webp"), avif: publicMediaPath("/manus-storage/campo-iluminado-movimento-06-1280w_7f75fd17.avif") },
+  [publicMediaPath("/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg")]: { webp: publicMediaPath("/manus-storage/rham-interface-navegacao-05-720w_bf1a85c4.webp"), avif: publicMediaPath("/manus-storage/rham-interface-navegacao-05-720w_b585edb6.avif") },
 };
 
 export const comparisonPairs: Record<string, { before: string; after: string }> = {};
@@ -150,9 +151,9 @@ export const repositories: Repository[] = [
     process: "Planos abertos, aproximações e movimentos suaves.",
     result: "Uma memória visual que preserva espaço, presença e atmosfera.",
     technologies: ["Vídeo", "Drone", "Conteúdo"],
-    url: "/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4",
+    url: publicMediaPath("/manus-storage/cha-da-eloise-cobertura-aerea_d6a43ac9.mp4"),
     kind: "video",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
+    cover: publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg"),
     featured: true,
     addedOrder: 7,
     relevance: 100,
@@ -179,9 +180,9 @@ export const repositories: Repository[] = [
     process: "Sequência curta guiada por leitura de tela e ritmo.",
     result: "Uma demonstração direta da navegação no aplicativo.",
     technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-servicos-01_de540335.mp4",
+    url: publicMediaPath("/manus-storage/rham-interface-servicos-01_de540335.mp4"),
     kind: "video",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
+    cover: publicMediaPath("/manus-storage/rham-interface-servicos-01_72f2d942.jpg"),
     addedOrder: 6,
     relevance: 88,
     catalog: {
@@ -207,9 +208,9 @@ export const repositories: Repository[] = [
     process: "Enquadramento vertical e condução direta diante da câmera.",
     result: "Uma peça curta para comunicar uma mensagem com presença.",
     technologies: ["Vídeo", "Conteúdo"],
-    url: "/manus-storage/rham-depoimento-02_e0bfccc3.mp4",
+    url: publicMediaPath("/manus-storage/rham-depoimento-02_e0bfccc3.mp4"),
     kind: "video",
-    cover: "/manus-storage/rham-depoimento-02_c0845a39.jpg",
+    cover: publicMediaPath("/manus-storage/rham-depoimento-02_c0845a39.jpg"),
     addedOrder: 5,
     relevance: 76,
     catalog: {
@@ -235,9 +236,9 @@ export const repositories: Repository[] = [
     process: "Captação noturna com perspectiva elevada e movimento controlado.",
     result: "Um recorte vertical que valoriza escala e atmosfera.",
     technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/captacao-noturna-03_7e22eda5.mp4",
+    url: publicMediaPath("/manus-storage/captacao-noturna-03_7e22eda5.mp4"),
     kind: "video",
-    cover: "/manus-storage/captacao-noturna-03_1033bede.jpg",
+    cover: publicMediaPath("/manus-storage/captacao-noturna-03_1033bede.jpg"),
     addedOrder: 4,
     relevance: 82,
     catalog: {
@@ -263,9 +264,9 @@ export const repositories: Repository[] = [
     process: "Enquadramento horizontal atento à luz, escala e movimento.",
     result: "Uma imagem de contexto para apresentar o espaço com impacto.",
     technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-04_dace435d.mp4",
+    url: publicMediaPath("/manus-storage/campo-iluminado-04_dace435d.mp4"),
     kind: "video",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+    cover: publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg"),
     addedOrder: 3,
     relevance: 84,
     catalog: {
@@ -291,9 +292,9 @@ export const repositories: Repository[] = [
     process: "Recorte vertical com foco nas etapas principais da interface.",
     result: "Uma leitura complementar e rápida do fluxo do aplicativo.",
     technologies: ["Vídeo", "Conteúdo", "Interface"],
-    url: "/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4",
+    url: publicMediaPath("/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4"),
     kind: "video",
-    cover: "/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg",
+    cover: publicMediaPath("/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg"),
     addedOrder: 2,
     relevance: 80,
     catalog: {
@@ -319,9 +320,9 @@ export const repositories: Repository[] = [
     process: "Movimento aéreo horizontal com atenção à atmosfera noturna.",
     result: "Uma sequência alternativa para comparar escala e direção.",
     technologies: ["Vídeo", "Drone", "Noturno"],
-    url: "/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4",
+    url: publicMediaPath("/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4"),
     kind: "video",
-    cover: "/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg",
+    cover: publicMediaPath("/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg"),
     addedOrder: 1,
     relevance: 79,
     catalog: {
@@ -346,19 +347,19 @@ export const repertoireSignals = [
     label: "escala e perspectiva",
     title: "Imagem aérea",
     text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
-    cover: "/manus-storage/campo-iluminado-04_665a6d8f.jpg",
+    cover: publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg"),
   },
   {
     label: "clareza e ritmo",
     title: "Interface em movimento",
     text: "Registro de produto e serviço com foco no que a pessoa precisa entender primeiro.",
-    cover: "/manus-storage/rham-interface-servicos-01_72f2d942.jpg",
+    cover: publicMediaPath("/manus-storage/rham-interface-servicos-01_72f2d942.jpg"),
   },
   {
     label: "presença e detalhe",
     title: "Registro de evento",
     text: "Captação que aproxima o público da atmosfera, das pessoas e dos pequenos momentos.",
-    cover: "/manus-storage/cha-da-eloise-capa_0d17d433.jpg",
+    cover: publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg"),
   },
 ];
 
