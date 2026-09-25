@@ -3,6 +3,16 @@ import DashboardLayout, { type DashboardNavigationItem } from "@/components/Dash
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import { portfolioCatalogById } from "@/lib/portfolioCatalog";
+import {
+  EXPORT_FIELDS,
+  buildFavoriteExportRows,
+  csvEscape,
+  estimateFavoriteExport,
+  filterFavoriteEntries,
+  getAvailableFavoriteTags,
+  moveFavoriteId,
+  type ExportField,
+} from "./favoritesManagementUtils";
 import { ArrowLeft, Check, Download, GripVertical, Search, ShieldCheck, Cloud, CloudOff, Pencil, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -39,8 +49,6 @@ function downloadFile(filename: string, type: string, content: BlobPart) {
 }
 
 type Draft = { displayName: string; description: string };
-type ExportField = "position" | "id" | "name" | "description" | "tags" | "updatedAt";
-const EXPORT_FIELDS: { value: ExportField; label: string }[] = [{ value: "position", label: "posição" }, { value: "id", label: "identificador" }, { value: "name", label: "nome" }, { value: "description", label: "descrição" }, { value: "tags", label: "tags" }, { value: "updatedAt", label: "alteração" }];
 function FavoritesManagementContent() {
   const { loading, user } = useAuth();
   const { data: savedOrder = [], isLoading: orderLoading, isError: orderError } = trpc.favoriteOrder.list.useQuery(undefined, { enabled: user?.role === "admin" });
@@ -81,8 +89,15 @@ function FavoritesManagementContent() {
 
   const metadataById = useMemo(() => new Map(savedMetadata.map((item) => [item.projectId, item])), [savedMetadata]);
   const entries = useMemo(() => favoriteIds.map((id, position) => { const base = portfolioCatalogById.get(id); const custom = metadataById.get(id); return { ...base, id, position, name: custom?.displayName ?? base?.name ?? id, description: custom?.description ?? base?.description ?? "Referência salva na lista de favoritos.", isEdited: Boolean(custom), updatedAt: custom?.updatedAt ? new Date(custom.updatedAt) : null }; }), [favoriteIds, metadataById]);
-  const filteredEntries = useMemo(() => { const normalized = query.trim().toLocaleLowerCase(); const cutoff = dateFilter === "all" ? null : dateFilter === "custom" ? (customStartDate ? new Date(`${customStartDate}T00:00:00`).getTime() : null) : Date.now() - Number(dateFilter) * 24 * 60 * 60 * 1000; const end = dateFilter === "custom" && customEndDate ? new Date(`${customEndDate}T23:59:59`).getTime() : null; return entries.filter((entry) => (!normalized || `${entry.name} ${entry.description} ${entry.id}`.toLocaleLowerCase().includes(normalized)) && (tagFilter === "all" || entry.tags?.includes(tagFilter)) && (editFilter === "all" || (editFilter === "edited" ? entry.isEdited : !entry.isEdited)) && (!cutoff || (entry.updatedAt && entry.updatedAt.getTime() >= cutoff)) && (!end || (entry.updatedAt && entry.updatedAt.getTime() <= end))); }, [customEndDate, customStartDate, dateFilter, editFilter, entries, query, tagFilter]);
-  const availableTags = useMemo(() => Array.from(new Set(entries.flatMap((entry) => entry.tags ?? []))).sort(), [entries]);
+  const filteredEntries = useMemo(() => filterFavoriteEntries(entries, {
+    query,
+    tagFilter,
+    editFilter,
+    dateFilter,
+    customStartDate,
+    customEndDate,
+  }), [customEndDate, customStartDate, dateFilter, editFilter, entries, query, tagFilter]);
+  const availableTags = useMemo(() => getAvailableFavoriteTags(entries), [entries]);
   const hasActiveFilters = Boolean(query.trim() || tagFilter !== "all" || editFilter !== "all" || dateFilter !== "all" || customStartDate || customEndDate);
   const isLoading = loading || orderLoading || metadataLoading;
 
@@ -104,20 +119,18 @@ function FavoritesManagementContent() {
     setFavoriteIds(nextIds); window.localStorage.setItem(ORDER_KEY, JSON.stringify(nextIds));
     if (user?.role === "admin") replaceOrder.mutate({ projectIds: nextIds }, { onSuccess: () => setFeedback("Ordem salva e sincronizada."), onError: () => setFeedback("A ordem foi atualizada localmente, mas a sincronização falhou.") });
   }
-  function moveFavorite(sourceId: string, targetId: string) { if (sourceId === targetId) return; const next = [...favoriteIds]; const sourceIndex = next.indexOf(sourceId); const targetIndex = next.indexOf(targetId); if (sourceIndex < 0 || targetIndex < 0) return; next.splice(sourceIndex, 1); next.splice(next.indexOf(targetId), 0, sourceId); persist(next); }
+  function moveFavorite(sourceId: string, targetId: string) { const next = moveFavoriteId(favoriteIds, sourceId, targetId); if (next !== favoriteIds) persist(next); }
   function startEditing(entry: (typeof entries)[number]) { setEditingId(entry.id); setDraft({ displayName: entry.name, description: entry.description }); }
   function requestCloseEditor(entry: (typeof entries)[number]) { const dirty = draft.displayName !== entry.name || draft.description !== entry.description; if (dirty) setDiscardTarget({ id: entry.id, name: entry.name }); else setEditingId(null); }
   function saveDraft() { if (!editingId || !draft.displayName.trim()) return; saveMetadata.mutate({ projectId: editingId, displayName: draft.displayName.trim(), description: draft.description.trim() }, { onSuccess: () => { setEditingId(null); setFeedback("Dados do projeto atualizados."); void utils.favoriteMetadata.list.invalidate(); }, onError: () => setFeedback("Não foi possível salvar os dados personalizados.") }); }
   function restoreOriginal(entryId: string) { restoreMetadata.mutate({ projectId: entryId }, { onSuccess: () => { setEditingId(null); setRestoreTarget(null); setFeedback("Metadados originais restaurados."); toast.success("Metadados originais restaurados", { description: "O projeto voltou aos dados do catálogo." }); void utils.favoriteMetadata.list.invalidate(); }, onError: () => { setFeedback("Não foi possível restaurar os metadados originais."); toast.error("Não foi possível restaurar os metadados."); } }); }
-  function exportValue(entry: (typeof entries)[number], field: ExportField) { const value = field === "position" ? entry.position + 1 : field === "tags" ? (entry.tags ?? []).join("|") : field === "updatedAt" ? (entry.updatedAt?.toISOString() ?? "original") : entry[field]; return String(value ?? ""); }
   const exportEntries = useMemo(() => selectedExportIds.length ? filteredEntries.filter((entry) => selectedExportIds.includes(entry.id)) : filteredEntries, [filteredEntries, selectedExportIds]);
-  const estimatedBreakdown = useMemo(() => { if (!exportEntries.length || !exportFields.length) return { data: 0, thumbnails: 0, overhead: 0, total: 0 }; const rows = exportEntries.map((entry) => Object.fromEntries(exportFields.map((field) => [field, exportValue(entry, field)]))); const data = new Blob([JSON.stringify(rows), JSON.stringify(rows)]).size; const thumbnails = exportWithThumbnails ? exportEntries.filter((entry) => entry.cover).length * 180 * 1024 : 0; const overhead = Math.round((data + thumbnails) * 0.08); return { data, thumbnails, overhead, total: data + thumbnails + overhead }; }, [exportEntries, exportFields, exportWithThumbnails]);
+  const estimatedBreakdown = useMemo(() => estimateFavoriteExport(exportEntries, exportFields, exportWithThumbnails), [exportEntries, exportFields, exportWithThumbnails]);
   const estimatedZipBytes = estimatedBreakdown.total;
   function cancelExport() { exportCancelRef.current = true; exportAbortRef.current?.abort(); exportAbortRef.current = null; setExportProgress(null); setFeedback("Compactação cancelada. Nenhum ZIP foi baixado."); }
   function toggleExportEntry(id: string) { setSelectedExportIds((current) => { const base = current.length ? current : filteredEntries.map((entry) => entry.id); const next = base.includes(id) ? base.filter((value) => value !== id) : [...base, id]; return next.length === filteredEntries.length ? [] : next; }); }
   function selectAllExportEntries() { setSelectedExportIds([]); }
-  function exportRows() { return exportEntries.map((entry) => Object.fromEntries(exportFields.map((field) => [field, exportValue(entry, field)]))); }
-  function csvEscape(value: string) { return `"${value.replaceAll('"', '""')}"`; }
+  function exportRows() { return buildFavoriteExportRows(exportEntries, exportFields); }
   async function exportFavorites(format: "csv" | "json" | "zip") {
     if (!exportEntries.length || !exportFields.length) return;
     exportCancelRef.current = false;
