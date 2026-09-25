@@ -50,6 +50,7 @@ jobs:
         env:
           E2E_BASE_URL: "http://127.0.0.1:4173"
           E2E_SERVE_PAGES: "true"
+          E2E_STATIC_DEPLOY: "true"
         run: pnpm test:e2e
       - name: Share validated build
         if: github.event_name != 'pull_request'
