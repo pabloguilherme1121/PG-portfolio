@@ -94,7 +94,7 @@ import {
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
-const markUrl = "/manus-storage/pablo-pg-mark_3a636084.png";
+const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
 const heroUrl = "/manus-storage/pablo-hero-archive_fbc55c04.png";
 const heroResponsive = {
   avif: "/manus-storage/pablo-hero-archive-480w_e40b1df5.avif 480w, /manus-storage/pablo-hero-archive-768w_5499edae.avif 768w, /manus-storage/pablo-hero-archive-1200w_862455f5.avif 1200w, /manus-storage/pablo-hero-archive-1600w_1c356f9e.avif 1600w, /manus-storage/pablo-hero-archive-1920w_64ab699e.avif 1920w",

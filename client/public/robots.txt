@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pabloguilherme1121.github.io/PG-portfolio/sitemap.xml
