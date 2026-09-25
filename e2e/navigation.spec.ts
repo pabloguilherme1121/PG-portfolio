@@ -580,6 +580,50 @@ test.describe("navegação pública e favoritos", () => {
     await expect(lightbox).toBeHidden();
   });
 
+  test("prioriza toque e leitura nos controles principais em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    const menuToggle = page.getByRole("button", { name: "Abrir menu" });
+    const themeToggle = page.locator('header > div [data-theme-toggle="true"]').last();
+    const headerTargetSizes = await Promise.all([
+      menuToggle.evaluate((element) => element.getBoundingClientRect()),
+      themeToggle.evaluate((element) => element.getBoundingClientRect()),
+    ]);
+    expect(headerTargetSizes.every(({ width, height }) => width >= 44 && height >= 44)).toBeTruthy();
+
+    const heroCta = page.locator('[data-hero-cta="true"]');
+    const quoteCta = heroCta.getByRole("link", { name: /solicitar orçamento/i });
+    const heroWidths = await Promise.all([
+      heroCta.evaluate((element) => element.getBoundingClientRect().width),
+      quoteCta.evaluate((element) => element.getBoundingClientRect().width),
+    ]);
+    expect(heroWidths[1]).toBeGreaterThanOrEqual(heroWidths[0] - 1);
+
+    await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+    const categoryHeights = await page.locator('[data-filter-scope="category"]').evaluateAll((elements) =>
+      elements.map((element) => element.getBoundingClientRect().height),
+    );
+    expect(categoryHeights.every((height) => height >= 44)).toBeTruthy();
+
+    await page.locator('[data-mobile-gallery-refinement-toggle="true"]').click();
+    const refinementHeights = await page.locator('[data-filter-scope="tag"], [data-filter-scope="technology"]').evaluateAll((elements) =>
+      elements.filter((element) => getComputedStyle(element).display !== "none").map((element) => element.getBoundingClientRect().height),
+    );
+    expect(refinementHeights.length).toBeGreaterThan(0);
+    expect(refinementHeights.every((height) => height >= 44)).toBeTruthy();
+
+    await page.locator("#contato-rodape").scrollIntoViewIfNeeded();
+    const footerSocialSizes = await page.locator(".footer-social-icon").evaluateAll((elements) =>
+      elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }),
+    );
+    expect(footerSocialSizes.every(({ width, height }) => width >= 44 && height >= 44)).toBeTruthy();
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém a rota de favoritos fora da vitrine pública", async ({ page }) => {
     await page.goto("/favoritos");
     await expect(page).toHaveURL(/\/favoritos$/);
