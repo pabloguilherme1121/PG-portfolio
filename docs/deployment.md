@@ -37,6 +37,6 @@ Variáveis com prefixo `VITE_` são públicas por natureza. Use-as apenas para c
 
 ## Checklist de release
 
-Antes de publicar, execute `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e, quando houver alterações de navegação ou interação, `pnpm test:e2e`. Verifique também as auditorias específicas em `scripts/audit/`, `scripts/validate/` e `scripts/performance/`.
+Antes de publicar, execute `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test` e `pnpm build`. No GitHub Pages, o workflow também prepara/valida `dist/public` e executa `pnpm test:e2e` contra o próprio bundle estático servido por `scripts/serve-pages-e2e.mjs`; o deploy só recebe o artefato depois que esse gate passa.
 
 O build pode emitir avisos sobre placeholders de analytics do template quando as variáveis `VITE_ANALYTICS_ENDPOINT` e `VITE_ANALYTICS_WEBSITE_ID` não estão definidas. Esses avisos são independentes do módulo SimilarWeb, que usa chamadas server-side.
