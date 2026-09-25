@@ -4,7 +4,6 @@ import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
  * A página transforma a trajetória de Pablo em capítulos assimétricos, com
  * metadados, linha de progresso e linguagem visual de arquivo em evolução.
  */
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { calculateMiniMapPosition, calculatePinchZoom, formatMiniMapPositionAnnouncement, getCancelledInteractionState, getViewportOrientation } from "@/lib/lightboxInteractions";
 import {
@@ -12,7 +11,6 @@ import {
   ArrowUp,
   ArrowUpRight,
   CalendarDays,
-  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -35,7 +33,6 @@ import {
   Linkedin,
   Loader2,
   Mail,
-  MapPin,
   Menu,
   Maximize2,
   MessageCircle,
@@ -55,16 +52,6 @@ import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, 
 import { useTheme } from "@/contexts/ThemeContext";
 import { favoriteImageStorageKey, normalizeFavoriteImageIds, toggleFavoriteImageId } from "@/lib/imageFavorites";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
-import {
-  availableTimes,
-  buildAvailabilityWhatsAppUrl,
-  calendarWeekdays,
-  formatAvailabilityDate,
-  getAvailabilityButtonLabel,
-  isAvailabilityConsultationReady,
-  isSelectableAvailabilityDate,
-  toDateKey,
-} from "@/lib/availability";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
