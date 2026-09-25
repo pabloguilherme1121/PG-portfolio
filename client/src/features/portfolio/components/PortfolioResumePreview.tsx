@@ -37,7 +37,7 @@ export function PortfolioResumePreview({
             <h2 id="resume-preview-title" className="mt-1 truncate font-display text-xl tracking-[-0.03em] text-white sm:text-2xl">Portfólio de Pablo Guilherme</h2>
             <p id="resume-preview-description" className="mt-1 font-body text-xs text-[#9fb2ce]">Pré-visualize o PDF diretamente na página antes de salvar uma cópia.</p>
           </div>
-          <button ref={closeRef} type="button" onClick={onClose} aria-label="Fechar pré-visualização do portfólio" title="Fechar pré-visualização" className="grid h-10 w-10 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-5 w-5" aria-hidden="true" /></button>
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="Fechar pré-visualização do portfólio" title="Fechar pré-visualização" className="grid h-11 w-11 shrink-0 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:h-10 sm:w-10"><X className="h-5 w-5" aria-hidden="true" /></button>
         </div>
         <div className="resume-preview-frame-wrap relative min-h-0 flex-1 bg-[#2b3440] p-2 sm:p-4">
           {loading && !error && (
