@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { calculateMiniMapPosition, calculatePinchZoom, formatMiniMapPositionAnnouncement, getCancelledInteractionState, getViewportOrientation } from "@/lib/lightboxInteractions";
 import {
   ArrowDown,
-  ArrowDownRight,
   ArrowUp,
   ArrowUpRight,
   CalendarDays,
