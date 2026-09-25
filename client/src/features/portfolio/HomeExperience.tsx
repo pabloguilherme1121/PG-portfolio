@@ -106,6 +106,8 @@ const portraitResponsive = {
 const resumeUrl = "/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf";
 const whatsAppNumber = "5561992903029";
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
+declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
+const resumeAvailable = !isStaticDeploy || __PORTFOLIO_RESUME_AVAILABLE__;
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
 const showreelUrl = "/manus-storage/showreel_e887bf6f.mp4";
@@ -1713,9 +1715,9 @@ export default function Home() {
               </a>
             ))}
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-            <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
-            </a>
+            </a>}
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -1748,7 +1750,7 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>
+              {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>}
               <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
           </nav>
@@ -1886,7 +1888,7 @@ export default function Home() {
                     <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">“Um bom projeto não precisa começar pronto. Precisa de clareza para dar o próximo passo.”</p>
                     <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd] light-muted-ink">— direção e processo</p>
                   </aside>
-                  <a
+                  {resumeAvailable && <a
                     href={resumeUrl}
                     download="portfolio-pablo-guilherme.pdf"
                     className="group mt-9 inline-flex w-full max-w-md items-center justify-between border border-[#67e8f9]/45 bg-[#0b1d2e] px-4 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#102a3b] hover:shadow-[0_12px_30px_rgba(14,116,144,0.28)] sm:w-auto sm:min-w-[320px]"
@@ -1899,7 +1901,7 @@ export default function Home() {
                       </span>
                     </span>
                     <ArrowDownRight className="h-4 w-4 text-[#70a6ff] transition-transform duration-200 group-hover:translate-y-1" />
-                  </a>
+                  </a>}
                 </div>
                 <div className="border-l border-white/10 pl-6 xl:mt-4">
                   <figure className="relative mb-8 overflow-hidden border border-white/10 bg-[#0d1523]">
