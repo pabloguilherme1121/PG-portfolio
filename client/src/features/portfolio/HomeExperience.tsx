@@ -46,8 +46,6 @@ import {
   Share2,
   Moon,
   Sun,
-  Volume2,
-  VolumeX,
   Monitor,
   Settings2,
   List,
@@ -71,6 +69,7 @@ import {
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
+import PortfolioShowreel from "@/features/portfolio/components/PortfolioShowreel";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -115,18 +114,6 @@ const heroAvailable = !isStaticDeploy || __PORTFOLIO_HERO_AVAILABLE__;
 const showreelAvailable = !isStaticDeploy || __PORTFOLIO_SHOWREEL_AVAILABLE__;
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
-const showreelUrl = publicMediaPath("/manus-storage/showreel_e887bf6f.mp4");
-const showreelPosterUrl = publicMediaPath("/manus-storage/showreel-poster_847cd0c5.jpg");
-const showreelPosterResponsive = {
-  avif: publicMediaPath("/manus-storage/showreel-poster-480w_409a88d2.avif 480w, /manus-storage/showreel-poster-768w_e6e5d093.avif 768w, /manus-storage/showreel-poster-1200w_b3315973.avif 1200w, /manus-storage/showreel-poster-1280w_54c3532c.avif 1280w"),
-  webp: publicMediaPath("/manus-storage/showreel-poster-480w_5c84b53c.webp 480w, /manus-storage/showreel-poster-768w_c3e4972b.webp 768w, /manus-storage/showreel-poster-1200w_876a4b83.webp 1200w, /manus-storage/showreel-poster-1280w_cab44748.webp 1280w"),
-};
-const showreelVerticalUrl = publicMediaPath("/manus-storage/showreel-vertical_00d4c92f.mp4");
-const showreelVerticalPosterUrl = publicMediaPath("/manus-storage/showreel-vertical-poster_e21c73f9.jpg");
-const showreelVerticalPosterResponsive = {
-  avif: publicMediaPath("/manus-storage/showreel-vertical-poster-480w_e4656a6a.avif 480w, /manus-storage/showreel-vertical-poster-720w_7e009499.avif 720w"),
-  webp: publicMediaPath("/manus-storage/showreel-vertical-poster-480w_092fa9d6.webp 480w, /manus-storage/showreel-vertical-poster-720w_d90358f3.webp 720w"),
-};
 
 type SearchSuggestion = {
   value: string;
@@ -204,7 +191,6 @@ export default function Home() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>();
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>();
-  const [showreelSectionRef, shouldLoadShowreelPoster] = useNearViewport<HTMLDivElement>("0px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -215,11 +201,6 @@ export default function Home() {
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
   const [resumePreviewProgress, setResumePreviewProgress] = useState(0);
   const [resumePreviewError, setResumePreviewError] = useState(false);
-  const [showreelRequested, setShowreelRequested] = useState(false);
-  const [showreelReady, setShowreelReady] = useState(false);
-  const [showreelError, setShowreelError] = useState(false);
-  const [showreelPlaying, setShowreelPlaying] = useState(false);
-  const [showreelMuted, setShowreelMuted] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState("inicio");
@@ -369,7 +350,6 @@ export default function Home() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
-  const showreelVideoRef = useRef<HTMLVideoElement>(null);
   const lightboxProjects = useMemo(() => repositories.filter((repository) => Boolean(repository.cover)), []);
   const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
   const lightboxProjectIndex = lightboxProject ? lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) : -1;
@@ -1830,26 +1810,7 @@ export default function Home() {
                     <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">orçamento e disponibilidade</span>
                   </a>
                 </nav>
-                {showreelAvailable ? <div ref={showreelSectionRef} className="showreel-card mt-6 overflow-hidden border border-[#67e8f9]/25 bg-[#050c16]/90" data-showreel="true">
-                  <div className="flex items-center justify-between gap-4 border-b border-white/[0.1] px-4 py-3">
-                    <div>
-                      <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo em movimento</p>
-                      <p className="mt-1 font-body text-xs text-[#a9bed8]">showreel curto · imagem aérea, interface e registro</p>
-                    </div>
-                    <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7189ae]">{showreelRequested ? (showreelError ? "erro" : showreelReady ? "pronto" : "carregando") : isDesktopViewport ? "sob demanda" : "vertical sob demanda"}</span>
-                  </div>
-                  <div className={`relative bg-[#07111f] ${isDesktopViewport ? "aspect-video" : "aspect-[9/16]"}`}>
-                    {!showreelRequested && <button type="button" onClick={() => { setShowreelError(false); setShowreelRequested(true); }} className="showreel-poster group absolute inset-0 grid place-items-center text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc]" aria-label="Carregar e reproduzir o showreel" data-showreel-trigger="true">
-                      {shouldLoadShowreelPoster && <picture className="absolute inset-0"><source type="image/avif" srcSet={isDesktopViewport ? showreelPosterResponsive.avif : showreelVerticalPosterResponsive.avif} sizes="(min-width: 1024px) 900px, 100vw" /><source type="image/webp" srcSet={isDesktopViewport ? showreelPosterResponsive.webp : showreelVerticalPosterResponsive.webp} sizes="(min-width: 1024px) 900px, 100vw" /><img src={isDesktopViewport ? showreelPosterUrl : showreelVerticalPosterUrl} alt={isDesktopViewport ? "Pôster horizontal do showreel com imagem aérea e registro audiovisual" : "Pôster vertical do showreel otimizado para celular"} loading="lazy" decoding="async" width={isDesktopViewport ? 1280 : 720} height={isDesktopViewport ? 720 : 1280} className="absolute inset-0 h-full w-full object-cover opacity-75 transition-transform duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" /></picture>}
-                      <span className="absolute inset-0 bg-[linear-gradient(90deg,rgba(3,11,20,0.82),rgba(3,11,20,0.18))]" />
-                      <span className="showreel-play-button relative ml-5 inline-flex items-center gap-3 rounded-full border border-[#a5f3fc]/80 bg-[#38bdf8] px-3 py-2 text-[#02111f] shadow-[0_0_28px_rgba(56,189,248,0.35)] transition-transform duration-200 group-hover:scale-[1.03] motion-reduce:transition-none" data-showreel-play="true"><span className="grid h-10 w-10 place-items-center rounded-full border border-[#02111f]/25 bg-[#a5f3fc]/80"><Play className="ml-0.5 h-4 w-4" fill="currentColor" aria-hidden="true" /></span><span className="pr-1 font-mono text-[10px] font-semibold uppercase tracking-[0.14em]">play</span></span>
-                      <span className="absolute bottom-4 left-5 font-mono text-[9px] uppercase tracking-[0.13em] text-[#e6f8ff]">carregar showreel {isDesktopViewport ? "horizontal" : "vertical"} · 00:09</span>
-                    </button>}
-                    {showreelRequested && !showreelError && <video ref={showreelVideoRef} key={isDesktopViewport ? "showreel-horizontal" : "showreel-vertical"} src={isDesktopViewport ? showreelUrl : showreelVerticalUrl} poster={isDesktopViewport ? publicMediaPath("/manus-storage/showreel-poster-1280w_54c3532c.avif") : publicMediaPath("/manus-storage/showreel-vertical-poster-720w_7e009499.avif")} controls playsInline preload="metadata" onCanPlay={() => setShowreelReady(true)} onPlay={() => setShowreelPlaying(true)} onPause={() => setShowreelPlaying(false)} onVolumeChange={(event) => setShowreelMuted(event.currentTarget.muted)} onError={() => { setShowreelError(true); setShowreelReady(false); setShowreelPlaying(false); }} className="h-full w-full object-cover" aria-label={isDesktopViewport ? "Showreel horizontal de Pablo Guilherme" : "Showreel vertical de Pablo Guilherme para dispositivos móveis"} data-showreel-video="true" />}
-                    {showreelRequested && !showreelError && showreelReady && showreelPlaying && <button type="button" onClick={(event) => { event.stopPropagation(); const video = showreelVideoRef.current; if (!video) return; video.muted = !video.muted; setShowreelMuted(video.muted); }} aria-label={showreelMuted ? "Ativar som do showreel" : "Desativar som do showreel"} aria-pressed={showreelMuted} title={showreelMuted ? "Ativar som" : "Desativar som"} className="showreel-volume-control absolute bottom-4 right-4 z-10 grid h-11 w-11 place-items-center border border-[#a5f3fc]/75 bg-[#02111f]/85 text-[#d9fbff] shadow-[0_10px_25px_rgba(0,0,0,0.28)] backdrop-blur-sm transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none" data-showreel-volume="true">{showreelMuted ? <VolumeX className="h-4 w-4" aria-hidden="true" /> : <Volume2 className="h-4 w-4" aria-hidden="true" />}</button>}
-                    {showreelRequested && showreelError && <div className="absolute inset-0 grid place-items-center px-5 text-center"><div><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">showreel indisponível</p><p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#b7cdf1]">O vídeo não carregou agora. Você ainda pode conhecer os trabalhos na galeria.</p><button type="button" onClick={() => { setShowreelError(false); setShowreelReady(false); setShowreelPlaying(false); setShowreelMuted(false); setShowreelRequested(false); }} className="mt-4 border border-[#67e8f9]/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">tentar novamente</button></div></div>}
-                  </div>
-                </div> : <div className="mt-6 border border-[#67e8f9]/25 bg-[#050c16]/90 px-5 py-6" role="status"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo em movimento</p><p className="mt-2 font-body text-sm text-[#b9d4ee]">Showreel em preparação. Conheça os projetos e formatos disponíveis abaixo.</p></div>}
+                <PortfolioShowreel available={showreelAvailable} isDesktopViewport={isDesktopViewport} />
               </div>
             </div>
 
@@ -2598,7 +2559,7 @@ export default function Home() {
                 {showSwipeHint && <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 border border-[#67e8f9]/30 bg-[#06172f]/90 px-4 py-2 text-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]">deslize para navegar</span></div>}
                 {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
                 {lightboxImageError && <div className="absolute inset-0 z-10 grid place-items-center px-6 text-center" role="alert"><div className="max-w-sm border border-[#fb7185]/35 bg-[#190f1c]/95 px-5 py-5 shadow-[0_10px_30px_rgba(0,0,0,0.28)]"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#fda4af]">imagem indisponível</p><p className="mt-2 font-display text-xl font-medium tracking-[-0.03em] text-white">Não conseguimos abrir esta imagem agora.</p><p className="mt-2 font-body text-sm leading-6 text-[#f6d8df]">Você pode tentar novamente ou continuar navegando pelos projetos.</p><button type="button" onClick={() => { setLightboxImageError(false); setLightboxImageLoading(true); setLightboxImageAttempt((attempt) => attempt + 1); }} className="mt-4 border border-[#fda4af]/55 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#ffe4e8] transition-colors hover:bg-[#4b1d2a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fda4af]">tentar novamente</button></div></div>}
-                <img ref={lightboxImageRef} key={`${lightboxProject.id}-${lightboxImageAttempt}`} src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onLoad={() => { setLightboxImageLoading(false); setLightboxImageError(false); }} onError={() => { setLightboxImageLoading(false); setLightboxImageError(true); }} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onTouchCancel={handleLightboxTouchEnd} onPointerDown={handleLightboxPointerDown} onPointerMove={handleLightboxPointerMove} onPointerUp={handleLightboxPointerEnd} onPointerCancel={handleLightboxPointerEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 3)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className={`h-auto max-h-full max-w-full w-auto object-contain ${lightboxZoom > 1 ? (lightboxPanning ? "cursor-grabbing" : "cursor-grab") : "cursor-default"} transition-[transform,opacity] ${lightboxResetting ? "duration-300" : "duration-150"} motion-reduce:transition-none ${lightboxImageLoading || lightboxImageError ? "opacity-0" : "opacity-100"}`} />
+                <img ref={lightboxImageRef} data-lightbox-image="true" key={`${lightboxProject.id}-${lightboxImageAttempt}`} src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onLoad={() => { setLightboxImageLoading(false); setLightboxImageError(false); }} onError={() => { setLightboxImageLoading(false); setLightboxImageError(true); }} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onTouchCancel={handleLightboxTouchEnd} onPointerDown={handleLightboxPointerDown} onPointerMove={handleLightboxPointerMove} onPointerUp={handleLightboxPointerEnd} onPointerCancel={handleLightboxPointerEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 3)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className={`h-auto max-h-full max-w-full w-auto object-contain ${lightboxZoom > 1 ? (lightboxPanning ? "cursor-grabbing" : "cursor-grab") : "cursor-default"} transition-[transform,opacity] ${lightboxResetting ? "duration-300" : "duration-150"} motion-reduce:transition-none ${lightboxImageLoading || lightboxImageError ? "opacity-0" : "opacity-100"}`} />
               </div>
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = lightboxProjects[(projectIndex - 1 + lightboxProjects.length) % lightboxProjects.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
               <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = lightboxProjects[(projectIndex + 1) % lightboxProjects.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
