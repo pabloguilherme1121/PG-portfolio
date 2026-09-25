@@ -638,6 +638,8 @@ test.describe("navegação pública e favoritos", () => {
     expect(manifest.start_url).toBe("./");
     expect(manifest.scope).toBe("./");
     expect(manifest.icons?.some((icon: { sizes?: string }) => icon.sizes === "any")).toBeTruthy();
+    expect(manifest.icons?.some((icon: { sizes?: string }) => icon.sizes === "192x192")).toBeTruthy();
+    expect(manifest.icons?.some((icon: { sizes?: string }) => icon.sizes === "512x512")).toBeTruthy();
 
     const baseUrl = new URL(page.url()).pathname.replace(/[^/]*$/, "");
     const workerResponse = await page.request.get(baseUrl + "sw.js");
