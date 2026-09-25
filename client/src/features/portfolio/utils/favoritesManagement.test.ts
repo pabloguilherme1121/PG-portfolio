@@ -46,8 +46,8 @@ describe("favoritesManagement utilities", () => {
     expect(result.thumbnails).toBe(180 * 1024);
   });
 
-  it("move um favorito para a posição do destino sem perder ids", () => {
-    expect(moveFavoriteId(["a", "b", "c", "d"], "a", "c")).toEqual(["b", "c", "a", "d"]);
+  it("insere o favorito imediatamente antes do destino sem perder ids", () => {
+    expect(moveFavoriteId(["a", "b", "c", "d"], "a", "c")).toEqual(["b", "a", "c", "d"]);
     expect(moveFavoriteId(["a", "b"], "missing", "b")).toEqual(["a", "b"]);
   });
 });
