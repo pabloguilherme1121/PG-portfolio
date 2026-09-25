@@ -216,6 +216,16 @@ export const repositories: Repository[] = [
       description: "Registro vertical para comunicação institucional.",
       tags: ["Conteúdo", "Vídeo"],
     },
+    caseStudy: {
+      context: "Registro vertical com apresentação diante da câmera para uma comunicação institucional curta.",
+      problem: "Organizar uma mensagem direta em vídeo mantendo presença, enquadramento e leitura adequados ao formato vertical.",
+      objective: "Produzir uma peça curta e clara para comunicação em canais digitais.",
+      function: "Captação e organização de uma mensagem em vídeo.",
+      process: "Enquadramento vertical e condução direta diante da câmera.",
+      decisions: "Priorizar enquadramento simples e leitura imediata da pessoa e da mensagem.",
+      result: "Uma peça curta para comunicar uma mensagem com presença.",
+      learning: "Em mensagens curtas, enquadramento e objetividade precisam trabalhar juntos.",
+    },
   },
   {
     id: "AUD.04",
@@ -233,6 +243,16 @@ export const repositories: Repository[] = [
     catalog: {
       description: "Registro noturno com perspectiva elevada.",
       tags: ["Drone", "Noturno", "Vídeo"],
+    },
+    caseStudy: {
+      context: "Registro vertical noturno de um espaço e de seus arredores a partir de uma perspectiva elevada.",
+      problem: "Preservar a leitura do espaço em baixa luz sem perder a sensação de escala.",
+      objective: "Criar um recorte vertical que apresente ambiente, iluminação e perspectiva aérea.",
+      function: "Exploração aérea de espaço e entorno.",
+      process: "Captação noturna com perspectiva elevada e movimento controlado.",
+      decisions: "Manter movimentos controlados e usar os pontos de luz como referência para a composição.",
+      result: "Um recorte vertical que valoriza escala e atmosfera.",
+      learning: "Em baixa luz, estabilidade e referências luminosas ajudam a orientar a leitura da cena.",
     },
   },
   {
@@ -280,6 +300,16 @@ export const repositories: Repository[] = [
       description: "Recorte vertical de interface móvel.",
       tags: ["Interface", "Conteúdo"],
     },
+    caseStudy: {
+      context: "Segundo recorte vertical dedicado à navegação por serviços em uma interface móvel.",
+      problem: "Mostrar etapas importantes da interface sem transformar o vídeo em uma demonstração longa.",
+      objective: "Complementar a apresentação do aplicativo com uma leitura rápida de sua jornada de serviços.",
+      function: "Reforço visual da jornada de serviços.",
+      process: "Recorte vertical com foco nas etapas principais da interface.",
+      decisions: "Selecionar apenas as etapas necessárias para manter a sequência curta e compreensível.",
+      result: "Uma leitura complementar e rápida do fluxo do aplicativo.",
+      learning: "Selecionar menos etapas pode tornar a demonstração de uma interface mais fácil de acompanhar.",
+    },
   },
   {
     id: "AUD.07",
@@ -297,6 +327,16 @@ export const repositories: Repository[] = [
     catalog: {
       description: "Sequência aérea com atmosfera noturna.",
       tags: ["Drone", "Noturno", "Esporte"],
+    },
+    caseStudy: {
+      context: "Variação de captação aérea horizontal do campo esportivo em período noturno.",
+      problem: "Criar uma perspectiva complementar do mesmo espaço sem repetir o enquadramento principal.",
+      objective: "Ampliar o repertório visual do registro com uma segunda leitura de escala e direção.",
+      function: "Variação de perspectiva para ampliar o repertório do registro.",
+      process: "Movimento aéreo horizontal com atenção à atmosfera noturna.",
+      decisions: "Variar direção e enquadramento mantendo o campo e a iluminação como referências visuais.",
+      result: "Uma sequência alternativa para comparar escala e direção.",
+      learning: "Variações de perspectiva funcionam melhor quando acrescentam informação em vez de apenas repetir a cena.",
     },
   },
 ];
