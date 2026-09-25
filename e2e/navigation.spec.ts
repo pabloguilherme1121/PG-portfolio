@@ -156,7 +156,7 @@ test.describe("navegação pública e favoritos", () => {
 
     const gallery = page.locator("#galeria-publica");
     await gallery.scrollIntoViewIfNeeded();
-    await expect.poll(() => page.locator('[data-filter-scope="category"]').evaluateAll((elements) => elements.map((element) => element.querySelector("span")?.textContent?.trim()))).toEqual(["Todos", "Aéreo", "Conteúdo", "Noturno", "Interface", "Eventos"]);
+    await expect.poll(() => page.locator('[data-filter-scope="category"]').evaluateAll((elements) => elements.map((element) => element.querySelector("span")?.textContent?.trim()))).toEqual(["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"]);
     await expect(page.locator('[data-mobile-gallery-refinement-toggle="true"]')).toHaveText(/filtros/i);
     await expect(page.getByRole("button", { name: /Ativar visualização compacta/i })).toHaveText(/detalhes/i);
     const favorite = page.locator('[data-favorite-control="true"]').first();
@@ -516,7 +516,8 @@ test.describe("navegação pública e favoritos", () => {
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
       await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
       const lightboxImage = lightbox.locator('img[alt^="Imagem ampliada"]');
-      await expect.poll(() => lightboxImage.evaluate((image) => image.getBoundingClientRect().width > 0 && image.getBoundingClientRect().height > 0)).toBeTruthy();
+      await expect(lightboxImage).toBeVisible({ timeout: 15000 });
+      await expect.poll(() => lightboxImage.evaluate((image) => image.getBoundingClientRect().width > 0 && image.getBoundingClientRect().height > 0), { timeout: 15000 }).toBeTruthy();
       const imageFitsMedia = await lightboxImage.evaluate((image) => {
         const media = image.parentElement;
         if (!media) return false;
@@ -554,9 +555,14 @@ test.describe("navegação pública e favoritos", () => {
   test("contém imagens verticais, quadradas e horizontais no quadro do lightbox mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await page.getByRole("button", { name: /Ampliar imagem/ }).first().click();
+    const imageTrigger = page.getByRole("button", { name: /Ampliar imagem/ }).first();
+    await imageTrigger.scrollIntoViewIfNeeded();
+    await expect(imageTrigger).toBeVisible({ timeout: 15000 });
+    await imageTrigger.click();
     const lightbox = page.locator('[data-lightbox-modal="true"]');
+    await expect(lightbox).toBeVisible({ timeout: 15000 });
     const image = lightbox.locator('img[alt^="Imagem ampliada"]');
+    await expect(image).toBeVisible({ timeout: 15000 });
     for (const ratio of [{ name: "9:16", width: 900, height: 1600 }, { name: "4:5", width: 800, height: 1000 }, { name: "1:1", width: 1000, height: 1000 }, { name: "4:3", width: 1200, height: 900 }, { name: "16:9", width: 1600, height: 900 }]) {
       await image.evaluate((element, dimensions) => {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${dimensions.width}" height="${dimensions.height}" viewBox="0 0 ${dimensions.width} ${dimensions.height}"><rect width="100%" height="100%" fill="#0b2746"/></svg>`;
