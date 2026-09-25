@@ -80,7 +80,7 @@ export function PortfolioNarrative({
                       <dl className="mt-5 space-y-5">
                         <div>
                           <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">formação</dt>
-                          <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Estudante de Tecnologia da Informação</dd>
+                          <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Estudante de Análise e Desenvolvimento de Sistemas (ADS)</dd>
                         </div>
                         <div>
                           <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#536887]">interesse</dt>
