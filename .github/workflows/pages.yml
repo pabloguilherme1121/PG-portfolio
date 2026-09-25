@@ -2,9 +2,9 @@ name: Deploy portfolio to GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: [main]
   pull_request:
-    branches: ["main"]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -13,19 +13,17 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
       - name: Enable Corepack
         run: corepack enable
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
@@ -35,33 +33,6 @@ jobs:
         run: pnpm check
       - name: Unit tests
         run: pnpm test
-      - name: Validate static Pages build
-        env:
-          VITE_DEPLOY_TARGET: github-pages
-          VITE_STATIC_DEPLOY: "true"
-        run: |
-          pnpm exec vite build
-          node scripts/prepare-github-pages.mjs
-
-  deploy:
-    if: github.event_name != 'pull_request'
-    needs: quality
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: corepack enable
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
       - name: Build static portfolio
         env:
           VITE_DEPLOY_TARGET: github-pages
@@ -69,6 +40,27 @@ jobs:
         run: pnpm exec vite build
       - name: Prepare Pages artifact
         run: node scripts/prepare-github-pages.mjs
+      - name: Share validated build
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pages-build
+          path: dist/public
+          if-no-files-found: error
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: quality
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download validated build
+        uses: actions/download-artifact@v4
+        with:
+          name: pages-build
+          path: dist/public
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
