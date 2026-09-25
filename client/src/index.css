@@ -843,6 +843,12 @@ html.theme-transitioning .arquivo-page * {
   }
   .contact-float-link svg { flex: 0 0 auto; }
 
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
+
   [data-project-search="true"],
   [data-sort-control="projects"],
   [data-saved-projects-search="true"],
