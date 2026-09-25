@@ -863,6 +863,20 @@ html.theme-transitioning .arquivo-page * {
     width: 100%;
     justify-content: center;
   }
+
+  [data-project-modal-previous="true"],
+  [data-project-modal-next="true"] {
+    min-height: 44px !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  [data-project-details-dialog="true"] [data-slot="dialog-close"] {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
 .featured-project-card {
