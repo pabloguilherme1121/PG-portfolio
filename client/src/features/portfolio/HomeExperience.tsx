@@ -72,6 +72,7 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload, buildLightboxShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
@@ -217,6 +218,7 @@ export default function Home() {
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
+  const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -1637,24 +1639,14 @@ export default function Home() {
     const eventDate = String(data.get("date") || "");
     setFormError(null);
     setFormSent(false);
+    setBriefingWhatsAppUrl(null);
 
     if (isStaticDeploy) {
-      const briefing = [
-        "Olá, Pablo! Vim pelo portfólio e gostaria de conversar sobre um projeto.",
-        `Nome: ${String(data.get("name") || "")}`,
-        `E-mail: ${String(data.get("email") || "")}`,
-        `Serviço: ${String(data.get("service") || "")}`,
-        `Tipo de projeto: ${String(data.get("projectType") || "")}`,
-        `Local: ${String(data.get("location") || "")}`,
-        eventDate ? `Data: ${eventDate}` : "",
-        data.get("delivery") ? `Prazo: ${String(data.get("delivery"))}` : "",
-        data.get("budget") ? `Orçamento: ${String(data.get("budget"))}` : "",
-        `Briefing: ${String(data.get("briefing") || "")}`,
-      ].filter(Boolean).join("\\n");
-      trackPortfolioEvent("briefing_completed", { channel: "whatsapp" });
-      window.open(`https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(briefing)}`, "_blank", "noopener,noreferrer");
+      trackPortfolioEvent("briefing_whatsapp_prepared", { channel: "whatsapp" });
+      const url = buildBriefingWhatsAppUrl(whatsAppNumber, data);
+      setBriefingWhatsAppUrl(url);
+      window.open(url, "_blank", "noopener,noreferrer");
       setFormSent(true);
-      form.reset();
       return;
     }
 
@@ -2495,7 +2487,7 @@ export default function Home() {
                   <Button data-briefing-submit="true" disabled={quoteRequestMutation.isPending} type="submit" className="min-h-12 w-full justify-center rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
                     {quoteRequestMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
                   </Button>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f] light-muted-ink">seus dados ficam apenas neste pedido</p>
+                  <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f] light-muted-ink">{isStaticDeploy ? "revise e envie a mensagem no WhatsApp" : "seus dados ficam apenas neste pedido"}</p>
                 </div>
                 {formError && <p role="alert" className="mt-6 border-l-2 border-rose-400 bg-rose-400/10 px-4 py-3 font-body text-sm text-rose-100">{formError}</p>}
                 {formSent && (
@@ -2503,9 +2495,10 @@ export default function Home() {
                     <div className="flex gap-4">
                       <span className="quote-success-icon grid h-11 w-11 shrink-0 place-items-center border border-[#3b82f6] bg-[#3b82f6] text-white"><CheckCircle2 className="h-5 w-5" /></span>
                       <div>
-                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">briefing recebido</p>
-                        <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Tudo certo: seu pedido chegou.</h3>
-                        <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">Obrigado por compartilhar sua ideia. Vou analisar as informações e retorno pelo e-mail informado para conversar sobre os próximos passos.</p>
+                        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">{isStaticDeploy ? "mensagem preparada" : "briefing recebido"}</p>
+                        <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{isStaticDeploy ? "Confira o WhatsApp para concluir." : "Tudo certo: seu pedido chegou."}</h3>
+                        <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">{isStaticDeploy ? "O site não enviou seu pedido automaticamente. Revise a mensagem e toque em enviar no WhatsApp. Seus dados continuam no formulário caso precise tentar novamente." : "Obrigado por compartilhar sua ideia. Vou analisar as informações e retorno pelo e-mail informado para conversar sobre os próximos passos."}</p>
+                        {isStaticDeploy && briefingWhatsAppUrl && <a href={briefingWhatsAppUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 border-b border-[#3b82f6] font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">abrir mensagem no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>}
                         <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">quero contar outra ideia <ArrowUpRight className="h-3 w-3" /></button>
                       </div>
                     </div>
