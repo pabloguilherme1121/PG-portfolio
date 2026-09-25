@@ -624,6 +624,29 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém o fechamento da pré-visualização do PDF tocável em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "Abrir menu" }).click();
+    const resumeLink = page.locator('[data-resume-header="true"]').filter({ visible: true }).first();
+    await expect(resumeLink).toBeVisible();
+    await resumeLink.click();
+
+    const preview = page.getByRole("dialog", { name: /Portfólio de Pablo Guilherme/i });
+    await expect(preview).toBeVisible();
+
+    const closeButton = preview.getByRole("button", { name: /Fechar pré-visualização do portfólio/i });
+    const closeRect = await closeButton.evaluate((element) => element.getBoundingClientRect());
+    expect(closeRect.width, `Fechar pré-visualização ficou com ${closeRect.width}px de largura`).toBeGreaterThanOrEqual(44);
+    expect(closeRect.height, `Fechar pré-visualização ficou com ${closeRect.height}px de altura`).toBeGreaterThanOrEqual(44);
+
+    const previewRect = await preview.evaluate((element) => element.getBoundingClientRect());
+    expect(previewRect.left).toBeGreaterThanOrEqual(0);
+    expect(previewRect.right).toBeLessThanOrEqual(320);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém controles de buscas recentes tocáveis em 320px", async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(["drone", "interface"]));
