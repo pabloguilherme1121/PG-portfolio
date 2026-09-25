@@ -3,7 +3,17 @@ import DashboardLayout, { type DashboardNavigationItem } from "@/components/Dash
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import { portfolioCatalogById } from "@/lib/portfolioCatalog";
-import { buildFavoriteExportRows, estimateFavoriteExportBreakdown, favoriteCsvEscape, favoriteExportValue, FAVORITE_FAVORITE_EXPORT_FIELDS, formatFavoriteBytes, moveFavoriteId, type FavoriteExportField } from "@/features/portfolio/utils/favoritesManagement";
+import { buildFavoriteExportRows, estimateFavoriteExportBreakdown, favoriteCsvEscape, favoriteExportValue, FAVORITE_FAVORITE_EXPORT_FIELDS, formatFavoriteBytes, moveFavoriteId } from "@/features/portfolio/utils/favoritesManagement";
+import {
+  parseExportPreferences,
+  parseExportSelection,
+  parseFavoriteIds,
+  parseSessionFilters,
+  type DateFilter,
+  type EditFilter,
+  type ExportField,
+  type ExportFormat,
+} from "@/lib/favoritesManagementState";
 import { ArrowLeft, Check, Download, GripVertical, Search, ShieldCheck, Cloud, CloudOff, Pencil, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -18,21 +28,19 @@ const EXPORT_LAST_KEY = "pablo-portfolio-favorites-export-last";
 const navigation: DashboardNavigationItem[] = [{ icon: ShieldCheck, label: "Favoritos", path: "/favoritos" }];
 
 function readIds(key: string) {
-  if (typeof window === "undefined") return [] as string[];
-  try { const parsed = JSON.parse(window.localStorage.getItem(key) ?? "[]"); return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : []; } catch { return []; }
+  return typeof window === "undefined" ? [] : parseFavoriteIds(window.localStorage.getItem(key));
 }
 function readSessionFilters() {
-  if (typeof window === "undefined") return { query: "", tagFilter: "all", editFilter: "all" as const, dateFilter: "all" as const, customStartDate: "", customEndDate: "" };
-  try { return { ...JSON.parse(window.sessionStorage.getItem(FILTERS_KEY) ?? "{}") } as { query?: string; tagFilter?: string; editFilter?: "all" | "edited" | "original"; dateFilter?: "all" | "7" | "30" | "custom"; customStartDate?: string; customEndDate?: string }; } catch { return {}; }
+  return parseSessionFilters(typeof window === "undefined" ? null : window.sessionStorage.getItem(FILTERS_KEY));
 }
-function readLastExportPreferences(): { fields: FavoriteExportField[]; thumbnails: boolean; format: "csv" | "json" | "zip"; estimate: number } {
-  const defaults: FavoriteExportField[] = ["position", "id", "name", "description"];
-  if (typeof window === "undefined") return { fields: defaults, thumbnails: false, format: "csv" as const, estimate: 0 };
-  try { const value = JSON.parse(window.sessionStorage.getItem(EXPORT_PREFS_KEY) ?? "{}"); const last = JSON.parse(window.sessionStorage.getItem(EXPORT_LAST_KEY) ?? "{}"); return { fields: Array.isArray(value.fields) ? value.fields as FavoriteExportField[] : defaults, thumbnails: Boolean(value.thumbnails), format: last.format === "json" || last.format === "zip" ? last.format : "csv", estimate: typeof last.estimate === "number" ? last.estimate : 0 }; } catch { return { fields: defaults, thumbnails: false, format: "csv", estimate: 0 }; }
+function readLastExportPreferences() {
+  return parseExportPreferences(
+    typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_PREFS_KEY),
+    typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_LAST_KEY),
+  );
 }
 function readExportSelection() {
-  if (typeof window === "undefined") return [] as string[];
-  try { const value = JSON.parse(window.sessionStorage.getItem(EXPORT_SELECTION_KEY) ?? "[]"); return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []; } catch { return []; }
+  return parseExportSelection(typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_SELECTION_KEY));
 }
 function downloadFile(filename: string, type: string, content: BlobPart) {
   const url = URL.createObjectURL(new Blob([content], { type })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; document.body.appendChild(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 0);
@@ -48,11 +56,11 @@ function FavoritesManagementContent() {
   const restoreMetadata = trpc.favoriteMetadata.restore.useMutation();
   const utils = trpc.useUtils();
   const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-  const initialFilters = readSessionFilters();
+  const [initialFilters] = useState(readSessionFilters);
   const [query, setQuery] = useState(initialFilters.query ?? "");
   const [tagFilter, setTagFilter] = useState(initialFilters.tagFilter ?? "all");
-  const [editFilter, setEditFilter] = useState<"all" | "edited" | "original">(initialFilters.editFilter ?? "all");
-  const [dateFilter, setDateFilter] = useState<"all" | "7" | "30" | "custom">(initialFilters.dateFilter ?? "all");
+  const [editFilter, setEditFilter] = useState<EditFilter>(initialFilters.editFilter);
+  const [dateFilter, setDateFilter] = useState<DateFilter>(initialFilters.dateFilter);
   const [customStartDate, setCustomStartDate] = useState(initialFilters.customStartDate ?? "");
   const [customEndDate, setCustomEndDate] = useState(initialFilters.customEndDate ?? "");
   const [restoreTarget, setRestoreTarget] = useState<{ id: string; name: string } | null>(null);
@@ -61,10 +69,10 @@ function FavoritesManagementContent() {
   const [draggedId, setDraggedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>({ displayName: "", description: "" });
-  const exportPreferences = readLastExportPreferences();
-  const [exportFields, setExportFields] = useState<FavoriteExportField[]>(exportPreferences.fields);
+  const [exportPreferences] = useState(readLastExportPreferences);
+  const [exportFields, setExportFields] = useState<ExportField[]>(exportPreferences.fields);
   const [exportWithThumbnails, setExportWithThumbnails] = useState(exportPreferences.thumbnails);
-  const [exportFormat, setExportFormat] = useState<"csv" | "json" | "zip">(exportPreferences.format);
+  const [exportFormat, setExportFormat] = useState<ExportFormat>(exportPreferences.format);
   const [lastExportEstimate, setLastExportEstimate] = useState(exportPreferences.estimate);
   const [selectedExportIds, setSelectedExportIds] = useState<string[]>(readExportSelection);
   const [showExportPreview, setShowExportPreview] = useState(false);
@@ -114,7 +122,7 @@ function FavoritesManagementContent() {
   function cancelExport() { exportCancelRef.current = true; exportAbortRef.current?.abort(); exportAbortRef.current = null; setExportProgress(null); setFeedback("Compactação cancelada. Nenhum ZIP foi baixado."); }
   function toggleExportEntry(id: string) { setSelectedExportIds((current) => { const base = current.length ? current : filteredEntries.map((entry) => entry.id); const next = base.includes(id) ? base.filter((value) => value !== id) : [...base, id]; return next.length === filteredEntries.length ? [] : next; }); }
   function selectAllExportEntries() { setSelectedExportIds([]); }
-    async function exportFavorites(format: "csv" | "json" | "zip") {
+    async function exportFavorites(format: ExportFormat) {
     if (!exportEntries.length || !exportFields.length) return;
     exportCancelRef.current = false;
     exportAbortRef.current?.abort();
