@@ -653,6 +653,13 @@ test.describe("navegação pública e favoritos", () => {
       expect(rect.height).toBeGreaterThanOrEqual(44);
     }
 
+    const briefing = page.locator("#contato-briefing");
+    await briefing.scrollIntoViewIfNeeded();
+    const briefingFontSizes = await briefing
+      .locator("input:not([name='website']), select, textarea")
+      .evaluateAll((elements) => elements.map((element) => Number.parseFloat(getComputedStyle(element).fontSize)));
+    expect(briefingFontSizes.every((size) => size >= 16)).toBeTruthy();
+
     await search.fill("");
     const preview = page.locator("[data-featured-project]").first();
     await preview.scrollIntoViewIfNeeded();
@@ -663,6 +670,13 @@ test.describe("navegação pública e favoritos", () => {
       .locator('[data-project-modal-favorite="true"], [data-project-modal-share="true"], [data-project-modal-copy-link="true"]')
       .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
     expect(modalActionHeights.every((height) => height >= 44)).toBeTruthy();
+
+    const modalNavigationHeights = await Promise.all([
+      projectDialog.locator('[data-project-modal-previous="true"]').evaluate((element) => element.getBoundingClientRect().height),
+      projectDialog.locator('[data-project-modal-next="true"]').evaluate((element) => element.getBoundingClientRect().height),
+      projectDialog.locator('[data-slot="dialog-close"]').evaluate((element) => element.getBoundingClientRect().height),
+    ]);
+    expect(modalNavigationHeights.every((height) => height >= 44)).toBeTruthy();
   });
 
   test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
