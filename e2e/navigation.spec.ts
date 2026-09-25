@@ -375,6 +375,28 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-project-video-play="true"]')).toBeVisible();
   });
 
+  test("mantém a ação de recuperação do showreel tocável em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    const showreel = page.locator('[data-showreel="true"]');
+    await showreel.scrollIntoViewIfNeeded();
+
+    const trigger = page.locator('[data-showreel-trigger="true"]');
+    await expect(trigger).toBeVisible();
+    await trigger.click();
+
+    const video = page.locator('[data-showreel-video="true"]');
+    await expect(video).toBeVisible();
+    await video.dispatchEvent("error");
+
+    const retry = showreel.getByRole("button", { name: /tentar novamente/i });
+    await expect(retry).toBeVisible();
+    const retryRect = await retry.evaluate((element) => element.getBoundingClientRect());
+    expect(retryRect.height, `Tentar novamente ficou com ${retryRect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("abre automaticamente um projeto ao acessar link direto", async ({ page }) => {
     await page.goto("/?projeto=AUD.01#projetos");
     await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 30000 });
