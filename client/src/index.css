@@ -838,10 +838,16 @@ html.theme-transitioning .arquivo-page * {
     flex: 1 1 0%;
     gap: 0.375rem;
     padding-inline: 0.4rem;
-    font-size: 0.5625rem;
-    letter-spacing: 0.035em;
+    font-size: 0.625rem;
+    letter-spacing: 0.025em;
   }
   .contact-float-link svg { flex: 0 0 auto; }
+
+  input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 1rem;
+  }
 
   [data-project-search="true"],
   [data-sort-control="projects"],
@@ -856,6 +862,20 @@ html.theme-transitioning .arquivo-page * {
     min-height: 48px !important;
     width: 100%;
     justify-content: center;
+  }
+
+  [data-project-modal-previous="true"],
+  [data-project-modal-next="true"] {
+    min-height: 48px !important;
+    width: 100%;
+    justify-content: center;
+  }
+
+  [data-project-details-dialog="true"] [data-slot="dialog-close"] {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px;
+    min-height: 48px;
   }
 }
 

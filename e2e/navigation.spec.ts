@@ -624,6 +624,67 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém ações rápidas dos cards com alvo de toque mínimo em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+    await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+
+    const firstProject = page.locator("[data-project-id]").first();
+    await expect(firstProject).toBeVisible();
+
+    const quickActions = firstProject.locator(
+      '[aria-label^="Ampliar imagem"], [data-project-whatsapp-share="true"], [data-image-favorite-control="true"], [data-favorite-control="true"], button[aria-label^="Mover "]',
+    );
+    const metrics = await quickActions.evaluateAll((elements) =>
+      elements.map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          label: element.getAttribute("aria-label"),
+          width: rect.width,
+          height: rect.height,
+        };
+      }),
+    );
+
+    expect(metrics.length).toBeGreaterThanOrEqual(5);
+    for (const metric of metrics) {
+      expect(metric.width, `${metric.label} ficou com ${metric.width}px de largura`).toBeGreaterThanOrEqual(44);
+      expect(metric.height, `${metric.label} ficou com ${metric.height}px de altura`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
+  test("mantém a barra flutuante legível e contida em mobile e landscape", async ({ page }) => {
+    test.setTimeout(60000);
+    for (const viewport of [{ width: 320, height: 568 }, { width: 568, height: 320 }]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+
+      const contactBar = page.locator('[data-mobile-contact-bar="true"]');
+      await expect(contactBar).toBeVisible();
+      await expect(contactBar).toHaveCSS("opacity", "1");
+
+      const barRect = await contactBar.evaluate((element) => element.getBoundingClientRect());
+      expect(barRect.left, `barra saiu pela esquerda em ${viewport.width}x${viewport.height}`).toBeGreaterThanOrEqual(0);
+      expect(barRect.right, `barra saiu pela direita em ${viewport.width}x${viewport.height}`).toBeLessThanOrEqual(viewport.width);
+
+      const linkMetrics = await contactBar.locator(".contact-float-link").evaluateAll((elements) =>
+        elements.map((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            height: rect.height,
+            fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+          };
+        }),
+      );
+      expect(linkMetrics.length).toBe(3);
+      expect(linkMetrics.every(({ height }) => height >= 44)).toBeTruthy();
+      expect(linkMetrics.every(({ fontSize }) => fontSize >= 10)).toBeTruthy();
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+  });
+
   test("evita zoom de formulário no iOS e mantém ações secundárias tocáveis no mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -653,6 +714,13 @@ test.describe("navegação pública e favoritos", () => {
       expect(rect.height).toBeGreaterThanOrEqual(44);
     }
 
+    const briefing = page.locator("#contato-briefing");
+    await briefing.scrollIntoViewIfNeeded();
+    const briefingFontSizes = await briefing
+      .locator("input:not([name='website']), select, textarea")
+      .evaluateAll((elements) => elements.map((element) => Number.parseFloat(getComputedStyle(element).fontSize)));
+    expect(briefingFontSizes.every((size) => size >= 16)).toBeTruthy();
+
     await search.fill("");
     const preview = page.locator("[data-featured-project]").first();
     await preview.scrollIntoViewIfNeeded();
@@ -663,10 +731,24 @@ test.describe("navegação pública e favoritos", () => {
       .locator('[data-project-modal-favorite="true"], [data-project-modal-share="true"], [data-project-modal-copy-link="true"]')
       .evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
     expect(modalActionHeights.every((height) => height >= 44)).toBeTruthy();
+
+    const modalNavigationTargets = [
+      { name: "anterior", locator: projectDialog.locator('[data-project-modal-previous="true"]') },
+      { name: "próximo", locator: projectDialog.locator('[data-project-modal-next="true"]') },
+      { name: "fechar", locator: projectDialog.locator('[data-slot="dialog-close"]') },
+    ];
+    for (const target of modalNavigationTargets) {
+      const rect = await target.locator.evaluate((element) => element.getBoundingClientRect());
+      expect(rect.height, `${target.name} ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+      expect(rect.width, `${target.name} ficou com ${rect.width}px de largura`).toBeGreaterThanOrEqual(44);
+    }
   });
 
   test("expõe uma PWA instalável com manifest e service worker no escopo público", async ({ page }) => {
     await page.goto("/");
+
+    const viewportContent = await page.locator('meta[name="viewport"]').getAttribute("content");
+    expect(viewportContent).toContain("viewport-fit=cover");
 
     const manifestHref = await page.locator('link[rel="manifest"]').getAttribute("href");
     expect(manifestHref).toBeTruthy();
