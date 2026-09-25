@@ -624,6 +624,30 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém controles de buscas recentes tocáveis em 320px", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(["drone", "interface"]));
+    });
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+    await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+
+    const recentSearches = page.locator('[data-recent-searches="true"]');
+    await expect(recentSearches).toBeVisible();
+
+    const repeatSearch = recentSearches.getByRole("button", { name: /drone, repetir busca/i });
+    const deleteSearch = recentSearches.getByRole("button", { name: /Excluir busca recente drone/i });
+    const clearHistory = recentSearches.getByRole("button", { name: /Limpar todo o histórico de buscas/i });
+
+    for (const control of [repeatSearch, deleteSearch, clearHistory]) {
+      const rect = await control.evaluate((element) => element.getBoundingClientRect());
+      expect(rect.height, `${await control.getAttribute("aria-label") ?? await control.textContent()} ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    }
+    const deleteRect = await deleteSearch.evaluate((element) => element.getBoundingClientRect());
+    expect(deleteRect.width, `Excluir busca recente ficou com ${deleteRect.width}px de largura`).toBeGreaterThanOrEqual(44);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém ações rápidas dos cards com alvo de toque mínimo em 320px", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.goto("/");
