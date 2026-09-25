@@ -3,7 +3,7 @@ import DashboardLayout, { type DashboardNavigationItem } from "@/components/Dash
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/trpc";
 import { portfolioCatalogById } from "@/lib/portfolioCatalog";
-import { buildFavoriteExportRows, estimateFavoriteExportBreakdown, favoriteCsvEscape, favoriteExportValue, FAVORITE_FAVORITE_EXPORT_FIELDS, formatFavoriteBytes, moveFavoriteId } from "@/features/portfolio/utils/favoritesManagement";
+import { buildFavoriteExportRows, estimateFavoriteExportBreakdown, favoriteCsvEscape, favoriteExportValue, FAVORITE_EXPORT_FIELDS, formatFavoriteBytes, moveFavoriteId } from "@/features/portfolio/utils/favoritesManagement";
 import {
   parseExportPreferences,
   parseExportSelection,
