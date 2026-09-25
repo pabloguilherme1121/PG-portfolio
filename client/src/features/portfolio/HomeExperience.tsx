@@ -1000,16 +1000,8 @@ export default function Home() {
     };
   }, [menuOpen]);
 
-  useEffect(() => {
-    if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
-      setAvailabilityDate(null);
-      setAvailabilityTime(null);
-    }
-  }, [availabilityDate, blockedDateKeys, isBlockedDatesError]);
-
   useEffect(() => () => {
     if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
-    if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
   }, []);
 
