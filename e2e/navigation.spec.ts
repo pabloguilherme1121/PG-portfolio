@@ -128,6 +128,8 @@ test.describe("navegação pública e favoritos", () => {
     await form.scrollIntoViewIfNeeded();
     const inputHeights = await form.locator("input:not([name='website']), select").evaluateAll((elements) => elements.map((element) => element.getBoundingClientRect().height));
     expect(inputHeights.every((height) => height >= 48)).toBeTruthy();
+    const controlFontSizes = await form.locator("input:not([name='website']), select, textarea").evaluateAll((elements) => elements.map((element) => Number.parseFloat(getComputedStyle(element).fontSize)));
+    expect(controlFontSizes.every((fontSize) => fontSize >= 16)).toBeTruthy();
     const submit = form.locator('[data-briefing-submit="true"]');
     const widths = await Promise.all([submit.evaluate((element) => element.getBoundingClientRect().width), form.evaluate((element) => element.getBoundingClientRect().width)]);
     expect(widths[0]).toBeGreaterThanOrEqual(widths[1] - 1);
@@ -224,7 +226,15 @@ test.describe("navegação pública e favoritos", () => {
     await expect(details.locator('[data-project-case-study="true"]')).toContainText(/contexto|problema|objetivo|minha função|processo|decisões|resultado|aprendizado/i);
     const title = details.getByRole("heading", { level: 2 });
     const initialTitle = await title.textContent();
+    const previous = details.locator('[data-project-modal-previous="true"]');
     const next = details.locator('[data-project-modal-next="true"]');
+    const close = details.locator('[data-slot="dialog-close"]');
+    const modalTouchTargetHeights = await Promise.all([
+      previous.evaluate((element) => element.getBoundingClientRect().height),
+      next.evaluate((element) => element.getBoundingClientRect().height),
+      close.evaluate((element) => element.getBoundingClientRect().height),
+    ]);
+    expect(modalTouchTargetHeights.every((height) => height >= 44)).toBeTruthy();
     await expect(next).toBeEnabled();
     await next.click();
     await expect(title).not.toHaveText(initialTitle ?? "");
