@@ -4,8 +4,8 @@ export const skillTracks = [
   {
     number: "01",
     title: "Tecnologia e produto",
-    text: "Lógica, interfaces e organização para transformar uma ideia em uma experiência clara e utilizável.",
-    tools: "HTML · CSS · JavaScript · Python",
+    text: "Desenvolvimento de interfaces e organização de produto para transformar problemas em experiências web claras, responsivas e utilizáveis.",
+    tools: "TypeScript · React · Vite · HTML · CSS · JavaScript · Python",
   },
   {
     number: "02",
