@@ -842,6 +842,13 @@ html.theme-transitioning .arquivo-page * {
     letter-spacing: 0.035em;
   }
   .contact-float-link svg { flex: 0 0 auto; }
+
+  [data-project-search="true"],
+  [data-sort-control="projects"],
+  [data-saved-projects-search="true"],
+  [data-saved-projects-sort="true"] {
+    font-size: 1rem !important;
+  }
 }
 
 .featured-project-card {
