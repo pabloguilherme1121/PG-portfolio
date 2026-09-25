@@ -9,11 +9,15 @@ describe("portfolio data canonical contract", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it("keeps case studies only on the three approved public projects", () => {
+  it("keeps case studies aligned with the current public project catalog", () => {
     expect(repositories.filter((repository) => repository.caseStudy).map((repository) => repository.id)).toEqual([
       "AUD.01",
       "CNT.02",
+      "CNT.03",
+      "AUD.04",
       "AUD.05",
+      "CNT.06",
+      "AUD.07",
     ]);
   });
 
