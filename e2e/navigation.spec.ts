@@ -701,6 +701,30 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém a recuperação da agenda tocável quando a disponibilidade falha em 320px", async ({ page }) => {
+    await page.route("**/*availability.listBlocked*", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: { message: "availability unavailable" } }),
+      });
+    });
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    const calendar = page.locator('[data-availability-context="true"]');
+    await calendar.scrollIntoViewIfNeeded();
+
+    const alert = calendar.getByRole("alert");
+    await expect(alert).toContainText(/Não foi possível verificar as datas indisponíveis/i, { timeout: 15000 });
+
+    const retry = alert.getByRole("button", { name: /Tentar novamente/i });
+    await expect(retry).toBeVisible();
+    const retryRect = await retry.evaluate((element) => element.getBoundingClientRect());
+    expect(retryRect.height, `Tentar novamente da agenda ficou com ${retryRect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém ações rápidas dos cards com alvo de toque mínimo em 320px", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.goto("/");
