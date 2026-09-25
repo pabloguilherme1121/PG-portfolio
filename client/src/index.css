@@ -838,8 +838,8 @@ html.theme-transitioning .arquivo-page * {
     flex: 1 1 0%;
     gap: 0.375rem;
     padding-inline: 0.4rem;
-    font-size: 0.5625rem;
-    letter-spacing: 0.035em;
+    font-size: 0.625rem;
+    letter-spacing: 0.025em;
   }
   .contact-float-link svg { flex: 0 0 auto; }
 
