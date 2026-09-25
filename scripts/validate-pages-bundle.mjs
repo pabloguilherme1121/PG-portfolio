@@ -28,7 +28,9 @@ assert.ok(home.includes('rel="manifest" href="/PG-portfolio/manifest.webmanifest
 assert.equal(manifest.display, "standalone");
 assert.equal(manifest.start_url, "./");
 assert.equal(manifest.scope, "./");
-assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose === "maskable"));
+assert.ok(manifest.icons?.some((icon) => icon.sizes === "192x192"));
+assert.ok(manifest.icons?.some((icon) => icon.sizes === "512x512"));
+assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose.includes("maskable")));
 assert.ok(serviceWorker.includes('self.addEventListener("install"'));
 assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
 assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).includes("<svg"));
