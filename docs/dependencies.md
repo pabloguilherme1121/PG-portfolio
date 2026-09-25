@@ -12,4 +12,4 @@ A auditoria foi conduzida por busca de referências no código, estilos e config
 | `recharts` | Mantido | Usado na tela administrativa de analytics. |
 | `pdf-lib` | Mantido | Usado nas exportações PDF do portfólio. |
 
-O lockfile foi atualizado pelo gerenciador de pacotes. A validação final deve sempre executar `pnpm check`, `pnpm test` e `pnpm build` antes de publicar.
+O lockfile deve continuar sendo a fonte de instalação reproduzível. As dependências de Express, tRPC, Drizzle/MySQL e integrações server-side permanecem intencionais porque o repositório também contém as jornadas administrativas e o backend; o deploy estático do GitHub Pages apenas não as empacota na página pública. A validação de release executa `pnpm check`, `pnpm test`, build/validação do bundle e `pnpm test:e2e` antes de publicar.
