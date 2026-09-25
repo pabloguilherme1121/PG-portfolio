@@ -32,7 +32,7 @@ export function PortfolioNarrative({
                 <aside className="relative border-b border-white/[0.07] px-5 py-10 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-20">
                   <div className="sticky top-28">
                     <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">02 / manifesto</p>
-                    <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Um repertório em construção.</p>
+                    <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Tecnologia e audiovisual, conectados pela prática.</p>
                     <div className="mt-12 hidden h-40 w-px bg-[linear-gradient(#3b82f6,transparent)] lg:block" />
                   </div>
                 </aside>
@@ -41,11 +41,11 @@ export function PortfolioNarrative({
                   <div className="grid gap-12 xl:grid-cols-[1.5fr_0.7fr] xl:gap-16">
                     <div>
                       <p className="font-display text-[clamp(2.3rem,4.6vw,4.75rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f4f8ff]">
-                          Tecnologia, conteúdo e imagem se encontram para dar forma a projetos que precisam ser entendidos, vistos e lembrados.
+                          Desenvolvo interfaces e produzo conteúdo audiovisual para transformar ideias em experiências claras, úteis e visualmente consistentes.
                       </p>
                       <div className="mt-9 max-w-2xl space-y-5 font-body text-base leading-8 text-[#b8c8df]">
-                        <p>O ponto de partida é sempre o mesmo: entender o problema, organizar a ideia e escolher a linguagem que faz sentido para quem vai receber.</p>
-                        <p>O repertório reúne interfaces, conteúdo vertical, captação terrestre e imagens aéreas — frentes diferentes que se fortalecem quando trabalham juntas.</p>
+                        <p>O ponto de partida é entender o problema, definir o objetivo e escolher a solução adequada — seja uma interface web, um vídeo vertical ou uma captação aérea.</p>
+                        <p>Como estudante de Análise e Desenvolvimento de Sistemas (ADS), conecto desenvolvimento web, produto digital e produção audiovisual em projetos reais e em evolução.</p>
                       </div>
                       <aside className="human-note mt-9 max-w-2xl p-5 sm:p-6">
                         <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">nota de direção</p>
@@ -103,8 +103,8 @@ export function PortfolioNarrative({
                 <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
                   <div>
                     <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
-                    <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que estou aprendendo a fazer bem.</h2>
-                    <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: lógica e presença, tela e câmera, detalhe e visão geral.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">status do arquivo</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Aprendendo na prática, registrando o processo e melhorando a cada entrega.</p></div>
+                    <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Competências aplicadas em projetos reais.</h2>
+                    <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">Desenvolvimento web, narrativa e captação visual se complementam para entregar projetos mais claros e completos.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">status do arquivo</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Estudando ADS e aplicando o aprendizado em interfaces, conteúdo e produção audiovisual.</p></div>
                   </div>
                   <div className="border-t border-white/[0.1]">
                     {skillTracks.map((skill) => (
