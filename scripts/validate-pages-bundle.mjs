@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 
 const root = path.resolve("dist/public");
@@ -34,6 +34,9 @@ assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose.in
 assert.ok(serviceWorker.includes('self.addEventListener("install"'));
 assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
 assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).includes("<svg"));
+const builtScripts = (await readdir(path.join(root, "assets"))).filter((file) => file.endsWith(".js"));
+const builtScriptSources = await Promise.all(builtScripts.map((file) => readFile(path.join(root, "assets", file), "utf8")));
+assert.ok(builtScriptSources.some((source) => source.includes("sw.js") && source.includes("serviceWorker")), "The production bundle does not register the PWA service worker");
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));
 assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));
