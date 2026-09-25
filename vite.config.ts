@@ -153,15 +153,20 @@ function vitePluginManusDebugCollector(): Plugin {
 const plugins = [
   react(),
   tailwindcss(),
-  jsxLocPlugin(),
-  vitePluginManusRuntime(),
-  vitePluginManusDebugCollector(),
+  // The Manus inspector and browser log collector are development tools.
+  // Excluding them from Pages avoids injecting a large inline runtime into index.html.
+  ...(process.env.VITE_STATIC_DEPLOY === "true"
+    ? []
+    : [jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()]),
 ];
 
 export default defineConfig({
   // GitHub Pages serves project sites from /<repository>/; local/Manus builds stay at root.
   base: process.env.VITE_DEPLOY_TARGET === "github-pages" ? "/PG-portfolio/" : "/",
   plugins,
+  define: {
+    __PORTFOLIO_RESUME_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf"))),
+  },
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),

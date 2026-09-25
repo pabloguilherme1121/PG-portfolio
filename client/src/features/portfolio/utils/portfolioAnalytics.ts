@@ -3,6 +3,7 @@ export const conversionEventNames = [
   "whatsapp_click",
   "briefing_started",
   "briefing_completed",
+  "briefing_whatsapp_prepared",
   "project_opened",
   "share_project",
   "download_project",
