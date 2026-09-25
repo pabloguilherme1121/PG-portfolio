@@ -853,7 +853,9 @@ html.theme-transitioning .arquivo-page * {
   [data-project-modal-favorite="true"],
   [data-project-modal-share="true"],
   [data-project-modal-copy-link="true"] {
-    min-height: 44px !important;
+    min-height: 48px !important;
+    width: 100%;
+    justify-content: center;
   }
 }
 
