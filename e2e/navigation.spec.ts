@@ -654,7 +654,7 @@ test.describe("navegação pública e favoritos", () => {
     }
 
     await search.fill("");
-    const preview = page.getByRole("button", { name: /Pré-visualizar|Abrir detalhes/i }).first();
+    const preview = page.locator("[data-featured-project]").first();
     await preview.scrollIntoViewIfNeeded();
     await preview.click();
     const projectDialog = page.locator('[data-project-details-dialog="true"]');
