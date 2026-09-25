@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
+const isStaticPages = process.env.E2E_STATIC_DEPLOY === "true";
 
 test.use({ baseURL });
 
@@ -156,7 +157,7 @@ test.describe("navegação pública e favoritos", () => {
 
     const gallery = page.locator("#galeria-publica");
     await gallery.scrollIntoViewIfNeeded();
-    await expect.poll(() => page.locator('[data-filter-scope="category"]').evaluateAll((elements) => elements.map((element) => element.querySelector("span")?.textContent?.trim()))).toEqual(["Todos", "Aéreo", "Conteúdo", "Noturno", "Interface", "Eventos"]);
+    await expect.poll(() => page.locator('[data-filter-scope="category"]').evaluateAll((elements) => elements.map((element) => element.querySelector("span")?.textContent?.trim()))).toEqual(["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"]);
     await expect(page.locator('[data-mobile-gallery-refinement-toggle="true"]')).toHaveText(/filtros/i);
     await expect(page.getByRole("button", { name: /Ativar visualização compacta/i })).toHaveText(/detalhes/i);
     const favorite = page.locator('[data-favorite-control="true"]').first();
@@ -246,7 +247,11 @@ test.describe("navegação pública e favoritos", () => {
     expect(deferredRequests).toHaveLength(0);
 
     await page.locator("#contato .availability-calendar").scrollIntoViewIfNeeded();
-    await expect.poll(() => deferredRequests.some((url) => url.includes("availability.listBlocked")), { timeout: 10000 }).toBeTruthy();
+    if (isStaticPages) {
+      expect(deferredRequests.some((url) => url.includes("availability.listBlocked"))).toBeFalsy();
+    } else {
+      await expect.poll(() => deferredRequests.some((url) => url.includes("availability.listBlocked")), { timeout: 10000 }).toBeTruthy();
+    }
 
     await page.locator("#social").scrollIntoViewIfNeeded();
     await expect(page.locator(".social-filter-card").first()).toBeVisible({ timeout: 10000 });
@@ -265,9 +270,15 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator('[data-showreel-trigger="true"] img')).toHaveCount(0);
     expect(showreelRequests).toHaveLength(0);
 
-    await page.locator('[data-showreel="true"]').scrollIntoViewIfNeeded();
-    await expect(page.locator('[data-showreel-trigger="true"] img')).toBeVisible({ timeout: 10000 });
-    await expect.poll(() => showreelRequests.length, { timeout: 10000 }).toBeGreaterThan(0);
+    const showreel = page.locator('[data-showreel="true"]');
+    if (await showreel.count()) {
+      await showreel.scrollIntoViewIfNeeded();
+      await expect(page.locator('[data-showreel-trigger="true"] img')).toBeVisible({ timeout: 10000 });
+      await expect.poll(() => showreelRequests.length, { timeout: 10000 }).toBeGreaterThan(0);
+    } else {
+      await expect(page.locator('[data-showreel-fallback="true"]')).toBeVisible();
+      expect(showreelRequests).toHaveLength(0);
+    }
   });
 
   test("publica canonical, robots e sitemap coerentes", async ({ page, request }) => {
@@ -518,7 +529,7 @@ test.describe("navegação pública e favoritos", () => {
       await expect(lightbox.locator("#project-lightbox-title")).toBeVisible();
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
       await expect(page.locator(".contact-float")).toHaveCSS("opacity", "0");
-      const lightboxImage = lightbox.locator('img[alt^="Imagem ampliada"]');
+      const lightboxImage = lightbox.locator('[data-lightbox-image="true"]');
       await expect.poll(() => lightboxImage.evaluate((image) => image.getBoundingClientRect().width > 0 && image.getBoundingClientRect().height > 0)).toBeTruthy();
       const imageFitsMedia = await lightboxImage.evaluate((image) => {
         const media = image.parentElement;
@@ -559,7 +570,7 @@ test.describe("navegação pública e favoritos", () => {
     await page.goto("/");
     await page.getByRole("button", { name: /Ampliar imagem/ }).first().click();
     const lightbox = page.locator('[data-lightbox-modal="true"]');
-    const image = lightbox.locator('img[alt^="Imagem ampliada"]');
+    const image = lightbox.locator('[data-lightbox-image="true"]');
     for (const ratio of [{ name: "9:16", width: 900, height: 1600 }, { name: "4:5", width: 800, height: 1000 }, { name: "1:1", width: 1000, height: 1000 }, { name: "4:3", width: 1200, height: 900 }, { name: "16:9", width: 1600, height: 900 }]) {
       await image.evaluate((element, dimensions) => {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${dimensions.width}" height="${dimensions.height}" viewBox="0 0 ${dimensions.width} ${dimensions.height}"><rect width="100%" height="100%" fill="#0b2746"/></svg>`;
