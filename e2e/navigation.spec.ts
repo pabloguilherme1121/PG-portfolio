@@ -701,6 +701,28 @@ test.describe("navegação pública e favoritos", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mantém os CTAs principais de contato tocáveis em 320px", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/");
+
+    const contact = page.locator("#contato");
+    await contact.scrollIntoViewIfNeeded();
+
+    const actions = [
+      contact.getByRole("link", { name: /preencher briefing/i }),
+      contact.getByRole("link", { name: /abrir WhatsApp/i }),
+      contact.getByRole("link", { name: /Abrir canal público de atendimento no Telegram/i }),
+    ];
+
+    for (const action of actions) {
+      await expect(action).toBeVisible();
+      const rect = await action.evaluate((element) => element.getBoundingClientRect());
+      const label = (await action.getAttribute("aria-label")) || (await action.textContent())?.trim() || "CTA de contato";
+      expect(rect.height, `${label} ficou com ${rect.height}px de altura`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mantém a recuperação da agenda tocável quando a disponibilidade falha em 320px", async ({ page }) => {
     await page.route("**/*availability.listBlocked*", async (route) => {
       await route.fulfill({
