@@ -2,7 +2,7 @@ import { cp, readdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const outputDir = path.resolve("dist/public");
-const repositoryBase = "/pablo-guilherme-portfolio";
+const repositoryBase = "/PG-portfolio";
 const textExtensions = new Set([".html", ".js", ".css", ".json", ".map", ".svg"]);
 
 async function walk(directory) {
