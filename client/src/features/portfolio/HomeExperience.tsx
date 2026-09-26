@@ -57,6 +57,7 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
+import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
@@ -1713,6 +1714,11 @@ export default function Home() {
           resumeUrl={resumeUrl}
           portraitUrl={portraitUrl}
           portraitResponsive={portraitResponsive}
+        />
+
+        <PortfolioProfessionalSnapshot
+          resumeAvailable={resumeAvailable}
+          resumeUrl={resumeUrl}
         />
 
         <PortfolioSkills isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
