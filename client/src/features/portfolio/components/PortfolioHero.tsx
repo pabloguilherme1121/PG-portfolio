@@ -54,10 +54,10 @@ export default function PortfolioHero({
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
-            Pablo Guilherme · tecnologia & audiovisual
+            Pablo Guilherme · desenvolvimento web & audiovisual
           </div>
           <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
-            Produtos digitais e histórias visuais.<br />Do código à câmera.
+            Desenvolvimento web que transforma ideias em experiências digitais.
           </h1>
           <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
@@ -66,15 +66,15 @@ export default function PortfolioHero({
               <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" />
             </picture>
             <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1">
-              <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">arquivo / autor</span>
+              <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</span>
               <span className="mt-1 block truncate font-display text-lg tracking-[-0.03em] text-white">Pablo Guilherme</span>
-              <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">TI · conteúdo · imagem</span>
+              <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">ADS · React · TypeScript · audiovisual</span>
             </figcaption>
           </figure>
 
           <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Desenvolvo experiências digitais e produzo conteúdo audiovisual para transformar ideias em entregas claras, funcionais e memoráveis.
+              Desenvolvo interfaces responsivas com React e TypeScript e amplio projetos com conteúdo audiovisual quando a comunicação pede imagem e movimento.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
               React e TypeScript · interfaces responsivas · conteúdo e produção audiovisual.
@@ -96,18 +96,18 @@ export default function PortfolioHero({
             <nav aria-label="Atalhos principais" className="mt-6 grid max-w-2xl gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-3">
               <a href="#projetos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">01</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver evidências</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">trabalhos e repertório</span>
+                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver projetos</span>
+                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projetos e resultados</span>
               </a>
               <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">entender serviços</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">formatos e duração típica</span>
+                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver serviços</span>
+                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">escopo e entregas</span>
               </a>
               <a href="#contato" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">03</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">iniciar conversa</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">orçamento e disponibilidade</span>
+                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">falar comigo</span>
+                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projeto e disponibilidade</span>
               </a>
             </nav>
 
@@ -117,14 +117,14 @@ export default function PortfolioHero({
 
         <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
           <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
-            ARQUIVO: em evolução
+            PORTFÓLIO: projetos selecionados
             <br />
-            FOCO ATUAL: TI · CONTEÚDO · AUDIOVISUAL
+            FOCO: DESENVOLVIMENTO WEB · AUDIOVISUAL
             <br />
             ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
           </p>
           <a href="#sobre" className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">
-            ver repertório e skills <ArrowDown className="h-4 w-4" />
+            conhecer perfil e competências <ArrowDown className="h-4 w-4" />
           </a>
         </div>
       </div>
