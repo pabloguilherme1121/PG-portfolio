@@ -203,6 +203,10 @@ export function PortfolioContact({
     trackPortfolioEvent("briefing_started");
   }
 
+  function updateBriefingField(field: (typeof briefingFieldNames)[number], value: string) {
+    setBriefingDraft((current) => ({ ...current, [field]: value }));
+  }
+
   function captureBriefingDraft(form: HTMLFormElement) {
     const data = new FormData(form);
     const nextDraft = Object.fromEntries(briefingFieldNames.map((field) => [field, String(data.get(field) || "")])) as BriefingDraft;
@@ -215,14 +219,22 @@ export function PortfolioContact({
   }
 
   function applyBriefingPreset(preset: BriefingPreset, form: HTMLFormElement) {
-    for (const [name, value] of Object.entries(preset.values)) {
-      const field = form.elements.namedItem(name);
-      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-        field.value = value;
-      }
-    }
+    const data = new FormData(form);
+    const currentDraft = Object.fromEntries(
+      briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
+    ) as BriefingDraft;
+    const nextDraft = {
+      ...briefingDefaultValues,
+      ...currentDraft,
+      ...preset.values,
+    };
 
-    captureBriefingDraft(form);
+    setBriefingDraft(nextDraft);
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O preset continua funcional mesmo quando o armazenamento local está indisponível.
+    }
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
     toast.success("Modelo aplicado", {
@@ -465,7 +477,7 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                    <select required name="service" defaultValue={briefingDraft.service ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="service" value={briefingDraft.service ?? ""} onChange={(event) => updateBriefingField("service", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione um serviço</option>
                       <option>Site ou landing page</option>
                       <option>Dashboard ou produto digital</option>
@@ -477,7 +489,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                    <select required name="projectType" defaultValue={briefingDraft.projectType ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="projectType" value={briefingDraft.projectType ?? ""} onChange={(event) => updateBriefingField("projectType", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione uma opção</option>
                       <option>Produto ou serviço digital</option>
                       <option>Marca ou negócio</option>
@@ -491,16 +503,16 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">objetivo principal *</span>
-                  <textarea required maxLength={900} name="objective" rows={3} defaultValue={briefingDraft.objective ?? ""} placeholder="O que precisa mudar depois que este projeto estiver pronto?" className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  <textarea required maxLength={900} name="objective" rows={3} value={briefingDraft.objective ?? ""} onChange={(event) => updateBriefingField("objective", event.currentTarget.value)} placeholder="O que precisa mudar depois que este projeto estiver pronto?" className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">público / quem vai usar *</span>
-                    <input required maxLength={240} name="audience" defaultValue={briefingDraft.audience ?? ""} placeholder="Ex.: clientes, equipe, moradores, gestores" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={240} name="audience" value={briefingDraft.audience ?? ""} onChange={(event) => updateBriefingField("audience", event.currentTarget.value)} placeholder="Ex.: clientes, equipe, moradores, gestores" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">estágio atual</span>
-                    <select name="stage" defaultValue={briefingDraft.stage ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="stage" value={briefingDraft.stage ?? ""} onChange={(event) => updateBriefingField("stage", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Ideia inicial</option>
                       <option>Já existe e precisa evoluir</option>
@@ -522,7 +534,7 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local ou alcance *</span>
-                    <input required maxLength={255} name="location" defaultValue={briefingDraft.location ?? ""} placeholder="Ex.: remoto, Águas Lindas, Brasil" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={255} name="location" value={briefingDraft.location ?? ""} onChange={(event) => updateBriefingField("location", event.currentTarget.value)} placeholder="Ex.: remoto, Águas Lindas, Brasil" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
@@ -532,7 +544,7 @@ export function PortfolioContact({
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                    <select name="delivery" defaultValue={briefingDraft.delivery ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="delivery" value={briefingDraft.delivery ?? ""} onChange={(event) => updateBriefingField("delivery", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Site responsivo</option>
                       <option>Landing page</option>
@@ -545,7 +557,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">prazo / urgência</span>
-                    <select name="deadline" defaultValue={briefingDraft.deadline ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="deadline" value={briefingDraft.deadline ?? ""} onChange={(event) => updateBriefingField("deadline", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Sem urgência</option>
                       <option>Até 2 semanas</option>
@@ -557,7 +569,7 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                  <select name="budget" defaultValue={briefingDraft.budget ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                  <select name="budget" value={briefingDraft.budget ?? ""} onChange={(event) => updateBriefingField("budget", event.currentTarget.value)} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="Preciso de orientação">Preciso de orientação</option>
                     <option>Até R$ 1.500</option>
                     <option>R$ 1.500 a R$ 3.000</option>
@@ -577,7 +589,7 @@ export function PortfolioContact({
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">04 · contexto e qualidade</legend>
                 <label className="block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
-                  <textarea maxLength={600} name="success" rows={3} defaultValue={briefingDraft.success ?? ""} placeholder="Ex.: mais pedidos de orçamento, informação mais fácil de consultar, lançamento pronto para uso." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  <textarea maxLength={600} name="success" rows={3} value={briefingDraft.success ?? ""} onChange={(event) => updateBriefingField("success", event.currentTarget.value)} placeholder="Ex.: mais pedidos de orçamento, informação mais fácil de consultar, lançamento pronto para uso." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
@@ -591,7 +603,7 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
-                  <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={briefingDraft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} value={briefingDraft.briefing ?? ""} onChange={(event) => updateBriefingField("briefing", event.currentTarget.value)} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
               </fieldset>
             
