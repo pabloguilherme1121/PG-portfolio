@@ -147,7 +147,7 @@ export default function PortfolioTicTacToe() {
             <Sparkles className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
           </div>
 
-          <div className="grid grid-cols-3 gap-2" role="grid" aria-label="Tabuleiro do jogo da velha">
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Tabuleiro do jogo da velha">
             {board.map((cell, index) => {
               const row = Math.floor(index / 3) + 1;
               const column = (index % 3) + 1;
@@ -155,7 +155,6 @@ export default function PortfolioTicTacToe() {
                 <button
                   key={index}
                   type="button"
-                  role="gridcell"
                   data-game-cell="true"
                   disabled={Boolean(cell) || Boolean(result)}
                   onClick={() => play(index)}
