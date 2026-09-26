@@ -1,44 +1,26 @@
 import type { CookieOptions, Request } from "express";
 
-const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
-
-function isIpAddress(host: string) {
-  // Basic IPv4 check and IPv6 presence detection.
-  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return true;
-  return host.includes(":");
+function isTrustedProxyAddress(value: string | undefined) {
+  const address = (value || "").replace(/^::ffff:/, "").toLowerCase();
+  return address === "127.0.0.1" || address === "::1" ||
+    /^10\./.test(address) || /^192\.168\./.test(address) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(address) ||
+    /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(address) ||
+    address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:");
 }
 
 function isSecureRequest(req: Request) {
-  if (req.protocol === "https") return true;
+  if (req.protocol === "https" || req.socket.encrypted) return true;
+  if (!isTrustedProxyAddress(req.socket.remoteAddress)) return false;
 
   const forwardedProto = req.headers["x-forwarded-proto"];
-  if (!forwardedProto) return false;
-
-  const protoList = Array.isArray(forwardedProto)
-    ? forwardedProto
-    : forwardedProto.split(",");
-
-  return protoList.some(proto => proto.trim().toLowerCase() === "https");
+  const proto = Array.isArray(forwardedProto) ? forwardedProto[0] : forwardedProto?.split(",")[0];
+  return proto?.trim().toLowerCase() === "https";
 }
 
 export function getSessionCookieOptions(
   req: Request
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
-  // const hostname = req.hostname;
-  // const shouldSetDomain =
-  //   hostname &&
-  //   !LOCAL_HOSTS.has(hostname) &&
-  //   !isIpAddress(hostname) &&
-  //   hostname !== "127.0.0.1" &&
-  //   hostname !== "::1";
-
-  // const domain =
-  //   shouldSetDomain && !hostname.startsWith(".")
-  //     ? `.${hostname}`
-  //     : shouldSetDomain
-  //       ? hostname
-  //       : undefined;
-
   return {
     httpOnly: true,
     path: "/",
