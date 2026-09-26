@@ -215,7 +215,6 @@ export function PortfolioContact({
   }
 
   function applyBriefingPreset(preset: BriefingPreset, form: HTMLFormElement) {
-
     const data = new FormData(form);
     const currentDraft = Object.fromEntries(
       briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
@@ -232,21 +231,19 @@ export function PortfolioContact({
     } catch {
       // O preset continua funcional mesmo quando o armazenamento local está indisponível.
     }
+
+    setBriefingStep(1);
     setBriefingRevision((value) => value + 1);
-    window.requestAnimationFrame(() => {
-      const nextForm = briefingFormRef.current;
-      if (!nextForm) return;
-      for (const [name, value] of Object.entries(preset.values)) {
-        const field = nextForm.elements.namedItem(name);
-        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-          field.value = value;
-        }
-      }
-    });
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
+
+    window.requestAnimationFrame(() => {
+      const directionStep = briefingFormRef.current?.querySelector<HTMLElement>('[data-briefing-step="direction"]');
+      directionStep?.focus({ preventScroll: true });
+    });
+
     toast.success("Modelo aplicado", {
-      description: "Direção, escopo e contexto foram pré-preenchidos. Tudo continua editável.",
+      description: "Direção, escopo e contexto foram pré-preenchidos. Revise a rota e ajuste o que precisar.",
     });
   }
 
