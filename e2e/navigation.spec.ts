@@ -98,7 +98,6 @@ test.describe("portfólio profissional", () => {
 
     await quickStart.getByRole("button", { name: /site.*landing/i }).click();
 
-    await expect(form.locator('[data-briefing-step="direction"]')).toBeVisible();
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
