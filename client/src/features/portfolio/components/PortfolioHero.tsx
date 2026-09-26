@@ -108,8 +108,12 @@ export default function PortfolioHero({
             <br />
             ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
           </p>
-          <a href="#sobre" className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">
-            conhecer perfil e competências <ArrowDown className="h-4 w-4" />
+          <a
+            href="#perfil-profissional"
+            onClick={() => trackPortfolioEvent("professional_profile_opened")}
+            className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0"
+          >
+            avaliar perfil profissional <ArrowDown className="h-4 w-4" />
           </a>
         </div>
       </div>
