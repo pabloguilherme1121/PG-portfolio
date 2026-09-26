@@ -8,7 +8,10 @@ export const conversionEventNames = [
   "share_project",
   "download_project",
   "diagnostic_option_selected",
+  "diagnostic_stage_selected",
   "diagnostic_completed",
+  "proof_deck_selected",
+  "proof_deck_cta",
 ] as const;
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
@@ -19,6 +22,8 @@ type ConversionProperties = Partial<{
   channel: "copy_link" | "whatsapp" | "linkedin" | "email" | "native";
   format: "original" | "webp" | "avif";
   diagnosticPath: "presence" | "data" | "launch";
+  diagnosticStage: "idea" | "evolve" | "ready";
+  proofId: "produto" | "qualidade" | "briefing";
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {
