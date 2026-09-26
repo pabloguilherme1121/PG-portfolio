@@ -214,7 +214,9 @@ export function PortfolioContact({
     }
   }
 
-  function applyBriefingPreset(preset: BriefingPreset, form: HTMLFormElement) {
+  function applyBriefingPreset(preset: BriefingPreset) {
+    const form = briefingFormRef.current;
+    if (!form) return;
 
     const data = new FormData(form);
     const currentDraft = Object.fromEntries(
