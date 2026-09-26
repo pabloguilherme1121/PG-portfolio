@@ -15,6 +15,13 @@ test.describe("portfólio profissional", () => {
     await expect(observatorio).toHaveAttribute("href", "https://pabloguilherme01.github.io/observatorio/#dashboard");
     await expect(observatorio).toHaveAttribute("target", "_blank");
 
+    const observatorioCode = page.getByRole("link", { name: /ver código-fonte/i });
+    await expect(observatorioCode).toHaveAttribute("href", "https://github.com/Pabloguilherme01/observatorio");
+    await expect(observatorioCode).toHaveAttribute("target", "_blank");
+
+    await expect(page.locator('[data-quality-proof="true"]')).toHaveCount(4);
+    await expect(page.getByText("Validação automatizada", { exact: true })).toBeVisible();
+
     const projectCta = page.locator("#projetos").getByRole("link", { name: /falar sobre um projeto/i });
     await expect(projectCta).toHaveAttribute("href", "#contato");
 
@@ -135,5 +142,6 @@ test.describe("portfólio profissional", () => {
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.locator('a[href="mailto:mpjcreator@gmail.com"]')).toBeVisible();
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
+    await expect(page.getByText("modelo", { exact: true }).first()).toBeVisible();
   });
 });

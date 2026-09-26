@@ -1,4 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
 import { repositories, type Repository } from "@/features/portfolio/portfolioData";
 
 type ResponsiveSourceSet = {
@@ -42,9 +42,18 @@ export default function PortfolioProjectsOverview({
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
           <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Um produto publicado que mostra como organizo informação complexa em uma experiência compreensível e navegável. O Observatório reúne estrutura de informação, interface responsiva, indicadores, dashboard e publicação web em uma entrega que pode ser aberta e avaliada.</p>
-          <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]"><span className="border border-white/10 px-2 py-1">Web</span><span className="border border-white/10 px-2 py-1">dashboard</span><span className="border border-white/10 px-2 py-1">dados públicos</span><span className="border border-white/10 px-2 py-1">produto publicado</span></div>
+          <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]">
+            <span className="border border-white/10 px-2 py-1">React</span>
+            <span className="border border-white/10 px-2 py-1">TypeScript</span>
+            <span className="border border-white/10 px-2 py-1">PWA</span>
+            <span className="border border-white/10 px-2 py-1">Playwright</span>
+            <span className="border border-white/10 px-2 py-1">GitHub Pages</span>
+          </div>
         </div>
-        <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
+        <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
+          <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
+          <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#67e8f9]/35 px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
+        </div>
       </article>
 
       <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
