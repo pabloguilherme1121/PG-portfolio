@@ -177,6 +177,12 @@ export type Repository = {
   technologies: string[];
   url: string;
   kind: "repository" | "video";
+  status: "Em evolução" | "Publicado";
+  evidence: {
+    label: "código" | "vídeo";
+    href: string;
+    type: "code" | "media";
+  };
   cover?: string;
   featured?: boolean;
   addedOrder: number;
@@ -213,6 +219,12 @@ export const repositories: Repository[] = [
     technologies: ["Web", "Interface", "React", "TypeScript"],
     url: "https://github.com/Pabloguilherme01/trajeto-web",
     kind: "repository",
+    status: "Em evolução",
+    evidence: {
+      label: "código",
+      href: "https://github.com/Pabloguilherme01/trajeto-web",
+      type: "code",
+    },
     featured: true,
     addedOrder: 13,
     relevance: 98,
@@ -241,6 +253,12 @@ export const repositories: Repository[] = [
     technologies: ["Vídeo", "Conteúdo", "Web"],
     url: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
     kind: "video",
+    status: "Publicado",
+    evidence: {
+      label: "vídeo",
+      href: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
+      type: "media",
+    },
     cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
     featured: true,
     addedOrder: 12,

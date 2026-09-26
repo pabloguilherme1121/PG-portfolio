@@ -1,5 +1,6 @@
 import { ArrowUpRight, Github } from "lucide-react";
 import type { Repository } from "@/features/portfolio/portfolioData";
+import PortfolioFeaturedProjectCard from "@/features/portfolio/components/PortfolioFeaturedProjectCard";
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -70,30 +71,41 @@ export default function PortfolioProjectsOverview({
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar o que foi feito, por que as decisões foram tomadas e qual valor cada entrega demonstra.</p>
         </div>
-        <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-2 xl:grid-cols-4" aria-busy={!featuredCardsReady}>
-          <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? `${featuredRepositories.length} projetos destacados disponíveis para abrir detalhes.` : "Carregando projetos destacados."}</div>
-          {featuredCardsReady ? featuredRepositories.map((project) => (
-            <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => openProjectDetails(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProjectDetails(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
-              {project.cover ? <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" /> : <div className="grid aspect-[16/10] place-items-center border border-[#67e8f9]/15 bg-[linear-gradient(135deg,#081a2e,#06111f)] text-center"><div><Github className="mx-auto h-8 w-8 text-[#67e8f9]" aria-hidden="true" /><span className="mt-3 block font-mono text-[9px] uppercase tracking-[0.14em] text-[#93c5d8]">código público · produto em evolução</span></div></div>}
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">{project.id}</p>
-                <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">{project.kind === "video" ? "vídeo" : "repositório"}</span>
-              </div>
-              <h4 id={`featured-title-${project.id}`} className="mt-2 break-words font-display text-xl font-medium leading-tight tracking-[-0.035em] text-white">{project.name}</h4>
-              <dl className="mt-4 grid gap-3 text-sm leading-5">
-                <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">papel</dt><dd className="mt-1 text-[#c4d9ee]">{project.role}</dd></div>
-                <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">processo</dt><dd className="mt-1 text-[#c4d9ee]">{project.process}</dd></div>
-                <div><dt className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#60a5fa]">resultado</dt><dd className="mt-1 text-[#c4d9ee]">{project.result}</dd></div>
-              </dl>
-              <span className="mt-5 inline-flex font-mono text-[9px] uppercase tracking-[0.12em] text-[#8db8ff] transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none">abrir detalhes <ArrowUpRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" /></span>
-            </article>
-          )) : Array.from({ length: 4 }).map((_, index) => (
-            <div key={`featured-skeleton-${index}`} aria-hidden="true" className="featured-project-card min-h-[430px] animate-pulse bg-[#0a1422] p-4 sm:p-5 motion-reduce:animate-none">
-              <div className="aspect-[16/10] w-full bg-[#163354]" />
-              <div className="mt-5 space-y-3"><div className="h-2 w-16 bg-[#294568]" /><div className="h-7 w-4/5 bg-[#294568]" /><div className="h-3 w-full bg-[#1c3454]" /><div className="h-3 w-2/3 bg-[#1c3454]" /></div>
-              <div className="mt-6 space-y-3"><div className="h-2 w-12 bg-[#294568]" /><div className="h-3 w-full bg-[#1c3454]" /><div className="h-2 w-16 bg-[#294568]" /><div className="h-3 w-4/5 bg-[#1c3454]" /></div>
-            </div>
-          ))}
+        <div className="mt-6 grid gap-px bg-[#3b82f6]/15 md:grid-cols-2" aria-busy={!featuredCardsReady}>
+          <div role="status" aria-live="polite" className="sr-only">
+            {featuredCardsReady
+              ? `${featuredRepositories.length} projetos destacados com prova direta e detalhes disponíveis.`
+              : "Carregando projetos destacados."}
+          </div>
+          {featuredCardsReady
+            ? featuredRepositories.map((project) => (
+                <PortfolioFeaturedProjectCard
+                  key={`featured-${project.id}`}
+                  project={project}
+                  onOpenDetails={openProjectDetails}
+                />
+              ))
+            : Array.from({ length: 2 }).map((_, index) => (
+                <div
+                  key={`featured-skeleton-${index}`}
+                  aria-hidden="true"
+                  className="featured-project-card min-h-[430px] animate-pulse bg-[#0a1422] p-4 sm:p-5 motion-reduce:animate-none"
+                >
+                  <div className="aspect-[16/10] w-full bg-[#163354]" />
+                  <div className="mt-5 space-y-3">
+                    <div className="h-2 w-16 bg-[#294568]" />
+                    <div className="h-7 w-4/5 bg-[#294568]" />
+                    <div className="h-3 w-full bg-[#1c3454]" />
+                    <div className="h-3 w-2/3 bg-[#1c3454]" />
+                  </div>
+                  <div className="mt-6 space-y-3">
+                    <div className="h-2 w-12 bg-[#294568]" />
+                    <div className="h-3 w-full bg-[#1c3454]" />
+                    <div className="h-2 w-16 bg-[#294568]" />
+                    <div className="h-3 w-4/5 bg-[#1c3454]" />
+                  </div>
+                </div>
+              ))}
         </div>
       </section>
 

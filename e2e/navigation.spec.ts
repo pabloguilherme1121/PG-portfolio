@@ -260,7 +260,12 @@ test.describe("portfólio profissional", () => {
     const featured = page.locator('[data-featured-project="TEC.09"]');
     await expect(featured).toBeVisible();
     await expect(featured).toContainText(/Trajeto/i);
-    await featured.click();
+    await expect(featured).toContainText(/em evolução/i);
+    await expect(featured.getByRole("link", { name: /abrir prova.*código/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+    await featured.getByRole("button", { name: /ver detalhes.*trajeto/i }).click();
 
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
@@ -269,6 +274,31 @@ test.describe("portfólio profissional", () => {
       "href",
       "https://github.com/Pabloguilherme01/trajeto-web",
     );
+  });
+
+  test("projetos destacados mostram estado, prova direta e detalhes separados", async ({ page }) => {
+    await page.goto("/");
+
+    const featured = page.locator("[data-featured-project]");
+    await expect(featured).toHaveCount(2);
+
+    const trajeto = page.locator('[data-featured-project="TEC.09"]');
+    await expect(trajeto.locator('[data-project-status="true"]')).toContainText(/em evolução/i);
+    await expect(trajeto.getByRole("link", { name: /abrir prova.*código/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+    await expect(trajeto.getByRole("button", { name: /ver detalhes.*trajeto/i })).toBeVisible();
+
+    const video = page.locator('[data-featured-project="TEC.08"]');
+    await expect(video.locator('[data-project-status="true"]')).toContainText(/publicado/i);
+    await expect(video.getByRole("link", { name: /abrir prova.*vídeo/i })).toHaveAttribute(
+      "href",
+      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
+    );
+    await expect(video.getByRole("button", { name: /ver detalhes.*site vendendo/i })).toBeVisible();
+
+    await expect(page.locator('[data-featured-evidence="true"]')).toHaveCount(2);
   });
 
   test("usa o retrato versionado e publica o case vertical válido", async ({ page, request }) => {
@@ -321,7 +351,7 @@ test.describe("portfólio profissional", () => {
 
     const featured = page.locator("[data-featured-project]").first();
     await expect(featured).toBeVisible();
-    await featured.click();
+    await featured.getByRole("button", { name: /ver detalhes/i }).click();
 
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
