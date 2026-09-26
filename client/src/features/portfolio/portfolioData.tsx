@@ -144,6 +144,18 @@ export const comparisonPairs: Record<string, { before: string; after: string }> 
 
 export const repositories: Repository[] = [
   {
+    id: "AUD.08", name: "Chá da Eloise", description: "Novo recorte audiovisual do evento, priorizando atmosfera e movimento.", role: "Captação e edição audiovisual.", process: "Curadoria de momentos e ritmo curto.", result: "Peça direta para portfólio e redes.", technologies: ["Vídeo", "Conteúdo", "Evento"], url: publicMediaPath("/portfolio-media/cha-da-eloise.mp4"), kind: "video", cover: publicMediaPath("/portfolio-media/cha-da-eloise-poster.jpg"), featured: true, addedOrder: 11, relevance: 99, catalog: { description: "Cobertura audiovisual de evento.", tags: ["Vídeo", "Evento", "Conteúdo"] },
+  },
+  {
+    id: "CNT.09", name: "Seu combustível vale OURO!", description: "Conteúdo vertical promocional com mensagem rápida e linguagem de campanha.", role: "Conteúdo e edição vertical.", process: "Ritmo curto, leitura imediata e foco na mensagem.", result: "Peça pronta para consumo mobile.", technologies: ["Vídeo", "Conteúdo", "Vertical"], url: publicMediaPath("/portfolio-media/rham-combustivel-ouro.mp4"), kind: "video", cover: publicMediaPath("/portfolio-media/rham-combustivel-ouro-poster.jpg"), featured: true, addedOrder: 10, relevance: 96, catalog: { description: "Conteúdo vertical promocional.", tags: ["Conteúdo", "Vídeo", "Vertical"] },
+  },
+  {
+    id: "AUD.10", name: "Cobertura esportiva — sequência aérea", description: "Sequência aérea de cobertura esportiva com foco em escala, movimento e leitura do espaço.", role: "Captação aérea.", process: "Movimento controlado e enquadramento amplo.", result: "Registro esportivo com perspectiva de drone.", technologies: ["Vídeo", "Drone", "Esporte"], url: publicMediaPath("/portfolio-media/cobertura-esportiva-aerea.mp4"), kind: "video", cover: publicMediaPath("/portfolio-media/cobertura-esportiva-aerea-poster.jpg"), featured: true, addedOrder: 9, relevance: 95, catalog: { description: "Cobertura esportiva aérea.", tags: ["Drone", "Vídeo", "Esporte"] },
+  },
+  {
+    id: "CNT.11", name: "Site vendendo — demonstração vertical", description: "Demonstração vertical de presença digital orientada à apresentação comercial.", role: "Demonstração de interface e conteúdo.", process: "Recorte mobile com foco na proposta e navegação.", result: "Peça curta para apresentar um site em funcionamento.", technologies: ["Vídeo", "Interface", "Vertical"], url: publicMediaPath("/portfolio-media/site-vendendo.mp4"), kind: "video", cover: publicMediaPath("/portfolio-media/site-vendendo-poster.jpg"), featured: true, addedOrder: 8, relevance: 94, catalog: { description: "Demonstração vertical de site.", tags: ["Interface", "Conteúdo", "Vertical"] },
+  },
+  {
     id: "AUD.01",
     name: "Chá da Eloise",
     description: "Registro audiovisual de evento social, com imagens amplas do ambiente e momentos da celebração.",
