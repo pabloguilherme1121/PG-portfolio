@@ -164,10 +164,10 @@ function getRepositoryCategories(repository: Repository) {
   return categories;
 }
 const navigationItems = [
-  ["manifesto", "#sobre", "sobre"],
-  ["atuação", "#trilha", "trilha"],
+  ["sobre", "#sobre", "sobre"],
+  ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
-  ["trabalhos", "#projetos", "projetos"],
+  ["projetos", "#projetos", "projetos"],
   ["social", "#social", "social"],
 ] as const;
 
@@ -1651,10 +1651,10 @@ export default function Home() {
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
-                ["01 / manifesto", "#sobre", "sobre"],
-                ["02 / atuação", "#trilha", "trilha"],
+                ["01 / sobre", "#sobre", "sobre"],
+                ["02 / competências", "#trilha", "trilha"],
                 ["03 / serviços", "#servicos", "servicos"],
-                ["04 / trabalhos", "#projetos", "projetos"],
+                ["04 / projetos", "#projetos", "projetos"],
                 ["05 / contato", "#contato", "contato"],
               ].map(([label, href, id]) => (
                 <a key={label} href={href} onClick={closeMenu} aria-current={activeSection === id ? "location" : undefined} className={`min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white ${activeSection === id ? "bg-[#0b2746] text-[#67e8f9]" : "text-[#b7cdf1]"}`}>
