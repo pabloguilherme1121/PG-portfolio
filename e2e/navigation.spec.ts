@@ -119,6 +119,38 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("link", { name: /observatório/i }).first()).toBeVisible();
   });
 
+  test("oferece rota curta para recrutadores com provas e contato profissional", async ({ page }) => {
+    await page.goto("/");
+
+    const recruiterEntry = page.locator("#inicio").getByRole("link", { name: /avaliar perfil profissional/i });
+    await expect(recruiterEntry).toHaveAttribute("href", "#perfil-profissional");
+    await recruiterEntry.click();
+
+    const profile = page.locator('[data-professional-snapshot="true"]');
+    await expect(profile).toBeVisible();
+    await expect(profile.getByRole("heading", { name: /avaliação profissional/i })).toBeVisible();
+    await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(4);
+
+    await expect(profile.getByRole("link", { name: /abrir currículo/i })).toHaveAttribute(
+      "href",
+      /curriculo-pablo-guilherme-profissional.*\.pdf$/,
+    );
+    await expect(profile.getByRole("link", { name: /ver github/i })).toHaveAttribute(
+      "href",
+      "https://github.com/pabloguilherme1121",
+    );
+    await expect(profile.getByRole("link", { name: /ver observatório/i })).toHaveAttribute(
+      "href",
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    await expect(profile.getByRole("link", { name: /ver qualidade/i })).toHaveAttribute("href", "#qualidade");
+
+    await expect(profile.getByRole("link", { name: /falar sobre oportunidade/i })).toHaveAttribute(
+      "href",
+      /^mailto:mpjcreator@gmail\.com\?subject=Oportunidade%20profissional/,
+    );
+  });
+
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
     await page.goto("/");
 
