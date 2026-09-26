@@ -13,6 +13,7 @@ export const conversionEventNames = [
   "diagnostic_completed",
   "proof_deck_selected",
   "proof_deck_cta",
+  "case_study_evidence_opened",
 ] as const;
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
@@ -26,6 +27,8 @@ type ConversionProperties = Partial<{
   diagnosticStage: "idea" | "evolve" | "ready";
   proofId: "produto" | "qualidade" | "briefing";
   briefingStep: "contact" | "direction" | "scope" | "context";
+  caseId: string;
+  evidenceType: "live" | "code" | "media";
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {

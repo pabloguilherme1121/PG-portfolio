@@ -82,6 +82,20 @@ export const caseStudies = [
     method: "Estrutura de informação, hierarquia visual, interface responsiva e publicação web com foco em reduzir o esforço para encontrar contexto e interpretar dados.",
     learning: "Uma boa interface de dados não precisa mostrar tudo de uma vez; precisa ajudar a pessoa a encontrar o que importa e entender o contexto.",
     tags: ["Produto digital", "Web", "Dashboard", "Dados"],
+    proofs: [
+      {
+        label: "Abrir produto",
+        description: "Dashboard publicado e navegável em produção.",
+        href: "https://pabloguilherme01.github.io/observatorio/#dashboard",
+        type: "live" as const,
+      },
+      {
+        label: "Ver código",
+        description: "Repositório público do produto.",
+        href: "https://github.com/Pabloguilherme01/observatorio",
+        type: "code" as const,
+      },
+    ],
   },
   {
     id: "TEC.08",
@@ -90,6 +104,14 @@ export const caseStudies = [
     method: "Mensagem central, hierarquia tipográfica e edição vertical para mostrar uma ideia sem competir pela atenção com argumentos demais.",
     learning: "Quando a proposta é curta, clareza e hierarquia importam mais do que quantidade de informação.",
     tags: ["Web", "Conteúdo", "Vídeo"],
+    proofs: [
+      {
+        label: "Assistir peça",
+        description: "Arquivo vertical publicado no próprio portfólio.",
+        href: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
+        type: "media" as const,
+      },
+    ],
   },
 ];
 
