@@ -153,119 +153,32 @@ export type Repository = {
  */
 export const repositories: Repository[] = [
   {
-    id: "AUD.01",
-    name: "Chá da Eloise — cobertura aérea",
-    description: "Registro audiovisual de evento social com leitura do ambiente, da celebração e da escala do espaço.",
-    role: "Captação aérea e construção do registro visual.",
-    process: "Planos amplos e movimentos suaves selecionados para um preview curto e direto.",
-    result: "Uma amostra audiovisual que preserva atmosfera e contexto sem transformar o portfólio em arquivo bruto.",
-    technologies: ["Vídeo", "Drone", "Conteúdo"],
-    url: portfolioMediaPath("cha-da-eloise-2026.mp4"),
-    kind: "video",
-    cover: portfolioMediaPath("cha-da-eloise-2026-poster.webp"),
-    featured: true,
-    addedOrder: 9,
-    relevance: 100,
-    catalog: {
-      description: "Cobertura aérea de evento social.",
-      tags: ["Drone", "Evento", "Conteúdo", "Vídeo"],
-    },
-    caseStudy: {
-      context: "Registro de um evento social com necessidade de situar o ambiente e preservar a sensação de celebração.",
-      problem: "Mostrar espaço e atmosfera em pouco tempo sem reduzir o evento a uma sequência genérica de tomadas.",
-      objective: "Criar uma memória visual curta, reconhecível e adequada para apresentação profissional.",
-      function: "Captação aérea e construção do registro visual.",
-      process: "Seleção de planos amplos, aproximações e movimentos suaves para contextualizar o evento.",
-      decisions: "Priorizar tomadas que acrescentam escala e atmosfera e condensar o original em um preview leve para web.",
-      result: "Uma amostra audiovisual que preserva o ambiente e demonstra domínio de perspectiva aérea.",
-      learning: "O contexto espacial funciona melhor quando ajuda a contar a história do evento, e não quando vira apenas efeito visual.",
-    },
-  },
-  {
-    id: "CNT.03",
-    name: "RHAM — Seu combustível vale ouro",
-    description: "Campanha vertical para posto de combustíveis, combinando imagem aérea, equipe e mensagem promocional em uma narrativa curta.",
-    role: "Captação aérea e terrestre, direção de conteúdo e organização da peça.",
-    process: "Seleção de cenas de contexto e presença, montagem vertical e foco em leitura rápida para celular.",
-    result: "Preview de campanha que demonstra produção de conteúdo comercial com variedade de enquadramentos.",
-    technologies: ["Vídeo", "Conteúdo", "Drone", "Vertical"],
-    url: portfolioMediaPath("rham-combustivel-ouro-2026.mp4"),
-    kind: "video",
-    cover: portfolioMediaPath("rham-combustivel-ouro-2026-poster.webp"),
-    featured: true,
-    addedOrder: 10,
-    relevance: 97,
-    catalog: {
-      description: "Campanha vertical de conteúdo comercial.",
-      tags: ["Conteúdo", "Vídeo", "Drone", "Vertical"],
-    },
-    caseStudy: {
-      context: "Peça promocional vertical para comunicar uma campanha de posto de combustíveis em canais digitais.",
-      problem: "Apresentar ambiente, equipe e chamada promocional sem perder clareza no formato curto.",
-      objective: "Construir uma peça comercial com leitura imediata no celular e identidade ligada ao local.",
-      function: "Captação aérea e terrestre, direção de conteúdo e organização da peça.",
-      process: "Combinação de tomadas aéreas e em solo, seleção de momentos de presença e edição orientada ao formato vertical.",
-      decisions: "Abrir espaço para o local e para as pessoas, evitando excesso de informação simultânea.",
-      result: "Preview de campanha que evidencia repertório de captação e conteúdo comercial.",
-      learning: "A peça fica mais convincente quando a mensagem promocional é sustentada por imagens reais do espaço e da equipe.",
-    },
-  },
-  {
     id: "TEC.08",
     name: "PG — Site vendendo enquanto você dorme",
-    description: "Peça vertical curta sobre aquisição digital, apresentando o site como um ativo que continua trabalhando para transformar visitas em oportunidades.",
-    role: "Conceito, direção e composição de conteúdo.",
-    process: "Roteiro enxuto, identidade PG, mensagem de conversão e apoio de IA na construção visual.",
-    result: "Uma peça de 8 segundos pensada para comunicar valor rapidamente em canais verticais.",
-    technologies: ["Vídeo", "Conteúdo", "IA", "Web", "Vertical"],
+    description: "Peça vertical de comunicação digital que apresenta uma proposta de valor ligada a presença web e automação.",
+    role: "Conceito, estrutura da mensagem e produção do conteúdo.",
+    process: "Roteiro curto, hierarquia visual e edição vertical pensados para leitura rápida em canais digitais.",
+    result: "Uma demonstração compacta de como produto, mensagem e conteúdo podem trabalhar juntos.",
+    technologies: ["Vídeo", "Conteúdo", "Web"],
     url: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
     kind: "video",
     cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
     featured: true,
-    addedOrder: 8,
+    addedOrder: 12,
     relevance: 94,
     catalog: {
-      description: "Conteúdo vertical de aquisição digital.",
-      tags: ["Conteúdo", "Vídeo", "IA", "Web", "Vertical"],
+      description: "Conteúdo vertical sobre presença digital e produto web.",
+      tags: ["Vídeo", "Conteúdo", "Web", "Vertical"],
     },
     caseStudy: {
-      context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
-      problem: "Explicar uma proposta de valor digital em poucos segundos sem transformar a mensagem em uma tela carregada.",
-      objective: "Apresentar uma ideia de site como ativo de aquisição com leitura imediata em formato vertical.",
-      function: "Conceito, direção e composição de conteúdo.",
-      process: "Roteiro enxuto, identidade visual PG, hierarquia tipográfica e apoio de IA na construção e iteração visual.",
-      decisions: "Concentrar a mensagem em uma promessa principal, usar contraste alto e fechar com uma chamada clara.",
-      result: "Uma peça curta e legível, pensada para Reels e Stories, conectando tecnologia e conteúdo.",
-      learning: "Em formatos de poucos segundos, uma única promessa forte comunica melhor do que vários argumentos simultâneos.",
-    },
-  },
-  {
-    id: "AUD.05",
-    name: "Cobertura esportiva — noite",
-    description: "Registro esportivo noturno que alterna presença em campo e perspectiva aérea para mostrar pessoas, luz, movimento e escala.",
-    role: "Captação terrestre e aérea do evento.",
-    process: "Planos próximos para presença, tomadas amplas para contexto e edição condensada em preview web.",
-    result: "Uma amostra dinâmica de cobertura que combina leitura humana do evento e dimensão espacial.",
-    technologies: ["Vídeo", "Drone", "Noturno", "Esporte"],
-    url: portfolioMediaPath("cobertura-esportiva-2026.mp4"),
-    kind: "video",
-    cover: portfolioMediaPath("cobertura-esportiva-2026-poster.webp"),
-    featured: true,
-    addedOrder: 11,
-    relevance: 92,
-    catalog: {
-      description: "Cobertura esportiva noturna com captação aérea e terrestre.",
-      tags: ["Drone", "Noturno", "Esporte", "Vídeo"],
-    },
-    caseStudy: {
-      context: "Registro noturno de um evento esportivo com ações em campo e leitura aérea do ambiente.",
-      problem: "Manter energia e contexto em baixa luz, sem depender apenas de planos amplos ou apenas de cenas próximas.",
-      objective: "Demonstrar cobertura capaz de conectar pessoas, movimento e escala do local.",
-      function: "Captação terrestre e aérea do evento.",
-      process: "Alternância entre planos de presença em campo e tomadas aéreas, com seleção de momentos que funcionam como preview curto.",
-      decisions: "Usar a iluminação do campo como referência visual e alternar proximidade e escala para criar ritmo.",
-      result: "Uma amostra dinâmica que apresenta o evento por mais de uma perspectiva.",
-      learning: "Em coberturas noturnas, a combinação de proximidade e visão geral ajuda o público a entender o acontecimento e o espaço.",
+      context: "Peça curta criada para comunicar uma proposta de presença digital de forma direta.",
+      problem: "Explicar valor em poucos segundos sem transformar o conteúdo em uma apresentação longa.",
+      objective: "Conectar uma mensagem comercial a uma demonstração visual simples e adequada ao formato vertical.",
+      function: "Comunicação de produto e presença digital.",
+      process: "Estruturação da mensagem, seleção de elementos visuais e edição curta.",
+      decisions: "Priorizar uma ideia central e reduzir elementos concorrentes para manter a leitura rápida.",
+      result: "Uma peça compacta que conecta desenvolvimento web e comunicação.",
+      learning: "Mensagens curtas funcionam melhor quando cada elemento visual reforça a mesma ideia central.",
     },
   },
 ];
@@ -275,33 +188,20 @@ export const comparisonPairs: Record<string, { before: string; after: string }> 
 
 export const repertoireSignals = [
   {
-    label: "escala e perspectiva",
-    title: "Imagem aérea",
-    text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
-    cover: portfolioMediaPath("cobertura-esportiva-2026-poster.webp"),
-  },
-  {
-    label: "clareza e ritmo",
-    title: "Conteúdo vertical",
-    text: "Peças curtas com foco em mensagem, presença e leitura rápida nos canais digitais.",
-    cover: portfolioMediaPath("rham-combustivel-ouro-2026-poster.webp"),
-  },
-  {
-    label: "atmosfera e memória",
-    title: "Registro de evento",
-    text: "Captação que usa ambiente, movimento e perspectiva para preservar a sensação do acontecimento.",
-    cover: portfolioMediaPath("cha-da-eloise-2026-poster.webp"),
+    label: "produto e mensagem",
+    title: "Comunicação digital",
+    text: "Conteúdo curto que conecta uma proposta de valor a uma experiência digital.",
+    cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
   },
 ];
 
-export const technologyFilters = ["Todos", "Web", "Vídeo", "Conteúdo", "Drone", "IA", "Noturno", "Esporte"];
-export const categoryFilters = ["Todos", "Produto digital", "Conteúdo", "Eventos", "Aéreo", "Noturno"];
-export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Drone", "Vertical", "Noturno"] as const;
+export const technologyFilters = ["Todos", "Web", "Vídeo", "Conteúdo"];
+export const categoryFilters = ["Todos", "Produto digital", "Conteúdo"];
+export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Vertical"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "CNT.03", "AUD.05", "TEC.08"] },
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.08", "CNT.03", "AUD.01", "AUD.05"] },
+  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.08"] },
 ];
 
 export const sortOptions = [
