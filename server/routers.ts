@@ -1,12 +1,13 @@
-import { COOKIE_NAME } from "@shared/const";
-import { z } from "zod";
 import type { Request } from "express";
 import { TRPCError } from "@trpc/server";
-import { blockAvailabilityDate, createQuoteRequest, deleteFavoriteProjectMetadata, listBlockedDates, listFavoriteProjectMetadata, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate, upsertFavoriteProjectMetadata } from "./db";
+import { z } from "zod";
+
+import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
-import { adminProcedure, publicProcedure, router } from "./_core/trpc";
+import { publicProcedure, router } from "./_core/trpc";
+import { createQuoteRequest } from "./db";
 
 export const quoteRequestInputSchema = z.object({
   name: z.string().trim().min(2).max(160),
@@ -55,49 +56,21 @@ export function isTrustedProxyAddress(address: string | undefined) {
 
 export function getRequestIdentifier(req: Pick<Request, "headers" | "socket">) {
   const peerAddress = normalizeNetworkAddress(req.socket.remoteAddress);
-  // O cabeçalho forwarded só é aceito quando a conexão chega de uma faixa local/privada
-  // típica de proxy gerenciado. Conexões diretas não podem escolher o próprio identificador.
   if (!isTrustedProxyAddress(peerAddress)) return peerAddress;
+
   const forwarded = req.headers["x-forwarded-for"];
   const forwardedAddress = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
   return normalizeNetworkAddress(forwardedAddress || peerAddress);
 }
 
-export function isValidDateKey(value: string) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
-}
-
-const blockedDateKeySchema = z.string().refine(isValidDateKey, "Informe uma data válida");
-
-export const blockedDateInputSchema = z.object({
-  dateKey: blockedDateKeySchema,
-  note: z.string().trim().max(180).optional(),
-});
-
-export type InstagramFeedItem = {
-  id: string;
-  permalink: string;
-  caption?: string;
-};
-
-export type InstagramFeedResponse =
-  | { status: "available"; items: InstagramFeedItem[]; message?: string }
-  | { status: "empty" | "credentials_required" | "error"; items: []; message: string };
-
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      return {
-        success: true,
-      } as const;
+      return { success: true } as const;
     }),
   }),
   quoteRequest: router({
@@ -105,15 +78,21 @@ export const appRouter = router({
       if (isQuoteRequestHoneypotFilled(input.website)) {
         return { success: true, requestId: "filtered", ownerNotified: false } as const;
       }
+
       if (!consumeQuoteRequestRateLimit(getRequestIdentifier(ctx.req))) {
-        throw new TRPCError({ code: "TOO_MANY_REQUESTS", message: "Muitos pedidos em sequência. Aguarde alguns minutos e tente novamente." });
+        throw new TRPCError({
+          code: "TOO_MANY_REQUESTS",
+          message: "Muitos pedidos em sequência. Aguarde alguns minutos e tente novamente.",
+        });
       }
+
       const result = await createQuoteRequest({
         ...input,
         delivery: input.delivery || null,
         budget: input.budget || null,
         eventDate: input.eventDate ? new Date(`${input.eventDate}T12:00:00.000Z`) : null,
       });
+
       let ownerNotified = false;
       try {
         ownerNotified = await notifyOwner({
@@ -123,34 +102,8 @@ export const appRouter = router({
       } catch (error) {
         console.warn("[QuoteRequest] Pedido salvo, mas a notificação não foi entregue:", error);
       }
-      return { success: true, requestId: result.id, ownerNotified };
-    }),
-  }),
-  instagramFeed: router({
-    status: publicProcedure.query((): InstagramFeedResponse => ({
-      status: "credentials_required",
-      items: [],
-      message: "A conexão com a API da Meta ainda depende de uma conta profissional e autorização válida.",
-    })),
-  }),
-  favoriteOrder: router({
-    list: adminProcedure.query(({ ctx }) => listFavoriteProjectOrder(ctx.user.id)),
-    replace: adminProcedure.input(z.object({ projectIds: z.array(z.string().trim().min(1).max(64)).max(100) })).mutation(({ ctx, input }) => replaceFavoriteProjectOrder(ctx.user.id, input.projectIds)),
-  }),
-  favoriteMetadata: router({
-    list: adminProcedure.query(({ ctx }) => listFavoriteProjectMetadata(ctx.user.id)),
-    save: adminProcedure.input(z.object({ projectId: z.string().trim().min(1).max(64), displayName: z.string().trim().min(1).max(160), description: z.string().trim().max(2000) })).mutation(({ ctx, input }) => upsertFavoriteProjectMetadata(ctx.user.id, input.projectId, input.displayName, input.description)),
-    restore: adminProcedure.input(z.object({ projectId: z.string().trim().min(1).max(64) })).mutation(({ ctx, input }) => deleteFavoriteProjectMetadata(ctx.user.id, input.projectId)),
-  }),
-  availability: router({
-    listBlocked: publicProcedure.query(() => listBlockedDates()),
-    block: adminProcedure.input(blockedDateInputSchema).mutation(async ({ input }) => {
-      await blockAvailabilityDate(input.dateKey, input.note);
-      return { success: true };
-    }),
-    unblock: adminProcedure.input(z.object({ dateKey: blockedDateKeySchema })).mutation(async ({ input }) => {
-      await unblockAvailabilityDate(input.dateKey);
-      return { success: true };
+
+      return { success: true, requestId: result.id, ownerNotified } as const;
     }),
   }),
 });
