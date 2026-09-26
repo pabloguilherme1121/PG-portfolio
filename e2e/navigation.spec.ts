@@ -37,7 +37,7 @@ test.describe("portfólio profissional", () => {
     await diagnostic.getByRole("button", { name: /organizar informação ou dados/i }).click();
     await expect(diagnostic.getByRole("heading", { name: /Produto para consulta e decisão/i })).toBeVisible();
 
-    await diagnostic.getByRole("link", { name: /montar briefing com essa direção/i }).click();
+    await diagnostic.getByRole("link", { name: /gerar briefing com esta rota/i }).click();
 
     const form = page.locator("#contato-briefing");
     await expect(form.locator('select[name="service"]')).toHaveValue("Dashboard ou produto digital");
