@@ -98,6 +98,7 @@ test.describe("portfólio profissional", () => {
 
     await quickStart.getByRole("button", { name: /site.*landing/i }).click();
 
+    await expect(form.locator('[data-briefing-step="direction"]')).toBeVisible();
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
@@ -105,6 +106,7 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="delivery"]')).toHaveValue("Site responsivo");
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/contato|orçamento|cadastro/i);
     await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
+    await expect(form.locator('select[name="deadline"]')).toHaveValue("");
     await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
   });
 
