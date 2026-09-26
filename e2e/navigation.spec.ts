@@ -51,13 +51,13 @@ test.describe("navegação pública e favoritos", () => {
     await page.goto("/");
 
     const portrait = page.getByRole("img", { name: "Pablo Guilherme" }).first();
-    await expect(portrait).toHaveAttribute("src", /portfolio-media\/pablo-retrato\.avif/);
+    await expect(portrait).toHaveAttribute("src", /portfolio-media\/pablo-profile-2026\.(?:avif|webp)/);
 
     const footerMark = page.locator("#contato-rodape img").first();
     await expect(footerMark).toHaveAttribute("src", /portfolio-media\/pg-marca\.webp/);
 
     await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
-    for (const projectId of ["AUD.01", "CNT.03", "AUD.05", "DEV.08"]) {
+    for (const projectId of ["TEC.08", "AUD.01", "CNT.03", "AUD.05"]) {
       await expect(page.locator(`[data-project-id="${projectId}"]`)).toBeVisible();
     }
     await expect(page.locator('[data-project-id="CNT.03"]')).toContainText(/combustível vale ouro/i);
