@@ -82,6 +82,54 @@ test.describe("portfólio profissional", () => {
   });
 
 
+  test("briefing oferece início rápido com opções pré-selecionadas e editáveis", async ({ page }) => {
+    await page.goto("/");
+
+    const form = page.locator("#contato-briefing");
+    await form.scrollIntoViewIfNeeded();
+
+    const quickStart = form.locator('[data-briefing-quick-start="true"]');
+    await expect(quickStart).toBeVisible();
+    await expect(quickStart.locator('[data-briefing-preset="true"]')).toHaveCount(3);
+
+    await expect(form.locator('input[name="location"]')).toHaveValue("Remoto / online");
+    await expect(form.locator('select[name="deadline"]')).toHaveValue("2 a 4 semanas");
+    await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
+
+    await quickStart.getByRole("button", { name: /site.*landing/i }).click();
+
+    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
+    await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
+    await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
+    await expect(form.locator('input[name="audience"]')).toHaveValue(/clientes|visitantes/i);
+    await expect(form.locator('select[name="delivery"]')).toHaveValue("Site responsivo");
+    await expect(form.locator('textarea[name="success"]')).toHaveValue(/contato|orçamento|cadastro/i);
+    await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
+    await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
+  });
+
+  test("jogo da velha oferece pausa interativa acessível e reiniciável", async ({ page }) => {
+    await page.goto("/");
+
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await game.scrollIntoViewIfNeeded();
+    await expect(game).toBeVisible();
+    await expect(game.getByRole("heading", { name: /jogo da velha/i })).toBeVisible();
+
+    const cells = game.locator('[data-game-cell="true"]');
+    await expect(cells).toHaveCount(9);
+
+    await cells.nth(0).click();
+    await expect(cells.nth(0)).toHaveText("X");
+    await expect(game.locator('[data-game-cell="true"]:has-text("O")')).toHaveCount(1);
+    await expect(game.locator('[data-game-status="true"]')).toContainText(/sua vez|você|empate|pg bot/i);
+
+    await game.getByRole("button", { name: /reiniciar rodada/i }).click();
+    for (let index = 0; index < 9; index += 1) {
+      await expect(cells.nth(index)).toHaveText("");
+    }
+  });
+
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
     await page.goto("/");
 

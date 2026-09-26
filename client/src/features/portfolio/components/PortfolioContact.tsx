@@ -10,6 +10,11 @@ import {
   toDateKey,
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import BriefingQuickStart from "@/features/portfolio/components/BriefingQuickStart";
+import {
+  briefingDefaultValues,
+  type BriefingPreset,
+} from "@/features/portfolio/briefingPresets";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -63,13 +68,17 @@ const briefingSteps = [
 ] as const;
 
 function readBriefingDraft(): BriefingDraft {
-  if (typeof window === "undefined") return {};
+  const defaults: BriefingDraft = { ...briefingDefaultValues };
+  if (typeof window === "undefined") return defaults;
   try {
     const parsed = JSON.parse(window.localStorage.getItem(briefingDraftStorageKey) || "{}");
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
-    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "string")) as BriefingDraft;
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return defaults;
+    const stored = Object.fromEntries(
+      Object.entries(parsed).filter(([, value]) => typeof value === "string"),
+    ) as BriefingDraft;
+    return { ...defaults, ...stored };
   } catch {
-    return {};
+    return defaults;
   }
 }
 
@@ -205,6 +214,42 @@ export function PortfolioContact({
     }
   }
 
+  function applyBriefingPreset(preset: BriefingPreset, form: HTMLFormElement) {
+
+    const data = new FormData(form);
+    const currentDraft = Object.fromEntries(
+      briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
+    ) as BriefingDraft;
+    const nextDraft = {
+      ...briefingDefaultValues,
+      ...currentDraft,
+      ...preset.values,
+    };
+
+    setBriefingDraft(nextDraft);
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O preset continua funcional mesmo quando o armazenamento local está indisponível.
+    }
+    setBriefingRevision((value) => value + 1);
+    window.requestAnimationFrame(() => {
+      const nextForm = briefingFormRef.current;
+      if (!nextForm) return;
+      for (const [name, value] of Object.entries(preset.values)) {
+        const field = nextForm.elements.namedItem(name);
+        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
+      }
+    });
+    trackBriefingStarted();
+    trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
+    toast.success("Modelo aplicado", {
+      description: "Direção, escopo e contexto foram pré-preenchidos. Tudo continua editável.",
+    });
+  }
+
   function validateBriefingStep(stepIndex: number) {
     const form = briefingFormRef.current;
     if (!form) return false;
@@ -236,7 +281,7 @@ export function PortfolioContact({
     } catch {
       // Nada a fazer: o reset visual ainda funciona.
     }
-    setBriefingDraft({});
+    setBriefingDraft({ ...briefingDefaultValues });
     setBriefingStep(0);
     setBriefingRevision((value) => value + 1);
     setFormSent(false);
@@ -403,6 +448,8 @@ export function PortfolioContact({
               </div>
             </div>
 
+            <BriefingQuickStart onSelect={applyBriefingPreset} />
+
             <label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
               <span>Website</span>
               <input tabIndex={-1} autoComplete="off" name="website" defaultValue="" />
@@ -531,7 +578,7 @@ export function PortfolioContact({
                 <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
                   <select name="budget" defaultValue={briefingDraft.budget ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
-                    <option value="">Preciso de orientação</option>
+                    <option value="Preciso de orientação">Preciso de orientação</option>
                     <option>Até R$ 1.500</option>
                     <option>R$ 1.500 a R$ 3.000</option>
                     <option>R$ 3.000 a R$ 6.000</option>
