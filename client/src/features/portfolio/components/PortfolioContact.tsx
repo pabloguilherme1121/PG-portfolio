@@ -15,13 +15,16 @@ import {
   ArrowUpRight,
   CalendarDays,
   CheckCircle2,
+  ClipboardCheck,
   ChevronLeft,
   ChevronRight,
   Instagram,
   Loader2,
   MapPin,
   MessageCircle,
+  RotateCcw,
   Send,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
@@ -29,6 +32,40 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type BlockedDate = { dateKey: string };
+
+type BriefingDraft = Record<string, string>;
+
+const briefingDraftStorageKey = "pablo-portfolio-briefing-draft";
+const briefingFieldNames = [
+  "name",
+  "email",
+  "service",
+  "projectType",
+  "objective",
+  "audience",
+  "stage",
+  "location",
+  "date",
+  "delivery",
+  "deadline",
+  "budget",
+  "success",
+  "references",
+  "constraints",
+  "briefing",
+] as const;
+const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "success", "briefing"] as const;
+
+function readBriefingDraft(): BriefingDraft {
+  if (typeof window === "undefined") return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(briefingDraftStorageKey) || "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "string")) as BriefingDraft;
+  } catch {
+    return {};
+  }
+}
 
 type PortfolioContactProps = {
   whatsAppUrl: string;
@@ -80,6 +117,9 @@ export function PortfolioContact({
   const [isClearingAvailabilitySelection, setIsClearingAvailabilitySelection] = useState(false);
   const availabilityClearTimerRef = useRef<number | null>(null);
   const briefingStartedRef = useRef(false);
+  const briefingFormRef = useRef<HTMLFormElement>(null);
+  const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
+  const [briefingRevision, setBriefingRevision] = useState(0);
 
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -98,6 +138,9 @@ export function PortfolioContact({
     availabilityTime,
     isBlockedDatesError,
   );
+  const briefingCompletedFields = briefingReadinessFields.filter((field) => briefingDraft[field]?.trim()).length;
+  const briefingProgress = Math.round((briefingCompletedFields / briefingReadinessFields.length) * 100);
+  const briefingStatus = briefingProgress >= 88 ? "pronto para análise" : briefingProgress >= 55 ? "bom contexto" : "em construção";
 
   useEffect(() => () => {
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
@@ -143,6 +186,50 @@ export function PortfolioContact({
     briefingStartedRef.current = true;
     trackPortfolioEvent("briefing_started");
   }
+
+  function captureBriefingDraft(form: HTMLFormElement) {
+    const data = new FormData(form);
+    const nextDraft = Object.fromEntries(briefingFieldNames.map((field) => [field, String(data.get(field) || "")])) as BriefingDraft;
+    setBriefingDraft(nextDraft);
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O formulário continua utilizável mesmo quando o armazenamento local está indisponível.
+    }
+  }
+
+  function clearBriefingDraft() {
+    try {
+      window.localStorage.removeItem(briefingDraftStorageKey);
+    } catch {
+      // Nada a fazer: o reset visual ainda funciona.
+    }
+    setBriefingDraft({});
+    setBriefingRevision((value) => value + 1);
+    setFormSent(false);
+    toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
+  }
+
+  useEffect(() => {
+    const applySeed = (event: Event) => {
+      const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective">>>).detail;
+      const form = briefingFormRef.current;
+      if (!form || !detail) return;
+
+      for (const [name, value] of Object.entries(detail)) {
+        if (!value) continue;
+        const field = form.elements.namedItem(name);
+        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
+      }
+      captureBriefingDraft(form);
+      toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
+    };
+
+    window.addEventListener("portfolio:briefing-seed", applySeed);
+    return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
+  }, []);
 
   return (
     <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
