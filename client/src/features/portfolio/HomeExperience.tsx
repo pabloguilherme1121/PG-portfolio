@@ -82,11 +82,11 @@ import {
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
-const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
-const portraitUrl = publicMediaPath("/manus-storage/pablo-guilherme-retrato-profissional_a0ec8605.png");
+const markUrl = publicMediaPath("/portfolio-media/pg-marca.webp");
+const portraitUrl = publicMediaPath("/portfolio-media/pablo-retrato-principal.jpg");
 const portraitResponsive = {
-  avif: publicMediaPath("/manus-storage/pablo-retrato-480w_72345227.avif 480w, /manus-storage/pablo-retrato-768w_02bb45b0.avif 768w, /manus-storage/pablo-retrato-1200w_e67ca5a8.avif 1200w, /manus-storage/pablo-retrato-1600w_09cf51fa.avif 1600w, /manus-storage/pablo-retrato-1664w_a3e67f83.avif 1664w"),
-  webp: publicMediaPath("/manus-storage/pablo-retrato-480w_d51f7f1b.webp 480w, /manus-storage/pablo-retrato-768w_b05571cc.webp 768w, /manus-storage/pablo-retrato-1200w_00268506.webp 1200w, /manus-storage/pablo-retrato-1600w_ad3a0976.webp 1600w, /manus-storage/pablo-retrato-1664w_fe47542b.webp 1664w"),
+  avif: publicMediaPath("/portfolio-media/pablo-retrato-principal.avif"),
+  webp: publicMediaPath("/portfolio-media/pablo-retrato-principal.webp"),
 };
 const resumeUrl = publicMediaPath("/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf");
 const whatsAppNumber = "5561992903029";
