@@ -96,14 +96,21 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="deadline"]')).toHaveValue("2 a 4 semanas");
     await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
 
-    await quickStart.getByRole("button", { name: /site.*landing/i }).click();
+    const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
+    await sitePreset.click();
 
+    await expect(sitePreset).toHaveAttribute("aria-pressed", "true");
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
     await expect(form.locator('input[name="audience"]')).toHaveValue(/clientes|visitantes/i);
     await expect(form.locator('select[name="delivery"]')).toHaveValue("Site responsivo");
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/contato|orçamento|cadastro/i);
+    await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
+    await form.locator('input[name="name"]').fill("Cliente expresso");
+    await form.locator('input[name="email"]').fill("cliente@example.com");
+    await form.getByRole("button", { name: /revisar modelo preenchido/i }).click();
+    await expect(form.locator('[data-briefing-step="context"]')).toBeVisible();
     await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
     await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
   });
