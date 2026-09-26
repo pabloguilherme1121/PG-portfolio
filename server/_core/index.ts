@@ -74,8 +74,7 @@ async function startServer() {
     res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()");
     if (process.env.NODE_ENV === "production") {
       res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
-      res.setHeader("Content-Security-Policy", "base-uri 'self'; object-src 'none'; frame-ancestors 'self'");
-      res.setHeader("Content-Security-Policy-Report-Only", getReportOnlyCsp());
+      res.setHeader("Content-Security-Policy", getReportOnlyCsp());
     }
     next();
   });
