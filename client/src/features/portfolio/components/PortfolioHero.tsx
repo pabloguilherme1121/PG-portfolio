@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
+import PortfolioProofDeck from "@/features/portfolio/components/PortfolioProofDeck";
 import PortfolioShowreel from "@/features/portfolio/components/PortfolioShowreel";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
@@ -93,23 +94,7 @@ export default function PortfolioHero({
               </a>
             </div>
 
-            <nav aria-label="Atalhos principais" className="mt-6 grid max-w-2xl gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-3">
-              <a href="#projetos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">01</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver projetos</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">cases e entregas reais</span>
-              </a>
-              <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver serviços</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">escopo e entregas</span>
-              </a>
-              <a href="#contato" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">03</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">falar comigo</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projeto e disponibilidade</span>
-              </a>
-            </nav>
+            <PortfolioProofDeck />
 
             <PortfolioShowreel available={showreelAvailable} isDesktopViewport={isDesktopViewport} />
           </div>
