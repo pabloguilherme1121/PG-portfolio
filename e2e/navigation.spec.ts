@@ -29,6 +29,37 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("heading", { name: /Vamos definir uma solução clara para o seu projeto/i })).toBeVisible();
   });
 
+  test("diagnóstico interativo prepara e preserva um briefing profissional", async ({ page }) => {
+    await page.goto("/");
+
+    const diagnostic = page.locator('[data-project-diagnostic="true"]');
+    await expect(diagnostic).toBeVisible();
+    await diagnostic.getByRole("button", { name: /organizar informação ou dados/i }).click();
+    await expect(diagnostic.getByRole("heading", { name: /Produto para consulta e decisão/i })).toBeVisible();
+
+    await diagnostic.getByRole("link", { name: /montar briefing com essa direção/i }).click();
+
+    const form = page.locator("#contato-briefing");
+    await expect(form.locator('select[name="service"]')).toHaveValue("Dashboard ou produto digital");
+    await expect(form.locator('select[name="projectType"]')).toHaveValue("Projeto com dados / dashboard");
+    await expect(form.locator('textarea[name="objective"]')).toHaveValue(/Transformar informação complexa/i);
+    await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
+
+    await form.locator('input[name="name"]').fill("Visitante de teste");
+    await form.locator('input[name="email"]').fill("visitante@example.com");
+    await form.locator('input[name="audience"]').fill("Equipe interna");
+    await form.locator('textarea[name="briefing"]').fill("Precisamos centralizar dados dispersos e facilitar a consulta.");
+    await page.reload();
+
+    const restoredForm = page.locator("#contato-briefing");
+    await expect(restoredForm.locator('input[name="name"]')).toHaveValue("Visitante de teste");
+    await expect(restoredForm.locator('input[name="audience"]')).toHaveValue("Equipe interna");
+    await expect(restoredForm.locator('[data-briefing-summary="true"]')).toContainText("Dashboard ou produto digital");
+
+    await restoredForm.getByRole("button", { name: /limpar rascunho/i }).click();
+    await expect(restoredForm.locator('input[name="name"]')).toHaveValue("");
+  });
+
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
     await page.goto("/");
 
