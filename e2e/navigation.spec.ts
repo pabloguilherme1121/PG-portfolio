@@ -15,7 +15,7 @@ test.describe("portfólio profissional", () => {
     await expect(observatorio).toHaveAttribute("href", "https://pabloguilherme01.github.io/observatorio/");
     await expect(observatorio).toHaveAttribute("target", "_blank");
 
-    const projectCta = page.getByRole("link", { name: /falar sobre um projeto/i });
+    const projectCta = page.locator("#projetos").getByRole("link", { name: /falar sobre um projeto/i });
     await expect(projectCta).toHaveAttribute("href", "#contato");
 
     await projectCta.click();
@@ -63,7 +63,7 @@ test.describe("portfólio profissional", () => {
           .__portfolioAnalyticsEvents.map((event) => event.eventName),
       );
 
-    await page.getByRole("link", { name: /iniciar um projeto/i }).click();
+    await page.locator("#inicio").getByRole("link", { name: /iniciar um projeto/i }).click();
     await expect.poll(emittedEventNames).toContain("quote_cta");
 
     await page.locator("#contato-briefing input").first().focus();
@@ -100,7 +100,7 @@ test.describe("portfólio profissional", () => {
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 
-    const primaryCta = page.getByRole("link", { name: /iniciar um projeto/i });
+    const primaryCta = page.locator("#inicio").getByRole("link", { name: /iniciar um projeto/i });
     expect(await primaryCta.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
 
     const skipLink = page.locator(".skip-link");
