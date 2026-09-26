@@ -93,7 +93,7 @@ test.describe("portfólio profissional", () => {
     await expect(quickStart.locator('[data-briefing-preset="true"]')).toHaveCount(3);
 
     await expect(form.locator('input[name="location"]')).toHaveValue("Remoto / online");
-    await expect(form.locator('select[name="deadline"]')).toHaveValue("2 a 4 semanas");
+    await expect(form.locator('select[name="deadline"]')).toHaveValue("");
     await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
 
     await quickStart.getByRole("button", { name: /site.*landing/i }).click();
