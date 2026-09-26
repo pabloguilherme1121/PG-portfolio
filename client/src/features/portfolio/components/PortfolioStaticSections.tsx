@@ -1,12 +1,35 @@
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowUpRight } from "lucide-react";
-import { processSteps, repertoireSignals, serviceOffers, skillTracks } from "../portfolioData";
+import { processSteps, serviceOffers, skillTracks } from "../portfolioData";
 
 const textureUrl = publicMediaPath("/manus-storage/pablo-systems-texture_cf9aade1.png");
 const textureResponsive = {
   avif: publicMediaPath("/manus-storage/pablo-systems-texture-480w_5a6395b2.avif 480w, /manus-storage/pablo-systems-texture-768w_8d43ab9a.avif 768w, /manus-storage/pablo-systems-texture-1200w_bd814e99.avif 1200w, /manus-storage/pablo-systems-texture-1600w_37d28a1c.avif 1600w, /manus-storage/pablo-systems-texture-1920w_743d3758.avif 1920w"),
   webp: publicMediaPath("/manus-storage/pablo-systems-texture-480w_ec71c815.webp 480w, /manus-storage/pablo-systems-texture-768w_c701324d.webp 768w, /manus-storage/pablo-systems-texture-1200w_4041e6bf.webp 1200w, /manus-storage/pablo-systems-texture-1600w_c56f3109.webp 1600w, /manus-storage/pablo-systems-texture-1920w_89c6d1bd.webp 1920w"),
 };
+
+const deliveryProofs = [
+  {
+    label: "produto em produção",
+    title: "Entrega demonstrável",
+    text: "O Observatório pode ser aberto e usado em produção, em vez de existir apenas como mockup ou apresentação.",
+  },
+  {
+    label: "engenharia",
+    title: "Código e stack verificáveis",
+    text: "O case principal possui repositório público e uma stack documentada com React, TypeScript e Vite.",
+  },
+  {
+    label: "qualidade",
+    title: "Validação automatizada",
+    text: "Typecheck, testes unitários, testes de navegador e auditoria de assets fazem parte do fluxo de qualidade.",
+  },
+  {
+    label: "experiência",
+    title: "Mobile e acessibilidade",
+    text: "Responsividade, alvos de toque, foco, movimento reduzido e acessibilidade são verificados por testes automatizados.",
+  },
+];
 
 export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewport: boolean; markUrl: string }) {
   return (
@@ -35,24 +58,20 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
                 ))}
               </div>
             </div>
-            <div className="mt-12 border-t border-white/[0.1] pt-8">
+            <div id="qualidade" className="mt-12 scroll-mt-28 border-t border-white/[0.1] pt-8">
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">aplicação prática</p>
-                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.4rem)] font-medium leading-none tracking-[-0.05em] text-white">Imagem com intenção e contexto.</h3>
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">provas de qualidade</p>
+                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.4rem)] font-medium leading-none tracking-[-0.05em] text-white">O trabalho pode ser verificado.</h3>
                 </div>
-                <p className="max-w-sm font-body text-sm leading-7 text-[#9eb0cc]">Registros selecionados para demonstrar composição, contexto e decisões visuais aplicáveis a novos projetos.</p>
+                <p className="max-w-md font-body text-sm leading-7 text-[#9eb0cc]">Além da interface final, mostro sinais concretos de engenharia, publicação e cuidado com a experiência.</p>
               </div>
-              <div className="mt-7 grid gap-px bg-white/[0.1] md:grid-cols-3">
-                {repertoireSignals.map((signal) => (
-                  <article key={signal.title} className="evidence-card group relative min-h-[270px] overflow-hidden bg-[#07101c] p-5 sm:p-6">
-                    <img src={signal.cover} alt={`Referência visual: ${signal.title}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 saturate-[0.75] transition duration-500 group-hover:scale-[1.03] group-hover:opacity-60" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#030b1e] via-[#030b1e]/65 to-transparent" />
-                    <div className="relative flex h-full flex-col justify-end">
-                      <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">{signal.label}</p>
-                      <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{signal.title}</h3>
-                      <p className="mt-2 max-w-sm font-body text-sm leading-6 text-[#c2d9e7]">{signal.text}</p>
-                    </div>
+              <div className="mt-7 grid gap-px bg-white/[0.1] sm:grid-cols-2 xl:grid-cols-4">
+                {deliveryProofs.map((proof) => (
+                  <article key={proof.title} data-quality-proof="true" className="min-h-[210px] bg-[#07101c] p-5 sm:p-6">
+                    <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">{proof.label}</p>
+                    <h3 className="mt-4 font-display text-2xl font-medium tracking-[-0.04em] text-white">{proof.title}</h3>
+                    <p className="mt-3 max-w-sm font-body text-sm leading-6 text-[#c2d9e7]">{proof.text}</p>
                   </article>
                 ))}
               </div>
@@ -95,7 +114,7 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
                     <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8db8] light-muted-ink">{detail}</p>
                     <div className="mt-5 grid grid-cols-2 gap-4">
                       <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">entrega</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{delivery}</p></div>
-                      <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">duração típica</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{duration}</p></div>
+                      <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">modelo</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{duration}</p></div>
                     </div>
                   </div>
                 </article>
