@@ -86,6 +86,9 @@ test.describe("portfólio profissional", () => {
     await expect(studio.locator('[data-briefing-step="direction"]')).toBeHidden();
     await expect(studio.getByText(/etapa 1 de 4/i)).toBeVisible();
 
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+
     await form.locator('input[name="name"]').fill("Visitante guiado");
     await form.locator('input[name="email"]').fill("guiado@example.com");
     await studio.getByRole("button", { name: /continuar.*direção/i }).click();
