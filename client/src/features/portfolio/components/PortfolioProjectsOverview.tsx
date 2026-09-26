@@ -33,7 +33,7 @@ export default function PortfolioProjectsOverview({
         </div>
         <div className="max-w-sm">
           <p className="font-body text-sm leading-7 text-[#b6d7eb]">Projetos apresentados como evidência: problema, papel, decisões de execução e resultado — não apenas uma galeria de peças.</p>
-          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
+          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} trabalhos com mídia + 1 produto digital publicado</div>
         </div>
       </div>
 
@@ -41,10 +41,10 @@ export default function PortfolioProjectsOverview({
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">produto digital publicado · dados públicos</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
-          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Um produto digital completo que transforma dados públicos em uma experiência navegável. O Observatório demonstra minha capacidade de estruturar informação, desenvolver interfaces, criar dashboards e publicar soluções que ajudam pessoas e organizações a entender dados complexos com mais clareza.</p>
+          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Case principal de produto digital: dados públicos organizados em uma interface responsiva com indicadores e dashboard. O projeto demonstra arquitetura de informação, desenvolvimento web e publicação de uma solução real — do problema à experiência em produção.</p>
           <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]"><span className="border border-white/10 px-2 py-1">React / Web</span><span className="border border-white/10 px-2 py-1">dashboard</span><span className="border border-white/10 px-2 py-1">dados públicos</span><span className="border border-white/10 px-2 py-1">produto publicado</span></div>
         </div>
-        <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">explorar dashboard <ArrowUpRight className="h-4 w-4" /></a>
+        <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
       </article>
 
       <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
