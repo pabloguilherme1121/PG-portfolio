@@ -77,6 +77,14 @@ export const processSteps = [
 
 export const caseStudies = [
   {
+    id: "TEC.08",
+    title: "Site vendendo enquanto você dorme",
+    context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
+    method: "Roteiro enxuto, hierarquia tipográfica e uma promessa principal adaptada ao formato vertical.",
+    learning: "Em poucos segundos, uma proposta clara comunica melhor do que vários argumentos competindo pela atenção.",
+    tags: ["Web", "Conteúdo", "Vídeo"],
+  },
+  {
     id: "ARQ.01",
     title: "Chá da Eloise",
     context: "Evento social com foco em atmosfera, pessoas e detalhes que ajudam a memória do dia.",
@@ -174,6 +182,7 @@ export const repositories: Repository[] = [
       learning: "Em formatos de poucos segundos, uma única promessa forte e uma chamada clara comunicam melhor do que vários argumentos simultâneos.",
     },
   },
+
   {
     id: "AUD.01",
     name: "Chá da Eloise",

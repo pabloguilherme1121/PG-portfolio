@@ -27,27 +27,37 @@ export default function PortfolioProjectsOverview({
     <>
       <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
         <div>
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">06 / trabalhos selecionados</p>
-          <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Repertório em uso,<br className="hidden sm:block" /> não só na vitrine.</h2>
-          <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // arquivo visual em progresso</div>
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Projetos selecionados</p>
+          <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Trabalhos que mostram processo,<br className="hidden sm:block" /> execução e resultado.</h2>
+          <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // projetos & estudos de caso</div>
         </div>
         <div className="max-w-sm">
-          <p className="font-body text-sm leading-7 text-[#b6d7eb]">Registros reais para mostrar como repertório, linguagem e execução se encontram em diferentes formatos.</p>
+          <p className="font-body text-sm leading-7 text-[#b6d7eb]">Uma seleção objetiva de projetos digitais e audiovisuais, com contexto, decisões de execução e resultado.</p>
           <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
         </div>
       </div>
 
+      <article className="mt-8 grid gap-6 border border-[#67e8f9]/30 bg-[#081a2e] p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">projeto web em produção</p>
+          <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
+          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Projeto publicado que demonstra desenvolvimento front-end, organização de interface e entrega real na web. Abra o site para avaliar a experiência funcionando.</p>
+          <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]"><span className="border border-white/10 px-2 py-1">web</span><span className="border border-white/10 px-2 py-1">interface</span><span className="border border-white/10 px-2 py-1">projeto publicado</span></div>
+        </div>
+        <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">visitar site <ArrowUpRight className="h-4 w-4" /></a>
+      </article>
+
       <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
         <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
-        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">entrada / quem está por trás</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Este arquivo é construído por Pablo Guilherme: estudante de TI, criador de conteúdo e operador de imagem aérea e terrestre.</p></div>
-        <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">conhecer percurso <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
+        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Pablo Guilherme desenvolve interfaces web e também atua com conteúdo e produção audiovisual, conectando tecnologia, comunicação e execução.</p></div>
+        <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">sobre mim <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
       </div>
 
       <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
         <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6">
           <div>
-            <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">entrada / três evidências</p>
-            <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">O trabalho antes do filtro.</h3>
+            <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">destaques</p>
+            <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">Projetos em destaque.</h3>
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar rapidamente o papel, o processo e o resultado de cada registro.</p>
         </div>
@@ -78,11 +88,6 @@ export default function PortfolioProjectsOverview({
         </div>
       </section>
 
-      <nav aria-label="Navegação do showroom" className="mt-8 flex flex-wrap gap-2 border-y border-white/[0.1] py-3">
-        <a href="#galeria-publica" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">galeria pública</a>
-        <a href="#favoritos-pessoais" className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">meus favoritos</a>
-        <a href={`${import.meta.env.BASE_URL}favoritos`} className="border border-[#67e8f9]/25 bg-[#07101e] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8edff0] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">gestão de favoritos</a>
-      </nav>
     </>
   );
 }

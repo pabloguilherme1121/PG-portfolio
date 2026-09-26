@@ -15,9 +15,9 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">03 / frentes de atuação</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de prática</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">O que estou aprendendo a fazer bem.</h2>
-                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">As frentes se complementam: lógica e presença, tela e câmera, detalhe e visão geral.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">status do arquivo</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Aprendendo na prática, registrando o processo e melhorando a cada entrega.</p></div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Competências</p>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">desenvolvimento · conteúdo · audiovisual</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Competências que conectam produto e comunicação.</h2>
+                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">Desenvolvimento web, conteúdo e audiovisual reunidos em um processo orientado a clareza, usabilidade e execução.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">abordagem</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Pesquisa, execução, teste e melhoria contínua em cada projeto.</p></div>
               </div>
               <div className="border-t border-white/[0.1]">
                 {skillTracks.map((skill) => (
@@ -38,10 +38,10 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
             <div className="mt-12 border-t border-white/[0.1] pt-8">
               <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                 <div>
-                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">repertório aplicado</p>
-                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.4rem)] font-medium leading-none tracking-[-0.05em] text-white">Três formas de pensar a imagem.</h3>
+                  <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#a5f3fc]">aplicação prática</p>
+                  <h3 className="mt-3 font-display text-[clamp(2rem,3vw,3.4rem)] font-medium leading-none tracking-[-0.05em] text-white">Imagem com intenção e contexto.</h3>
                 </div>
-                <p className="max-w-sm font-body text-sm leading-7 text-[#9eb0cc]">As imagens entram como referência prática: o que foi observado, para que serviu e como pode ajudar um novo projeto.</p>
+                <p className="max-w-sm font-body text-sm leading-7 text-[#9eb0cc]">Registros selecionados para demonstrar composição, contexto e decisões visuais aplicáveis a novos projetos.</p>
               </div>
               <div className="mt-7 grid gap-px bg-white/[0.1] md:grid-cols-3">
                 {repertoireSignals.map((signal) => (
@@ -69,12 +69,12 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
           <div className="relative mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
               <div>
-                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">04 / serviços</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG / caderno de produção</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Como uma ideia vira entrega.</h2>
-                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // direção e imagem</div>
+                <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Serviços</p>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">soluções sob medida</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Soluções digitais e audiovisuais.</h2>
+                <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // desenvolvimento & produção</div>
               </div>
               <div className="lg:pb-2">
-                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">Cada projeto recebe uma combinação de direção, captação e organização para que a entrega seja clara antes, durante e depois da produção.</p>
+                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">O escopo é definido de acordo com o objetivo: interface, conteúdo, captação ou uma combinação dessas frentes.</p>
                 <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3eeff] transition-colors hover:text-[#76aaff]">falar sobre um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
               </div>
             </div>
@@ -113,10 +113,10 @@ export function PortfolioProcess() {
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
           <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.82fr_1.18fr] lg:px-12 lg:py-28">
             <div>
-              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">05 / como o trabalho acontece</p>
-              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Da primeira conversa<br />à entrega final.</h2>
-              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um processo simples ajuda a decidir melhor: contexto, formato, produção e próximos usos.</p>
-              <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">contar sua ideia <ArrowUpRight className="h-3.5 w-3.5" /></a>
+              <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">Processo</p>
+              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do briefing à entrega.</h2>
+              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um fluxo objetivo para alinhar contexto, escopo, execução, revisão e entrega.</p>
+              <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">iniciar um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
             </div>
             <div className="divide-y divide-cyan-100/[0.12] border-y border-cyan-100/[0.12]">
               {processSteps.map((step) => (

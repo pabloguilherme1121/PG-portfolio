@@ -29,14 +29,14 @@ const privacyUrl = `${publicUrl}privacidade/`;
 
 // A real file gives the public privacy route HTTP 200 instead of relying on the 404 fallback.
 const privacy = homepage
-  .replace(`<title>Pablo Guilherme — Tecnologia, Conteúdo e Repertório Visual</title>`, `<title>Privacidade — Pablo Guilherme</title>`)
-  .replace(`rel="canonical" href="${publicUrl}"`, `rel="canonical" href="${privacyUrl}"`)
-  .replace(`property="og:url" content="${publicUrl}"`, `property="og:url" content="${privacyUrl}"`)
-  .replace(`property="og:title" content="Pablo Guilherme — tecnologia, conteúdo e repertório visual"`, `property="og:title" content="Privacidade — Pablo Guilherme"`)
-  .replace(`name="twitter:title" content="Pablo Guilherme — tecnologia, conteúdo e repertório visual"`, `name="twitter:title" content="Privacidade — Pablo Guilherme"`)
-  .replace(`property="og:description" content="Projetos de Pablo Guilherme em desenvolvimento web, interfaces, conteúdo audiovisual e captação aérea, conectando tecnologia e produção visual."`, `property="og:description" content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`)
-  .replace(`name="twitter:description" content="Desenvolvimento web, interfaces, conteúdo audiovisual e captação aérea em um portfólio multidisciplinar."`, `name="twitter:description" content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`)
-  .replace(`content="Portfólio de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas (ADS), com projetos em desenvolvimento web, interfaces, conteúdo audiovisual e captação aérea."`, `content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`);
+  .replace(/<title>[^<]*<\/title>/, `<title>Privacidade — Pablo Guilherme</title>`)
+  .replace(/rel="canonical" href="[^"]*"/, `rel="canonical" href="${privacyUrl}"`)
+  .replace(/property="og:url" content="[^"]*"/, `property="og:url" content="${privacyUrl}"`)
+  .replace(/property="og:title" content="[^"]*"/, `property="og:title" content="Privacidade — Pablo Guilherme"`)
+  .replace(/name="twitter:title" content="[^"]*"/, `name="twitter:title" content="Privacidade — Pablo Guilherme"`)
+  .replace(/property="og:description" content="[^"]*"/, `property="og:description" content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`)
+  .replace(/name="twitter:description" content="[^"]*"/, `name="twitter:description" content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`)
+  .replace(/name="description" content="[^"]*"/, `name="description" content="Como o portfólio de Pablo Guilherme trata preferências locais e pedidos de contato."`);
 await mkdir(path.join(outputDir, "privacidade"), { recursive: true });
 await writeFile(path.join(outputDir, "privacidade", "index.html"), privacy);
 

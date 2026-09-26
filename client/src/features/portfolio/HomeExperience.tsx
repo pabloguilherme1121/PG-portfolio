@@ -165,11 +165,10 @@ function getRepositoryCategories(repository: Repository) {
   return categories;
 }
 const navigationItems = [
-  ["manifesto", "#sobre", "sobre"],
-  ["atuação", "#trilha", "trilha"],
+  ["sobre", "#sobre", "sobre"],
+  ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
-  ["trabalhos", "#projetos", "projetos"],
-  ["social", "#social", "social"],
+  ["projetos", "#projetos", "projetos"],
 ] as const;
 
 export default function Home() {
@@ -1622,6 +1621,7 @@ export default function Home() {
                 {label}
               </a>
             ))}
+            <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="nav-link text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-[#a5f3fc] transition-colors hover:text-white">observatório <ArrowUpRight className="ml-1 inline h-3 w-3" /></a>
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
             {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
@@ -1651,16 +1651,17 @@ export default function Home() {
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
-                ["01 / manifesto", "#sobre", "sobre"],
-                ["02 / atuação", "#trilha", "trilha"],
+                ["01 / sobre", "#sobre", "sobre"],
+                ["02 / competências", "#trilha", "trilha"],
                 ["03 / serviços", "#servicos", "servicos"],
-                ["04 / trabalhos", "#projetos", "projetos"],
+                ["04 / projetos", "#projetos", "projetos"],
                 ["05 / contato", "#contato", "contato"],
               ].map(([label, href, id]) => (
                 <a key={label} href={href} onClick={closeMenu} aria-current={activeSection === id ? "location" : undefined} className={`min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white ${activeSection === id ? "bg-[#0b2746] text-[#67e8f9]" : "text-[#b7cdf1]"}`}>
                   {label}
                 </a>
               ))}
+              <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mt-2 inline-flex min-h-12 items-center justify-between border border-[#67e8f9]/40 bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff]">06 / observatório <ArrowUpRight className="h-4 w-4" /></a>
               {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>}
               <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
@@ -1715,294 +1716,12 @@ export default function Home() {
               featuredRepositories={featuredRepositories}
               openProjectDetails={openProjectDetails}
             />
-            <div className="mt-8 border-y border-white/[0.1] py-4">
-              <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                {sharedProjectIds && <aside role="region" aria-labelledby="shared-list-title" className="mb-5 flex flex-col gap-4 border border-[#67e8f9]/35 bg-[#062342]/70 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
-                <div className="min-w-0">
-                  <p id="shared-list-title" className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">lista compartilhada</p>
-                  <p className="mt-2 max-w-2xl text-sm leading-6 text-[#d9f4ff]">Você recebeu {sharedProjectIds.length} {sharedProjectIds.length === 1 ? "referência" : "referências"}. Salve {sharedProjectIds.length === 1 ? "esta seleção" : "todas na sua lista"} para acessar depois.</p>
-                </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  <button type="button" onClick={saveSharedFavorites} className="border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">salvar na minha lista</button>
-                  <button type="button" onClick={dismissSharedFavorites} className="border border-white/15 bg-[#07101e]/60 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-white/35 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">agora não</button>
-                </div>
-                <span role="status" aria-live="polite" className="sr-only">Lista compartilhada com {sharedProjectIds.length} {sharedProjectIds.length === 1 ? "referência" : "referências"} carregada.</span>
-              </aside>}
-              <div className="flex items-center justify-between gap-4">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#6f8fb7] light-muted-ink">explorar por categoria</p>
-                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">{visibleRepositories.length} referências visíveis</p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button type="button" onClick={() => setFavoritesOnly((current) => !current)} aria-pressed={favoritesOnly} className={`inline-flex min-h-11 items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${favoritesOnly ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoritesOnly ? "fill-current" : ""}`} aria-hidden="true" /><span>projetos salvos</span><span aria-hidden="true">{favoriteProjectIds.length}</span></button>
-                  <button type="button" data-image-collection-toggle="true" onClick={() => setIsImageCollectionOpen((current) => !current)} aria-expanded={isImageCollectionOpen} aria-controls="curadoria-pessoal" className={`inline-flex min-h-11 items-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] transition-all active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${isImageCollectionOpen ? "border-[#67e8f9] bg-[#0b3156] text-[#e5fbff]" : "border-[#67e8f9]/25 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIds.length ? "fill-[#67e8f9] text-[#67e8f9]" : ""}`} aria-hidden="true" /><span>minhas imagens</span><span aria-hidden="true">{favoriteImageIds.length}</span></button>
-                  <span role="status" aria-live="polite" className="sr-only">{favoriteImageStatus}</span>
-                  <div className="hidden items-center gap-2 sm:flex">
-                    <span className="h-5 w-px bg-white/10" aria-hidden="true" />
-                    <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Copiar link dos favoritos"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span>{shareStatus === "copied" ? "copiado" : "compartilhar"}</span></button>
-                    <span className="flex items-center gap-1.5" aria-label="Exportar projetos favoritos">
-                    <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em CSV"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>CSV</span></button>
-                    <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex items-center gap-1.5 border border-[#67e8f9]/20 bg-[#07101e] px-2.5 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2] transition-all hover:border-[#67e8f9]/65 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" title="Baixar favoritos em JSON"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>JSON</span></button>
-                    </span>
-                  </div>
-                  <details className="relative sm:hidden">
-                    <summary data-mobile-gallery-secondary-actions-toggle="true" className="flex min-h-11 list-none items-center gap-2 border border-[#67e8f9]/25 bg-[#07101e] px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] [&::-webkit-details-marker]:hidden"><Settings2 className="h-3.5 w-3.5" aria-hidden="true" />mais ações<ChevronDown className="h-3.5 w-3.5" aria-hidden="true" /></summary>
-                    <div data-mobile-gallery-secondary-actions="true" className="absolute right-0 z-30 mt-2 grid min-w-44 gap-1 border border-[#67e8f9]/35 bg-[#061226] p-1.5 shadow-[0_18px_40px_rgba(0,0,0,0.36)]">
-                      <button type="button" onClick={shareFavorites} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Share2 className="h-3.5 w-3.5" aria-hidden="true" />{shareStatus === "copied" ? "copiado" : "compartilhar"}</button>
-                      <button type="button" onClick={() => exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Download className="h-3.5 w-3.5" aria-hidden="true" />baixar CSV</button>
-                      <button type="button" onClick={() => exportFavorites("json")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center gap-2 px-3 text-left font-mono text-[9px] uppercase tracking-[0.1em] text-[#d8f7ff] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35"><Download className="h-3.5 w-3.5" aria-hidden="true" />baixar JSON</button>
-                    </div>
-                  </details>
-                  <span role="status" aria-live="polite" className="sr-only">{shareStatus === "copied" ? "Link dos favoritos copiado." : shareStatus === "error" ? "Não foi possível copiar o link dos favoritos." : ""}</span>
-
-                </div>
+            <div className="mt-10 flex flex-col gap-4 border-y border-white/[0.1] py-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">quer ver mais ou discutir um projeto?</p>
+                <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Os destaques acima representam a seleção principal. Para detalhes técnicos, contexto ou uma proposta, fale diretamente comigo.</p>
               </div>
-              <aside id="favoritos-pessoais" aria-label="Coleção pessoal de imagens favoritas" aria-hidden={!isImageCollectionOpen} inert={!isImageCollectionOpen} className={`overflow-hidden border-x border-b border-[#67e8f9]/20 bg-[#06172f]/60 transition-[max-height,opacity,transform] duration-200 motion-reduce:transition-none ${isImageCollectionOpen ? "max-h-[760px] translate-y-0 opacity-100" : "pointer-events-none max-h-0 -translate-y-1 opacity-0"}`}>
-                <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">coleção pessoal</p><h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Imagens guardadas para rever.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">Esta coleção é salva apenas neste navegador e permanece separada dos projetos favoritos.</p></div><span className="shrink-0 border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#bdf7ff]">{favoriteImageProjects.length} {favoriteImageProjects.length === 1 ? "imagem" : "imagens"}</span></div>
-                {favoriteImageProjects.length ? <div className="grid gap-px border-t border-[#67e8f9]/15 bg-[#67e8f9]/10 sm:grid-cols-2 lg:grid-cols-3">{favoriteImageProjects.map((project) => <button key={`favorite-image-${project.id}`} type="button" data-image-collection-item={project.id} onClick={(event) => { setIsImageCollectionOpen(false); openProjectLightbox(project.id, event); }} className="group relative min-h-40 overflow-hidden bg-[#07101e] p-4 text-left focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={project.cover} alt={`Miniatura salva de ${project.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-[1.03] group-focus-visible:scale-[1.03] motion-reduce:transition-none" /><span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(3,8,18,0.1),rgba(3,8,18,0.94))]" /><span className="relative flex h-full flex-col justify-between"><Heart className="h-4 w-4 fill-[#67e8f9] text-[#67e8f9]" aria-hidden="true" /><span><span className="block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8edff0]">abrir imagem</span><span className="mt-1 block font-display text-xl font-medium tracking-[-0.03em] text-white">{project.name}</span></span></span></button>)}</div> : <div className="border-t border-[#67e8f9]/15 px-5 py-7 font-body text-sm leading-6 text-[#bad9e8]">Use o coração identificado como <strong className="font-semibold text-white">imagem</strong> nos cartões ou no visualizador para começar sua coleção.</div>}
-              </aside>
-              </div>
-              {favoritesOnly && <section id="projetos-salvos" data-saved-projects-section="true" aria-labelledby="saved-projects-title" aria-describedby="saved-projects-help" className="mb-6 border border-[#67e8f9]/25 bg-[#06172f]/60 p-4 sm:p-5"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">seção dedicada</p><h3 id="saved-projects-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Projetos salvos para revisitar.</h3><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bad9e8]">A lista abaixo respeita a ordenação escolhida e mostra apenas os projetos marcados como favoritos neste navegador.</p><p id="saved-projects-help" className="mt-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">arraste os cartões para ajustar sua ordem manual</p></div><div className="flex flex-wrap gap-2"><button type="button" data-saved-export-csv="true" onClick={() => void exportFavorites("csv")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" />CSV</button><button type="button" data-saved-export-pdf="true" onClick={() => void exportFavorites("pdf")} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 border border-[#67e8f9] bg-[#38bdf8] px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><FileText className="h-3.5 w-3.5" aria-hidden="true" />PDF</button><button type="button" onClick={() => setFavoritesOnly(false)} className="inline-flex min-h-11 shrink-0 items-center justify-center border border-[#67e8f9]/30 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver todos os projetos</button></div></div>{!favoriteProjectIds.length && !sharedProjectIds?.length && <div data-saved-projects-empty="true" role="status" aria-live="polite" className="mt-5 border border-dashed border-[#67e8f9]/35 bg-[#07101e]/65 p-5"><Heart className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" /><h4 className="mt-3 font-display text-xl font-medium tracking-[-0.03em] text-white">Nenhum projeto salvo ainda.</h4><p className="mt-2 max-w-xl font-body text-sm leading-6 text-[#bad9e8]">Use o coração nos cartões da galeria para guardar referências e voltar a elas quando quiser.</p><button type="button" onClick={() => setFavoritesOnly(false)} className="mt-4 inline-flex min-h-11 items-center gap-2 border border-[#67e8f9]/35 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />ver todos os projetos</button></div>}<p role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{favoriteExportStatus === "csv" ? "CSV preparado para download." : favoriteExportStatus === "pdf-loading" ? "Preparando PDF para download." : favoriteExportStatus === "pdf" ? "PDF preparado para download." : favoriteExportStatus === "error" ? "Não foi possível preparar a exportação." : ""}</p></section>}
-              {favoritesOnly && <section data-saved-projects-controls="true" tabIndex={-1} aria-label="Filtrar e ordenar projetos salvos" aria-busy={contextTransitionTarget === "saved"} className={`mb-5 scroll-mt-24 border border-[#67e8f9]/25 bg-[#07101e]/70 p-4 outline-none transition-[opacity,transform] duration-[180ms] motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${contextTransitionTarget === "saved" ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                  <div>
-                    <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">revisar projetos salvos</p>
-                    <p className="mt-1 font-body text-xs leading-5 text-[#a8c9da]">Filtre esta lista sem alterar a busca ou a ordenação da vitrine pública.</p>
-                    <div className="mt-3 flex flex-wrap gap-2"><button type="button" data-saved-to-availability="true" onClick={() => navigateSavedAgendaContext("agenda")} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><CalendarDays className="h-3.5 w-3.5" aria-hidden="true" />ver agenda</button><button type="button" data-saved-projects-share="true" onClick={() => void shareFavorites()} disabled={!favoriteProjectIds.length} className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#67e8f9]/30 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Share2 className="h-3.5 w-3.5" aria-hidden="true" />{shareStatus === "shared" ? "compartilhado" : shareStatus === "copied" ? "link copiado" : shareStatus === "error" ? "tentar novamente" : "compartilhar lista"}</button></div>
-                  </div>
-                </div>
-                <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <label className="block"><span className="sr-only">Filtrar projetos salvos por título, tecnologia ou descrição</span><input data-saved-projects-search="true" type="search" value={savedProjectSearch} onChange={(event) => { setSavedProjectSearch(event.target.value); setSavedProjectControlStatus(""); }} placeholder="filtrar projetos salvos" aria-describedby="saved-projects-filter-status" className="min-h-12 w-full border border-[#67e8f9]/25 bg-[#061226] px-3 font-mono text-base uppercase tracking-[0.04em] text-white placeholder:text-[#6e8bad] sm:text-[10px] sm:tracking-[0.08em] focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc]" /></label>
-                  <div className="flex flex-col gap-2 sm:min-w-52"><label className="flex min-h-12 items-center justify-between gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9eb5d2]"><span>ordenar</span><select data-saved-projects-sort="true" value={savedProjectSortMode} onChange={(event) => { setSavedProjectSortMode(event.target.value as (typeof sortOptions)[number]["value"]); setSavedProjectControlStatus(""); }} aria-label="Ordenar projetos salvos" className="min-h-12 border border-[#67e8f9]/25 bg-[#061226] px-2.5 font-mono text-base uppercase tracking-[0.04em] sm:text-[9px] sm:tracking-[0.08em] text-[#d8f7ff] outline-none focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>{hasActiveSavedProjectControls && <button type="button" data-saved-projects-clear-controls="true" onClick={clearSavedProjectControls} className="inline-flex min-h-12 items-center justify-center gap-2 border border-amber-300/35 px-3 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar busca e ordem</button>}</div>
-                </div>
-                <p id="saved-projects-filter-status" data-saved-projects-result-count="true" role="status" aria-live="polite" className="mt-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#8db8ff]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto salvo encontrado" : "projetos salvos encontrados"}{savedProjectSearch ? ` para “${savedProjectSearch}”` : ""}</p><span role="status" aria-live="polite" className="sr-only">{savedProjectControlStatus}</span>
-              </section>}
-              {!favoritesOnly && <>
-              <div className="mb-3 flex flex-col gap-2 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">explorar por tecnologia</p><p className="mt-1 font-body text-xs leading-5 text-[#9fb4d2]">Combine tecnologia, categoria, tags e busca para encontrar evidências específicas.</p></div><p role="status" aria-live="polite" data-technology-result-count="true" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7894bb]">{visibleRepositories.length} {visibleRepositories.length === 1 ? "projeto encontrado" : "projetos encontrados"}</p></div>
-            <div className="flex max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden" aria-label="Filtrar galeria por categoria">
-                {categoryFilters.map((category) => {
-                  const categoryCount = category === "Todos" ? repositories.length : repositories.filter((repository) => getRepositoryCategories(repository).has(category)).length;
-                  return <button type="button" key={category} onClick={() => selectCategory(category)} aria-pressed={activeCategory === category} aria-busy={isProjectFilterTransitioning} data-filter-scope="category" className={`inline-flex min-h-11 shrink-0 items-center gap-2 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${activeCategory === category ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{category}</span><span aria-hidden="true" className={`min-w-4 text-center text-[8px] ${activeCategory === category ? "text-[#083760]" : "text-[#5e789d]"}`}>{categoryCount}</span></button>;
-                })}
-              </div>
-              <div className={`${isMobileGalleryRefinementOpen ? "flex" : "hidden"} mt-3 max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden`} aria-label="Filtrar galeria pública por tags">
-                {tagFilters.map((tag) => <button type="button" key={tag} onClick={() => selectTag(tag)} aria-pressed={activeTag === tag} data-filter-scope="tag" className={`inline-flex min-h-11 shrink-0 items-center gap-2 border px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${activeTag === tag ? "border-[#a5f3fc] bg-[#0b3156] text-[#dffbff]" : "border-[#67e8f9]/20 bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/65 hover:text-white"}`}><span>{tag}</span><span aria-hidden="true" className="text-[8px] text-[#5e789d]">{tag === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(tag) || getRepositoryCategories(repository).has(tag)).length}</span></button>)}
-              </div>
-              <button type="button" data-mobile-gallery-refinement-toggle="true" onClick={() => setIsMobileGalleryRefinementOpen((current) => !current)} aria-label="Refinar resultados" aria-expanded={isMobileGalleryRefinementOpen} aria-controls="mobile-gallery-refinements" className="mt-3 inline-flex min-h-11 w-full items-center justify-between border border-[#67e8f9]/25 bg-[#07101e] px-3 font-mono text-[9px] uppercase tracking-[0.11em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"><span className="flex items-center gap-2"><Settings2 className="h-3.5 w-3.5" aria-hidden="true" />filtros</span><ChevronDown className={`h-4 w-4 transition-transform duration-200 motion-reduce:transition-none ${isMobileGalleryRefinementOpen ? "rotate-180" : ""}`} aria-hidden="true" /></button>
-            <div className="mt-4 flex flex-col gap-4 border-b border-white/[0.1] pb-4 sm:flex-row sm:items-center sm:justify-between">
-              <div id="mobile-gallery-refinements" className={`${isMobileGalleryRefinementOpen ? "flex" : "hidden"} max-w-full flex-nowrap gap-2 overflow-x-auto pb-1 pr-1 [scrollbar-width:none] sm:flex sm:flex-wrap sm:overflow-visible sm:pb-0 sm:pr-0 [&::-webkit-scrollbar]:hidden`} aria-label="Filtrar repositórios por tecnologia">
-              {technologyFilters.map((technology) => (
-                <button
-                  type="button"
-                  key={technology}
-                  onClick={() => selectTechnology(technology)}
-                  aria-busy={isProjectFilterTransitioning}
-                  aria-pressed={activeTechnology === technology}
-                  data-filter-scope="technology"
-                  className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 border px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${
-                    activeTechnology === technology
-                      ? "border-[#3b82f6] bg-[#3b82f6] text-[#02111f]"
-                      : "border-white/10 bg-transparent text-[#88a0c4] hover:border-[#3b82f6]/60 hover:text-[#eaf2ff]"
-                  }`}
-                >
-                  <span>{technology}</span>
-                  <span aria-hidden="true" className={`ml-1 min-w-4 text-center text-[8px] ${activeTechnology === technology ? "text-[#02111f]" : "text-[#5e789d]"}`}>
-                    {technology === "Todos" ? repositories.length : repositories.filter((repository) => repository.technologies.includes(technology)).length}
-                  </span>
-                </button>
-              ))}
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsCompactGallery((current) => !current)}
-                aria-pressed={isCompactGallery}
-                aria-label={isCompactGallery ? "Voltar para visualização detalhada" : "Ativar visualização compacta"}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 border px-3 py-2 font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f18] ${isCompactGallery ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/[0.12] bg-[#07101e] text-[#9eb5d2] hover:border-[#67e8f9]/60 hover:text-white"}`}
-              >
-                <Layers2 className="h-3.5 w-3.5" /> <span className="sm:hidden">{isCompactGallery ? "compacto" : "detalhes"}</span><span className="hidden sm:inline">{isCompactGallery ? "modo compacto" : "modo detalhado"}</span>
-              </button>
-            </div>
-
-            <div className="mt-3 min-h-5" aria-live="polite">
-              <span data-gallery-loading-status="true" aria-hidden={!(isProjectFilterTransitioning || isGalleryLoading)} className={`inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8edff0] transition-[opacity,transform] duration-200 motion-reduce:transition-none ${isProjectFilterTransitioning || isGalleryLoading ? "translate-y-0 opacity-100" : "pointer-events-none -translate-y-1 opacity-0"}`}><Loader2 className="h-3.5 w-3.5 animate-spin motion-reduce:animate-none" aria-hidden="true" />atualizando resultados</span>
-            </div>
-
-            <div data-project-search-panel="true" className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <label className="relative block w-full sm:max-w-md">
-                <span className="sr-only">Pesquisar projetos por palavra-chave, nome, tecnologia ou descrição</span>
-                {isGalleryLoading ? <Loader2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-[#60a5fa] motion-reduce:animate-none" aria-hidden="true" /> : <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6e8bad]" aria-hidden="true" />}
-                <input
-                  ref={projectSearchInputRef}
-                  type="search"
-                  role="combobox"
-                  value={projectSearch}
-                  onChange={(event) => {
-                    setProjectSearch(event.target.value);
-                    if (galleryLoadingTimerRef.current) window.clearTimeout(galleryLoadingTimerRef.current);
-                    setIsGalleryLoading(true);
-                    galleryLoadingTimerRef.current = window.setTimeout(() => setIsGalleryLoading(false), 260);
-                    setActiveSearchSuggestionIndex(-1);
-                    setIsProjectSearchFocused(true);
-                  }}
-                  onFocus={() => setIsProjectSearchFocused(true)}
-                  onBlur={() => setIsProjectSearchFocused(false)}
-                  onKeyDown={handleProjectSearchKeyDown}
-                  data-project-search="true"
-                  placeholder="pesquisar por palavra-chave, tecnologia ou descrição"
-                  aria-describedby="project-search-feedback"
-                  aria-keyshortcuts="Escape"
-                  enterKeyHint="search"
-                  aria-autocomplete="list"
-                  aria-controls="project-search-suggestions"
-                  aria-expanded={isProjectSearchFocused && visibleSearchSuggestions.length > 0}
-                  aria-activedescendant={activeSearchSuggestionIndex >= 0 ? `project-search-suggestion-${activeSearchSuggestionIndex}` : undefined}
-                  className="min-h-12 w-full border border-white/[0.12] bg-[#07101e] py-3 pl-10 pr-12 font-mono text-base uppercase tracking-[0.04em] sm:text-[10px] sm:tracking-[0.1em] text-white placeholder:text-[#59718f] transition-colors focus:border-[#67e8f9] focus:outline-none focus:ring-2 focus:ring-[#a5f3fc] focus:ring-offset-2 focus:ring-offset-[#0a0f18]"
-                />
-                {isProjectSearchFocused && visibleSearchSuggestions.length > 0 && (
-                  <ul id="project-search-suggestions" role="listbox" aria-label="Sugestões de busca" className="absolute z-20 mt-2 w-full overflow-hidden border border-[#67e8f9]/35 bg-[#061226] shadow-[0_18px_40px_rgba(0,0,0,0.36)]">
-                    {visibleSearchSuggestions.map((suggestion, index) => (
-                      <li
-                        key={`${suggestion.source}-${suggestion.value}`}
-                        id={`project-search-suggestion-${index}`}
-                        role="option"
-                        aria-selected={activeSearchSuggestionIndex === index}
-                        onMouseDown={(event) => event.preventDefault()}
-                        onClick={() => applyProjectSearchSuggestion(suggestion)}
-                        className={`flex min-h-11 cursor-pointer items-center justify-between gap-4 border-b border-white/[0.08] px-3 py-2.5 font-mono text-[10px] uppercase tracking-[0.1em] last:border-b-0 ${activeSearchSuggestionIndex === index ? "bg-[#38bdf8] text-[#02111f]" : "text-[#d6ecf8] hover:bg-[#0a2446]"}`}
-                      >
-                        <span className="flex min-w-0 items-center gap-2">
-                          {suggestion.source === "projeto" ? <FolderGit2 data-suggestion-icon="projeto" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#60a5fa]"}`} aria-hidden="true" /> : suggestion.source === "tecnologia" ? <Braces data-suggestion-icon="tecnologia" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#67e8f9]"}`} aria-hidden="true" /> : <FileText data-suggestion-icon="descrição" className={`h-3.5 w-3.5 shrink-0 ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#a5b4fc]"}`} aria-hidden="true" />}
-                          <span className="truncate">{renderSuggestionMatch(suggestion.value, projectSearch, activeSearchSuggestionIndex === index)}</span>
-                        </span>
-                        <span className={`shrink-0 text-[8px] tracking-[0.12em] ${activeSearchSuggestionIndex === index ? "text-[#083760]" : "text-[#6f9cbd]"}`}>{suggestion.source}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <button
-                  type="button"
-                  onClick={clearProjectSearch}
-                  aria-label="Limpar busca de trabalhos"
-                  title="Limpar busca"
-                  tabIndex={projectSearch ? 0 : -1}
-                  className={`absolute right-0.5 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-transparent text-[#91acd0] light-muted-ink transition-[opacity,transform,background-color,border-color,color] duration-200 focus-visible:border-[#67e8f9]/60 focus-visible:bg-[#0b2746] focus-visible:text-[#eaffff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-offset-2 focus-visible:ring-offset-[#07101e] active:scale-95 ${projectSearch ? "scale-100 opacity-100 hover:border-[#67e8f9]/35 hover:bg-[#0b2746] hover:text-white" : "pointer-events-none scale-95 opacity-0"}`}
-                >
-                  <X className="h-4 w-4 transition-transform duration-200 hover:rotate-90" aria-hidden="true" />
-                  <span className="sr-only">Limpar busca de trabalhos</span>
-                </button>
-              </label>
-              <div className="flex shrink-0 flex-wrap items-center gap-2">
-                <label className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb] light-muted-ink"><span>ordenar</span><select data-sort-control="projects" value={sortMode} onChange={(event) => selectSort(event.target.value as (typeof sortOptions)[number]["value"])} aria-label="Ordenar projetos por data ou relevância" className="min-h-11 border border-[#67e8f9]/25 bg-[#07101e] px-2.5 py-2 font-mono text-base uppercase tracking-[0.04em] sm:text-[9px] sm:tracking-[0.08em] text-[#d8f7ff] outline-none transition-colors focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]"><option value="relevance">relevância</option><option value="added">data de adição</option><option value="manual">ordem manual</option></select></label>
-                <button type="button" onClick={copyCurrentSearchLink} aria-label={searchShareStatus === "copied" ? "Link da busca copiado" : "Copiar link da busca atual"} className="inline-flex min-h-11 items-center gap-2 border border-[#3b82f6]/30 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-[#b7d4ff] transition-colors hover:border-[#3b82f6] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><Copy className="h-3.5 w-3.5" aria-hidden="true" />{searchShareStatus === "copied" ? "copiado" : searchShareStatus === "error" ? "tente novamente" : "copiar busca"}</button>
-                <span data-search-share-status="true" role="status" aria-live="polite" className="sr-only">{searchShareStatus === "copied" ? "Link da busca copiado." : searchShareStatus === "error" ? "Não foi possível copiar o link da busca." : ""}</span>
-                <button type="button" onClick={clearAllProjectFilters} aria-label="Limpar todos os filtros de projetos" className="inline-flex min-h-11 items-center gap-2 border border-amber-300/25 px-2.5 font-mono text-[9px] uppercase tracking-[0.1em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar filtros</button>
-              </div>
-              <p id="project-search-feedback" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6e89ab] light-muted-ink">{visibleRepositories.length} {visibleRepositories.length === 1 ? "trabalho encontrado" : "trabalhos encontrados"}{projectSearch ? ` para “${projectSearch}”` : ""}</p>
-              {(activeCategory !== "Todos" || activeTag !== "Todos" || activeTechnology !== "Todos" || favoritesOnly || projectSearch) && <div data-active-filter-summary="true" className="mt-3 flex flex-wrap items-center gap-2" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">filtros ativos</span>{activeCategory !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">categoria: {activeCategory}</span>}{activeTag !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">tag: {activeTag}</span>}{activeTechnology !== "Todos" && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">tecnologia: {activeTechnology}</span>}{favoritesOnly && <span className="border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#d8f7ff]">salvos</span>}<button type="button" onClick={clearAllProjectFilters} className="inline-flex min-h-11 items-center font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 underline decoration-amber-300/50 underline-offset-2 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar ativos</button></div>}
-            </div>
-
-            {recentSearches.length > 0 && <div data-recent-searches="true" className="mt-3 flex flex-wrap items-center gap-2" aria-label="Buscas recentes"><span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#6e89ab]">recentes</span>{recentSearches.map((term) => <span key={term} className="inline-flex max-w-full items-center border border-white/[0.1] bg-[#07101e] font-mono text-[9px] uppercase tracking-[0.08em] text-[#9eb5d2]"><button type="button" onClick={() => { setProjectSearch(term); setIsProjectSearchFocused(false); projectSearchInputRef.current?.focus(); }} className="inline-flex min-h-11 items-center truncate px-2.5 py-1.5 text-left transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:min-h-0">{term}<span className="sr-only">, repetir busca</span></button><button type="button" onClick={() => removeRecentSearch(term)} aria-label={`Excluir busca recente ${term}`} title={`Excluir ${term}`} className="grid h-11 w-11 shrink-0 place-items-center border-l border-white/[0.1] text-[#7189ae] transition-colors hover:bg-red-400/10 hover:text-red-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:h-7 sm:w-7"><Trash2 className="h-3 w-3" aria-hidden="true" /></button></span>)}<button type="button" onClick={clearRecentSearches} aria-label="Limpar todo o histórico de buscas" className="inline-flex min-h-11 items-center gap-1.5 border border-amber-300/25 px-2.5 py-1.5 font-mono text-[9px] uppercase tracking-[0.08em] text-amber-100 transition-colors hover:border-amber-200 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:min-h-0">limpar histórico</button></div>}
-              </>}
-
-            <div id="galeria-publica" aria-label="Galeria pública de trabalhos" aria-busy={isProjectFilterTransitioning || isGalleryLoading} className={`project-gallery-stage mt-8 transition-[opacity,transform] duration-200 ${isProjectFilterTransitioning ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"}`}>
-            {isGalleryLoading ? (
-              <div role="status" aria-live="polite" aria-label="Carregando projetos" className="grid gap-px bg-white/[0.1] lg:grid-cols-3">
-                {Array.from({ length: Math.min(visibleProjectLimit, 4) }).map((_, index) => <div key={`project-skeleton-${index}`} aria-hidden="true" className={`relative overflow-hidden bg-[#0a1422] p-6 sm:p-8 ${galleryView === "list" ? "min-h-[250px] sm:min-h-[280px]" : isCompactGallery ? "min-h-[220px] sm:min-h-[250px]" : "min-h-[380px] sm:min-h-[440px]"}`}><div className="absolute inset-0 bg-[linear-gradient(110deg,transparent_20%,rgba(103,232,249,0.08)_45%,transparent_70%)] motion-safe:animate-[skeleton-shimmer_1.4s_linear_infinite] motion-reduce:animate-none" /><div className="relative flex h-full flex-col justify-between"><div className="space-y-3"><span className="block h-2 w-20 bg-[#294568]" /><span className="block h-2 w-28 bg-[#1c3454]" /></div><div className="space-y-4"><span className="block h-8 w-3/4 bg-[#294568]" /><span className="block h-3 w-full bg-[#1c3454]" /><span className="block h-3 w-2/3 bg-[#1c3454]" /><div className="flex gap-2"><span className="h-6 w-16 bg-[#163354]" /><span className="h-6 w-20 bg-[#163354]" /></div></div></div></div>)}
-              </div>
-            ) : visibleRepositories.length > 0 ? (
-              <>
-              <div className={`grid gap-px bg-white/[0.1] ${galleryView === "list" ? "grid-cols-1" : isCompactGallery ? "sm:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-3"}`} data-gallery-view={galleryView}><p className="sr-only" role="status" aria-live="polite">{manualOrderStatus}</p>
-                {displayedRepositories.map((repository, index) => {
-                  const cardContent = (
-                    <>
-                      {repository.cover && <img src={repository.cover} alt={`Capa do trabalho ${repository.name}`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-55 saturate-[0.75] transition-transform duration-700 group-hover:scale-[1.03]" />}
-                      {repository.cover && <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(6,10,16,0.18),rgba(6,10,16,0.95)_78%)]" />}
-                      <span aria-hidden="true" className="archive-preview pointer-events-none absolute inset-x-4 bottom-4 z-10 translate-y-2 border border-[#67e8f9]/35 bg-[#061a31]/95 p-4 opacity-0 shadow-[0_14px_35px_rgba(0,0,0,0.34)] transition-[opacity,transform] duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 max-sm:translate-y-0 max-sm:opacity-100 motion-reduce:translate-y-0 motion-reduce:transition-none">
-                        <span className="block font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">resumo rápido</span>
-                        <span className="mt-2 block font-body text-xs leading-5 text-[#d6edf8]">{repository.description}</span>
-                        <span className="mt-3 flex flex-wrap gap-1.5">{repository.technologies.map((technology) => <span key={`preview-${technology}`} className="border border-[#67e8f9]/25 bg-[#0b2746] px-2 py-1 font-mono text-[8px] uppercase tracking-[0.08em] text-[#bdf7ff]">{technology}</span>)}</span>
-                      </span>
-                      <span className="relative flex items-start justify-between gap-4">
-                        <span><span className="block font-mono text-[10px] uppercase tracking-[0.14em] text-[#bdcff0]">{repository.id}</span>{!isCompactGallery && <span className="mt-2 block font-mono text-[8px] uppercase tracking-[0.12em] text-[#8b9cb4]">EVIDÊNCIA / FRAME {String(index + 1).padStart(2, "0")}</span>}</span>
-                        {repository.kind === "video" ? <span className="grid h-9 w-9 place-items-center border border-[#8bb4ff]/50 bg-[#3b82f6]/25 text-[#f3f8ff] transition-all duration-200 group-hover:scale-110 group-hover:bg-[#3b82f6]"><Play className="h-4 w-4 fill-current" /></span> : <ArrowUpRight className="h-4 w-4 text-[#6fa4ff] transition-transform duration-200 group-hover:-translate-y-1 group-hover:translate-x-1" />}
-                      </span>
-                      <span className="relative mt-auto block">
-                        <span className={`${isCompactGallery ? "mb-3" : "mb-5"} flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#a4b1c6]`}>{repository.kind === "video" ? <><Clapperboard className="h-3.5 w-3.5" /> registro de campo / assistir</> : "repositório"}</span>
-                        <span className={`block font-display font-medium leading-[1.02] tracking-[-0.04em] text-white ${isCompactGallery ? "text-xl" : "text-3xl"}`}>{repository.name}</span>
-                        {!isCompactGallery && <span className="mt-4 block max-w-md font-body text-sm leading-6 text-[#c2d0e4]">{repository.description}</span>}
-                        {!isCompactGallery && <span className="mt-5 grid max-w-xl gap-3 border-t border-white/10 pt-4 sm:grid-cols-3"><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">papel</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.role}</span></span><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">processo</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.process}</span></span><span><span className="block font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">resultado</span><span className="mt-1 block font-body text-[11px] leading-4 text-[#b9cce3]">{repository.result}</span></span></span>}
-                        <span className={`${isCompactGallery ? "mt-4" : "mt-6"} flex flex-wrap gap-2`}>
-                          {(isCompactGallery ? repository.technologies.slice(0, 2) : repository.technologies).map((technology) => <span key={technology} className="border border-white/15 bg-[#07101e]/65 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#abb9ce]">{technology}</span>)}
-                        </span>
-                      </span>
-                    </>
-                  );
-
-                  const reorderControls = <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1" role="group" aria-label={`Reordenar ${repository.name}`}><span className="grid h-11 w-11 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#9eb5d2] sm:h-9 sm:w-9" title="Arraste para reordenar"><GripVertical className="h-4 w-4" aria-hidden="true" /></span><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, -1); }} aria-label={`Mover ${repository.name} para cima`} title="Mover para cima" className="grid h-11 w-11 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:h-9 sm:w-9"><ChevronUp className="h-4 w-4" aria-hidden="true" /></button><button type="button" onClick={(event) => { event.stopPropagation(); moveProject(repository.id, 1); }} aria-label={`Mover ${repository.name} para baixo`} title="Mover para baixo" className="grid h-11 w-11 place-items-center border border-[#67e8f9]/30 bg-[#07101e]/75 text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:h-9 sm:w-9"><ChevronDown className="h-4 w-4" aria-hidden="true" /></button></div>;
-                  const favoriteButton = <button type="button" data-favorite-control="true" aria-label={favoriteProjectIdSet.has(repository.id) ? `Remover ${repository.name} dos favoritos` : `Favoritar ${repository.name}`} aria-pressed={favoriteProjectIdSet.has(repository.id)} onClick={(event) => toggleFavorite(repository.id, event)} title={favoriteProjectIdSet.has(repository.id) ? "Remover dos favoritos" : "Salvar nos favoritos"} className={`absolute right-4 top-4 z-20 grid h-11 w-11 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:right-5 sm:top-5 sm:h-10 sm:w-10 ${favoriteProjectIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] hover:border-[#67e8f9] hover:bg-[#3b82f6]"}`}><Heart className={`h-4 w-4 ${favoriteProjectIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" />{favoriteProjectIdSet.has(repository.id) && <span aria-hidden="true" className="absolute -right-2 -top-2 border border-[#67e8f9] bg-[#071326] px-1.5 py-0.5 font-mono text-[7px] uppercase tracking-[0.08em] text-[#c8f7ff]">salvo</span>}</button>;
-                  const imageFavoriteButton = repository.cover ? <button type="button" data-image-favorite-control="true" aria-label={favoriteImageIdSet.has(repository.id) ? `Remover imagem de ${repository.name} da coleção pessoal` : `Salvar imagem de ${repository.name} na coleção pessoal`} aria-pressed={favoriteImageIdSet.has(repository.id)} onClick={(event) => toggleFavoriteImage(repository.id, event)} title={favoriteImageIdSet.has(repository.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`absolute right-[5.5rem] top-4 z-20 grid h-11 w-11 place-items-center border transition-all duration-200 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:right-16 sm:top-5 sm:h-10 sm:w-10 ${favoriteImageIdSet.has(repository.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#a5f3fc] shadow-[0_0_0_1px_rgba(103,232,249,0.25)]" : "border-[#67e8f9]/35 bg-[#07101e]/80 text-[#c8f7ff] hover:border-[#67e8f9] hover:bg-[#0b2746]"}`}><Heart className={`h-4 w-4 ${favoriteImageIdSet.has(repository.id) ? "fill-current" : ""}`} aria-hidden="true" /></button> : null;
-                  const lightboxButton = repository.cover ? <button type="button" onClick={(event) => openProjectLightbox(repository.id, event)} aria-label={`Ampliar imagem de ${repository.name}`} title="Ampliar imagem" className="absolute left-5 top-5 z-20 grid h-11 w-11 place-items-center border border-[#8bb4ff]/50 bg-[#07101e]/80 text-[#f3f8ff] transition-all hover:border-[#67e8f9] hover:bg-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:h-10 sm:w-10"><Maximize2 className="h-4 w-4" aria-hidden="true" /></button> : null;
-                  const whatsAppShareButton = <button type="button" data-project-whatsapp-share="true" onClick={(event) => shareRepositoryToWhatsApp(repository, event)} aria-label={`Compartilhar ${repository.name} no WhatsApp`} title="Compartilhar no WhatsApp" className="absolute left-[4.25rem] top-5 z-20 grid h-11 w-11 place-items-center border border-[#67e8f9]/35 bg-[#07101e]/80 text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:h-10 sm:w-10"><MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" /></button>;
-                  return repository.kind === "video" ? (
-                    <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
-                      {lightboxButton}
-                      {whatsAppShareButton}
-                      {imageFavoriteButton}
-                      {favoriteButton}
-                      {reorderControls}
-                      <button type="button" onClick={() => openProjectDetails(repository)} style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : `p-6 sm:p-8 ${repository.featured ? "min-h-[440px] lg:col-span-2" : "min-h-[380px]"}`}`}>
-                        {cardContent}
-                      </button>
-                    </div>
-                  ) : (
-                    <div key={`${activeTechnology}-${repository.id}`} data-project-id={repository.id} draggable onDragStart={() => startProjectDrag(repository.id)} onDragOver={(event) => event.preventDefault()} onDrop={() => dropProject(repository.id)} onDragEnd={() => setDraggedProjectId(null)} aria-label={`Projeto ${repository.name}. Arraste para reordenar ou use os controles de mover.`} className={`relative cursor-grab transition-opacity active:cursor-grabbing ${draggedProjectId === repository.id ? "opacity-45" : "opacity-100"}`}>
-                      {lightboxButton}
-                      {whatsAppShareButton}
-                      {imageFavoriteButton}
-                      {favoriteButton}
-                      {reorderControls}
-                      {favoritesOnly ? <button type="button" data-saved-project-preview={repository.id} onClick={() => openProjectDetails(repository)} style={{ animationDelay: `${index * 45}ms` }} aria-label={`Pré-visualizar ${repository.name} sem sair dos projetos salvos`} className={`project-gallery-card group relative flex w-full flex-col overflow-hidden bg-[#0a0f18] text-left transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
-                        {cardContent}
-                      </button> : <a href={repository.url} target="_blank" rel="noreferrer" style={{ animationDelay: `${index * 45}ms` }} className={`project-gallery-card group relative flex flex-col overflow-hidden bg-[#0a0f18] transition-colors hover:bg-[#0d1523] ${galleryView === "list" ? "min-h-[260px] p-5 sm:min-h-[290px] sm:p-7" : isCompactGallery ? "min-h-[220px] p-4 sm:min-h-[250px] sm:p-5" : "min-h-[380px] p-6 sm:p-8"}`}>
-                        {cardContent}
-                      </a>}
-                    </div>
-                  );
-                })}
-              </div>
-              {hasMoreRepositories && <div className="mt-5 flex flex-col items-center justify-between gap-3 border border-[#67e8f9]/15 bg-[#07101e]/60 px-4 py-4 sm:flex-row sm:px-5"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink" aria-live="polite">mostrando {displayedRepositories.length} de {visibleRepositories.length}</p><button type="button" onClick={loadMoreProjects} className="inline-flex items-center gap-2 border border-[#67e8f9]/35 bg-[#0b2746] px-4 py-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#c8f7ff] transition-all hover:border-[#67e8f9] hover:bg-[#12385e] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">carregar mais <ArrowDown className="h-3.5 w-3.5" aria-hidden="true" /></button></div>}
-              {!hasMoreRepositories && <p role="status" aria-live="polite" className="mt-5 border border-white/[0.1] bg-[#07101e]/60 px-4 py-3 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink">todos os {visibleRepositories.length} projetos desta seleção foram carregados</p>}
-              </>
-            ) : (
-              <div key={`empty-${activeTechnology}`} className="project-gallery-empty grid border border-white/[0.1] bg-[#09101c] lg:grid-cols-[1.42fr_0.58fr]">
-                <div className="relative overflow-hidden p-7 sm:p-10">
-                  <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
-                  <div className="relative">
-                    <span className="grid h-12 w-12 place-items-center border border-[#3b82f6]/40 bg-[#3b82f6]/10 text-[#70a6ff]"><FolderGit2 className="h-5 w-5" /></span>
-                    <p className="mt-8 font-mono text-[10px] font-semibold uppercase tracking-[0.15em] text-[#72a7fb]">arquivo em preparo / novos trabalhos</p>
-                    <h3 className="mt-4 max-w-xl font-display text-[clamp(2rem,3.5vw,3.7rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white">Quando você quiser, a próxima história começa aqui.</h3>
-                    <p className="mt-5 max-w-2xl font-body text-sm leading-7 text-[#9fb2ce]">
-                      {projectSearch.trim()
-                        ? `Nenhum trabalho real com “${projectSearch.trim()}” no nome, tecnologia ou descrição corresponde ao filtro ${activeTechnology}. Tente outro termo ou limpe a busca.`
-                        : activeTechnology === "Todos"
-                        ? "Quando houver um link do GitHub, um vídeo ou uma nova filmagem, o registro pode entrar aqui com descrição, tecnologias e acesso direto."
-                        : `Ainda não há um trabalho real marcado com ${activeTechnology}. Quando houver, ele será filtrado aqui automaticamente.`}
-                    </p>
-                    <div className="mt-7 flex flex-wrap items-center gap-3"><button type="button" data-empty-clear-filters="true" onClick={clearAllProjectFilters} className="inline-flex items-center gap-2 border border-[#3b82f6]/50 bg-[#3b82f6]/10 px-3.5 py-2.5 font-mono text-[10px] uppercase tracking-[0.12em] text-[#d9e8ff] transition-colors hover:border-[#70a6ff] hover:bg-[#3b82f6]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]"><X className="h-3.5 w-3.5" aria-hidden="true" />limpar filtros ativos</button><a href="#contato" className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.13em] text-[#d9e8ff] transition-colors hover:text-[#70a6ff]">enviar material para incluir <ArrowUpRight className="h-3.5 w-3.5" /></a></div>
-                  </div>
-                </div>
-                <div className="border-t border-white/[0.1] bg-[#070b13] p-7 sm:p-10 lg:border-l lg:border-t-0">
-                  <Layers2 className="h-5 w-5 text-[#3b82f6]" />
-                  <p className="mt-7 font-mono text-[10px] uppercase tracking-[0.14em] text-[#7189ae]">ficha de inclusão</p>
-                  <div className="mt-5 space-y-3 font-mono text-[11px] leading-5 text-[#c8d8ef]">
-                    <p><span className="text-[#3b82f6]">01</span> nome do trabalho</p>
-                    <p><span className="text-[#3b82f6]">02</span> descrição objetiva</p>
-                    <p><span className="text-[#3b82f6]">03</span> tecnologias ou formato</p>
-                    <p><span className="text-[#3b82f6]">04</span> link ou arquivo</p>
-                  </div>
-                  <div className="mt-8 flex items-center gap-2 border-t border-white/[0.1] pt-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#60789d]"><Github className="h-3.5 w-3.5" /> pronto para conectar</div>
-                </div>
-              </div>
-            )}
+              <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
             </div>
 
             <PortfolioCaseStudies />

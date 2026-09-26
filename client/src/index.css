@@ -1138,3 +1138,31 @@ html.theme-transitioning .arquivo-page * {
     outline-width: 3px;
   }
 }
+
+
+/* Professional refinement — restrained surfaces, clearer hierarchy, stronger mobile rhythm. */
+.arquivo-page {
+  --content-max: 1440px;
+}
+.arquivo-page .blueprint-grid { opacity: .32; }
+.arquivo-page .archive-spine { opacity: .42; }
+.arquivo-page .archive-chapter::before,
+.arquivo-page .archive-chapter::after { opacity: .65; }
+.arquivo-page :where(.archive-entry,.featured-project-card,.evidence-card) {
+  border-radius: 2px;
+}
+.arquivo-page :where(h1,h2) { font-kerning: normal; }
+@media (min-width: 1024px) {
+  .arquivo-page section > div { scroll-margin-top: 6rem; }
+}
+@media (max-width: 639px) {
+  .arquivo-page .blueprint-grid { opacity: .18; }
+  .arquivo-page .archive-spine,
+  .arquivo-page .archive-chapter::before,
+  .arquivo-page .archive-chapter::after { display: none; }
+  .arquivo-page section { overflow-x: clip; }
+  .arquivo-page h1 { line-height: .94 !important; letter-spacing: -.055em !important; }
+  .arquivo-page h2 { line-height: 1 !important; letter-spacing: -.045em !important; }
+  .arquivo-page :where(p,dd,li) { max-width: 65ch; }
+  .arquivo-page .featured-project-card { min-height: 0; }
+}
