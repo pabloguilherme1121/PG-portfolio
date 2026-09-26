@@ -54,10 +54,10 @@ export default function PortfolioHero({
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
-            Pablo Guilherme · desenvolvimento de produtos digitais
+            Pablo Guilherme · produtos digitais do problema à publicação
           </div>
           <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
-            Transformo problemas e informação em experiências digitais claras e funcionais.
+            Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
           <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
@@ -74,10 +74,10 @@ export default function PortfolioHero({
 
           <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Desenvolvo sites, interfaces e dashboards do entendimento do problema à publicação. Quando o projeto precisa comunicar melhor, integro conteúdo e audiovisual à solução — sem perder o foco em clareza, usabilidade e entrega.
+              Crio sites, interfaces e dashboards com foco em clareza, responsividade e entrega real. Organizo o problema, desenho a experiência, desenvolvo e publico; conteúdo visual entra quando ajuda a explicar ou demonstrar melhor a solução.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
-              React + TypeScript · interfaces responsivas · dashboards · publicação web
+              Produto digital · React + TypeScript · dashboards · publicação web
             </p>
 
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
@@ -88,8 +88,8 @@ export default function PortfolioHero({
               >
                 iniciar um projeto <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
-              <a href="#projetos" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
-                ver projetos <ArrowDownRight className="h-3.5 w-3.5" />
+              <a href="#observatorio" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
+                ver trabalho em produção <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
 

@@ -1,119 +1,95 @@
-import { Braces, Clapperboard, Plane } from "lucide-react";
+import { Braces, Clapperboard } from "lucide-react";
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 
 export const skillTracks = [
   {
     number: "01",
-    title: "Tecnologia e produto",
-    text: "Desenvolvimento de interfaces e organização de produto para transformar problemas em experiências web claras, responsivas e utilizáveis.",
-    tools: "TypeScript · React · Vite · HTML · CSS · JavaScript · Python",
+    title: "Produto e estrutura",
+    text: "Transformo objetivos, conteúdo e dados em uma estrutura clara: o que precisa aparecer, para quem e em qual ordem.",
+    tools: "Problema · fluxo · arquitetura de informação · priorização",
   },
   {
     number: "02",
-    title: "Conteúdo e narrativa",
-    text: "Roteiro, captação e edição para organizar mensagens curtas, demonstrações de interface e conteúdo vertical com clareza.",
-    tools: "Roteiro · edição · vídeo vertical · direção",
+    title: "Interface e desenvolvimento",
+    text: "Construo interfaces responsivas e produtos web com atenção a usabilidade, consistência, desempenho e publicação.",
+    tools: "TypeScript · React · Vite · HTML · CSS · JavaScript",
   },
   {
     number: "03",
-    title: "Imagem aérea e terrestre",
-    text: "Enquadramento, movimento e leitura de espaço aplicados a eventos, ambientes e registros noturnos em solo e por drone.",
-    tools: "Drone · câmera · composição · captação",
+    title: "Comunicação da solução",
+    text: "Uso conteúdo e audiovisual como apoio quando a entrega precisa ser explicada, demonstrada ou apresentada com mais clareza.",
+    tools: "Roteiro · vídeo · demonstração · narrativa visual",
   },
 ];
 
 export const serviceOffers = [
   {
     number: "01",
-    label: "produto / presença digital",
-    title: "Sites e produtos digitais",
-    text: "Planejamento e desenvolvimento de sites, interfaces e dashboards que organizam informação, apresentam valor e criam um caminho claro para a próxima ação.",
-    detail: "ESTRATÉGIA · INTERFACE · PUBLICAÇÃO",
-    delivery: "Site · landing page · dashboard",
+    label: "presença digital",
+    title: "Sites e landing pages",
+    text: "Páginas responsivas que organizam a proposta de valor, facilitam a navegação e conduzem a pessoa para a próxima ação.",
+    detail: "ESTRUTURA · INTERFACE · PUBLICAÇÃO",
+    delivery: "Site responsivo · landing page",
     duration: "Escopo definido por projeto",
     Icon: Braces,
   },
   {
     number: "02",
-    label: "narrativa / presença digital",
-    title: "Conteúdo para marcas e projetos",
-    text: "Planejamento, captação e edição de peças que explicam uma ideia, apresentam um produto e fortalecem sua presença nos canais digitais.",
-    detail: "MENSAGEM · RITMO · CONVERSÃO",
-    delivery: "Vídeos · peças verticais · demonstrações",
-    duration: "Pacotes sob medida",
-    Icon: Clapperboard,
+    label: "produto / informação",
+    title: "Interfaces e dashboards",
+    text: "Experiências digitais para organizar dados, fluxos e informações que precisam ser consultados, compreendidos e usados com facilidade.",
+    detail: "INFORMAÇÃO · USABILIDADE · DADOS",
+    delivery: "Dashboard · interface · produto web",
+    duration: "Escopo definido por projeto",
+    Icon: Braces,
   },
   {
     number: "03",
-    label: "drone / cobertura visual",
-    title: "Captação aérea e audiovisual",
-    text: "Imagem aérea e terrestre para mostrar espaços, eventos, pessoas e operações com contexto, movimento e acabamento profissional.",
-    detail: "PERSPECTIVA · PRESENÇA · ATMOSFERA",
-    delivery: "9:16 · 16:9 · fotos e vídeos",
-    duration: "Conforme cobertura",
-    Icon: Plane,
+    label: "comunicação complementar",
+    title: "Conteúdo e audiovisual",
+    text: "Peças visuais para explicar uma solução, demonstrar um produto ou apresentar um projeto de forma mais direta.",
+    detail: "MENSAGEM · DEMONSTRAÇÃO · NARRATIVA",
+    delivery: "Vídeo · conteúdo vertical · captação",
+    duration: "Conforme a necessidade",
+    Icon: Clapperboard,
   },
 ];
 
 export const processSteps = [
   {
     number: "01",
-    title: "Entendemos o problema",
-    text: "Objetivo, público, contexto e resultado esperado definem o que realmente precisa ser construído ou produzido.",
+    title: "Entender e priorizar",
+    text: "Defino o problema, o público, a informação essencial e a ação que precisa ficar mais simples.",
   },
   {
     number: "02",
-    title: "Definimos a solução",
-    text: "Escopo, experiência, formato, tecnologia e entregáveis são organizados antes da execução.",
+    title: "Estruturar e construir",
+    text: "Organizo conteúdo e fluxo, desenho a interface e desenvolvo a solução com foco em clareza e responsividade.",
   },
   {
     number: "03",
-    title: "Construímos e publicamos",
-    text: "A solução é desenvolvida, testada e entregue pronta para uso — com espaço para medir, aprender e evoluir.",
+    title: "Validar e publicar",
+    text: "Testo o que foi construído, ajusto os pontos críticos e entrego uma versão publicada que pode ser usada e evoluída.",
   },
 ];
 
 export const caseStudies = [
   {
     id: "TEC.01",
-    title: "Observatório — dados públicos em uma experiência utilizável",
-    context: "Produto digital publicado para organizar dados públicos e transformá-los em uma interface navegável, com indicadores e dashboard.",
-    method: "Arquitetura de informação, hierarquia visual, desenvolvimento responsivo e publicação web com foco em tornar dados complexos mais fáceis de explorar.",
-    learning: "Um dashboard cria mais valor quando reduz o esforço para encontrar contexto e interpretar informação, em vez de apenas exibir números.",
+    title: "Observatório — informação pública transformada em produto digital",
+    context: "Produto publicado criado para organizar informação pública em uma experiência navegável com indicadores e dashboard.",
+    method: "Estrutura de informação, hierarquia visual, interface responsiva e publicação web com foco em reduzir o esforço para encontrar contexto e interpretar dados.",
+    learning: "Uma boa interface de dados não precisa mostrar tudo de uma vez; precisa ajudar a pessoa a encontrar o que importa e entender o contexto.",
     tags: ["Produto digital", "Web", "Dashboard", "Dados"],
   },
   {
     id: "TEC.08",
-    title: "Site vendendo enquanto você dorme",
-    context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
-    method: "Roteiro enxuto, hierarquia tipográfica e uma promessa principal adaptada ao formato vertical.",
-    learning: "Em poucos segundos, uma proposta clara comunica melhor do que vários argumentos competindo pela atenção.",
+    title: "Site vendendo enquanto você dorme — comunicação de uma proposta digital",
+    context: "Peça autoral curta criada para apresentar uma proposta ligada a presença digital em um formato rápido.",
+    method: "Mensagem central, hierarquia tipográfica e edição vertical para mostrar uma ideia sem competir pela atenção com argumentos demais.",
+    learning: "Quando a proposta é curta, clareza e hierarquia importam mais do que quantidade de informação.",
     tags: ["Web", "Conteúdo", "Vídeo"],
-  },
-  {
-    id: "AUD.01",
-    title: "Chá da Eloise",
-    context: "Evento social registrado com foco em atmosfera, pessoas e leitura do espaço.",
-    method: "Seleção de planos amplos e movimentos suaves, usando a perspectiva aérea como contexto da celebração.",
-    learning: "A cobertura ganha força quando o espaço situa a história sem competir com as pessoas.",
-    tags: ["Evento", "Vídeo", "Drone"],
-  },
-  {
-    id: "CNT.03",
-    title: "RHAM — Seu combustível vale ouro",
-    context: "Campanha vertical para um posto de combustíveis, combinando espaço, equipe e mensagem promocional.",
-    method: "Captação aérea e terrestre, seleção de planos objetivos e montagem orientada à leitura rápida no celular.",
-    learning: "Em conteúdo comercial curto, cenário, equipe e chamada precisam aparecer como uma única narrativa.",
-    tags: ["Conteúdo", "Vídeo", "Vertical", "Drone"],
-  },
-  {
-    id: "AUD.05",
-    title: "Cobertura esportiva noturna",
-    context: "Registro de evento esportivo à noite, alternando presença em campo e perspectiva aérea do ambiente.",
-    method: "Planos terrestres para proximidade e tomadas aéreas para mostrar escala, luz e dinâmica do espaço.",
-    learning: "Alternar proximidade e contexto cria ritmo e dá dimensão ao acontecimento.",
-    tags: ["Esporte", "Vídeo", "Drone", "Noturno"],
   },
 ];
 

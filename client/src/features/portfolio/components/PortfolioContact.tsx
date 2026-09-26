@@ -150,8 +150,8 @@ export function PortfolioContact({
       <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
         <div className="min-w-0 border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Contato</p>
-            <h2 className="mt-6 max-w-full break-words font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Vamos conversar sobre seu projeto.</h2>
-            <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Envie o objetivo, o contexto e o prazo. A partir disso, alinhamos escopo, formato e próximos passos.</p>
+            <h2 className="mt-6 max-w-full break-words font-display text-[clamp(3.1rem,5.6vw,6rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">Vamos definir uma solução clara para o seu projeto.</h2>
+            <p className="mt-8 max-w-md font-body text-base leading-8 text-[#c0e3f4]">Conte o problema, quem vai usar a solução e o resultado esperado. A partir disso, organizo o contexto para alinhar escopo, entrega e próximos passos.</p>
           <div className="mt-12 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8ca4c8]"><span className="human-status-dot h-2 w-2 shrink-0 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]" /> disponível para novos projetos e oportunidades</div>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <a href="#contato-briefing" className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] sm:min-h-0">enviar briefing <ArrowDown className="h-3.5 w-3.5" /></a>
