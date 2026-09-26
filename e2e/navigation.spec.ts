@@ -182,7 +182,7 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(2);
+    await expect(studies).toHaveCount(3);
 
     const observatorioStudy = studies.filter({ hasText: "Observatório" });
     await expect(observatorioStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
@@ -200,7 +200,7 @@ test.describe("portfólio profissional", () => {
       /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(4);
   });
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
