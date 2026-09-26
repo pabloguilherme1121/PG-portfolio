@@ -39,7 +39,7 @@ describe("exportFavoriteProjects", () => {
 
   it("preserva o formato JSON e as categorias derivadas", async () => {
     const { anchor, getExportedBlob } = setupDownloadEnvironment();
-    const project = repositories[1]!;
+    const project = repositories[0]!;
 
     await exportFavoriteProjects("json", [project], () => new Set(["Interface", "Conteúdo"]));
 

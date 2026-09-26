@@ -82,8 +82,8 @@ import {
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
-const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
+const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
 const portraitUrl = portfolioMediaPath("pablo-profile-2026.webp");
 const portraitResponsive = {
   avif: portfolioMediaPath("pablo-profile-2026.avif"),
@@ -95,9 +95,9 @@ const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
 declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
 declare const __PORTFOLIO_SHOWREEL_AVAILABLE__: boolean;
-const resumeAvailable = !isStaticDeploy || __PORTFOLIO_RESUME_AVAILABLE__;
-const heroAvailable = !isStaticDeploy || __PORTFOLIO_HERO_AVAILABLE__;
-const showreelAvailable = !isStaticDeploy || __PORTFOLIO_SHOWREEL_AVAILABLE__;
+const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
+const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
+const showreelAvailable = __PORTFOLIO_SHOWREEL_AVAILABLE__;
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
 
@@ -169,6 +169,7 @@ const navigationItems = [
   ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
   ["projetos", "#projetos", "projetos"],
+  ["observatório", "#observatorio", "observatorio"],
 ] as const;
 
 export default function Home() {
@@ -811,7 +812,7 @@ export default function Home() {
   const selectedProjectIndex = selectedProject ? visibleRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
   const previousSelectedProject = selectedProjectIndex > 0 ? visibleRepositories[selectedProjectIndex - 1] : null;
   const nextSelectedProject = selectedProjectIndex >= 0 && selectedProjectIndex < visibleRepositories.length - 1 ? visibleRepositories[selectedProjectIndex + 1] : null;
-  const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 3), []);
+  const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 4), []);
   const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
   const projectPageSize = 4;
 

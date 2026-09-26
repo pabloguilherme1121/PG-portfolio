@@ -13,6 +13,9 @@ build/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.*
+!.env.example
+!env.example
 
 # IDE and editor files
 .vscode/
@@ -115,3 +118,13 @@ client/public/__manus__/version.json
 
 # Development-only Manus debug collector
 client/public/__manus__/debug-collector.js
+
+# Secrets and private credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+credentials.json
+service-account*.json

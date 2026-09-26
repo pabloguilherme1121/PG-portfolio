@@ -12,13 +12,6 @@ describe("portfolio data canonical contract", () => {
   it("keeps case studies aligned with the current public project catalog", () => {
     expect(repositories.filter((repository) => repository.caseStudy).map((repository) => repository.id)).toEqual([
       "TEC.08",
-      "AUD.01",
-      "CNT.02",
-      "CNT.03",
-      "AUD.04",
-      "AUD.05",
-      "CNT.06",
-      "AUD.07",
     ]);
   });
 

@@ -24,7 +24,7 @@ export default function PortfolioAbout({
         <aside className="relative border-b border-white/[0.07] px-5 py-10 sm:px-8 lg:border-b-0 lg:border-r lg:px-12 lg:py-20">
           <div className="sticky top-28">
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Sobre</p>
-            <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Tecnologia com repertório visual.</p>
+            <p className="mt-5 max-w-[14rem] font-display text-2xl font-medium leading-tight text-white">Desenvolvimento orientado a problema, uso e entrega.</p>
             <div className="mt-12 hidden h-40 w-px bg-[linear-gradient(#3b82f6,transparent)] lg:block" />
           </div>
         </aside>
@@ -34,16 +34,16 @@ export default function PortfolioAbout({
           <div className="grid gap-12 xl:grid-cols-[1.5fr_0.7fr] xl:gap-16">
             <div>
               <p className="font-display text-[clamp(2.3rem,4.6vw,4.75rem)] font-medium leading-[0.98] tracking-[-0.05em] text-[#f4f8ff]">
-                Construo na interseção entre desenvolvimento, produto e comunicação visual.
+                Meu trabalho é transformar contexto complexo em uma experiência que alguém consiga entender e usar.
               </p>
               <div className="mt-9 max-w-2xl space-y-5 font-body text-base leading-8 text-[#b8c8df]">
-                <p>Meu processo começa pelo problema: entender o contexto, organizar prioridades e escolher a solução mais clara para quem vai usar ou assistir.</p>
-                <p>No digital, trabalho com interfaces e desenvolvimento web. No audiovisual, com conteúdo vertical, captação terrestre e imagens aéreas. O objetivo em ambos é o mesmo: execução cuidadosa e comunicação direta.</p>
+                <p>Antes de escolher tecnologia ou formato, procuro entender quem vai usar a solução, qual informação importa e qual ação precisa ficar mais simples. A partir disso, estruturo a experiência, desenvolvo, testo e publico.</p>
+                <p>O Observatório é a principal demonstração desse processo: dados públicos foram organizados em uma interface navegável e um dashboard publicado. Os projetos audiovisuais mostram uma competência complementar — transformar mensagem, ambiente e movimento em comunicação visual.</p>
               </div>
 
               <aside className="human-note mt-9 max-w-2xl p-5 sm:p-6">
                 <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">princípio de trabalho</p>
-                <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">Clareza antes do excesso: entender, construir, testar e melhorar.</p>
+                <p className="mt-3 max-w-xl font-body text-lg leading-8 text-[#e6f8ff]">Entender o problema, construir uma solução real, publicar, observar e melhorar.</p>
                 <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd] light-muted-ink">processo / execução</p>
               </aside>
 
@@ -89,11 +89,11 @@ export default function PortfolioAbout({
                 </div>
                 <div>
                   <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">interesse</dt>
-                  <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Tecnologia, conteúdo e audiovisual</dd>
+                  <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Produto digital, interfaces e visualização de dados</dd>
                 </div>
                 <div>
                   <dt className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#7b91b3]">modo de trabalho</dt>
-                  <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Criatividade, prática e melhoria contínua</dd>
+                  <dd className="mt-1.5 font-body text-sm text-[#e7f0ff]">Entender → estruturar → desenvolver → publicar</dd>
                 </div>
               </dl>
             </div>

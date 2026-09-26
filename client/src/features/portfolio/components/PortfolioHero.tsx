@@ -54,10 +54,10 @@ export default function PortfolioHero({
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
-            Pablo Guilherme · desenvolvimento web & audiovisual
+            Pablo Guilherme · desenvolvimento de produtos digitais
           </div>
           <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
-            Desenvolvimento web que transforma ideias em experiências digitais.
+            Transformo problemas e informação em experiências digitais claras e funcionais.
           </h1>
           <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
@@ -74,10 +74,10 @@ export default function PortfolioHero({
 
           <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Desenvolvo interfaces responsivas com React e TypeScript e amplio projetos com conteúdo audiovisual quando a comunicação pede imagem e movimento.
+              Desenvolvo sites, interfaces e dashboards do entendimento do problema à publicação. Quando o projeto precisa comunicar melhor, integro conteúdo e audiovisual à solução — sem perder o foco em clareza, usabilidade e entrega.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
-              React e TypeScript · interfaces responsivas · conteúdo e produção audiovisual.
+              React + TypeScript · interfaces responsivas · dashboards · publicação web
             </p>
 
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
@@ -97,7 +97,7 @@ export default function PortfolioHero({
               <a href="#projetos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">01</span>
                 <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver projetos</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projetos e resultados</span>
+                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">cases e entregas reais</span>
               </a>
               <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
@@ -119,7 +119,7 @@ export default function PortfolioHero({
           <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
             PORTFÓLIO: projetos selecionados
             <br />
-            FOCO: DESENVOLVIMENTO WEB · AUDIOVISUAL
+            FOCO: PRODUTOS DIGITAIS · INTERFACES · DADOS
             <br />
             ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
           </p>

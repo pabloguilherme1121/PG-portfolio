@@ -8,6 +8,10 @@ export function registerStorageProxy(app: Express) {
       res.status(400).send("Missing storage key");
       return;
     }
+    if (key.length > 512 || key.includes("..") || key.includes("\\") || key.startsWith("/") || /[\u0000-\u001f\u007f]/.test(key)) {
+      res.status(400).send("Invalid storage key");
+      return;
+    }
 
     if (!ENV.forgeApiUrl || !ENV.forgeApiKey) {
       res.status(500).send("Storage proxy not configured");
@@ -38,7 +42,8 @@ export function registerStorageProxy(app: Express) {
         return;
       }
 
-      res.set("Cache-Control", "no-store");
+      res.set("Cache-Control", "private, no-store");
+      res.set("X-Content-Type-Options", "nosniff");
       res.redirect(307, url);
     } catch (err) {
       console.error("[StorageProxy] failed:", err);

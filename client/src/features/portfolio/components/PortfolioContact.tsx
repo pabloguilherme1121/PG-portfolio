@@ -255,10 +255,11 @@ export function PortfolioContact({
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
                   <select required name="service" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="" disabled>Selecione um serviço</option>
-                    <option>Filmagem aérea com drone</option>
-                    <option>Captação terrestre</option>
+                    <option>Site ou landing page</option>
+                    <option>Dashboard ou produto digital</option>
                     <option>Criação de conteúdo</option>
-                    <option>Pacote combinado</option>
+                    <option>Captação audiovisual / drone</option>
+                    <option>Solução combinada</option>
                     <option>Outro projeto</option>
                   </select>
                 </label>
@@ -266,10 +267,11 @@ export function PortfolioContact({
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
                   <select required name="projectType" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="" disabled>Selecione uma opção</option>
-                    <option>Evento social</option>
-                    <option>Evento corporativo</option>
+                    <option>Produto ou serviço digital</option>
                     <option>Marca ou negócio</option>
-                    <option>Imóvel ou espaço</option>
+                    <option>Projeto com dados / dashboard</option>
+                    <option>Evento social ou corporativo</option>
+                    <option>Imóvel, espaço ou operação</option>
                     <option>Esporte ou atividade externa</option>
                     <option>Outro</option>
                   </select>
@@ -290,10 +292,13 @@ export function PortfolioContact({
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
                   <select name="delivery" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="">A definir</option>
+                    <option>Site responsivo</option>
+                    <option>Landing page</option>
+                    <option>Dashboard / interface</option>
                     <option>Vertical 9:16 para Reels</option>
                     <option>Horizontal 16:9</option>
-                    <option>Vertical e horizontal</option>
                     <option>Fotos e vídeos</option>
+                    <option>Solução combinada</option>
                   </select>
                 </label>
                 <label className="block">
@@ -309,7 +314,7 @@ export function PortfolioContact({
               </div>
               <label className="block">
                 <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">briefing do projeto *</span>
-                <textarea required name="briefing" rows={5} placeholder="Conte o objetivo, referências, o que precisa ser registrado e qualquer detalhe importante." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                <textarea required name="briefing" rows={5} placeholder="Conte o problema ou objetivo, para quem é a solução, referências e o resultado que você espera alcançar." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
               </label>
             </div>
             <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
