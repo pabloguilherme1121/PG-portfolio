@@ -103,7 +103,7 @@ export default function ProjectDiagnostic() {
             <div className="mt-7 grid gap-px bg-white/10 sm:grid-cols-3">
               {selected.signal.split(" → ").map((item, index) => (
                 <div key={item} className="bg-[#08182a] px-4 py-4">
-                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#5f789d]">0{index + 1}</p>
+                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8aa8cc]">0{index + 1}</p>
                   <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[#d8f3ff]">{item}</p>
                 </div>
               ))}
