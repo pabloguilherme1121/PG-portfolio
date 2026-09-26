@@ -1,30 +1,22 @@
 import { ArrowUpRight, Clapperboard, FileText, Github, Mail, Route, ShieldCheck, SquareChartGantt } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
-type PortfolioProfessionalSnapshotProps = {
-  resumeAvailable: boolean;
-  resumeUrl: string;
-};
-
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 
 const opportunityEmailUrl =
   "mailto:mpjcreator@gmail.com?subject=Oportunidade%20profissional%20-%20Pablo%20Guilherme&body=Ol%C3%A1%2C%20Pablo.%20Vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20uma%20oportunidade%20profissional.";
 
-export default function PortfolioProfessionalSnapshot({
-  resumeAvailable,
-  resumeUrl,
-}: PortfolioProfessionalSnapshotProps) {
+export default function PortfolioProfessionalSnapshot() {
   const proofs = [
     {
       id: "resume",
       label: "Currículo",
-      title: "Abrir currículo",
-      text: "PDF profissional com formação, perfil e links para avaliação.",
-      href: resumeUrl,
-      external: true,
+      title: "Abrir currículo web",
+      text: "Versão verificável e imprimível com formação, stack, projetos e contato.",
+      href: "#curriculo-web",
+      external: false,
       Icon: FileText,
-      available: resumeAvailable,
+      available: true,
     },
     {
       id: "github",
@@ -131,32 +123,9 @@ export default function PortfolioProfessionalSnapshot({
           </div>
 
           <div className="grid gap-px bg-cyan-100/[0.12] sm:grid-cols-2 xl:grid-cols-3">
-            {proofs.map(({ id, label, title, text, href, external, Icon, available }) => {
+            {proofs.map(({ id, label, title, text, href, external, Icon }) => {
               const className =
                 "group flex min-h-[190px] flex-col justify-between bg-[#071326] p-5 transition-colors hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:p-6";
-
-              if (!available) {
-                return (
-                  <a
-                    key={id}
-                    data-professional-proof="true"
-                    data-professional-proof-id={id}
-                    href="#sobre"
-                    onClick={() => trackPortfolioEvent("professional_evidence_opened", { professionalEvidence: "profile" })}
-                    className={className}
-                  >
-                    <div>
-                      <div className="flex items-start justify-between gap-4">
-                        <Icon className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
-                        <ArrowUpRight className="h-4 w-4 text-[#5d7892] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
-                      </div>
-                      <p className="mt-5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#77a9fc]">{label}</p>
-                      <p className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">Ver perfil e formação</p>
-                    </div>
-                    <p className="mt-5 font-body text-xs leading-5 text-[#9db8ca]">O PDF ainda não está publicado neste build; formação, foco e contexto profissional estão disponíveis no perfil.</p>
-                  </a>
-                );
-              }
 
               return (
                 <a
