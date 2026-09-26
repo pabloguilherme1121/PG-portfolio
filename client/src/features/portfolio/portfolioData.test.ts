@@ -4,9 +4,9 @@ import { repositories } from "@/features/portfolio/portfolioData";
 describe("portfolioData — mídia pública", () => {
   it("mantém somente projetos com mídia real versionada no portfólio", () => {
     expect(repositories.map((project) => project.id)).toEqual([
-      "TEC.08",
       "AUD.01",
       "CNT.03",
+      "TEC.08",
       "AUD.05",
     ]);
 
