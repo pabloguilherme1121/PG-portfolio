@@ -2,43 +2,45 @@
 
 ## Visão geral
 
-O projeto é uma aplicação fullstack em React 19, TypeScript, Vite, Express, tRPC, Drizzle ORM e MySQL. A arquitetura permanece incremental: a refatoração reorganiza responsabilidades sem reescrever a aplicação nem alterar as rotas públicas existentes.
+O portfólio tem uma experiência pública em React 19, TypeScript e Vite. O GitHub Pages publica uma versão estática; o backend Express/tRPC permanece disponível para ambientes que desejem persistir pedidos de briefing.
 
-## Fronteiras principais
+A arquitetura atual privilegia uma única jornada pública e remove ferramentas administrativas que não contribuíam para a apresentação profissional.
 
-| Área | Responsabilidade | Local principal |
-|---|---|---|
-| Aplicação | Bootstrap, providers e roteamento | `client/src/App.tsx`, `client/src/main.tsx` |
-| Jornada pública | Home, apresentação e contato | `client/src/pages/Home.tsx` |
-| Feature de portfólio | Experiência editorial, catálogo, filtros, contato e rodapé | `client/src/features/portfolio/` |
-| Feature social | Repertório social carregado sob demanda | `client/src/features/social/` |
-| Curadoria | Favoritos, ordenação e exportação administrativa | `client/src/pages/FavoritesManagement.tsx` |
-| Agenda | Disponibilidade e fluxo administrativo | `client/src/pages/AvailabilityManager.tsx` |
-| Analytics | Eventos agregados opcionais e consultas protegidas quando configuradas | `client/src/`, `server/` |
-| Backend | Procedures tRPC, autenticação e regras de negócio | `server/` |
-| Persistência | Schema, migrations e helpers Drizzle | `drizzle/`, `server/db.ts` |
-| QA | Testes unitários, E2E e auditorias manuais | `server/*.test.ts`, `client/**/*.test.ts`, `e2e/`, `scripts/` |
+## Fronteiras
 
-## Refatoração da Home
+| Área | Responsabilidade | Local |
+| --- | --- | --- |
+| Aplicação | providers, roteamento e fallback | `client/src/App.tsx` |
+| Portfólio | home, seções, projetos e contato | `client/src/features/portfolio/` |
+| Páginas auxiliares | privacidade e 404 | `client/src/pages/` |
+| Backend opcional | briefing, autenticação de infraestrutura e serviços do template | `server/` |
+| Persistência | usuários e pedidos de briefing | `drizzle/`, `server/db.ts` |
+| QA | unitários, E2E, acessibilidade e build | `client/**/*.test.ts`, `server/*.test.ts`, `e2e/`, `scripts/` |
 
-A rota pública continua apontando para `client/src/pages/Home.tsx`, que agora funciona como um ponto de entrada fino. A implementação da experiência foi movida para `client/src/features/portfolio/HomeExperience.tsx`, enquanto dados estáticos e utilitários reutilizáveis vivem em arquivos próprios.
+## Jornada pública
 
-```text
-client/src/pages/Home.tsx
-        ↓
-client/src/features/portfolio/HomeExperience.tsx
-        └── components/
-            └── PortfolioFooter.tsx
+A home segue esta ordem:
 
-client/src/features/social/InstagramRepertoire.tsx
-```
+1. proposta de valor;
+2. perfil e competências;
+3. serviços;
+4. processo;
+5. projetos e estudos de caso;
+6. briefing e contato.
 
-A feature já separa a rota pública, o rodapé e o repertório social carregado sob demanda. A narrativa, os filtros, favoritos e lightbox permanecem na experiência principal porque concentram estados interdependentes. O próximo corte seguro é separar esses blocos em hooks ou componentes específicos, sempre acompanhado pelos testes existentes e sem duplicar regras de negócio.
+O projeto Observatório funciona como prova externa de uma entrega web publicada. Os demais projetos usam um modal único de detalhes, sem favoritos, filtros, exportação, ordenação manual ou lightbox paralelo.
 
-## Regras de dependência
+## Dados
 
-As páginas podem consumir features, componentes compartilhados e bibliotecas de domínio. Features não devem importar páginas umas das outras. Componentes de UI não devem conhecer regras de negócio ou endpoints tRPC. O backend deve continuar sendo acessado por procedures tipadas, sem chamadas HTTP manuais espalhadas pelo frontend. Rotas internas usam `DashboardLayout` com `requireAdmin` como gate visual de defesa em profundidade; a autoridade de autorização permanece em `adminProcedure` no servidor.
+`portfolioData.tsx` é a fonte canônica de competências, serviços, processo e projetos. Estudos de caso são derivados dos próprios projetos, evitando duas bases de conteúdo para a mesma informação.
 
-## Jornadas do produto
+## Publicação
 
-A experiência pública tem como objetivo apresentar trabalho, competências, prova e contato. A curadoria permanece em rotas protegidas (`/curadoria` e `/favoritos`), a agenda permanece em `/agenda` e a privacidade pública está disponível em `/privacidade`. Essa separação evita que ferramentas internas dominem o caminho principal do visitante.
+No GitHub Pages, o formulário não envia dados automaticamente: ele prepara uma mensagem para o WhatsApp e exige uma ação explícita do visitante. Em um ambiente com backend, a mesma interface pode usar a procedure `quoteRequest.create`.
+
+## Regras
+
+- componentes visuais não devem duplicar dados canônicos;
+- recursos internos não devem ser expostos no bundle público sem uma necessidade concreta;
+- novas dependências e rotas devem justificar seu impacto na jornada principal;
+- alterações de navegação ou interação devem manter cobertura E2E e acessibilidade.
