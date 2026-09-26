@@ -63,10 +63,10 @@ export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: Portf
             <section aria-labelledby="resume-contact-title">
               <h3 id="resume-contact-title" className="font-mono text-[10px] font-bold uppercase tracking-[0.14em] text-[#0e7490]">Contato e presença</h3>
               <div className="mt-4 grid gap-3 text-sm">
-                <a href="mailto:mpjcreator@gmail.com" className="inline-flex items-center gap-2 text-[#18384d] hover:text-[#0e7490]">
+                <a href="mailto:mpjcreator@gmail.com" className="inline-flex min-h-11 items-center gap-2 text-[#18384d] hover:text-[#0e7490]">
                   <Mail className="h-4 w-4" aria-hidden="true" /> mpjcreator@gmail.com
                 </a>
-                <a href="https://github.com/pabloguilherme1121" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-[#18384d] hover:text-[#0e7490]">
+                <a href="https://github.com/pabloguilherme1121" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 text-[#18384d] hover:text-[#0e7490]">
                   <Github className="h-4 w-4" aria-hidden="true" /> github.com/pabloguilherme1121
                 </a>
               </div>
