@@ -1,7 +1,7 @@
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
-import { Camera, Clapperboard, Plane } from "lucide-react";
+import { Braces, Clapperboard, Plane } from "lucide-react";
 
 export const skillTracks = [
   {
@@ -27,33 +27,33 @@ export const skillTracks = [
 export const serviceOffers = [
   {
     number: "01",
-    label: "drone / perspectiva aérea",
-    title: "Filmagem aérea",
-    text: "Captação aérea para apresentar espaços, eventos e ambientes por uma perspectiva ampla, com atenção a movimento, escala e composição.",
-    detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
-    delivery: "9:16 · 16:9",
-    duration: "15–60 s / 1–2 min",
-    Icon: Plane,
+    label: "desenvolvimento / produto",
+    title: "Desenvolvimento web",
+    text: "Sites, landing pages e interfaces responsivas construídos com foco em clareza, desempenho e experiência de uso.",
+    detail: "REACT · TYPESCRIPT · RESPONSIVIDADE",
+    delivery: "site · landing page · interface",
+    duration: "escopo sob consulta",
+    Icon: Braces,
   },
   {
     number: "02",
-    label: "câmera / registro em solo",
-    title: "Captação terrestre",
-    text: "Captação em solo para registrar pessoas, detalhes e momentos com enquadramento pensado para a entrega final.",
-    detail: "PRESENÇA · RITMO · DETALHE",
-    delivery: "Reels · aftermovie",
-    duration: "30–90 s / 1–3 min",
-    Icon: Camera,
+    label: "conteúdo / narrativa",
+    title: "Conteúdo audiovisual",
+    text: "Peças curtas para apresentar produtos, serviços e experiências com ritmo, hierarquia visual e mensagem objetiva.",
+    detail: "ROTEIRO · EDIÇÃO · VÍDEO VERTICAL",
+    delivery: "reels · demonstrações · peças",
+    duration: "escopo sob consulta",
+    Icon: Clapperboard,
   },
   {
     number: "03",
-    label: "narrativa / presença digital",
-    title: "Criação de conteúdo",
-    text: "Planejamento, captação e edição de peças curtas para apresentar uma mensagem, uma experiência ou uma interface em canais digitais.",
-    detail: "IDEIA · REGISTRO · CONEXÃO",
-    delivery: "3–5 vídeos verticais",
-    duration: "15–60 s por peça",
-    Icon: Clapperboard,
+    label: "captação / imagem",
+    title: "Captação aérea e terrestre",
+    text: "Registro de eventos, espaços e atividades com enquadramento pensado para a entrega final e para os canais de publicação.",
+    detail: "DRONE · CÂMERA · COMPOSIÇÃO",
+    delivery: "9:16 · 16:9 · fotos e vídeo",
+    duration: "escopo sob consulta",
+    Icon: Plane,
   },
 ];
 
@@ -75,33 +75,6 @@ export const processSteps = [
   },
 ];
 
-export const caseStudies = [
-  {
-    id: "TEC.08",
-    title: "Site vendendo enquanto você dorme",
-    context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
-    method: "Roteiro enxuto, hierarquia tipográfica e uma promessa principal adaptada ao formato vertical.",
-    learning: "Em poucos segundos, uma proposta clara comunica melhor do que vários argumentos competindo pela atenção.",
-    tags: ["Web", "Conteúdo", "Vídeo"],
-  },
-  {
-    id: "ARQ.01",
-    title: "Chá da Eloise",
-    context: "Evento social com foco em atmosfera, pessoas e detalhes que ajudam a memória do dia.",
-    method: "Planos abertos, aproximações e movimentos suaves para equilibrar espaço e presença.",
-    learning: "A imagem funciona quando o ambiente e as pessoas têm espaço para aparecer.",
-    tags: ["Evento", "Vídeo", "Aéreo"],
-  },
-  {
-    id: "ARQ.02",
-    title: "RHAM — serviços no app",
-    context: "Conteúdo vertical para apresentar uma jornada de serviços com rapidez e clareza.",
-    method: "Sequência curta, leitura de tela e ritmo guiando cada etapa da experiência.",
-    learning: "Legibilidade e ritmo também são parte do produto final.",
-    tags: ["Interface", "Conteúdo", "Vertical"],
-  },
-];
-
 export type Repository = {
 
   id: string;
@@ -115,15 +88,8 @@ export type Repository = {
   kind: "repository" | "video";
   cover?: string;
   featured?: boolean;
-  /** Ordem de entrada no arquivo visual, preservada pela sequência de cadastro dos projetos. */
-  addedOrder: number;
   /** Critério editorial relativo: destaque, variedade técnica e força demonstrativa do registro. */
   relevance: number;
-  /** Projeção resumida usada na gestão de favoritos, com tags próprias já exibidas no painel. */
-  catalog: {
-    description: string;
-    tags: string[];
-  };
   caseStudy?: {
     context: string;
     problem: string;
@@ -165,12 +131,7 @@ export const repositories: Repository[] = [
     kind: "video",
     cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
     featured: true,
-    addedOrder: 8,
     relevance: 94,
-    catalog: {
-      description: "Conteúdo vertical de aquisição digital.",
-      tags: ["Conteúdo", "Vídeo", "IA", "Web"],
-    },
     caseStudy: {
       context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
       problem: "Explicar uma proposta de valor digital em poucos segundos sem transformar a mensagem em uma tela carregada.",
@@ -195,12 +156,7 @@ export const repositories: Repository[] = [
     kind: "video",
     cover: publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg"),
     featured: true,
-    addedOrder: 7,
     relevance: 100,
-    catalog: {
-      description: "Registro audiovisual de evento social.",
-      tags: ["Drone", "Evento", "Conteúdo"],
-    },
     caseStudy: {
       context: "Registro audiovisual de um evento social, reunindo ambiente, pessoas e momentos da celebração.",
       problem: "Concentrar espaço, presença e detalhes em um registro breve sem perder a atmosfera do encontro.",
@@ -223,12 +179,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/rham-interface-servicos-01_de540335.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/rham-interface-servicos-01_72f2d942.jpg"),
-    addedOrder: 6,
     relevance: 88,
-    catalog: {
-      description: "Vídeo vertical de navegação por serviços.",
-      tags: ["Interface", "Conteúdo"],
-    },
     caseStudy: {
       context: "Vídeo vertical público que percorre serviços em uma interface móvel da RHAM Águas Lindas.",
       problem: "Apresentar uma jornada de serviços em pouco tempo, sem perder a leitura das etapas na tela.",
@@ -251,12 +202,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/rham-depoimento-02_e0bfccc3.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/rham-depoimento-02_c0845a39.jpg"),
-    addedOrder: 5,
     relevance: 76,
-    catalog: {
-      description: "Registro vertical para comunicação institucional.",
-      tags: ["Conteúdo", "Vídeo"],
-    },
     caseStudy: {
       context: "Registro vertical com apresentação diante da câmera para uma comunicação institucional curta.",
       problem: "Organizar uma mensagem direta em vídeo mantendo presença, enquadramento e leitura adequados ao formato vertical.",
@@ -279,12 +225,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/captacao-noturna-03_7e22eda5.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/captacao-noturna-03_1033bede.jpg"),
-    addedOrder: 4,
     relevance: 82,
-    catalog: {
-      description: "Registro noturno com perspectiva elevada.",
-      tags: ["Drone", "Noturno", "Vídeo"],
-    },
     caseStudy: {
       context: "Registro vertical noturno de um espaço e de seus arredores a partir de uma perspectiva elevada.",
       problem: "Preservar a leitura do espaço em baixa luz sem perder a sensação de escala.",
@@ -307,12 +248,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/campo-iluminado-04_dace435d.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg"),
-    addedOrder: 3,
     relevance: 84,
-    catalog: {
-      description: "Captação horizontal de campo esportivo.",
-      tags: ["Drone", "Noturno", "Esporte"],
-    },
     caseStudy: {
       context: "Captação horizontal noturna de um campo esportivo, com foco em escala, luz e movimento.",
       problem: "Apresentar o espaço à noite mantendo a leitura de escala e da iluminação disponível.",
@@ -335,12 +271,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/rham-interface-navegacao-05_b0c568ac.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/rham-interface-navegacao-05_6de0dfd3.jpg"),
-    addedOrder: 2,
     relevance: 80,
-    catalog: {
-      description: "Recorte vertical de interface móvel.",
-      tags: ["Interface", "Conteúdo"],
-    },
     caseStudy: {
       context: "Segundo recorte vertical dedicado à navegação por serviços em uma interface móvel.",
       problem: "Mostrar etapas importantes da interface sem transformar o vídeo em uma demonstração longa.",
@@ -363,12 +294,7 @@ export const repositories: Repository[] = [
     url: publicMediaPath("/manus-storage/campo-iluminado-movimento-06_d3806c2d.mp4"),
     kind: "video",
     cover: publicMediaPath("/manus-storage/campo-iluminado-movimento-06_cc198d97.jpg"),
-    addedOrder: 1,
     relevance: 79,
-    catalog: {
-      description: "Sequência aérea com atmosfera noturna.",
-      tags: ["Drone", "Noturno", "Esporte"],
-    },
     caseStudy: {
       context: "Variação de captação aérea horizontal do campo esportivo em período noturno.",
       problem: "Criar uma perspectiva complementar do mesmo espaço sem repetir o enquadramento principal.",
@@ -381,40 +307,3 @@ export const repositories: Repository[] = [
     },
   },
 ];
-
-export const repertoireSignals = [
-  {
-    label: "escala e perspectiva",
-    title: "Imagem aérea",
-    text: "Leitura de espaço, movimento e contexto para apresentar um lugar de outro ponto de vista.",
-    cover: publicMediaPath("/manus-storage/campo-iluminado-04_665a6d8f.jpg"),
-  },
-  {
-    label: "clareza e ritmo",
-    title: "Interface em movimento",
-    text: "Registro de produto e serviço com foco no que a pessoa precisa entender primeiro.",
-    cover: publicMediaPath("/manus-storage/rham-interface-servicos-01_72f2d942.jpg"),
-  },
-  {
-    label: "presença e detalhe",
-    title: "Registro de evento",
-    text: "Captação que aproxima o público da atmosfera, das pessoas e dos pequenos momentos.",
-    cover: publicMediaPath("/manus-storage/cha-da-eloise-capa_0d17d433.jpg"),
-  },
-];
-
-export const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "IA", "Web", "Noturno", "HTML", "CSS", "JavaScript", "Python"];
-export const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
-export const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
-export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
-
-export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-audiovisual", name: "Audiovisual", preset: true, order: ["AUD.01", "TEC.08", "AUD.05", "AUD.07", "AUD.04", "CNT.03", "CNT.02", "CNT.06"] },
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.08", "CNT.02", "CNT.06", "CNT.03", "AUD.01", "AUD.05", "AUD.04", "AUD.07"] },
-];
-
-export const sortOptions = [
-  { value: "manual", label: "ordem manual" },
-  { value: "relevance", label: "relevância editorial" },
-  { value: "added", label: "ordem de adição" },
-] as const;
