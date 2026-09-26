@@ -131,10 +131,12 @@ test.describe("portfólio profissional", () => {
     await expect(profile.getByRole("heading", { name: /avaliação profissional/i })).toBeVisible();
     await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(4);
 
-    await expect(profile.getByRole("link", { name: /abrir currículo/i })).toHaveAttribute(
+    const resumeProof = profile.locator('[data-professional-proof-id="resume"]');
+    await expect(resumeProof).toHaveAttribute(
       "href",
-      /curriculo-pablo-guilherme-profissional.*\.pdf$/,
+      /(?:curriculo-pablo-guilherme-profissional.*\.pdf|#sobre)$/,
     );
+    await expect(resumeProof).toContainText(/abrir currículo|ver perfil e formação/i);
     await expect(profile.getByRole("link", { name: /ver github/i })).toHaveAttribute(
       "href",
       "https://github.com/pabloguilherme1121",
