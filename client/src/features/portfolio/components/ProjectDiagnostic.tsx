@@ -53,12 +53,41 @@ const diagnosticPaths = [
   },
 ] as const;
 
+const diagnosticStages = [
+  {
+    id: "idea",
+    label: "Ideia inicial",
+    value: "Ideia inicial",
+    summary: "descoberta orientada",
+    description: "Organizar problema, público e prioridade antes da construção.",
+  },
+  {
+    id: "evolve",
+    label: "Já existe e precisa evoluir",
+    value: "Já existe e precisa evoluir",
+    summary: "evolução guiada",
+    description: "Preservar o que funciona, corrigir atritos e priorizar a próxima versão.",
+  },
+  {
+    id: "ready",
+    label: "Pronto para construir",
+    value: "Pronto para construir",
+    summary: "execução objetiva",
+    description: "Levar um escopo já claro para interface, desenvolvimento, validação e publicação.",
+  },
+] as const;
+
 export default function ProjectDiagnostic() {
   const [selectedId, setSelectedId] = useState<(typeof diagnosticPaths)[number]["id"]>("data");
+  const [selectedStageId, setSelectedStageId] = useState<(typeof diagnosticStages)[number]["id"]>("idea");
   const selected = diagnosticPaths.find((path) => path.id === selectedId) ?? diagnosticPaths[0];
+  const selectedStage = diagnosticStages.find((stage) => stage.id === selectedStageId) ?? diagnosticStages[0];
 
   function seedBriefing() {
-    trackPortfolioEvent("diagnostic_completed", { diagnosticPath: selected.id });
+    trackPortfolioEvent("diagnostic_completed", {
+      diagnosticPath: selected.id,
+      diagnosticStage: selectedStage.id,
+    });
     window.dispatchEvent(
       new CustomEvent("portfolio:briefing-seed", {
         detail: {
@@ -71,10 +100,10 @@ export default function ProjectDiagnostic() {
                 ? "Produto ou serviço digital"
                 : "Marca ou negócio",
           audience: selected.audience,
-          stage: selected.stage,
+          stage: selectedStage.value,
           delivery: selected.delivery,
           success: selected.success,
-          briefing: selected.briefing,
+          briefing: `${selected.briefing} Estágio informado: ${selectedStage.value}. Direção inicial: ${selectedStage.description}`,
         },
       }),
     );
@@ -215,6 +244,37 @@ export default function ProjectDiagnostic() {
                   <p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">critério de sucesso</p>
                   <p className="mt-3 font-body text-sm leading-6 text-[#bcd9e8]">{selected.success}</p>
                 </div>
+              </div>
+
+
+              <div className="mt-6 border border-white/10 bg-[#06172f]/65 p-4">
+                <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+                  <div>
+                    <p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">maturidade do projeto</p>
+                    <p className="mt-2 font-body text-xs leading-5 text-[#9fbfd3]">A rota muda conforme o ponto de partida.</p>
+                  </div>
+                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#a5f3fc]">{selectedStage.summary}</p>
+                </div>
+                <div className="mt-4 grid gap-2 sm:grid-cols-3" role="group" aria-label="Escolha o estágio atual do projeto">
+                  {diagnosticStages.map((stage) => {
+                    const active = selectedStageId === stage.id;
+                    return (
+                      <button
+                        key={stage.id}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => {
+                          setSelectedStageId(stage.id);
+                          trackPortfolioEvent("diagnostic_stage_selected", { diagnosticStage: stage.id });
+                        }}
+                        className={`min-h-12 border px-3 py-3 text-left font-mono text-[8px] font-semibold uppercase leading-4 tracking-[0.09em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${active ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 bg-[#07101e] text-[#8fa8c7] hover:border-[#67e8f9]/45 hover:text-white"}`}
+                      >
+                        {stage.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <p className="mt-3 font-body text-xs leading-5 text-[#88a9bf]">{selectedStage.description}</p>
               </div>
 
               <div className="mt-6 border-l-2 border-[#38bdf8] bg-[#08172a]/80 px-4 py-3">
