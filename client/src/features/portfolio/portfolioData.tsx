@@ -25,6 +25,7 @@ export const skillTracks = [
 
 export const serviceOffers = [
   {
+    id: "site",
     number: "01",
     label: "presença digital",
     title: "Sites e landing pages",
@@ -33,8 +34,17 @@ export const serviceOffers = [
     delivery: "Site responsivo · landing page",
     duration: "Escopo definido por projeto",
     Icon: Braces,
+    briefingSeed: {
+      service: "Site ou landing page",
+      projectType: "Marca ou negócio",
+      objective: "Apresentar uma oferta com clareza e conduzir visitantes para uma próxima ação.",
+      delivery: "Site responsivo",
+      success: "Tornar a proposta mais fácil de entender e facilitar ações como contato, orçamento ou cadastro.",
+      briefing: "Quero estruturar uma presença digital com proposta de valor clara, navegação simples e uma ação principal bem definida.",
+    },
   },
   {
+    id: "dashboard",
     number: "02",
     label: "produto / informação",
     title: "Interfaces e dashboards",
@@ -43,8 +53,21 @@ export const serviceOffers = [
     delivery: "Dashboard · interface · produto web",
     duration: "Escopo definido por projeto",
     Icon: Braces,
+    evidence: {
+      label: "ver prova: Observatório",
+      href: "#observatorio",
+    },
+    briefingSeed: {
+      service: "Dashboard ou produto digital",
+      projectType: "Projeto com dados / dashboard",
+      objective: "Organizar dados ou informação complexa em uma experiência clara para consulta e decisão.",
+      delivery: "Dashboard / interface",
+      success: "Reduzir o esforço de consulta e tornar indicadores e contexto mais fáceis de compreender.",
+      briefing: "Quero transformar dados, fontes ou indicadores em uma experiência navegável, com hierarquia de informação, interface responsiva e contexto suficiente para consulta e decisão.",
+    },
   },
   {
+    id: "content",
     number: "03",
     label: "comunicação complementar",
     title: "Conteúdo e audiovisual",
@@ -53,6 +76,18 @@ export const serviceOffers = [
     delivery: "Vídeo · conteúdo vertical · captação",
     duration: "Conforme a necessidade",
     Icon: Clapperboard,
+    evidence: {
+      label: "ver prova: peça vertical",
+      href: "?projeto=TEC.08#projetos",
+    },
+    briefingSeed: {
+      service: "Criação de conteúdo",
+      projectType: "Marca ou negócio",
+      objective: "Explicar, demonstrar ou apresentar uma proposta com conteúdo visual direto.",
+      delivery: "Vertical 9:16 para Reels",
+      success: "Comunicar a ideia central com clareza em um formato rápido e publicável.",
+      briefing: "Quero transformar uma proposta, produto ou projeto em conteúdo visual direto, com mensagem central clara, formato adequado ao canal e uma demonstração fácil de entender.",
+    },
   },
 ];
 
