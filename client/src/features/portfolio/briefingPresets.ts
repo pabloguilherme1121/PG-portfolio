@@ -1,6 +1,6 @@
 export const briefingDefaultValues = {
   location: "Remoto / online",
-  deadline: "2 a 4 semanas",
+  deadline: "",
   budget: "Preciso de orientação",
 } as const;
 
