@@ -14,6 +14,8 @@ export const conversionEventNames = [
   "proof_deck_selected",
   "proof_deck_cta",
   "case_study_evidence_opened",
+  "service_briefing_started",
+  "service_evidence_opened",
 ] as const;
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
@@ -29,6 +31,7 @@ type ConversionProperties = Partial<{
   briefingStep: "contact" | "direction" | "scope" | "context";
   caseId: string;
   evidenceType: "live" | "code" | "media";
+  serviceId: string;
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {

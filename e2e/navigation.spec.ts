@@ -119,6 +119,31 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("link", { name: /observatório/i }).first()).toBeVisible();
   });
 
+  test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
+    await page.goto("/");
+
+    const services = page.locator("#servicos");
+    await expect(services.locator('[data-service-offer="true"]')).toHaveCount(3);
+
+    const dashboard = services.locator('[data-service-id="dashboard"]');
+    await expect(dashboard.getByRole("link", { name: /ver prova.*observatório/i })).toHaveAttribute("href", "#observatorio");
+
+    await dashboard.getByRole("link", { name: /iniciar briefing.*interfaces e dashboards/i }).click();
+
+    const form = page.locator("#contato-briefing");
+    await expect(form.locator('select[name="service"]')).toHaveValue("Dashboard ou produto digital");
+    await expect(form.locator('select[name="projectType"]')).toHaveValue("Projeto com dados / dashboard");
+    await expect(form.locator('textarea[name="objective"]')).toHaveValue(/organizar dados|informação complexa/i);
+    await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
+    await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|indicadores|contexto/i);
+
+    const content = services.locator('[data-service-id="content"]');
+    await expect(content.getByRole("link", { name: /ver prova.*peça vertical/i })).toHaveAttribute(
+      "href",
+      "?projeto=TEC.08#projetos",
+    );
+  });
+
   test("estudos de caso levam a evidências verificáveis", async ({ page }) => {
     await page.goto("/");
 
