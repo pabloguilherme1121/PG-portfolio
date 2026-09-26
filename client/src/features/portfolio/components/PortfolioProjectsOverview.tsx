@@ -32,7 +32,7 @@ export default function PortfolioProjectsOverview({
           <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // projetos & estudos de caso</div>
         </div>
         <div className="max-w-sm">
-          <p className="font-body text-sm leading-7 text-[#b6d7eb]">Uma seleção objetiva de projetos digitais e audiovisuais, com contexto, decisões de execução e resultado.</p>
+          <p className="font-body text-sm leading-7 text-[#b6d7eb]">Projetos apresentados como evidência: problema, papel, decisões de execução e resultado — não apenas uma galeria de peças.</p>
           <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} referências catalogadas</div>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function PortfolioProjectsOverview({
 
       <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
         <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
-        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Pablo Guilherme desenvolve interfaces web e também atua com conteúdo e produção audiovisual, conectando tecnologia, comunicação e execução.</p></div>
+        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">Pablo Guilherme transforma problemas e informação em produtos digitais publicados e usa conteúdo e audiovisual para ampliar a comunicação dessas soluções.</p></div>
         <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">sobre mim <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
       </div>
 
@@ -59,7 +59,7 @@ export default function PortfolioProjectsOverview({
             <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">destaques</p>
             <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">Projetos em destaque.</h3>
           </div>
-          <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar rapidamente o papel, o processo e o resultado de cada registro.</p>
+          <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar o que foi feito, por que as decisões foram tomadas e qual valor cada entrega demonstra.</p>
         </div>
         <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-2 xl:grid-cols-4" aria-busy={!featuredCardsReady}>
           <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? `${featuredRepositories.length} projetos destacados disponíveis para abrir detalhes.` : "Carregando projetos destacados."}</div>
