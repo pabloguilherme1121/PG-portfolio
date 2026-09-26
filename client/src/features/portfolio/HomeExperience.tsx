@@ -1567,6 +1567,17 @@ export default function Home() {
       return;
     }
 
+    const extraContext = [
+      data.get("objective") ? `Objetivo: ${String(data.get("objective"))}` : "",
+      data.get("audience") ? `Público: ${String(data.get("audience"))}` : "",
+      data.get("stage") ? `Estágio atual: ${String(data.get("stage"))}` : "",
+      data.get("deadline") ? `Prazo: ${String(data.get("deadline"))}` : "",
+      data.get("success") ? `Critério de sucesso: ${String(data.get("success"))}` : "",
+      data.get("references") ? `Referências: ${String(data.get("references"))}` : "",
+      data.get("constraints") ? `Restrições / integrações: ${String(data.get("constraints"))}` : "",
+    ].filter(Boolean).join("\n");
+    const enrichedBriefing = [String(data.get("briefing") || ""), extraContext].filter(Boolean).join("\n\n").slice(0, 5000);
+
     quoteRequestMutation.mutate(
       {
         name: String(data.get("name") || ""),
@@ -1577,7 +1588,7 @@ export default function Home() {
         eventDate: eventDate || undefined,
         delivery: String(data.get("delivery") || "") || undefined,
         budget: String(data.get("budget") || "") || undefined,
-        briefing: String(data.get("briefing") || ""),
+        briefing: enrichedBriefing,
         website: String(data.get("website") || ""),
       },
       { onSuccess: () => form.reset() },
