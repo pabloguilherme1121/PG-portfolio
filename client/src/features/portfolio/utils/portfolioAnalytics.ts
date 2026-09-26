@@ -20,6 +20,7 @@ export const conversionEventNames = [
   "professional_evidence_opened",
   "professional_contact_clicked",
   "professional_resume_printed",
+  "featured_project_evidence_opened",
 ] as const;
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
