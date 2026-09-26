@@ -33,6 +33,7 @@ import {
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
+import { flushSync } from "react-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -226,14 +227,21 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    for (const [name, value] of Object.entries(nextDraft)) {
-      const field = form.elements.namedItem(name);
-      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-        field.value = value;
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+      setBriefingRevision((value) => value + 1);
+    });
+
+    const nextForm = briefingFormRef.current;
+    if (nextForm) {
+      for (const [name, value] of Object.entries(nextDraft)) {
+        const field = nextForm.elements.namedItem(name);
+        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
       }
     }
 
-    setBriefingDraft(nextDraft);
     try {
       window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
     } catch {
