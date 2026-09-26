@@ -61,8 +61,8 @@ export default function PortfolioProjectsOverview({
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar rapidamente o papel, o processo e o resultado de cada registro.</p>
         </div>
-        <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-3" aria-busy={!featuredCardsReady}>
-          <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? "Três projetos destacados disponíveis para abrir detalhes." : "Carregando projetos destacados."}</div>
+        <div className="mt-6 grid gap-px bg-[#3b82f6]/15 sm:grid-cols-2 xl:grid-cols-4" aria-busy={!featuredCardsReady}>
+          <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? `${featuredRepositories.length} projetos destacados disponíveis para abrir detalhes.` : "Carregando projetos destacados."}</div>
           {featuredCardsReady ? featuredRepositories.map((project) => (
             <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => openProjectDetails(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProjectDetails(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
               {project.cover && <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" />}
@@ -78,7 +78,7 @@ export default function PortfolioProjectsOverview({
               </dl>
               <span className="mt-5 inline-flex font-mono text-[9px] uppercase tracking-[0.12em] text-[#8db8ff] transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none">abrir detalhes <ArrowUpRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" /></span>
             </article>
-          )) : Array.from({ length: 3 }).map((_, index) => (
+          )) : Array.from({ length: 4 }).map((_, index) => (
             <div key={`featured-skeleton-${index}`} aria-hidden="true" className="featured-project-card min-h-[430px] animate-pulse bg-[#0a1422] p-4 sm:p-5 motion-reduce:animate-none">
               <div className="aspect-[16/10] w-full bg-[#163354]" />
               <div className="mt-5 space-y-3"><div className="h-2 w-16 bg-[#294568]" /><div className="h-7 w-4/5 bg-[#294568]" /><div className="h-3 w-full bg-[#1c3454]" /><div className="h-3 w-2/3 bg-[#1c3454]" /></div>
