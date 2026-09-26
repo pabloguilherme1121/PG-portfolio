@@ -5,6 +5,39 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("navegação pública e favoritos", () => {
+  test("publica a nova curadoria audiovisual e o retrato principal", async ({ page }) => {
+    await page.goto("/#galeria-publica");
+
+    await expect(page.getByText("Chá da Eloise", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Seu combustível vale OURO!", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Cobertura esportiva — sequência aérea", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("Site vendendo — demonstração vertical", { exact: true }).first()).toBeVisible();
+
+    const portrait = page.getByAltText("Pablo Guilherme").first();
+    await portrait.scrollIntoViewIfNeeded();
+    await expect(portrait).toHaveAttribute("src", /\/portfolio-media\/pablo-retrato-principal\.jpg$/);
+
+    const assets = [
+      "/portfolio-media/cha-da-eloise.mp4",
+      "/portfolio-media/cha-da-eloise-poster.jpg",
+      "/portfolio-media/rham-combustivel-ouro.mp4",
+      "/portfolio-media/rham-combustivel-ouro-poster.jpg",
+      "/portfolio-media/cobertura-esportiva-aerea.mp4",
+      "/portfolio-media/cobertura-esportiva-aerea-poster.jpg",
+      "/portfolio-media/site-vendendo.mp4",
+      "/portfolio-media/site-vendendo-poster.jpg",
+      "/portfolio-media/pablo-retrato-principal.jpg",
+      "/portfolio-media/pablo-retrato-principal.webp",
+      "/portfolio-media/pablo-retrato-principal.avif",
+      "/portfolio-media/pg-marca.webp",
+    ];
+
+    for (const asset of assets) {
+      const response = await page.request.get(asset);
+      expect(response.ok(), `${asset} não foi servido corretamente`).toBeTruthy();
+    }
+  });
+
   test("emite CTA de orçamento e início de briefing sem incluir dados pessoais", async ({ page }) => {
     await page.addInitScript(() => {
       const events: unknown[] = [];
