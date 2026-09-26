@@ -235,6 +235,16 @@ export function PortfolioContact({
       // O preset continua funcional mesmo quando o armazenamento local está indisponível.
     }
     setBriefingRevision((value) => value + 1);
+    window.requestAnimationFrame(() => {
+      const nextForm = briefingFormRef.current;
+      if (!nextForm) return;
+      for (const [name, value] of Object.entries(preset.values)) {
+        const field = nextForm.elements.namedItem(name);
+        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
+      }
+    });
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
     toast.success("Modelo aplicado", {
