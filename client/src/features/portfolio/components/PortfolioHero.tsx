@@ -1,6 +1,4 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
-import type { RefObject } from "react";
-import PortfolioShowreel from "@/features/portfolio/components/PortfolioShowreel";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
@@ -20,9 +18,6 @@ type PortfolioHeroProps = {
   markUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
-  showreelAvailable: boolean;
-  isDesktopViewport: boolean;
-  heroCtaRef: RefObject<HTMLDivElement | null>;
 };
 
 export default function PortfolioHero({
@@ -30,9 +25,6 @@ export default function PortfolioHero({
   markUrl,
   portraitUrl,
   portraitResponsive,
-  showreelAvailable,
-  isDesktopViewport,
-  heroCtaRef,
 }: PortfolioHeroProps) {
   return (
     <section id="inicio" className="relative isolate min-h-[680px] overflow-hidden pt-[76px] sm:min-h-[850px]">
@@ -76,11 +68,7 @@ export default function PortfolioHero({
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
               Desenvolvo interfaces responsivas com React e TypeScript e amplio projetos com conteúdo audiovisual quando a comunicação pede imagem e movimento.
             </p>
-            <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
-              React e TypeScript · interfaces responsivas · conteúdo e produção audiovisual.
-            </p>
-
-            <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
+            <div data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
                 href="#contato"
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
@@ -93,25 +81,7 @@ export default function PortfolioHero({
               </a>
             </div>
 
-            <nav aria-label="Atalhos principais" className="mt-6 grid max-w-2xl gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-3">
-              <a href="#projetos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">01</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver projetos</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projetos e resultados</span>
-              </a>
-              <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver serviços</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">escopo e entregas</span>
-              </a>
-              <a href="#contato" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
-                <span className="font-mono text-[9px] text-[#67e8f9]">03</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">falar comigo</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">projeto e disponibilidade</span>
-              </a>
-            </nav>
 
-            <PortfolioShowreel available={showreelAvailable} isDesktopViewport={isDesktopViewport} />
           </div>
         </div>
 
