@@ -2,41 +2,54 @@
 
 ## Instalação
 
-Use a versão de Node e pnpm compatível com o projeto e instale as dependências a partir do lockfile:
-
 ```bash
+corepack enable
 pnpm install --frozen-lockfile
 ```
 
-## Variáveis de ambiente
+## Variáveis
 
-As variáveis de backend devem ser fornecidas pelo ambiente de implantação e nunca publicadas no frontend. A integração SimilarWeb utiliza a infraestrutura de Data API já disponível no template e depende de `BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY` no servidor.
+Variáveis de backend devem permanecer no ambiente do servidor. Variáveis com prefixo `VITE_` são públicas e devem conter apenas configurações seguras para o navegador.
 
-Variáveis com prefixo `VITE_` são públicas por natureza. Use-as apenas para configurações que podem ser expostas ao navegador, como identificadores de analytics de frontend.
+O GitHub Pages usa:
 
-## Scripts de operação
+- `VITE_DEPLOY_TARGET=github-pages`
+- `VITE_STATIC_DEPLOY=true`
+
+Nessa modalidade, o briefing é preparado para envio manual pelo WhatsApp; nenhum dado do formulário é persistido automaticamente.
+
+## Comandos
 
 | Comando | Finalidade |
-|---|---|
-| `pnpm dev` | Desenvolvimento local |
-| `pnpm check` | Verificação TypeScript |
-| `pnpm test` | Testes unitários |
-| `pnpm test:e2e` | Testes end-to-end |
-| `pnpm build` | Build de frontend e backend |
-| `pnpm start` | Execução do build de produção |
-| `pnpm db:push` | Geração e aplicação de migrations quando necessário |
+| --- | --- |
+| `pnpm dev` | desenvolvimento local |
+| `pnpm audit:assets` | validação do inventário público de mídia |
+| `pnpm check` | TypeScript |
+| `pnpm test` | testes unitários |
+| `pnpm test:e2e` | testes de navegador |
+| `pnpm build` | build de frontend e backend |
+| `pnpm start` | execução do build com servidor |
 
-## Rotas relevantes
+## Rotas públicas
 
-| Rota | Jornada | Acesso |
-|---|---|---|
-| `/` | Portfólio público | Público |
-| `/agenda` | Gestão de disponibilidade | Administrador |
-| `/favoritos` | Curadoria e exportação | Administrador |
-| `/curadoria` | Alias da curadoria | Administrador |
+| Rota | Uso |
+| --- | --- |
+| `/` | portfólio |
+| `/privacidade` | informações de privacidade |
+| `/404` | fallback de rota |
 
-## Checklist de release
+## Pipeline do GitHub Pages
 
-Antes de publicar, execute `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e, quando houver alterações de navegação ou interação, `pnpm test:e2e`. Verifique também as auditorias específicas em `scripts/audit/`, `scripts/validate/` e `scripts/performance/`.
+O workflow `.github/workflows/pages.yml` executa, nesta ordem:
 
-O build pode emitir avisos sobre placeholders de analytics do template quando as variáveis `VITE_ANALYTICS_ENDPOINT` e `VITE_ANALYTICS_WEBSITE_ID` não estão definidas. Esses avisos são independentes do módulo SimilarWeb, que usa chamadas server-side.
+1. instalação com lockfile;
+2. auditoria de assets;
+3. typecheck;
+4. testes unitários;
+5. testes Playwright;
+6. build estático;
+7. preparação do bundle;
+8. validação das rotas;
+9. deploy.
+
+O deploy só acontece depois de todas as etapas de qualidade passarem.
