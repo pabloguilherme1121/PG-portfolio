@@ -55,6 +55,12 @@ const briefingFieldNames = [
   "briefing",
 ] as const;
 const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "success", "briefing"] as const;
+const briefingSteps = [
+  { id: "contact", label: "Contato", description: "Quem é você e como retorno." },
+  { id: "direction", label: "Direção", description: "Problema, público e objetivo." },
+  { id: "scope", label: "Escopo", description: "Formato, prazo e investimento." },
+  { id: "context", label: "Contexto", description: "Sucesso, referências e detalhes." },
+] as const;
 
 function readBriefingDraft(): BriefingDraft {
   if (typeof window === "undefined") return {};
@@ -120,6 +126,7 @@ export function PortfolioContact({
   const briefingFormRef = useRef<HTMLFormElement>(null);
   const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
   const [briefingRevision, setBriefingRevision] = useState(0);
+  const [briefingStep, setBriefingStep] = useState(0);
 
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -198,6 +205,31 @@ export function PortfolioContact({
     }
   }
 
+  function validateBriefingStep(stepIndex: number) {
+    const form = briefingFormRef.current;
+    if (!form) return false;
+    const section = form.querySelector<HTMLElement>(`[data-briefing-step="${briefingSteps[stepIndex]?.id}"]`);
+    if (!section) return true;
+    const fields = Array.from(section.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, textarea, select"));
+    const invalidField = fields.find((field) => !field.checkValidity());
+    if (invalidField) {
+      invalidField.reportValidity();
+      invalidField.focus();
+      return false;
+    }
+    return true;
+  }
+
+  function moveBriefingStep(nextStep: number) {
+    const target = Math.min(briefingSteps.length - 1, Math.max(0, nextStep));
+    if (target > briefingStep && !validateBriefingStep(briefingStep)) return;
+    setBriefingStep(target);
+    trackPortfolioEvent("briefing_step_changed", { briefingStep: briefingSteps[target].id });
+    window.requestAnimationFrame(() => {
+      briefingFormRef.current?.querySelector<HTMLElement>(`[data-briefing-step="${briefingSteps[target].id}"]`)?.focus({ preventScroll: true });
+    });
+  }
+
   function clearBriefingDraft() {
     try {
       window.localStorage.removeItem(briefingDraftStorageKey);
@@ -205,6 +237,7 @@ export function PortfolioContact({
       // Nada a fazer: o reset visual ainda funciona.
     }
     setBriefingDraft({});
+    setBriefingStep(0);
     setBriefingRevision((value) => value + 1);
     setFormSent(false);
     toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
@@ -328,7 +361,7 @@ export function PortfolioContact({
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
             className="max-w-2xl scroll-mt-24"
           >
-            <div className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
+            <div data-briefing-studio="true" className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
@@ -337,11 +370,33 @@ export function PortfolioContact({
                 <div className="sm:text-right">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7892b8]">qualidade do contexto</p>
                   <p data-briefing-progress="true" aria-live="polite" className="mt-1 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#a5f3fc]">{briefingProgress}% · {briefingStatus}</p>
+                  <p className="mt-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#7fa2b6]">etapa {briefingStep + 1} de {briefingSteps.length} · {briefingSteps[briefingStep].label}</p>
                 </div>
               </div>
               <div className="mt-4 h-1.5 overflow-hidden bg-white/10" aria-hidden="true">
                 <span className="block h-full origin-left bg-[#38bdf8] transition-transform duration-300 motion-reduce:transition-none" style={{ transform: `scaleX(${briefingProgress / 100})` }} />
               </div>
+              <ol className="mt-5 grid gap-px bg-white/10 sm:grid-cols-4" aria-label="Etapas do briefing">
+                {briefingSteps.map((step, index) => {
+                  const active = index === briefingStep;
+                  const completed = index < briefingStep;
+                  return (
+                    <li
+                      key={step.id}
+                      aria-current={active ? "step" : undefined}
+                      className={`bg-[#07111f] px-3 py-3 ${active ? "ring-1 ring-inset ring-[#67e8f9]" : ""}`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`font-mono text-[8px] uppercase tracking-[0.12em] ${active || completed ? "text-[#67e8f9]" : "text-[#5f7695]"}`}>
+                          0{index + 1}
+                        </span>
+                        {completed && <CheckCircle2 className="h-3.5 w-3.5 text-[#67e8f9]" aria-hidden="true" />}
+                      </div>
+                      <p className={`mt-2 font-mono text-[8px] font-semibold uppercase tracking-[0.09em] ${active ? "text-white" : "text-[#9bb4cf]"}`}>{step.label}</p>
+                    </li>
+                  );
+                })}
+              </ol>
               <div className="mt-4 flex items-start gap-3 border-t border-white/10 pt-4">
                 <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
                 <p className="font-body text-xs leading-5 text-[#8fb6c9]">O rascunho é salvo apenas neste dispositivo para você não perder o preenchimento. Nada é enviado enquanto você não concluir a ação final.</p>
@@ -353,8 +408,13 @@ export function PortfolioContact({
               <input tabIndex={-1} autoComplete="off" name="website" defaultValue="" />
             </label>
 
-            <div className="grid gap-7">
-              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+            <div data-briefing-studio="true" className="grid gap-7">
+              <fieldset
+                data-briefing-step="contact"
+                tabIndex={-1}
+                hidden={briefingStep !== 0}
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+              >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">01 · contato</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
@@ -368,7 +428,12 @@ export function PortfolioContact({
                 </div>
               </fieldset>
 
-              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+              <fieldset
+                data-briefing-step="direction"
+                tabIndex={-1}
+                hidden={briefingStep !== 1}
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+              >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">02 · direção</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
@@ -420,7 +485,12 @@ export function PortfolioContact({
                 </div>
               </fieldset>
 
-              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+              <fieldset
+                data-briefing-step="scope"
+                tabIndex={-1}
+                hidden={briefingStep !== 2}
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+              >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">03 · escopo</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
@@ -471,7 +541,12 @@ export function PortfolioContact({
                 </label>
               </fieldset>
 
-              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+              <fieldset
+                data-briefing-step="context"
+                tabIndex={-1}
+                hidden={briefingStep !== 3}
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+              >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">04 · contexto e qualidade</legend>
                 <label className="block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
@@ -492,6 +567,39 @@ export function PortfolioContact({
                   <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={briefingDraft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
               </fieldset>
+            
+              <div className="grid gap-3 border border-white/10 bg-[#07111f]/85 p-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                <button
+                  type="button"
+                  onClick={() => moveBriefingStep(briefingStep - 1)}
+                  disabled={briefingStep === 0}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/10 px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#a8c5d8] transition-colors hover:border-[#67e8f9]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-not-allowed disabled:opacity-35 sm:justify-self-start"
+                  aria-label={briefingStep > 0 ? `Voltar para ${briefingSteps[briefingStep - 1].label}` : "Primeira etapa do briefing"}
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                  {briefingStep > 0 ? `voltar: ${briefingSteps[briefingStep - 1].label}` : "início"}
+                </button>
+
+                <div className="text-center">
+                  <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">etapa {briefingStep + 1} de {briefingSteps.length}</p>
+                  <p className="mt-1 font-body text-xs leading-5 text-[#86a8bc]">{briefingSteps[briefingStep].description}</p>
+                </div>
+
+                {briefingStep < briefingSteps.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => moveBriefingStep(briefingStep + 1)}
+                    className="inline-flex min-h-11 items-center justify-center gap-2 bg-[#123b67] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:bg-[#18508c] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:justify-self-end"
+                    aria-label={`Continuar para ${briefingSteps[briefingStep + 1].label}`}
+                  >
+                    continuar: {briefingSteps[briefingStep + 1].label}
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                ) : (
+                  <span className="hidden sm:block" aria-hidden="true" />
+                )}
+              </div>
+
             </div>
 
             <aside data-briefing-summary="true" className="mt-7 border border-[#67e8f9]/25 bg-[#06172f]/80 p-5">
@@ -513,7 +621,7 @@ export function PortfolioContact({
             </aside>
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <Button data-briefing-submit="true" disabled={isQuoteRequestPending} type="submit" className="min-h-12 w-full justify-center rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
+              <Button data-briefing-submit="true" disabled={isQuoteRequestPending || briefingStep !== briefingSteps.length - 1} type="submit" className="min-h-12 w-full justify-center rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
                 {isQuoteRequestPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
               </Button>
               <button type="button" onClick={clearBriefingDraft} className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/10 px-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#8fa9c6] transition-colors hover:border-[#67e8f9]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
