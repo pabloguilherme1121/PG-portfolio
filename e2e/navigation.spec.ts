@@ -8,7 +8,7 @@ test.describe("portfólio profissional", () => {
   test("apresenta posicionamento, prova pública e contato em uma jornada direta", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { level: 1, name: /Transformo problemas e informação em experiências digitais claras e funcionais/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i })).toBeVisible();
     await expect(page.locator("#observatorio").getByRole("heading", { name: "Observatório" })).toBeVisible();
 
     const observatorio = page.getByRole("link", { name: /ver produto em produção/i }).first();
@@ -19,7 +19,7 @@ test.describe("portfólio profissional", () => {
     await expect(projectCta).toHaveAttribute("href", "#contato");
 
     await projectCta.click();
-    await expect(page.getByRole("heading", { name: /Vamos conversar sobre seu projeto/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Vamos definir uma solução clara para o seu projeto/i })).toBeVisible();
   });
 
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
@@ -115,8 +115,8 @@ test.describe("portfólio profissional", () => {
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
 
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /produtos digitais.*dashboards/i);
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Produtos Digitais, Interfaces & Dados/i);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /desenvolvimento web.*dashboards/i);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Desenvolvimento Web & Produtos Digitais/i);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${new URL(baseURL).origin}/`);
 
     const robots = await request.get("/robots.txt");
