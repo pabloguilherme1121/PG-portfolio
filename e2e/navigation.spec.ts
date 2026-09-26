@@ -73,6 +73,32 @@ test.describe("portfólio profissional", () => {
     await expect(restoredForm.locator('input[name="name"]')).toHaveValue("");
   });
 
+
+  test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
+    await page.goto("/");
+
+    const form = page.locator("#contato-briefing");
+    await form.scrollIntoViewIfNeeded();
+
+    const studio = form.locator('[data-briefing-studio="true"]');
+    await expect(studio).toBeVisible();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+    await expect(studio.locator('[data-briefing-step="direction"]')).toBeHidden();
+    await expect(studio.getByText(/etapa 1 de 4/i)).toBeVisible();
+
+    await form.locator('input[name="name"]').fill("Visitante guiado");
+    await form.locator('input[name="email"]').fill("guiado@example.com");
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
+
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeHidden();
+    await expect(studio.locator('[data-briefing-step="direction"]')).toBeVisible();
+    await expect(studio.getByText(/etapa 2 de 4/i)).toBeVisible();
+
+    await studio.getByRole("button", { name: /voltar.*contato/i }).click();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+    await expect(form.locator('input[name="name"]')).toHaveValue("Visitante guiado");
+  });
+
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
     await page.goto("/");
 
