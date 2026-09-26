@@ -1,4 +1,4 @@
-import { ArrowDownRight, Braces, ChartNoAxesCombined, Sparkles } from "lucide-react";
+import { ArrowDownRight, BarChart3, Braces, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -19,7 +19,7 @@ const diagnosticPaths = [
     recommendation: "Dashboard ou produto digital",
     objective: "Transformar informação complexa em uma experiência navegável, compreensível e útil.",
     signal: "dados → contexto → interface",
-    Icon: ChartNoAxesCombined,
+    Icon: BarChart3,
   },
   {
     id: "launch",
@@ -37,7 +37,7 @@ export default function ProjectDiagnostic() {
   const selected = diagnosticPaths.find((path) => path.id === selectedId) ?? diagnosticPaths[0];
 
   function seedBriefing() {
-    trackPortfolioEvent("diagnostic_completed", { path: selected.id });
+    trackPortfolioEvent("diagnostic_completed", { diagnosticPath: selected.id });
     window.dispatchEvent(new CustomEvent("portfolio:briefing-seed", {
       detail: {
         service: selected.recommendation,
@@ -70,7 +70,7 @@ export default function ProjectDiagnostic() {
                   aria-pressed={active}
                   onClick={() => {
                     setSelectedId(id);
-                    trackPortfolioEvent("diagnostic_option_selected", { path: id });
+                    trackPortfolioEvent("diagnostic_option_selected", { diagnosticPath: id });
                   }}
                   className={`group flex min-h-14 items-center gap-4 border px-4 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none ${active ? "border-[#67e8f9] bg-[#0b2746] shadow-[0_12px_36px_rgba(56,189,248,0.14)]" : "border-white/10 bg-[#07101e]/70 hover:border-[#67e8f9]/50 hover:bg-[#091b30]"}`}
                 >
