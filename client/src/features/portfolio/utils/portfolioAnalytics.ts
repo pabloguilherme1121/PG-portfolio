@@ -35,7 +35,7 @@ type ConversionProperties = Partial<{
   caseId: string;
   evidenceType: "live" | "code" | "media";
   serviceId: string;
-  professionalEvidence: "resume" | "profile" | "github" | "product" | "quality";
+  professionalEvidence: "resume" | "profile" | "github" | "product" | "fullstack" | "media" | "quality";
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {
