@@ -83,7 +83,7 @@ import {
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
-const markUrl = portfolioMediaPath("pg-marca.webp");
+const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
 const portraitUrl = portfolioMediaPath("pablo-profile-2026.webp");
 const portraitResponsive = {
   avif: portfolioMediaPath("pablo-profile-2026.avif"),
@@ -169,7 +169,7 @@ const navigationItems = [
   ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
   ["projetos", "#projetos", "projetos"],
-  ["site", "#observatorio", "observatorio"],
+  ["observatório", "#observatorio", "observatorio"],
 ] as const;
 
 export default function Home() {
