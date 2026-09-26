@@ -83,6 +83,11 @@ async function startServer() {
   // uploads usam storage assinado e não passam por este parser global.
   app.use(express.json({ limit: PUBLIC_BODY_LIMIT }));
   app.use(express.urlencoded({ limit: PUBLIC_BODY_LIMIT, extended: true }));
+  app.use("/api", (_req, res, next) => {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
+    next();
+  });
   registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerSeoRoutes(app);
