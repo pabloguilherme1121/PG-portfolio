@@ -1,5 +1,6 @@
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { processSteps, serviceOffers, skillTracks } from "../portfolioData";
 
 const textureUrl = publicMediaPath("/manus-storage/pablo-systems-texture_cf9aade1.png");
@@ -82,6 +83,11 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
 }
 
 export function PortfolioServices({ markUrl }: { markUrl: string }) {
+  function seedServiceBriefing(serviceId: string, briefingSeed: (typeof serviceOffers)[number]["briefingSeed"]) {
+    trackPortfolioEvent("service_briefing_started", { serviceId });
+    window.dispatchEvent(new CustomEvent("portfolio:briefing-seed", { detail: briefingSeed }));
+  }
+
   return (
         <section id="servicos" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#09101a]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
@@ -99,8 +105,8 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
             </div>
 
             <div className="mt-8 divide-y divide-white/[0.1] border-y border-white/[0.1]">
-              {serviceOffers.map(({ number, label, title, text, detail, delivery, duration, Icon }, index) => (
-                <article key={number} className={`archive-entry group relative grid gap-7 overflow-hidden border-l border-transparent py-9 transition-all duration-300 hover:border-[#67e8f9]/60 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
+              {serviceOffers.map(({ id, number, label, title, text, detail, delivery, duration, Icon, evidence, briefingSeed }, index) => (
+                <article key={number} data-service-offer="true" data-service-id={id} className={`archive-entry group relative grid gap-7 overflow-hidden border-l border-transparent py-9 transition-all duration-300 hover:border-[#67e8f9]/60 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
                   <div className="flex items-start justify-between gap-4 lg:pr-8">
                     <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1] light-muted-ink">PG / SVC.{number}</p></div>
                     <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
@@ -115,6 +121,26 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
                     <div className="mt-5 grid grid-cols-2 gap-4">
                       <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">entrega</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{delivery}</p></div>
                       <div><p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#516987]">modelo</p><p className="mt-1 font-mono text-[9px] uppercase leading-4 tracking-[0.08em] text-[#b6cae8]">{duration}</p></div>
+                    </div>
+                    <div className="mt-6 grid gap-2">
+                      <a
+                        href="#contato-briefing"
+                        onClick={() => seedServiceBriefing(id, briefingSeed)}
+                        className="group/service inline-flex min-h-12 items-center justify-between gap-3 border border-[#67e8f9]/30 bg-[#071a2e] px-4 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6fbff] transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                      >
+                        <span>iniciar briefing: {title}</span>
+                        <ArrowDownRight className="h-4 w-4 shrink-0 text-[#67e8f9] transition-transform group-hover/service:translate-x-0.5 group-hover/service:translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
+                      </a>
+                      {evidence && (
+                        <a
+                          href={evidence.href}
+                          onClick={() => trackPortfolioEvent("service_evidence_opened", { serviceId: id })}
+                          className="inline-flex min-h-11 items-center gap-2 px-1 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#8db8ff] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                        >
+                          {evidence.label}
+                          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+                        </a>
+                      )}
                     </div>
                   </div>
                 </article>
