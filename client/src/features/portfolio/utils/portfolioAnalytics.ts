@@ -3,6 +3,7 @@ export const conversionEventNames = [
   "whatsapp_click",
   "briefing_started",
   "briefing_completed",
+  "briefing_step_changed",
   "briefing_whatsapp_prepared",
   "project_opened",
   "share_project",
@@ -24,6 +25,7 @@ type ConversionProperties = Partial<{
   diagnosticPath: "presence" | "data" | "launch";
   diagnosticStage: "idea" | "evolve" | "ready";
   proofId: "produto" | "qualidade" | "briefing";
+  briefingStep: "contact" | "direction" | "scope" | "context";
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {

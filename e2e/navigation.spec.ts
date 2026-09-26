@@ -60,7 +60,15 @@ test.describe("portfólio profissional", () => {
 
     await form.locator('input[name="name"]').fill("Visitante de teste");
     await form.locator('input[name="email"]').fill("visitante@example.com");
+
+    const studio = form.locator('[data-briefing-studio="true"]');
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
     await form.locator('input[name="audience"]').fill("Equipe interna");
+
+    await studio.getByRole("button", { name: /continuar.*escopo/i }).click();
+    await form.locator('input[name="location"]').fill("Remoto");
+
+    await studio.getByRole("button", { name: /continuar.*contexto/i }).click();
     await form.locator('textarea[name="briefing"]').fill("Precisamos centralizar dados dispersos e facilitar a consulta.");
     await page.reload();
 
@@ -71,6 +79,35 @@ test.describe("portfólio profissional", () => {
 
     await restoredForm.getByRole("button", { name: /limpar rascunho/i }).click();
     await expect(restoredForm.locator('input[name="name"]')).toHaveValue("");
+  });
+
+
+  test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
+    await page.goto("/");
+
+    const form = page.locator("#contato-briefing");
+    await form.scrollIntoViewIfNeeded();
+
+    const studio = form.locator('[data-briefing-studio="true"]');
+    await expect(studio).toBeVisible();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+    await expect(studio.locator('[data-briefing-step="direction"]')).toBeHidden();
+    await expect(studio.getByText(/etapa 1 de 4/i)).toBeVisible();
+
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+
+    await form.locator('input[name="name"]').fill("Visitante guiado");
+    await form.locator('input[name="email"]').fill("guiado@example.com");
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
+
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeHidden();
+    await expect(studio.locator('[data-briefing-step="direction"]')).toBeVisible();
+    await expect(studio.getByText(/etapa 2 de 4/i)).toBeVisible();
+
+    await studio.getByRole("button", { name: /voltar.*contato/i }).click();
+    await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
+    await expect(form.locator('input[name="name"]')).toHaveValue("Visitante guiado");
   });
 
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
