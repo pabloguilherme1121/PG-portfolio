@@ -1166,3 +1166,60 @@ html.theme-transitioning .arquivo-page * {
   .arquivo-page :where(p,dd,li) { max-width: 65ch; }
   .arquivo-page .featured-project-card { min-height: 0; }
 }
+
+
+/* Currículo web — impressão limpa e independente do restante do portfólio. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  #curriculo-web,
+  #curriculo-web * {
+    visibility: visible !important;
+  }
+
+  #curriculo-web {
+    position: absolute !important;
+    inset: 0 auto auto 0 !important;
+    width: 100% !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    border: 0 !important;
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  #curriculo-web::before,
+  #curriculo-web::after,
+  #curriculo-web [data-print-hidden="true"] {
+    display: none !important;
+  }
+
+  #curriculo-web *,
+  #curriculo-web a {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #111827 !important;
+    text-shadow: none !important;
+  }
+
+  #curriculo-web a {
+    text-decoration: none !important;
+  }
+
+  #curriculo-web article,
+  #curriculo-web section {
+    break-inside: avoid;
+  }
+}

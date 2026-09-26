@@ -58,6 +58,7 @@ import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
+import PortfolioWebResume from "@/features/portfolio/components/PortfolioWebResume";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
@@ -1716,7 +1717,9 @@ export default function Home() {
           portraitResponsive={portraitResponsive}
         />
 
-        <PortfolioProfessionalSnapshot
+        <PortfolioProfessionalSnapshot />
+
+        <PortfolioWebResume
           resumeAvailable={resumeAvailable}
           resumeUrl={resumeUrl}
         />

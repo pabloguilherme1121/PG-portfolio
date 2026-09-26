@@ -132,11 +132,8 @@ test.describe("portfólio profissional", () => {
     await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(6);
 
     const resumeProof = profile.locator('[data-professional-proof-id="resume"]');
-    await expect(resumeProof).toHaveAttribute(
-      "href",
-      /(?:curriculo-pablo-guilherme-profissional.*\.pdf|#sobre)$/,
-    );
-    await expect(resumeProof).toContainText(/abrir currículo|ver perfil e formação/i);
+    await expect(resumeProof).toHaveAttribute("href", "#curriculo-web");
+    await expect(resumeProof).toContainText(/abrir currículo web/i);
     await expect(profile.getByRole("link", { name: /ver github/i })).toHaveAttribute(
       "href",
       "https://github.com/pabloguilherme1121",
@@ -159,6 +156,40 @@ test.describe("portfólio profissional", () => {
       "href",
       /^mailto:mpjcreator@gmail\.com\?subject=Oportunidade%20profissional/,
     );
+  });
+
+  test("oferece currículo web imprimível sem depender do PDF", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "__portfolioPrintCalls", { value: 0, writable: true });
+      window.print = () => {
+        const target = window as typeof window & { __portfolioPrintCalls: number };
+        target.__portfolioPrintCalls += 1;
+      };
+    });
+    await page.goto("/");
+
+    await page.locator('[data-professional-proof-id="resume"]').click();
+
+    const resume = page.locator('[data-web-resume="true"]');
+    await expect(resume).toBeVisible();
+    await expect(resume.getByRole("heading", { name: /currículo profissional/i })).toBeVisible();
+    await expect(resume).toContainText(/análise e desenvolvimento de sistemas/i);
+    await expect(resume).toContainText(/react.*typescript.*trpc/i);
+    await expect(resume.getByRole("link", { name: /observatório/i })).toHaveAttribute(
+      "href",
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    await expect(resume.getByRole("link", { name: /trajeto/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+
+    await resume.getByRole("button", { name: /imprimir.*salvar.*pdf/i }).click();
+    await expect.poll(() =>
+      page.evaluate(() =>
+        (window as typeof window & { __portfolioPrintCalls: number }).__portfolioPrintCalls,
+      ),
+    ).toBe(1);
   });
 
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
