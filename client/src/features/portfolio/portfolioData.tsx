@@ -34,6 +34,7 @@ export const serviceOffers = [
     delivery: "Site responsivo · landing page",
     duration: "Escopo definido por projeto",
     Icon: Braces,
+    evidence: null,
     briefingSeed: {
       service: "Site ou landing page",
       projectType: "Marca ou negócio",
