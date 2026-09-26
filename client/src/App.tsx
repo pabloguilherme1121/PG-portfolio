@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { installMissingMediaFallback } from "@/features/portfolio/utils/installMissingMediaFallback";
-import Home from "@/pages/Home";
+import Home from "@/features/portfolio/HomeExperience";
 import NotFound from "@/pages/NotFound";
 
 const Privacy = lazy(() => import("@/pages/Privacy"));
