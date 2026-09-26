@@ -2,26 +2,26 @@
 
 ## Escopo
 
-Este portfólio coleta apenas os dados necessários para responder a solicitações de orçamento, manter preferências locais de navegação e compreender o uso agregado da experiência quando o analytics estiver habilitado.
+O portfólio usa apenas os dados necessários para responder a um briefing e, quando configurado, métricas agregadas de uso.
 
-## Dados informados pelo visitante
+## Formulário
 
-O formulário comercial pode receber nome, e-mail, telefone, data desejada, tipo de serviço, duração, localização e briefing. Esses dados são usados exclusivamente para analisar a solicitação, entrar em contato e preparar uma resposta comercial. O pedido é salvo antes de qualquer tentativa de notificação para evitar perda silenciosa de oportunidades.
+O briefing pode incluir nome, e-mail, serviço, tipo de projeto, localização, data, prazo, faixa de investimento e descrição do objetivo.
 
-## Preferências no navegador
+No GitHub Pages, esses dados **não são enviados automaticamente pelo site**. O navegador prepara uma mensagem de WhatsApp e o visitante decide se deseja abri-la e enviá-la.
 
-Favoritos, histórico de buscas, ordem manual, tema, escala de fonte e preferências de visualização são mantidos no armazenamento local ou de sessão do navegador. O visitante pode remover esses dados limpando as preferências da aplicação ou os dados do site no próprio navegador.
+Em uma implantação com backend, o pedido pode ser persistido para permitir retorno comercial. O honeypot e o limite de requisições ajudam a reduzir abuso automatizado.
+
+## Preferências locais
+
+A interface pode armazenar preferências técnicas do tema no navegador. Não existe mais uma coleção pública de favoritos, histórico de buscas ou ordenação de projetos.
 
 ## Analytics
 
-Quando configurado no ambiente de produção, o analytics registra eventos agregados de navegação, como abertura de projetos, uso de filtros, compartilhamento e downloads. A integração não deve ser tratada como condição para navegar, visualizar trabalhos ou enviar uma solicitação.
+Quando configurado, o analytics registra eventos de conversão sem enviar os campos pessoais do briefing. Exemplos: abertura de projeto, início do briefing e clique no WhatsApp.
 
-## Armazenamento e segurança
+## Solicitações
 
-Solicitações comerciais persistidas no servidor são protegidas pelas regras de acesso da aplicação. Recursos administrativos exigem autenticação e autorização no servidor; o bloqueio visual da interface não substitui a autorização backend.
+Para esclarecimentos, correção ou exclusão de dados enviados em uma implantação com backend, use **mpjcreator@gmail.com** e informe o contexto necessário para localizar o pedido.
 
-## Solicitações do titular
-
-Para solicitar esclarecimentos, correção ou exclusão de dados enviados pelo formulário, escreva para **mpjcreator@gmail.com**. A solicitação deve informar o endereço usado no contato e o contexto suficiente para localizar o registro.
-
-> Este documento é uma explicação operacional da experiência atual e não substitui uma revisão jurídica específica para a atividade profissional.
+> Este documento descreve o comportamento técnico atual e não substitui aconselhamento jurídico específico.
