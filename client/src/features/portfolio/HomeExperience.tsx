@@ -57,6 +57,7 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
+import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
 import { PortfolioContact } from "@/features/portfolio/components/PortfolioContact";
@@ -1693,6 +1694,8 @@ export default function Home() {
           isDesktopViewport={isDesktopViewport}
           heroCtaRef={heroCtaRef}
         />
+
+        <ProjectDiagnostic />
 
         <PortfolioAbout
           resumeAvailable={resumeAvailable}
