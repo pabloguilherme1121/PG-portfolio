@@ -37,12 +37,17 @@ test.describe("portfólio profissional", () => {
     await diagnostic.getByRole("button", { name: /organizar informação ou dados/i }).click();
     await expect(diagnostic.getByRole("heading", { name: /Produto para consulta e decisão/i })).toBeVisible();
 
-    await diagnostic.getByRole("link", { name: /montar briefing com essa direção/i }).click();
+    await diagnostic.getByRole("link", { name: /gerar briefing com esta rota/i }).click();
 
     const form = page.locator("#contato-briefing");
     await expect(form.locator('select[name="service"]')).toHaveValue("Dashboard ou produto digital");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Projeto com dados / dashboard");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/Transformar informação complexa/i);
+    await expect(form.locator('input[name="audience"]')).toHaveValue(/gestores|equipes|pessoas/i);
+    await expect(form.locator('select[name="stage"]')).toHaveValue("Ideia inicial");
+    await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
+    await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|decis/i);
+    await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/dados|fontes|indicadores/i);
     await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
 
     await form.locator('input[name="name"]').fill("Visitante de teste");

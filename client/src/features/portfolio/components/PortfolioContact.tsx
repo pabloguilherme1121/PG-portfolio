@@ -212,7 +212,7 @@ export function PortfolioContact({
 
   useEffect(() => {
     const applySeed = (event: Event) => {
-      const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective">>>).detail;
+      const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing">>>).detail;
       const form = briefingFormRef.current;
       if (!form || !detail) return;
 

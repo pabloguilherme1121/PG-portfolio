@@ -99,10 +99,10 @@ export default function PortfolioHero({
                 <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver projetos</span>
                 <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">cases e entregas reais</span>
               </a>
-              <a href="#servicos" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
+              <a href="#diagnostico" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">02</span>
-                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">ver serviços</span>
-                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">escopo e entregas</span>
+                <span className="mt-2 block font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#e6f8ff]">Project Lens · 30s</span>
+                <span className="mt-1 block font-body text-[11px] leading-4 text-[#8fa8c7]">transforme a ideia em rota</span>
               </a>
               <a href="#contato" className="archive-quick-route group bg-[#07111f]/90 px-3 py-3 transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] focus-visible:ring-inset">
                 <span className="font-mono text-[9px] text-[#67e8f9]">03</span>
