@@ -43,6 +43,11 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="service"]')).toHaveValue("Dashboard ou produto digital");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Projeto com dados / dashboard");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/Transformar informação complexa/i);
+    await expect(form.locator('input[name="audience"]')).toHaveValue(/gestores|equipes|pessoas/i);
+    await expect(form.locator('select[name="stage"]')).toHaveValue("Ideia inicial");
+    await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
+    await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|decis/i);
+    await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/dados|fontes|indicadores/i);
     await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
 
     await form.locator('input[name="name"]').fill("Visitante de teste");
