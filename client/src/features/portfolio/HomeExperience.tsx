@@ -82,11 +82,11 @@ import {
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 
-const markUrl = publicMediaPath("/portfolio-media/pg-marca.webp");
-const portraitUrl = publicMediaPath("/portfolio-media/pablo-retrato-principal.jpg");
+const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
+const portraitUrl = publicMediaPath("/manus-storage/pablo-guilherme-retrato-profissional_a0ec8605.png");
 const portraitResponsive = {
-  avif: publicMediaPath("/portfolio-media/pablo-retrato-principal.avif"),
-  webp: publicMediaPath("/portfolio-media/pablo-retrato-principal.webp"),
+  avif: publicMediaPath("/manus-storage/pablo-retrato-480w_72345227.avif 480w, /manus-storage/pablo-retrato-768w_02bb45b0.avif 768w, /manus-storage/pablo-retrato-1200w_e67ca5a8.avif 1200w, /manus-storage/pablo-retrato-1600w_09cf51fa.avif 1600w, /manus-storage/pablo-retrato-1664w_a3e67f83.avif 1664w"),
+  webp: publicMediaPath("/manus-storage/pablo-retrato-480w_7aa7df67.webp 480w, /manus-storage/pablo-retrato-768w_f9f682be.webp 768w, /manus-storage/pablo-retrato-1200w_57f8c32f.webp 1200w, /manus-storage/pablo-retrato-1600w_09cf51fa.webp 1600w"),
 };
 const resumeUrl = publicMediaPath("/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf");
 const whatsAppNumber = "5561992903029";
