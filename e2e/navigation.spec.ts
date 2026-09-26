@@ -9,7 +9,7 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1, name: /Transformo problemas e informação em experiências digitais claras e funcionais/i })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Observatório" })).toBeVisible();
+    await expect(page.locator("#observatorio").getByRole("heading", { name: "Observatório" })).toBeVisible();
 
     const observatorio = page.getByRole("link", { name: /ver produto em produção/i }).first();
     await expect(observatorio).toHaveAttribute("href", "https://pabloguilherme01.github.io/observatorio/#dashboard");
@@ -115,7 +115,7 @@ test.describe("portfólio profissional", () => {
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
 
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /React e TypeScript/i);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /produtos digitais.*dashboards/i);
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Produtos Digitais, Interfaces & Dados/i);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${new URL(baseURL).origin}/`);
 
