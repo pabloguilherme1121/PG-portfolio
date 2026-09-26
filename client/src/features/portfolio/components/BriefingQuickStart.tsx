@@ -5,7 +5,7 @@ import {
 } from "@/features/portfolio/briefingPresets";
 
 type BriefingQuickStartProps = {
-  onSelect: (preset: BriefingPreset, form: HTMLFormElement) => void;
+  onSelect: (preset: BriefingPreset) => void;
 };
 
 export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps) {
@@ -38,10 +38,7 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
             key={preset.id}
             type="button"
             data-briefing-preset="true"
-            onClick={(event) => {
-              const form = event.currentTarget.closest("form");
-              if (form instanceof HTMLFormElement) onSelect(preset, form);
-            }}
+            onClick={() => onSelect(preset)}
             aria-label={`Usar modelo ${preset.title}`}
             className="group min-h-[132px] border border-white/10 bg-[#07111f] p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none"
           >
