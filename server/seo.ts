@@ -1,10 +1,9 @@
 import type { Express, Request, Response } from "express";
 
-function getPublicOrigin(request: Request) {
-  const forwardedProto = request.get("x-forwarded-proto")?.split(",")[0]?.trim();
-  const protocol = forwardedProto || request.protocol || "https";
-  const host = request.get("host") || "localhost";
-  return `${protocol}://${host}`;
+const CANONICAL_ORIGIN = "https://pabloguilherme1121.github.io/PG-portfolio";
+
+function getPublicOrigin(_request: Request) {
+  return CANONICAL_ORIGIN;
 }
 
 function sendXml(response: Response, content: string) {
