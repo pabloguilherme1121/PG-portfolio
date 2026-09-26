@@ -169,6 +169,7 @@ const navigationItems = [
   ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
   ["projetos", "#projetos", "projetos"],
+  ["site", "#observatorio", "observatorio"],
 ] as const;
 
 export default function Home() {
