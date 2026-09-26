@@ -10,7 +10,7 @@ function isTrustedProxyAddress(value: string | undefined) {
 }
 
 function isSecureRequest(req: Request) {
-  if (req.protocol === "https" || req.socket.encrypted) return true;
+  if (req.protocol === "https") return true;
   if (!isTrustedProxyAddress(req.socket.remoteAddress)) return false;
 
   const forwardedProto = req.headers["x-forwarded-proto"];
