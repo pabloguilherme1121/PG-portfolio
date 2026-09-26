@@ -1,5 +1,5 @@
 import { ArrowUpRight, Github } from "lucide-react";
-import { repositories, type Repository } from "@/features/portfolio/portfolioData";
+import type { Repository } from "@/features/portfolio/portfolioData";
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -33,7 +33,7 @@ export default function PortfolioProjectsOverview({
         </div>
         <div className="max-w-sm">
           <p className="font-body text-sm leading-7 text-[#b6d7eb]">Cada case mostra o que precisava ser resolvido, como a solução foi construída e o que pode ser examinado funcionando.</p>
-          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} {repositories.length === 1 ? "trabalho" : "trabalhos"} com mídia + 1 produto digital publicado</div>
+          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> 1 produto em produção · 1 produto full-stack em evolução · 1 peça audiovisual</div>
         </div>
       </div>
 
@@ -74,7 +74,7 @@ export default function PortfolioProjectsOverview({
           <div role="status" aria-live="polite" className="sr-only">{featuredCardsReady ? `${featuredRepositories.length} projetos destacados disponíveis para abrir detalhes.` : "Carregando projetos destacados."}</div>
           {featuredCardsReady ? featuredRepositories.map((project) => (
             <article key={`featured-${project.id}`} data-featured-project={project.id} role="button" tabIndex={0} aria-labelledby={`featured-title-${project.id}`} onClick={() => openProjectDetails(project)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openProjectDetails(project); } }} className="featured-project-card group cursor-pointer bg-[#07111f] p-4 text-left outline-none focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[#60a5fa] focus-visible:ring-inset sm:p-5">
-              {project.cover && <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" />}
+              {project.cover ? <img src={project.cover} alt={`Miniatura de ${project.name}`} width="720" height="480" loading="lazy" decoding="async" className="aspect-[16/10] w-full object-cover opacity-80 transition-[transform,opacity] duration-200 ease-out group-hover:scale-[1.04] group-hover:opacity-100 motion-reduce:transition-none" /> : <div className="grid aspect-[16/10] place-items-center border border-[#67e8f9]/15 bg-[linear-gradient(135deg,#081a2e,#06111f)] text-center"><div><Github className="mx-auto h-8 w-8 text-[#67e8f9]" aria-hidden="true" /><span className="mt-3 block font-mono text-[9px] uppercase tracking-[0.14em] text-[#93c5d8]">código público · produto em evolução</span></div></div>}
               <div className="mt-4 flex items-center justify-between gap-3">
                 <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">{project.id}</p>
                 <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-[#7894bb]">{project.kind === "video" ? "vídeo" : "repositório"}</span>
