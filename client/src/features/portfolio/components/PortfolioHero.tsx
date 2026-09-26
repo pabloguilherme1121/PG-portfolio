@@ -77,7 +77,7 @@ export default function PortfolioHero({
               Desenvolvo experiências digitais e produzo conteúdo audiovisual para transformar ideias em entregas claras, funcionais e memoráveis.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
-              React e TypeScript · conteúdo vertical · captação terrestre e aérea.
+              React e TypeScript · interfaces responsivas · conteúdo e produção audiovisual.
             </p>
 
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
@@ -89,7 +89,7 @@ export default function PortfolioHero({
                 iniciar um projeto <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
               <a href="#projetos" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
-                explorar projetos <ArrowDownRight className="h-3.5 w-3.5" />
+                ver projetos <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
