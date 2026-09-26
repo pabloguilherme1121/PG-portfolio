@@ -1,4 +1,4 @@
-import { Camera, Clapperboard, Plane } from "lucide-react";
+import { Braces, Clapperboard, Plane } from "lucide-react";
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 
@@ -26,51 +26,51 @@ export const skillTracks = [
 export const serviceOffers = [
   {
     number: "01",
-    label: "drone / perspectiva aérea",
-    title: "Filmagem aérea",
-    text: "Captação aérea para apresentar espaços, eventos e ambientes por uma perspectiva ampla, com atenção a movimento, escala e composição.",
-    detail: "ENQUADRAMENTO · ESCALA · ATMOSFERA",
-    delivery: "9:16 · 16:9",
-    duration: "15–60 s / 1–2 min",
-    Icon: Plane,
+    label: "produto / presença digital",
+    title: "Sites e produtos digitais",
+    text: "Planejamento e desenvolvimento de sites, interfaces e dashboards que organizam informação, apresentam valor e criam um caminho claro para a próxima ação.",
+    detail: "ESTRATÉGIA · INTERFACE · PUBLICAÇÃO",
+    delivery: "Site · landing page · dashboard",
+    duration: "Escopo definido por projeto",
+    Icon: Braces,
   },
   {
     number: "02",
-    label: "câmera / registro em solo",
-    title: "Captação terrestre",
-    text: "Captação em solo para registrar pessoas, detalhes e momentos com enquadramento pensado para a entrega final.",
-    detail: "PRESENÇA · RITMO · DETALHE",
-    delivery: "Reels · aftermovie",
-    duration: "30–90 s / 1–3 min",
-    Icon: Camera,
+    label: "narrativa / presença digital",
+    title: "Conteúdo para marcas e projetos",
+    text: "Planejamento, captação e edição de peças que explicam uma ideia, apresentam um produto e fortalecem sua presença nos canais digitais.",
+    detail: "MENSAGEM · RITMO · CONVERSÃO",
+    delivery: "Vídeos · peças verticais · demonstrações",
+    duration: "Pacotes sob medida",
+    Icon: Clapperboard,
   },
   {
     number: "03",
-    label: "narrativa / presença digital",
-    title: "Criação de conteúdo",
-    text: "Planejamento, captação e edição de peças curtas para apresentar uma mensagem, uma experiência ou uma interface em canais digitais.",
-    detail: "IDEIA · REGISTRO · CONEXÃO",
-    delivery: "3–5 vídeos verticais",
-    duration: "15–60 s por peça",
-    Icon: Clapperboard,
+    label: "drone / cobertura visual",
+    title: "Captação aérea e audiovisual",
+    text: "Imagem aérea e terrestre para mostrar espaços, eventos, pessoas e operações com contexto, movimento e acabamento profissional.",
+    detail: "PERSPECTIVA · PRESENÇA · ATMOSFERA",
+    delivery: "9:16 · 16:9 · fotos e vídeos",
+    duration: "Conforme cobertura",
+    Icon: Plane,
   },
 ];
 
 export const processSteps = [
   {
     number: "01",
-    title: "Alinhamos o objetivo",
-    text: "Contexto, público e resultado esperado entram na conversa antes de qualquer produção.",
+    title: "Entendemos o problema",
+    text: "Objetivo, público, contexto e resultado esperado definem o que realmente precisa ser construído ou produzido.",
   },
   {
     number: "02",
-    title: "Escolhemos o formato",
-    text: "Referências, linguagem, data e entrega são definidos de forma simples e transparente.",
+    title: "Definimos a solução",
+    text: "Escopo, experiência, formato, tecnologia e entregáveis são organizados antes da execução.",
   },
   {
     number: "03",
-    title: "Produzimos com clareza",
-    text: "O material é captado, organizado e entregue pronto para o próximo uso do projeto.",
+    title: "Construímos e publicamos",
+    text: "A solução é desenvolvida, testada e entregue pronta para uso — com espaço para medir, aprender e evoluir.",
   },
 ];
 
