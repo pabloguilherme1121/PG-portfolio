@@ -76,6 +76,14 @@ export const processSteps = [
 
 export const caseStudies = [
   {
+    id: "TEC.01",
+    title: "Observatório — dados públicos em uma experiência utilizável",
+    context: "Produto digital publicado para organizar dados públicos e transformá-los em uma interface navegável, com indicadores e dashboard.",
+    method: "Arquitetura de informação, hierarquia visual, desenvolvimento responsivo e publicação web com foco em tornar dados complexos mais fáceis de explorar.",
+    learning: "Um dashboard cria mais valor quando reduz o esforço para encontrar contexto e interpretar informação, em vez de apenas exibir números.",
+    tags: ["Produto digital", "Web", "Dashboard", "Dados"],
+  },
+  {
     id: "TEC.08",
     title: "Site vendendo enquanto você dorme",
     context: "Peça autoral curta para comunicar como um site pode apoiar aquisição e conversão de forma contínua.",
@@ -286,9 +294,9 @@ export const repertoireSignals = [
   },
 ];
 
-export const technologyFilters = ["Todos", "Vídeo", "Drone", "Conteúdo", "Interface", "IA", "Web", "Noturno", "Esporte", "HTML", "CSS", "JavaScript", "Python"];
-export const categoryFilters = ["Todos", "Eventos", "Aéreo", "Interface", "Conteúdo", "Noturno"];
-export const tagFilters = ["Todos", "Drone", "Vídeo", "Conteúdo", "Interface", "Noturno", "Vertical"] as const;
+export const technologyFilters = ["Todos", "Web", "Vídeo", "Conteúdo", "Drone", "IA", "Noturno", "Esporte"];
+export const categoryFilters = ["Todos", "Produto digital", "Conteúdo", "Eventos", "Aéreo", "Noturno"];
+export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Drone", "Vertical", "Noturno"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 export const predefinedOrderProfiles: ManualOrderProfile[] = [
