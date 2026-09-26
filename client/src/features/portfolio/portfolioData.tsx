@@ -198,8 +198,9 @@ export type Repository = {
 };
 
 /**
- * Trabalhos publicados a partir de arquivos reais fornecidos por Pablo.
- * Os originais permanecem preservados; o site usa previews web otimizados.
+ * Projetos públicos com evidência verificável.
+ * Mídia usa arquivos versionados no portfólio; projetos de software apontam
+ * para repositórios públicos quando ainda não existe uma produção verificável.
  */
 export const repositories: Repository[] = [
   {
