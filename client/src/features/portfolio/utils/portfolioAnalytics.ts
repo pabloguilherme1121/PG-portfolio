@@ -27,7 +27,7 @@ type ConversionProperties = Partial<{
   diagnosticStage: "idea" | "evolve" | "ready";
   proofId: "produto" | "qualidade" | "briefing";
   briefingStep: "contact" | "direction" | "scope" | "context";
-  caseId: "TEC.01" | "TEC.08";
+  caseId: string;
   evidenceType: "live" | "code" | "media";
 }>;
 
