@@ -134,6 +134,22 @@ export const caseStudies = [
     ],
   },
   {
+    id: "TEC.09",
+    title: "Trajeto — produto full-stack para decisões de rota e abastecimento",
+    context: "Produto em evolução para motoristas do Entorno do Distrito Federal, estruturado para ajudar a comparar parada, desvio, referência de combustível e origem dos dados antes de abrir a navegação.",
+    method: "Fluxo buscar → comparar → decidir → navegar, com frontend React + TypeScript, API tRPC/Express, persistência MySQL/Drizzle, validação Zod, testes automatizados, CI e auditoria de dependências.",
+    learning: "Produtos de decisão ficam mais úteis quando cada tela responde uma pergunta prática e a origem do dado é tratada como parte da experiência, não como detalhe técnico.",
+    tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
+    proofs: [
+      {
+        label: "Ver código",
+        description: "Repositório público com frontend, API, testes, CI e segurança documentada.",
+        href: "https://github.com/Pabloguilherme01/trajeto-web",
+        type: "code" as const,
+      },
+    ],
+  },
+  {
     id: "TEC.08",
     title: "Site vendendo enquanto você dorme — comunicação de uma proposta digital",
     context: "Peça autoral curta criada para apresentar uma proposta ligada a presença digital em um formato rápido.",
@@ -182,10 +198,39 @@ export type Repository = {
 };
 
 /**
- * Trabalhos publicados a partir de arquivos reais fornecidos por Pablo.
- * Os originais permanecem preservados; o site usa previews web otimizados.
+ * Projetos públicos com evidência verificável.
+ * Mídia usa arquivos versionados no portfólio; projetos de software apontam
+ * para repositórios públicos quando ainda não existe uma produção verificável.
  */
 export const repositories: Repository[] = [
+  {
+    id: "TEC.09",
+    name: "Trajeto — decisão de rota e abastecimento",
+    description: "Produto full-stack em evolução para transformar busca de posto ou rota em uma decisão prática, com comparação de desvio, contexto de combustível e transparência sobre fontes.",
+    role: "Produto, interface e arquitetura full-stack.",
+    process: "Estruturação do fluxo buscar → comparar → decidir → navegar, separando dados oficiais, dados de terceiros e estimativas próprias.",
+    result: "Repositório público com frontend React, API tRPC/Express, persistência MySQL/Drizzle, testes automatizados, CI e auditoria de segurança.",
+    technologies: ["Web", "Interface", "React", "TypeScript"],
+    url: "https://github.com/Pabloguilherme01/trajeto-web",
+    kind: "repository",
+    featured: true,
+    addedOrder: 13,
+    relevance: 98,
+    catalog: {
+      description: "Produto full-stack para decisões de rota e abastecimento no Entorno do Distrito Federal.",
+      tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
+    },
+    caseStudy: {
+      context: "Ferramenta de decisão para motoristas que circulam pelo Entorno do Distrito Federal.",
+      problem: "Encontrar e comparar opções de parada exige consultar fontes diferentes e entender quanto um desvio realmente altera a rota.",
+      objective: "Organizar contexto suficiente para decidir onde parar, quanto desviar e qual é a origem de cada dado antes de navegar.",
+      function: "Produto, interface, arquitetura de dados e implementação full-stack.",
+      process: "Fluxo buscar → comparar → decidir → navegar, com React/TypeScript no frontend e tRPC, Express, MySQL, Drizzle e Zod no backend.",
+      decisions: "Cadastro opcional, separação explícita entre dado oficial, dado de terceiro e estimativa, e CI com typecheck, testes, build e auditoria de dependências.",
+      result: "Base técnica pública e testável para um produto em evolução, sem apresentar referência oficial como preço de bomba ou inventar disponibilidade de produção.",
+      learning: "Transparência de fonte e redução de passos são parte do produto quando a interface apoia uma decisão prática.",
+    },
+  },
   {
     id: "TEC.08",
     name: "PG — Site vendendo enquanto você dorme",
@@ -220,13 +265,13 @@ export const repositories: Repository[] = [
 export const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {};
 export const comparisonPairs: Record<string, { before: string; after: string }> = {};
 
-export const technologyFilters = ["Todos", "Web", "Vídeo", "Conteúdo"];
+export const technologyFilters = ["Todos", "Web", "React", "TypeScript", "Vídeo", "Conteúdo"];
 export const categoryFilters = ["Todos", "Produto digital", "Conteúdo"];
 export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Vertical"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.08"] },
+  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.09", "TEC.08"] },
 ];
 
 export const sortOptions = [

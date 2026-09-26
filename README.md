@@ -10,11 +10,12 @@
 
 Portfólio profissional de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, conteúdo e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
 
-O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma galeria: produto em produção, decisões de interface, código verificável, testes automatizados e uma jornada de contato que transforma uma necessidade inicial em briefing estruturado.
+O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma galeria: produto em produção, produto full-stack em evolução, decisões de interface, código verificável, testes automatizados e uma jornada de contato que transforma uma necessidade inicial em briefing estruturado.
 
 ## O que este portfólio demonstra
 
 - **Produto real em produção:** o Observatório pode ser aberto, navegado e avaliado fora do portfólio.
+- **Produto full-stack em evolução:** o Trajeto expõe arquitetura de produto, frontend, API, persistência, testes, CI e segurança em código público.
 - **Engenharia verificável:** React, TypeScript, Vite, testes unitários, Playwright e auditoria de assets fazem parte do fluxo.
 - **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
 - **Briefing Studio:** fluxo progressivo em quatro etapas, com autosave local, validação e resumo do contexto.
@@ -51,6 +52,16 @@ O Observatório organiza informação pública em uma experiência navegável co
 - [Código-fonte](https://github.com/Pabloguilherme01/observatorio)
 
 O case é usado no portfólio como evidência de arquitetura de informação, interface responsiva, produto com dados e publicação web.
+
+## Case técnico: Trajeto
+
+O Trajeto é um produto full-stack em evolução para apoiar decisões de rota e abastecimento no Entorno do Distrito Federal. A proposta organiza o fluxo **buscar → comparar → decidir → navegar** e separa explicitamente dados oficiais, dados de terceiros e estimativas próprias.
+
+**Prova pública:**
+
+- [Código-fonte do Trajeto](https://github.com/Pabloguilherme01/trajeto-web)
+
+O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, MySQL + Drizzle na persistência, validação com Zod, testes automatizados, CI e auditoria de dependências. O portfólio não apresenta o Trajeto como produto publicado enquanto não houver uma evidência pública de produção.
 
 ## Tecnologias
 
