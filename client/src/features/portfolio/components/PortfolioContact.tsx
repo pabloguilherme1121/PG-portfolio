@@ -361,7 +361,7 @@ export function PortfolioContact({
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
             className="max-w-2xl scroll-mt-24"
           >
-            <div data-briefing-studio="true" className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
+            <div data-briefing-header="true" className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
