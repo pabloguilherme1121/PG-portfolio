@@ -18,6 +18,9 @@ async function inspect(directory) {
 
     const source = await readFile(file, "utf8");
     for (const match of source.matchAll(/\/portfolio-media\/[\w.-]+/g)) requiredAssets.add(match[0]);
+    for (const match of source.matchAll(/portfolioMediaPath\(["'`]([\w.-]+)["'`]\)/g)) {
+      requiredAssets.add(`/portfolio-media/${match[1]}`);
+    }
     for (const match of source.matchAll(/\/manus-storage\/[\w.-]+/g)) optionalAssets.add(match[0]);
   }
 }
