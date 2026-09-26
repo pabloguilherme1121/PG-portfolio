@@ -29,13 +29,21 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("heading", { name: /Vamos definir uma solução clara para o seu projeto/i })).toBeVisible();
   });
 
-  test("diagnóstico interativo prepara e preserva um briefing profissional", async ({ page }) => {
+  test("hero destaca provas reais e o diagnóstico prepara um briefing profissional", async ({ page }) => {
     await page.goto("/");
+
+    const proofDeck = page.locator('[data-attention-hook="proof-deck"]');
+    await expect(proofDeck).toBeVisible();
+    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir e verificar/i })).toBeVisible();
+    await proofDeck.getByRole("button", { name: /qualidade/i }).click();
+    await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
 
     const diagnostic = page.locator('[data-project-diagnostic="true"]');
     await expect(diagnostic).toBeVisible();
     await diagnostic.getByRole("button", { name: /organizar informação ou dados/i }).click();
     await expect(diagnostic.getByRole("heading", { name: /Produto para consulta e decisão/i })).toBeVisible();
+    await diagnostic.getByRole("button", { name: /já existe e precisa evoluir/i }).click();
+    await expect(diagnostic).toContainText(/evolução guiada/i);
 
     await diagnostic.getByRole("link", { name: /gerar briefing com esta rota/i }).click();
 
@@ -44,7 +52,7 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Projeto com dados / dashboard");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/Transformar informação complexa/i);
     await expect(form.locator('input[name="audience"]')).toHaveValue(/gestores|equipes|pessoas/i);
-    await expect(form.locator('select[name="stage"]')).toHaveValue("Ideia inicial");
+    await expect(form.locator('select[name="stage"]')).toHaveValue("Já existe e precisa evoluir");
     await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|decis/i);
     await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/dados|fontes|indicadores/i);
