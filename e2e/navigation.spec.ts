@@ -47,6 +47,23 @@ test.describe("navegação pública e favoritos", () => {
     await expect(page.locator("#favoritos-pessoais")).toBeVisible();
   });
 
+  test("usa mídia nova versionada no retrato, marca e cases principais", async ({ page }) => {
+    await page.goto("/");
+
+    const portrait = page.getByRole("img", { name: "Pablo Guilherme" }).first();
+    await expect(portrait).toHaveAttribute("src", /portfolio-media\/pablo-retrato\.webp/);
+
+    const footerMark = page.locator("#contato-rodape img").first();
+    await expect(footerMark).toHaveAttribute("src", /portfolio-media\/pg-marca\.webp/);
+
+    await page.locator("#galeria-publica").scrollIntoViewIfNeeded();
+    for (const projectId of ["AUD.01", "CNT.03", "AUD.05", "DEV.08"]) {
+      await expect(page.locator(`[data-project-id="${projectId}"]`)).toBeVisible();
+    }
+    await expect(page.locator('[data-project-id="CNT.03"]')).toContainText(/combustível vale ouro/i);
+    await expect(page.locator('[data-project-id="AUD.05"]')).toContainText(/cobertura esportiva/i);
+  });
+
   test("aplica um filtro por tag na galeria pública", async ({ page }) => {
     await page.goto("/#galeria-publica");
     const tagFilter = page.locator('[data-filter-scope="tag"]').filter({ hasText: "Drone" }).first();
