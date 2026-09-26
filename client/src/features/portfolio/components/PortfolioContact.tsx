@@ -215,17 +215,16 @@ export function PortfolioContact({
   }
 
   function applyBriefingPreset(preset: BriefingPreset) {
-    const form = briefingFormRef.current;
-    if (!form) return;
+    setBriefingDraft((current) => ({ ...current, ...preset.values }));
+    setBriefingRevision((value) => value + 1);
 
-    for (const [name, value] of Object.entries(preset.values)) {
-      const field = form.elements.namedItem(name);
-      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-        field.value = value;
-      }
+    try {
+      const nextDraft = { ...briefingDraft, ...preset.values };
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O preset continua funcional mesmo quando o armazenamento local está indisponível.
     }
 
-    captureBriefingDraft(form);
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
     toast.success("Modelo aplicado", {
