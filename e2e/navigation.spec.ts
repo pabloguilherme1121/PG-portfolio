@@ -119,6 +119,31 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("link", { name: /observatório/i }).first()).toBeVisible();
   });
 
+  test("estudos de caso levam a evidências verificáveis", async ({ page }) => {
+    await page.goto("/");
+
+    const studies = page.locator('[data-case-study="true"]');
+    await expect(studies).toHaveCount(2);
+
+    const observatorioStudy = studies.filter({ hasText: "Observatório" });
+    await expect(observatorioStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
+      "href",
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    await expect(observatorioStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/observatorio",
+    );
+
+    const videoStudy = studies.filter({ hasText: /Site vendendo enquanto você dorme/i });
+    await expect(videoStudy.getByRole("link", { name: /assistir peça/i })).toHaveAttribute(
+      "href",
+      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
+    );
+
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
+  });
+
   test("usa o retrato versionado e publica o case vertical válido", async ({ page, request }) => {
     await page.goto("/");
 
