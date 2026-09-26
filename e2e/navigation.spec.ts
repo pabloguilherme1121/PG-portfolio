@@ -113,6 +113,8 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const game = page.locator('[data-tic-tac-toe="true"]');
+    await expect(game).toBeHidden();
+    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
     await game.scrollIntoViewIfNeeded();
     await expect(game).toBeVisible();
     await expect(game.getByRole("heading", { name: /jogo da velha/i })).toBeVisible();
