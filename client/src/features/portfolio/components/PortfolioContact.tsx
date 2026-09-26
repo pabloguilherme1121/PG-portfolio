@@ -234,15 +234,19 @@ export function PortfolioContact({
       // O preset continua funcional mesmo quando o armazenamento local está indisponível.
     }
 
-    setBriefingStep(1);
-    setBriefingRevision((value) => value + 1);
+    for (const [name, value] of Object.entries(preset.values)) {
+      const field = form.elements.namedItem(name);
+      if (
+        field instanceof HTMLInputElement
+        || field instanceof HTMLTextAreaElement
+        || field instanceof HTMLSelectElement
+      ) {
+        field.value = value;
+      }
+    }
+
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
-
-    window.requestAnimationFrame(() => {
-      const directionStep = briefingFormRef.current?.querySelector<HTMLElement>('[data-briefing-step="direction"]');
-      directionStep?.focus({ preventScroll: true });
-    });
 
     toast.success("Modelo aplicado", {
       description: "Direção, escopo e contexto foram pré-preenchidos. Revise a rota e ajuste o que precisar.",
