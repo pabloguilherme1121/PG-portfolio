@@ -218,14 +218,23 @@ export function PortfolioContact({
     const form = briefingFormRef.current;
     if (!form) return;
 
-    for (const [name, value] of Object.entries(preset.values)) {
-      const field = form.elements.namedItem(name);
-      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-        field.value = value;
-      }
-    }
+    const data = new FormData(form);
+    const currentDraft = Object.fromEntries(
+      briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
+    ) as BriefingDraft;
+    const nextDraft = {
+      ...briefingDefaultValues,
+      ...currentDraft,
+      ...preset.values,
+    };
 
-    captureBriefingDraft(form);
+    setBriefingDraft(nextDraft);
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O preset continua funcional mesmo quando o armazenamento local está indisponível.
+    }
+    setBriefingRevision((value) => value + 1);
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
     toast.success("Modelo aplicado", {
