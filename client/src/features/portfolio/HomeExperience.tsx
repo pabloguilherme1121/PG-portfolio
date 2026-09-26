@@ -187,6 +187,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
   const [resumePreviewProgress, setResumePreviewProgress] = useState(0);
@@ -1777,7 +1778,19 @@ export default function Home() {
           onBriefingFocusChange={setIsBriefingFieldFocused}
         />
 
-        <PortfolioTicTacToe />
+        <section className="archive-chapter border-t border-white/[0.07] bg-[#040a13] px-5 py-10 sm:px-8 lg:px-12" aria-labelledby="pg-lab-title">
+          <div className="mx-auto max-w-[1440px] border border-[#67e8f9]/20 bg-[#06172f]/55 p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-7">
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Lab · opcional</p>
+              <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação rápida?</h2>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">O contato principal termina acima. Este laboratório é uma demonstração curta de lógica, estados e acessibilidade — abra apenas se quiser explorar.</p>
+            </div>
+            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-11 shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">{pgLabOpen ? "fechar PG Lab" : "abrir PG Lab · jogar jogo da velha"}</button>
+          </div>
+          <div id="pg-lab-game" hidden={!pgLabOpen} className="mx-auto max-w-[1440px]">
+            <PortfolioTicTacToe />
+          </div>
+        </section>
       </main>
 
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
