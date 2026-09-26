@@ -203,6 +203,35 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
   });
 
+  test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
+    await page.goto("/");
+
+    const studies = page.locator('[data-case-study="true"]');
+    await expect(studies).toHaveCount(3);
+
+    const trajetoStudy = studies.filter({ hasText: "Trajeto" });
+    await expect(trajetoStudy).toContainText(/produto.*evolução|em evolução/i);
+    await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(4);
+
+    const featured = page.locator('[data-featured-project="TEC.09"]');
+    await expect(featured).toBeVisible();
+    await expect(featured).toContainText(/Trajeto/i);
+    await featured.click();
+
+    const dialog = page.locator('[data-project-details-dialog="true"]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole("heading", { name: /Trajeto/i })).toBeVisible();
+    await expect(dialog.getByRole("link", { name: /abrir projeto/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+  });
+
   test("usa o retrato versionado e publica o case vertical válido", async ({ page, request }) => {
     await page.goto("/");
 
