@@ -60,7 +60,15 @@ test.describe("portfólio profissional", () => {
 
     await form.locator('input[name="name"]').fill("Visitante de teste");
     await form.locator('input[name="email"]').fill("visitante@example.com");
+
+    const studio = form.locator('[data-briefing-studio="true"]');
+    await studio.getByRole("button", { name: /continuar.*direção/i }).click();
     await form.locator('input[name="audience"]').fill("Equipe interna");
+
+    await studio.getByRole("button", { name: /continuar.*escopo/i }).click();
+    await form.locator('input[name="location"]').fill("Remoto");
+
+    await studio.getByRole("button", { name: /continuar.*contexto/i }).click();
     await form.locator('textarea[name="briefing"]').fill("Precisamos centralizar dados dispersos e facilitar a consulta.");
     await page.reload();
 
