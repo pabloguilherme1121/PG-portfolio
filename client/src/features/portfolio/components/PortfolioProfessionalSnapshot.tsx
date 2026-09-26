@@ -1,10 +1,12 @@
-import { ArrowUpRight, FileText, Github, Mail, ShieldCheck, SquareChartGantt } from "lucide-react";
+import { ArrowUpRight, Clapperboard, FileText, Github, Mail, Route, ShieldCheck, SquareChartGantt } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
 type PortfolioProfessionalSnapshotProps = {
   resumeAvailable: boolean;
   resumeUrl: string;
 };
+
+const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 
 const opportunityEmailUrl =
   "mailto:mpjcreator@gmail.com?subject=Oportunidade%20profissional%20-%20Pablo%20Guilherme&body=Ol%C3%A1%2C%20Pablo.%20Vi%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20uma%20oportunidade%20profissional.";
@@ -45,6 +47,26 @@ export default function PortfolioProfessionalSnapshot({
       available: true,
     },
     {
+      id: "fullstack",
+      label: "Produto full-stack",
+      title: "Ver Trajeto",
+      text: "Produto em evolução com frontend, API, persistência, testes e CI em código público.",
+      href: "https://github.com/Pabloguilherme01/trajeto-web",
+      external: true,
+      Icon: Route,
+      available: true,
+    },
+    {
+      id: "media",
+      label: "Comunicação",
+      title: "Assistir peça",
+      text: "Peça vertical autoral que demonstra mensagem, hierarquia e comunicação de uma proposta digital.",
+      href: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
+      external: true,
+      Icon: Clapperboard,
+      available: true,
+    },
+    {
       id: "quality",
       label: "Qualidade",
       title: "Ver qualidade",
@@ -76,7 +98,7 @@ export default function PortfolioProfessionalSnapshot({
               Avaliação profissional, sem caça ao tesouro.
             </h2>
             <p className="mt-6 max-w-xl font-body text-base leading-8 text-[#b8d3e6]">
-              Currículo, código, produto publicado e sinais de qualidade reunidos em uma leitura curta para quem está avaliando perfil, processo e capacidade de entrega.
+              Currículo, código, produto publicado, desenvolvimento full-stack, comunicação e sinais de qualidade reunidos em uma leitura curta para quem está avaliando perfil, processo e capacidade de entrega.
             </p>
 
             <dl className="mt-8 grid gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
@@ -90,7 +112,7 @@ export default function PortfolioProfessionalSnapshot({
               </div>
               <div className="bg-[#081523] p-4">
                 <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">stack demonstrada</dt>
-                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">React · TypeScript · Vite</dd>
+                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">React · TypeScript · tRPC</dd>
               </div>
               <div className="bg-[#081523] p-4">
                 <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">validação</dt>
@@ -108,7 +130,7 @@ export default function PortfolioProfessionalSnapshot({
             </a>
           </div>
 
-          <div className="grid gap-px bg-cyan-100/[0.12] sm:grid-cols-2">
+          <div className="grid gap-px bg-cyan-100/[0.12] sm:grid-cols-2 xl:grid-cols-3">
             {proofs.map(({ id, label, title, text, href, external, Icon, available }) => {
               const className =
                 "group flex min-h-[190px] flex-col justify-between bg-[#071326] p-5 transition-colors hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:p-6";
