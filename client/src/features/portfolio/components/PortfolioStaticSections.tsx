@@ -16,8 +16,8 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Competências</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">desenvolvimento · conteúdo · audiovisual</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Competências que conectam produto e comunicação.</h2>
-                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">Desenvolvimento web, conteúdo e audiovisual reunidos em um processo orientado a clareza, usabilidade e execução.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">abordagem</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Pesquisa, execução, teste e melhoria contínua em cada projeto.</p></div>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">produto · desenvolvimento · comunicação</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.4rem,4vw,4.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">Competências que conectam produto e comunicação.</h2>
+                <p className="mt-6 max-w-sm font-body text-base leading-7 text-[#b6d7eb]">Produto digital, desenvolvimento web e comunicação reunidos para transformar problemas em entregas claras e publicáveis.</p><div className="mt-8 border-l-2 border-[#67e8f9] pl-4"><p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">abordagem</p><p className="mt-2 font-body text-sm leading-6 text-[#c9e8f0]">Entender, estruturar, construir, publicar e melhorar com base no uso real.</p></div>
               </div>
               <div className="border-t border-white/[0.1]">
                 {skillTracks.map((skill) => (
@@ -70,11 +70,11 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
             <div className="grid gap-10 border-b border-white/[0.1] pb-10 lg:grid-cols-[0.75fr_1.25fr] lg:items-end">
               <div>
                 <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Serviços</p>
-                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">soluções sob medida</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Soluções digitais e audiovisuais.</h2>
+                <div className="flex items-center gap-3"><img src={markUrl} alt="" width="28" height="28" loading="lazy" decoding="async" className="h-7 w-7 object-contain opacity-80" /><span className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">soluções sob medida</span></div><h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do produto digital à comunicação que o apresenta.</h2>
                 <div className="mt-7 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // desenvolvimento & produção</div>
               </div>
               <div className="lg:pb-2">
-                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">O escopo é definido de acordo com o objetivo: interface, conteúdo, captação ou uma combinação dessas frentes.</p>
+                <p className="max-w-2xl font-body text-base leading-8 text-[#c0e3f4]">O ponto de partida é o resultado: construir uma presença digital, organizar dados em uma interface, comunicar uma oferta ou registrar uma experiência. A solução combina apenas o que fizer sentido para esse objetivo.</p>
                 <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3eeff] transition-colors hover:text-[#76aaff]">falar sobre um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
               </div>
             </div>
@@ -114,8 +114,8 @@ export function PortfolioProcess() {
           <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.82fr_1.18fr] lg:px-12 lg:py-28">
             <div>
               <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">Processo</p>
-              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do briefing à entrega.</h2>
-              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um fluxo objetivo para alinhar contexto, escopo, execução, revisão e entrega.</p>
+              <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do problema à solução publicada.</h2>
+              <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um processo direto para transformar contexto em escopo, execução, validação e uma entrega pronta para uso.</p>
               <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">iniciar um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
             </div>
             <div className="divide-y divide-cyan-100/[0.12] border-y border-cyan-100/[0.12]">
