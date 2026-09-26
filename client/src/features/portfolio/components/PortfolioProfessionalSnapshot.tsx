@@ -115,14 +115,24 @@ export default function PortfolioProfessionalSnapshot({
 
               if (!available) {
                 return (
-                  <div key={id} data-professional-proof="true" className={className + " opacity-60"} aria-label="Currículo temporariamente indisponível">
+                  <a
+                    key={id}
+                    data-professional-proof="true"
+                    data-professional-proof-id={id}
+                    href="#sobre"
+                    onClick={() => trackPortfolioEvent("professional_evidence_opened", { professionalEvidence: "profile" })}
+                    className={className}
+                  >
                     <div>
-                      <Icon className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
+                      <div className="flex items-start justify-between gap-4">
+                        <Icon className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
+                        <ArrowUpRight className="h-4 w-4 text-[#5d7892] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
+                      </div>
                       <p className="mt-5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#77a9fc]">{label}</p>
-                      <p className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">Currículo indisponível</p>
+                      <p className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">Ver perfil e formação</p>
                     </div>
-                    <p className="mt-5 font-body text-xs leading-5 text-[#8eaac0]">O restante das evidências profissionais continua disponível.</p>
-                  </div>
+                    <p className="mt-5 font-body text-xs leading-5 text-[#9db8ca]">O PDF ainda não está publicado neste build; formação, foco e contexto profissional estão disponíveis no perfil.</p>
+                  </a>
                 );
               }
 
@@ -130,6 +140,7 @@ export default function PortfolioProfessionalSnapshot({
                 <a
                   key={id}
                   data-professional-proof="true"
+                  data-professional-proof-id={id}
                   href={href}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
