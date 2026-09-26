@@ -15,13 +15,16 @@ import {
   ArrowUpRight,
   CalendarDays,
   CheckCircle2,
+  ClipboardCheck,
   ChevronLeft,
   ChevronRight,
   Instagram,
   Loader2,
   MapPin,
   MessageCircle,
+  RotateCcw,
   Send,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
@@ -29,6 +32,40 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type BlockedDate = { dateKey: string };
+
+type BriefingDraft = Record<string, string>;
+
+const briefingDraftStorageKey = "pablo-portfolio-briefing-draft";
+const briefingFieldNames = [
+  "name",
+  "email",
+  "service",
+  "projectType",
+  "objective",
+  "audience",
+  "stage",
+  "location",
+  "date",
+  "delivery",
+  "deadline",
+  "budget",
+  "success",
+  "references",
+  "constraints",
+  "briefing",
+] as const;
+const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "success", "briefing"] as const;
+
+function readBriefingDraft(): BriefingDraft {
+  if (typeof window === "undefined") return {};
+  try {
+    const parsed = JSON.parse(window.localStorage.getItem(briefingDraftStorageKey) || "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return {};
+    return Object.fromEntries(Object.entries(parsed).filter(([, value]) => typeof value === "string")) as BriefingDraft;
+  } catch {
+    return {};
+  }
+}
 
 type PortfolioContactProps = {
   whatsAppUrl: string;
@@ -80,6 +117,9 @@ export function PortfolioContact({
   const [isClearingAvailabilitySelection, setIsClearingAvailabilitySelection] = useState(false);
   const availabilityClearTimerRef = useRef<number | null>(null);
   const briefingStartedRef = useRef(false);
+  const briefingFormRef = useRef<HTMLFormElement>(null);
+  const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
+  const [briefingRevision, setBriefingRevision] = useState(0);
 
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -98,6 +138,9 @@ export function PortfolioContact({
     availabilityTime,
     isBlockedDatesError,
   );
+  const briefingCompletedFields = briefingReadinessFields.filter((field) => briefingDraft[field]?.trim()).length;
+  const briefingProgress = Math.round((briefingCompletedFields / briefingReadinessFields.length) * 100);
+  const briefingStatus = briefingProgress >= 88 ? "pronto para análise" : briefingProgress >= 55 ? "bom contexto" : "em construção";
 
   useEffect(() => () => {
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
@@ -143,6 +186,50 @@ export function PortfolioContact({
     briefingStartedRef.current = true;
     trackPortfolioEvent("briefing_started");
   }
+
+  function captureBriefingDraft(form: HTMLFormElement) {
+    const data = new FormData(form);
+    const nextDraft = Object.fromEntries(briefingFieldNames.map((field) => [field, String(data.get(field) || "")])) as BriefingDraft;
+    setBriefingDraft(nextDraft);
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // O formulário continua utilizável mesmo quando o armazenamento local está indisponível.
+    }
+  }
+
+  function clearBriefingDraft() {
+    try {
+      window.localStorage.removeItem(briefingDraftStorageKey);
+    } catch {
+      // Nada a fazer: o reset visual ainda funciona.
+    }
+    setBriefingDraft({});
+    setBriefingRevision((value) => value + 1);
+    setFormSent(false);
+    toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
+  }
+
+  useEffect(() => {
+    const applySeed = (event: Event) => {
+      const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective">>>).detail;
+      const form = briefingFormRef.current;
+      if (!form || !detail) return;
+
+      for (const [name, value] of Object.entries(detail)) {
+        if (!value) continue;
+        const field = form.elements.namedItem(name);
+        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+          field.value = value;
+        }
+      }
+      captureBriefingDraft(form);
+      toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
+    };
+
+    window.addEventListener("portfolio:briefing-seed", applySeed);
+    return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
+  }, []);
 
   return (
     <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
@@ -230,99 +317,211 @@ export function PortfolioContact({
         </div>
 
         <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
-          <form id="contato-briefing" aria-busy={isQuoteRequestPending} onSubmit={handleSubmit} onFocusCapture={() => { onBriefingFocusChange(true); trackBriefingStarted(); }} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }} className="max-w-xl scroll-mt-24">
-            <div className="mb-8 flex items-center justify-between border-b border-white/[0.1] pb-4">
-              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cbe8]">formulário de briefing</p>
-              <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#637da5] light-muted-ink">* campos obrigatórios</p>
+          <form
+            key={briefingRevision}
+            ref={briefingFormRef}
+            id="contato-briefing"
+            aria-busy={isQuoteRequestPending}
+            onSubmit={handleSubmit}
+            onChangeCapture={(event) => captureBriefingDraft(event.currentTarget)}
+            onFocusCapture={() => { onBriefingFocusChange(true); trackBriefingStarted(); }}
+            onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
+            className="max-w-2xl scroll-mt-24"
+          >
+            <div className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
+                  <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Construa um briefing que já começa útil.</h3>
+                </div>
+                <div className="sm:text-right">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7892b8]">qualidade do contexto</p>
+                  <p data-briefing-progress="true" aria-live="polite" className="mt-1 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#a5f3fc]">{briefingProgress}% · {briefingStatus}</p>
+                </div>
+              </div>
+              <div className="mt-4 h-1.5 overflow-hidden bg-white/10" aria-hidden="true">
+                <span className="block h-full origin-left bg-[#38bdf8] transition-transform duration-300 motion-reduce:transition-none" style={{ transform: `scaleX(${briefingProgress / 100})` }} />
+              </div>
+              <div className="mt-4 flex items-start gap-3 border-t border-white/10 pt-4">
+                <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+                <p className="font-body text-xs leading-5 text-[#8fb6c9]">O rascunho é salvo apenas neste dispositivo para você não perder o preenchimento. Nada é enviado enquanto você não concluir a ação final.</p>
+              </div>
             </div>
+
+            <label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
+              <span>Website</span>
+              <input tabIndex={-1} autoComplete="off" name="website" defaultValue="" />
+            </label>
+
             <div className="grid gap-7">
-              <label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
-                <span>Website</span>
-                <input tabIndex={-1} autoComplete="off" name="website" defaultValue="" />
-              </label>
-              <div className="grid gap-7 sm:grid-cols-2">
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
-                  <input required name="name" autoComplete="name" placeholder="Como você se chama?" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+                <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">01 · contato</legend>
+                <div className="grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
+                    <input required maxLength={160} name="name" autoComplete="name" defaultValue={briefingDraft.name ?? ""} placeholder="Como você se chama?" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
+                    <input required maxLength={320} type="email" name="email" autoComplete="email" defaultValue={briefingDraft.email ?? ""} placeholder="voce@exemplo.com" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+                <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">02 · direção</legend>
+                <div className="grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
+                    <select required name="service" defaultValue={briefingDraft.service ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <option value="" disabled>Selecione um serviço</option>
+                      <option>Site ou landing page</option>
+                      <option>Dashboard ou produto digital</option>
+                      <option>Criação de conteúdo</option>
+                      <option>Captação audiovisual / drone</option>
+                      <option>Solução combinada</option>
+                      <option>Outro projeto</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
+                    <select required name="projectType" defaultValue={briefingDraft.projectType ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <option value="" disabled>Selecione uma opção</option>
+                      <option>Produto ou serviço digital</option>
+                      <option>Marca ou negócio</option>
+                      <option>Projeto com dados / dashboard</option>
+                      <option>Evento social ou corporativo</option>
+                      <option>Imóvel, espaço ou operação</option>
+                      <option>Esporte ou atividade externa</option>
+                      <option>Outro</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="mt-7 block">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">objetivo principal *</span>
+                  <textarea required maxLength={900} name="objective" rows={3} defaultValue={briefingDraft.objective ?? ""} placeholder="O que precisa mudar depois que este projeto estiver pronto?" className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
-                  <input required type="email" name="email" autoComplete="email" placeholder="voce@exemplo.com" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                </label>
-              </div>
-              <div className="grid gap-7 sm:grid-cols-2">
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                  <select required name="service" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
-                    <option value="" disabled>Selecione um serviço</option>
-                    <option>Site ou landing page</option>
-                    <option>Dashboard ou produto digital</option>
-                    <option>Criação de conteúdo</option>
-                    <option>Captação audiovisual / drone</option>
-                    <option>Solução combinada</option>
-                    <option>Outro projeto</option>
-                  </select>
-                </label>
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                  <select required name="projectType" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
-                    <option value="" disabled>Selecione uma opção</option>
-                    <option>Produto ou serviço digital</option>
-                    <option>Marca ou negócio</option>
-                    <option>Projeto com dados / dashboard</option>
-                    <option>Evento social ou corporativo</option>
-                    <option>Imóvel, espaço ou operação</option>
-                    <option>Esporte ou atividade externa</option>
-                    <option>Outro</option>
-                  </select>
-                </label>
-              </div>
-              <div className="grid gap-7 sm:grid-cols-2">
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local do projeto *</span>
-                  <input required name="location" placeholder="Ex.: Águas Lindas de Goiás" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                </label>
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
-                  <input type="date" name="date" onFocus={(event) => { event.currentTarget.style.outline = "2px solid #a5f3fc"; event.currentTarget.style.outlineOffset = "3px"; event.currentTarget.style.boxShadow = "0 0 0 4px rgba(165, 243, 252, 0.28)"; }} onBlur={(event) => { event.currentTarget.style.outline = ""; event.currentTarget.style.outlineOffset = ""; event.currentTarget.style.boxShadow = ""; }} className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] [color-scheme:dark]" />
-                </label>
-              </div>
-              <div className="grid gap-7 sm:grid-cols-2">
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                  <select name="delivery" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
-                    <option value="">A definir</option>
-                    <option>Site responsivo</option>
-                    <option>Landing page</option>
-                    <option>Dashboard / interface</option>
-                    <option>Vertical 9:16 para Reels</option>
-                    <option>Horizontal 16:9</option>
-                    <option>Fotos e vídeos</option>
-                    <option>Solução combinada</option>
-                  </select>
-                </label>
-                <label className="block">
+                <div className="mt-7 grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">público / quem vai usar *</span>
+                    <input required maxLength={240} name="audience" defaultValue={briefingDraft.audience ?? ""} placeholder="Ex.: clientes, equipe, moradores, gestores" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">estágio atual</span>
+                    <select name="stage" defaultValue={briefingDraft.stage ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <option value="">A definir</option>
+                      <option>Ideia inicial</option>
+                      <option>Já existe e precisa evoluir</option>
+                      <option>Redesign / reorganização</option>
+                      <option>Escopo já definido</option>
+                      <option>Pronto para construir</option>
+                    </select>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+                <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">03 · escopo</legend>
+                <div className="grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">local ou alcance *</span>
+                    <input required maxLength={255} name="location" defaultValue={briefingDraft.location ?? ""} placeholder="Ex.: remoto, Águas Lindas, Brasil" className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
+                    <input type="date" name="date" defaultValue={briefingDraft.date ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] [color-scheme:dark]" />
+                  </label>
+                </div>
+                <div className="mt-7 grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
+                    <select name="delivery" defaultValue={briefingDraft.delivery ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <option value="">A definir</option>
+                      <option>Site responsivo</option>
+                      <option>Landing page</option>
+                      <option>Dashboard / interface</option>
+                      <option>Vertical 9:16 para Reels</option>
+                      <option>Horizontal 16:9</option>
+                      <option>Fotos e vídeos</option>
+                      <option>Solução combinada</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">prazo / urgência</span>
+                    <select name="deadline" defaultValue={briefingDraft.deadline ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                      <option value="">A definir</option>
+                      <option>Sem urgência</option>
+                      <option>Até 2 semanas</option>
+                      <option>2 a 4 semanas</option>
+                      <option>1 a 2 meses</option>
+                      <option>Mais de 2 meses</option>
+                    </select>
+                  </label>
+                </div>
+                <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                  <select name="budget" defaultValue="" className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
-                    <option value="">Prefiro conversar</option>
-                    <option>Até R$ 500</option>
-                    <option>R$ 500 a R$ 1.000</option>
-                    <option>R$ 1.000 a R$ 2.000</option>
-                    <option>Acima de R$ 2.000</option>
+                  <select name="budget" defaultValue={briefingDraft.budget ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <option value="">Preciso de orientação</option>
+                    <option>Até R$ 1.500</option>
+                    <option>R$ 1.500 a R$ 3.000</option>
+                    <option>R$ 3.000 a R$ 6.000</option>
+                    <option>R$ 6.000 a R$ 12.000</option>
+                    <option>Acima de R$ 12.000</option>
                   </select>
                 </label>
-              </div>
-              <label className="block">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">briefing do projeto *</span>
-                <textarea required name="briefing" rows={5} placeholder="Conte o problema ou objetivo, para quem é a solução, referências e o resultado que você espera alcançar." className="mt-3 w-full resize-none border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-              </label>
+              </fieldset>
+
+              <fieldset className="border border-white/[0.1] bg-[#080f1a]/60 p-5 sm:p-6">
+                <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">04 · contexto e qualidade</legend>
+                <label className="block">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
+                  <textarea maxLength={600} name="success" rows={3} defaultValue={briefingDraft.success ?? ""} placeholder="Ex.: mais pedidos de orçamento, informação mais fácil de consultar, lançamento pronto para uso." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                </label>
+                <div className="mt-7 grid gap-7 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">referências / links</span>
+                    <textarea maxLength={1000} name="references" rows={3} defaultValue={briefingDraft.references ?? ""} placeholder="Sites, perfis ou produtos que ajudam a explicar a direção." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                  <label className="block">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">restrições / integrações</span>
+                    <textarea maxLength={1000} name="constraints" rows={3} defaultValue={briefingDraft.constraints ?? ""} placeholder="Ex.: domínio existente, plataforma obrigatória, identidade visual, APIs." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  </label>
+                </div>
+                <label className="mt-7 block">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
+                  <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={briefingDraft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                </label>
+              </fieldset>
             </div>
-            <div className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <aside data-briefing-summary="true" className="mt-7 border border-[#67e8f9]/25 bg-[#06172f]/80 p-5">
+              <div className="flex items-start gap-3">
+                <ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+                <div className="min-w-0">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">resumo ao vivo</p>
+                  <p className="mt-2 font-body text-sm leading-6 text-[#cbe8f6]">
+                    {briefingDraft.service || "Serviço ainda não definido"} · {briefingDraft.projectType || "tipo de projeto a definir"}
+                  </p>
+                  {briefingDraft.objective && <p className="mt-2 line-clamp-3 font-body text-xs leading-5 text-[#91b6ca]">{briefingDraft.objective}</p>}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {briefingDraft.stage && <span className="border border-white/10 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#a5c8dd]">{briefingDraft.stage}</span>}
+                    {briefingDraft.deadline && <span className="border border-white/10 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#a5c8dd]">{briefingDraft.deadline}</span>}
+                    {briefingDraft.budget && <span className="border border-white/10 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.1em] text-[#a5c8dd]">{briefingDraft.budget}</span>}
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <Button data-briefing-submit="true" disabled={isQuoteRequestPending} type="submit" className="min-h-12 w-full justify-center rounded-none bg-[#38bdf8] px-5 py-3.5 font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
                 {isQuoteRequestPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
               </Button>
-              <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#647a9f] light-muted-ink">{isStaticDeploy ? "revise e envie a mensagem no WhatsApp" : "seus dados ficam apenas neste pedido"}</p>
+              <button type="button" onClick={clearBriefingDraft} className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/10 px-4 font-mono text-[9px] uppercase tracking-[0.11em] text-[#8fa9c6] transition-colors hover:border-[#67e8f9]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> limpar rascunho
+              </button>
             </div>
+            <p className="mt-4 font-mono text-[9px] uppercase leading-5 tracking-[0.11em] text-[#647a9f] light-muted-ink">{isStaticDeploy ? "o site prepara a mensagem; você revisa e confirma o envio no WhatsApp" : "seus dados são usados apenas para analisar este pedido"}</p>
+
             {formError && <p role="alert" className="mt-6 border-l-2 border-rose-400 bg-rose-400/10 px-4 py-3 font-body text-sm text-rose-100">{formError}</p>}
             {formSent && (
               <div ref={successMessageRef} tabIndex={-1} role="status" aria-live="polite" className="quote-success mt-7 border border-[#3b82f6]/45 bg-[#0a1730] p-5">
@@ -330,10 +529,10 @@ export function PortfolioContact({
                   <span className="quote-success-icon grid h-11 w-11 shrink-0 place-items-center border border-[#3b82f6] bg-[#3b82f6] text-white"><CheckCircle2 className="h-5 w-5" /></span>
                   <div>
                     <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">{isStaticDeploy ? "mensagem preparada" : "briefing recebido"}</p>
-                    <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{isStaticDeploy ? "Confira o WhatsApp para concluir." : "Tudo certo: seu pedido chegou."}</h3>
-                    <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">{isStaticDeploy ? "O site não enviou seu pedido automaticamente. Revise a mensagem e toque em enviar no WhatsApp. Seus dados continuam no formulário caso precise tentar novamente." : "Obrigado por compartilhar sua ideia. Vou analisar as informações e retorno pelo e-mail informado para conversar sobre os próximos passos."}</p>
+                    <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{isStaticDeploy ? "Revise a mensagem antes de enviar." : "Tudo certo: seu pedido chegou."}</h3>
+                    <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">{isStaticDeploy ? "O briefing foi organizado em uma mensagem para o WhatsApp. Você mantém o controle e confirma o envio manualmente." : "As informações foram registradas para análise de escopo e próximos passos."}</p>
                     {isStaticDeploy && briefingWhatsAppUrl && <a href={briefingWhatsAppUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 border-b border-[#3b82f6] font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">abrir mensagem no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>}
-                    <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">quero contar outra ideia <ArrowUpRight className="h-3 w-3" /></button>
+                    <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-[9px] uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">continuar editando <ArrowUpRight className="h-3 w-3" /></button>
                   </div>
                 </div>
               </div>

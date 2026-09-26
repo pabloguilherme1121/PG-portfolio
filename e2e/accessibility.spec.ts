@@ -7,7 +7,7 @@ test.describe("acessibilidade pública", () => {
     await expect(page.locator("main")).toBeVisible();
 
     const violations = [];
-    for (const selector of ["#inicio", "#sobre", "#atuacao", "#servicos", "#trabalhos", "#social", "#contato", "#contato-rodape"]) {
+    for (const selector of ["#inicio", "#diagnostico", "#sobre", "#atuacao", "#servicos", "#trabalhos", "#social", "#contato", "#contato-rodape"]) {
       const section = page.locator(selector);
       if (!(await section.count())) continue;
       await section.scrollIntoViewIfNeeded();
