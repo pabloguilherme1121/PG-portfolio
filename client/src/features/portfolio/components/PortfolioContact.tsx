@@ -468,7 +468,7 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                    <select required name="service" value={briefingDraft.service ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, service: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="service" defaultValue={briefingDraft.service ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione um serviço</option>
                       <option>Site ou landing page</option>
                       <option>Dashboard ou produto digital</option>
@@ -480,7 +480,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                    <select required name="projectType" value={briefingDraft.projectType ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, projectType: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="projectType" defaultValue={briefingDraft.projectType ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione uma opção</option>
                       <option>Produto ou serviço digital</option>
                       <option>Marca ou negócio</option>
@@ -503,7 +503,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">estágio atual</span>
-                    <select name="stage" value={briefingDraft.stage ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, stage: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="stage" defaultValue={briefingDraft.stage ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Ideia inicial</option>
                       <option>Já existe e precisa evoluir</option>
@@ -535,7 +535,7 @@ export function PortfolioContact({
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                    <select name="delivery" value={briefingDraft.delivery ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, delivery: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="delivery" defaultValue={briefingDraft.delivery ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Site responsivo</option>
                       <option>Landing page</option>
@@ -548,7 +548,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">prazo / urgência</span>
-                    <select name="deadline" value={briefingDraft.deadline ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, deadline: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="deadline" defaultValue={briefingDraft.deadline ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Sem urgência</option>
                       <option>Até 2 semanas</option>
@@ -560,7 +560,7 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                  <select name="budget" value={briefingDraft.budget ?? ""} onChange={(event) => setBriefingDraft((current) => ({ ...current, budget: event.currentTarget.value }))} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                  <select name="budget" defaultValue={briefingDraft.budget ?? ""} className="mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="Preciso de orientação">Preciso de orientação</option>
                     <option>Até R$ 1.500</option>
                     <option>R$ 1.500 a R$ 3.000</option>
