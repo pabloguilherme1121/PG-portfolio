@@ -12,7 +12,7 @@ export default function PortfolioCaseStudies() {
         </div>
         <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Cada estudo resume o que precisava ser resolvido, qual caminho foi escolhido e o que a entrega comprova.</p>
       </div>
-      <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2">
+      <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2 xl:grid-cols-3">
         {caseStudies.map((study) => (
           <article key={study.id} data-case-study="true" className="relative bg-[#071326] p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
