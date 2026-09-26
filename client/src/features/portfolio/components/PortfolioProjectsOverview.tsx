@@ -28,20 +28,20 @@ export default function PortfolioProjectsOverview({
       <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
         <div>
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Projetos selecionados</p>
-          <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Trabalhos que mostram processo,<br className="hidden sm:block" /> execução e resultado.</h2>
+          <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Provas de trabalho, não apenas peças.<br className="hidden sm:block" /> Processo, decisões e entrega.</h2>
           <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // projetos & estudos de caso</div>
         </div>
         <div className="max-w-sm">
-          <p className="font-body text-sm leading-7 text-[#b6d7eb]">O portfólio é organizado por evidências: o problema enfrentado, meu papel, as decisões tomadas e a entrega que pode ser examinada.</p>
+          <p className="font-body text-sm leading-7 text-[#b6d7eb]">Cada case mostra o que precisava ser resolvido, como a solução foi construída e o que pode ser examinado funcionando.</p>
           <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> {repositories.length} {repositories.length === 1 ? "trabalho" : "trabalhos"} com mídia + 1 produto digital publicado</div>
         </div>
       </div>
 
       <article id="observatorio" className="mt-8 scroll-mt-28 grid gap-6 border border-[#67e8f9]/30 bg-[#081a2e] p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
         <div>
-          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">produto digital publicado · dados públicos</p>
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
-          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">O case que melhor representa meu objetivo profissional: transformar informação complexa em um produto digital utilizável. O Observatório reúne arquitetura de informação, interface responsiva, visualização de dados e publicação web em uma solução que pode ser aberta e avaliada em funcionamento.</p>
+          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Um produto publicado que mostra como organizo informação complexa em uma experiência compreensível e navegável. O Observatório reúne estrutura de informação, interface responsiva, indicadores, dashboard e publicação web em uma entrega que pode ser aberta e avaliada.</p>
           <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]"><span className="border border-white/10 px-2 py-1">Web</span><span className="border border-white/10 px-2 py-1">dashboard</span><span className="border border-white/10 px-2 py-1">dados públicos</span><span className="border border-white/10 px-2 py-1">produto publicado</span></div>
         </div>
         <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
@@ -49,7 +49,7 @@ export default function PortfolioProjectsOverview({
 
       <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
         <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
-        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">O eixo principal é desenvolvimento de produtos digitais. Conteúdo e audiovisual aparecem como competências complementares quando ajudam a explicar, demonstrar ou apresentar melhor uma solução.</p></div>
+        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">O eixo principal é transformar problemas de informação e uso em produtos digitais claros. Conteúdo e audiovisual entram quando ajudam a explicar, demonstrar ou apresentar melhor a entrega.</p></div>
         <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">sobre mim <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
       </div>
 
