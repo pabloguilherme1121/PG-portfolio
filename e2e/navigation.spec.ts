@@ -129,7 +129,7 @@ test.describe("portfólio profissional", () => {
     const profile = page.locator('[data-professional-snapshot="true"]');
     await expect(profile).toBeVisible();
     await expect(profile.getByRole("heading", { name: /avaliação profissional/i })).toBeVisible();
-    await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(4);
+    await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(6);
 
     const resumeProof = profile.locator('[data-professional-proof-id="resume"]');
     await expect(resumeProof).toHaveAttribute(
@@ -144,6 +144,14 @@ test.describe("portfólio profissional", () => {
     await expect(profile.getByRole("link", { name: /ver observatório/i })).toHaveAttribute(
       "href",
       "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    await expect(profile.getByRole("link", { name: /ver trajeto/i })).toHaveAttribute(
+      "href",
+      "https://github.com/Pabloguilherme01/trajeto-web",
+    );
+    await expect(profile.getByRole("link", { name: /assistir peça/i })).toHaveAttribute(
+      "href",
+      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
     );
     await expect(profile.getByRole("link", { name: /ver qualidade/i })).toHaveAttribute("href", "#qualidade");
 
