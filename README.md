@@ -22,6 +22,8 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
 - **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto, audiovisual e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
+- **Briefing com início rápido:** três modelos editáveis pré-preenchem direção, escopo e contexto, mantendo os dados de contato sob controle do visitante.
+- **Pausa interativa opcional:** jogo da velha contra o PG Bot, com lógica local, placar e controles acessíveis, sem bloquear a jornada de conversão.
 - **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
 
 ## Jornada principal
