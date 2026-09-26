@@ -20,7 +20,8 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
 - **Briefing Studio:** fluxo progressivo em quatro etapas, com autosave local, validação e resumo do contexto.
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
-- **Leitura curta para recrutadores:** currículo/perfil, GitHub, Observatório, Trajeto, audiovisual e qualidade reunidos em uma matriz única de provas.
+- **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto, audiovisual e qualidade reunidos em uma matriz única de provas.
+- **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
 - **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
 
 ## Jornada principal
