@@ -52,7 +52,6 @@ import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
-import PortfolioWebResume from "@/features/portfolio/components/PortfolioWebResume";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
@@ -64,6 +63,7 @@ import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/po
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
@@ -76,6 +76,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioWebResume = lazy(() => import("@/features/portfolio/components/PortfolioWebResume"));
 const loadPortfolioResumePreview = () =>
   import("@/features/portfolio/components/PortfolioResumePreview").then((module) => ({
     default: module.PortfolioResumePreview,
@@ -176,8 +177,13 @@ const navigationItems = [
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
-  const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>();
-  const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>();
+  const [avoidSpeculativePreload, setAvoidSpeculativePreload] = useState(() =>
+    typeof navigator === "undefined" ? false : shouldAvoidSpeculativePreload(getNavigatorConnection(navigator)),
+  );
+  const deferredRootMargin = avoidSpeculativePreload ? "160px" : "720px";
+  const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
+  const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
+  const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -296,6 +302,16 @@ export default function Home() {
   const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
+  const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+
+  useEffect(() => {
+    if (typeof navigator === "undefined") return;
+    const connection = getNavigatorConnection(navigator);
+    if (!connection?.addEventListener || !connection.removeEventListener) return;
+    const syncNetworkPreference = () => setAvoidSpeculativePreload(shouldAvoidSpeculativePreload(connection));
+    connection.addEventListener("change", syncNetworkPreference);
+    return () => connection.removeEventListener?.("change", syncNetworkPreference);
+  }, []);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
@@ -670,6 +686,7 @@ export default function Home() {
   });
 
   function preloadResumePreview() {
+    if (avoidSpeculativePreload) return;
     void loadPortfolioResumePreview();
   }
 
@@ -686,6 +703,7 @@ export default function Home() {
   }
 
   function preloadPgArcade() {
+    if (avoidSpeculativePreload) return;
     void loadPortfolioTicTacToe();
   }
 
@@ -1340,10 +1358,29 @@ export default function Home() {
 
         <PortfolioProfessionalSnapshot />
 
-        <PortfolioWebResume
-          resumeAvailable={resumeAvailable}
-          resumeUrl={resumeUrl}
-        />
+        <div
+          id="curriculo-web"
+          ref={webResumeSectionRef}
+          data-web-resume-anchor="true"
+          aria-busy={!shouldRenderWebResume}
+          className="scroll-mt-24 min-h-px"
+        >
+          {shouldRenderWebResume ? (
+            <Suspense
+              fallback={
+                <section data-web-resume-placeholder="true" className="archive-chapter border-t border-white/[0.07] bg-[#f5fbff] px-5 py-14 text-[#365166]" aria-label="Carregando currículo web">
+                  <div className="mx-auto max-w-[1120px] font-mono text-[10px] uppercase tracking-[0.14em] text-[#0e7490]">carregando currículo web…</div>
+                </section>
+              }
+            >
+              <PortfolioWebResume embedded resumeAvailable={resumeAvailable} resumeUrl={resumeUrl} />
+            </Suspense>
+          ) : (
+            <section data-web-resume-placeholder="true" className="archive-chapter border-t border-white/[0.07] bg-[#f5fbff] px-5 py-10 text-[#365166]" aria-label="Currículo web">
+              <div className="mx-auto max-w-[1120px] font-mono text-[9px] uppercase tracking-[0.12em] text-[#0e7490]">currículo web disponível ao aproximar</div>
+            </section>
+          )}
+        </div>
 
         <PortfolioSkills isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
 
