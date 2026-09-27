@@ -1187,10 +1187,18 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              <div data-mobile-shortcuts="true" className="mt-3 grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-3" aria-label="Atalhos rápidos">
-                <a href="#diagnostico" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Compass className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>diagnóstico</span></a>
-                <a href="#perfil-profissional" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><UserRound className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>perfil</span></a>
-                <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
+              <a
+                data-mobile-menu-primary="true"
+                href={mobilePrimaryAction.href}
+                onClick={closeMenu}
+                className="mt-3 flex min-h-12 items-center justify-between rounded-[10px] bg-[#38bdf8] px-3 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              >
+                <span className="inline-flex items-center gap-2"><ClipboardCheck className="h-4 w-4" aria-hidden="true" />{hasMobileBriefingDraft ? "retomar briefing" : "começar diagnóstico"}</span>
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
+              <div data-mobile-shortcuts="true" className="mt-2 grid grid-cols-2 gap-2" aria-label="Atalhos rápidos">
+                <a href="#perfil-profissional" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><UserRound className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>perfil</span></a>
+                <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
               </div>
               {resumeAvailable && <button type="button" onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> visualizar portfólio PDF</button>}
             </div>
