@@ -47,7 +47,7 @@ import {
   LayoutGrid,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
@@ -651,7 +651,6 @@ export default function Home() {
   function openProjectDetails(project: Repository) {
     trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
     setProjectDetailsLoading(true);
-    setProjectVideoNeedsPlay(false);
     if (window.innerWidth < 768 && !window.localStorage.getItem("pablo-portfolio-project-swipe-hint-seen")) {
       setShowProjectSwipeHint(true);
       window.localStorage.setItem("pablo-portfolio-project-swipe-hint-seen", "true");
@@ -664,14 +663,13 @@ export default function Home() {
     if (!target) return;
     setShowProjectSwipeHint(false);
     setProjectDetailsLoading(true);
-    setProjectVideoNeedsPlay(false);
     setProjectDetailsTransition(direction);
     setSelectedProject(target);
     window.setTimeout(() => setProjectDetailsTransition(null), 260);
   }
   function handleProjectDetailsTouchStart(event: TouchEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement | null;
-    if (target?.closest("button, a, input, video, summary")) {
+    if (target?.closest("button, a, input, summary")) {
       projectDetailsSwipeStartRef.current = null;
       return;
     }
@@ -691,8 +689,7 @@ export default function Home() {
   useEffect(() => {
     if (!selectedProject) {
       setProjectDetailsLoading(false);
-      setProjectVideoNeedsPlay(false);
-      return;
+        return;
     }
     const timer = window.setTimeout(() => setProjectDetailsLoading(false), 420);
     return () => window.clearTimeout(timer);
