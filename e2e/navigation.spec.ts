@@ -417,6 +417,31 @@ test.describe("portfólio profissional", () => {
     }
   });
 
+  test("não publica mais a peça vertical autoral nem fluxos relacionados", async ({ page, request }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await expect(page.getByText(/Site vendendo enquanto você dorme/i)).toHaveCount(0);
+    await expect(page.getByText("Conteúdo e audiovisual", { exact: true })).toHaveCount(0);
+    await expect(page.locator('a[href*="pg-site-vendendo-2026"]')).toHaveCount(0);
+
+    await page.goto("/?projeto=TEC.08#projetos");
+    await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
+
+    await page.goto("/?imagem=TEC.08");
+    await expect(page.locator("[data-lightbox-modal]")).toHaveCount(0);
+
+    for (const asset of [
+      "/portfolio-media/pg-site-vendendo-2026-poster.webp",
+      "/portfolio-media/pg-site-vendendo-2026.mp4",
+    ]) {
+      const response = await request.get(asset);
+      expect(response.status(), `${asset} ainda está publicado`).toBe(404);
+    }
+
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("emite eventos de conversão sem incluir dados pessoais", async ({ page }) => {
     await page.addInitScript(() => {
       const events: unknown[] = [];
