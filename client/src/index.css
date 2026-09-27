@@ -863,6 +863,8 @@ html.theme-transitioning .arquivo-page * {
     padding-inline: 0;
   }
   .mobile-whatsapp-action span { display: none; }
+  .contact-float-telegram,
+  .contact-float-instagram { display: none; }
   .contact-float-link svg { flex: 0 0 auto; }
 
   .mobile-shortcut-card {
