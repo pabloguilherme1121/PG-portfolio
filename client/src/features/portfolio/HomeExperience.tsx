@@ -89,10 +89,8 @@ const whatsAppNumber = "5561992903029";
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
 declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
-declare const __PORTFOLIO_SHOWREEL_AVAILABLE__: boolean;
 const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
 const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
-const showreelAvailable = __PORTFOLIO_SHOWREEL_AVAILABLE__;
 const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
 const telegramUrl = "https://t.me/mpjmarketing";
 
@@ -1183,8 +1181,6 @@ export default function Home() {
           markUrl={markUrl}
           portraitUrl={portraitUrl}
           portraitResponsive={portraitResponsive}
-          showreelAvailable={showreelAvailable}
-          isDesktopViewport={isDesktopViewport}
           heroCtaRef={heroCtaRef}
         />
 
