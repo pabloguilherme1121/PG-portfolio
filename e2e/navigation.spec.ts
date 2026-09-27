@@ -577,7 +577,7 @@ test.describe("portfólio profissional", () => {
       await game.scrollIntoViewIfNeeded();
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
 
-      await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(3);
+      await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(4);
       await game.locator('[data-arcade-advanced="true"] summary').click();
 
       for (const name of [/contra (o )?bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
@@ -615,12 +615,13 @@ test.describe("portfólio profissional", () => {
     await expect(dock).toHaveAttribute("data-mobile-dock", "true");
     await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
 
-    await page.getByRole("button", { name: /abrir.*pg arcade/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|jogar.*pg arcade/i }).click();
     const game = page.locator('[data-tic-tac-toe="true"]');
-    await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(3);
+    await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(4);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(0)).toContainText(/contra.*bot|contra.*ia/i);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(1)).toContainText(/impossível|estratégia/i);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(2)).toContainText(/local|1.*1/i);
+    await expect(game.locator('[data-arcade-preset-card="true"]').nth(3)).toContainText(/sobrevivência|MD5/i);
   });
 
   test("mobile prioriza navegação curta e CTA de projeto ao alcance do polegar", async ({ page }) => {
