@@ -2,15 +2,16 @@ import { ArrowDownRight, Briefcase, CheckCircle2, Compass, Sparkles, UserRound }
 import type { KeyboardEvent, PointerEvent } from "react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { experienceRouteStorageKey, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 
 const experienceRoutes = [
   {
     id: "client",
     label: "Quero contratar",
     eyebrow: "projeto / orçamento",
-    title: "Transforme uma necessidade em uma rota clara de execução.",
+    title: "Comece pelo problema e avance com uma rota clara.",
     description:
-      "Comece pelo diagnóstico interativo, receba uma direção inicial e leve o contexto para um briefing profissional editável.",
+      "O diagnóstico organiza objetivo, estágio e direção para o briefing já começar com contexto útil.",
     href: "#diagnostico",
     cta: "diagnosticar meu projeto",
     Icon: Briefcase,
@@ -21,9 +22,9 @@ const experienceRoutes = [
     id: "recruiter",
     label: "Quero avaliar seu perfil",
     eyebrow: "recrutamento / parceria",
-    title: "Veja competências, provas verificáveis e trajetória sem perder tempo.",
+    title: "Avalie perfil e provas sem procurar informação espalhada.",
     description:
-      "A rota profissional reúne currículo web, projetos em produção, código, qualidade técnica e canais de contato.",
+      "Currículo web, projetos, código, qualidade técnica e contato ficam reunidos em uma rota curta.",
     href: "#perfil-profissional",
     cta: "abrir perfil profissional",
     Icon: UserRound,
@@ -34,9 +35,9 @@ const experienceRoutes = [
     id: "explorer",
     label: "Quero explorar",
     eyebrow: "cases / experiência",
-    title: "Navegue pelos projetos e descubra como cada solução foi construída.",
+    title: "Explore projetos e entenda como cada solução foi construída.",
     description:
-      "Explore produtos digitais, interfaces, dados, conteúdo visual e experiências interativas com contexto e prova pública.",
+      "Veja produtos digitais, interfaces, dados, decisões técnicas e provas públicas sem ruído desnecessário.",
     href: "#projetos",
     cta: "ver projetos selecionados",
     Icon: Compass,
@@ -48,12 +49,18 @@ const experienceRoutes = [
 type ExperienceRouteId = (typeof experienceRoutes)[number]["id"];
 
 export default function PortfolioExperienceHub() {
-  const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>("client");
+  const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>(() => readStoredExperienceRoute(typeof window === "undefined" ? null : window.sessionStorage) as ExperienceRouteId);
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
   const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
 
   function selectRoute(routeId: ExperienceRouteId) {
     setActiveRoute(routeId);
+    try {
+      window.sessionStorage.setItem(experienceRouteStorageKey, routeId);
+    } catch {
+      // A rota continua válida durante a renderização atual mesmo sem storage.
+    }
+    window.dispatchEvent(new CustomEvent<{ routeId: MobileExperienceRoute }>("portfolio:experience-route", { detail: { routeId } }));
     trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
   }
 
@@ -111,12 +118,12 @@ export default function PortfolioExperienceHub() {
               id="experience-hub-title"
               className="mt-3 max-w-4xl font-display text-[clamp(2.05rem,10vw,5.6rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white sm:mt-4 sm:leading-[0.92] sm:tracking-[-0.06em]"
             >
-              Escolha como quer explorar este portfólio.
+              Escolha o caminho mais útil para você.
             </h2>
           </div>
           <div className="lg:pb-1">
             <p className="max-w-xl font-body text-sm leading-7 text-[#b7d4e4] sm:text-base">
-              Em vez de obrigar todo mundo a seguir a mesma sequência, o portfólio adapta a próxima etapa à sua intenção.
+              Contratar, avaliar o perfil ou explorar projetos: a próxima etapa se adapta à sua intenção.
               Você pode trocar de rota a qualquer momento.
             </p>
             <div className="mt-4 inline-flex items-center gap-2 border border-[#67e8f9]/20 bg-[#06172f]/75 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#9ed8e6]">
