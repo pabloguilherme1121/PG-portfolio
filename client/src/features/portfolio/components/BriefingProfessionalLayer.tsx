@@ -4,8 +4,8 @@ type BriefingProfessionalLayerProps = {
   reviewHidden: boolean;
 };
 
-const fieldClass = "mt-3 min-h-12 w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
-const textareaClass = "mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
+const fieldClass = "mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
+const textareaClass = "mt-3 min-w-0 max-w-full w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
 
 export default function BriefingProfessionalLayer({
   draft,
@@ -18,7 +18,7 @@ export default function BriefingProfessionalLayer({
         data-briefing-step="requirements"
         tabIndex={-1}
         hidden={requirementsHidden}
-        className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+        className="min-w-0 border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
         <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           04 · requisitos
@@ -105,7 +105,7 @@ export default function BriefingProfessionalLayer({
         data-briefing-step="review"
         tabIndex={-1}
         hidden={reviewHidden}
-        className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+        className="min-w-0 border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
         <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           05 · contexto e revisão

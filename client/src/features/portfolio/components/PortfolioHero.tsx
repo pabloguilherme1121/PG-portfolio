@@ -51,16 +51,16 @@ export default function PortfolioHero({
         <img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[604px] max-w-[1440px] flex-col justify-between px-5 pb-8 pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
+      <div className="relative mx-auto flex min-h-[604px] max-w-[1440px] flex-col justify-between px-4 pb-8 pt-10 min-[360px]:px-5 min-[360px]:pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
             Pablo Guilherme · produtos digitais do problema à publicação
           </div>
-          <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.7rem,11vw,3.15rem)] font-semibold leading-[0.84] tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
+          <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.35rem,11vw,3.15rem)] font-semibold leading-[0.9] tracking-[-0.06em] sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-7 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-6 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
@@ -73,7 +73,7 @@ export default function PortfolioHero({
             </figcaption>
           </figure>
 
-          <div className="reveal delay-2 mt-9 flex max-w-xl flex-col gap-6 sm:ml-[16.8%]">
+          <div className="reveal delay-2 mt-7 flex max-w-xl flex-col gap-5 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
               Crio sites, interfaces e dashboards com foco em clareza, responsividade e entrega real. Organizo o problema, desenho a experiência, desenvolvo e publico; conteúdo visual entra quando ajuda a explicar ou demonstrar melhor a solução.
             </p>
