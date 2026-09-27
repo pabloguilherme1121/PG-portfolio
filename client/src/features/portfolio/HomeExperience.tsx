@@ -1311,7 +1311,7 @@ export default function Home() {
           data-mobile-context-action="true"
           href={mobileContextAction.href}
           onClick={() => trackPortfolioEvent("experience_route_cta", { experienceRoute: mobileExperienceRoute })}
-          className="mobile-context-action hidden min-h-12 basis-[78px] flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:basis-[92px] sm:hidden"
+          className="mobile-context-action flex min-h-12 basis-[78px] flex-col items-center justify-center gap-1 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:basis-[92px] sm:hidden"
         >
           <MobileContextIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
           <span>{mobileContextAction.label}</span>
@@ -1320,7 +1320,7 @@ export default function Home() {
           data-mobile-primary-action="true"
           href="#contato"
           onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
-          className="inline-flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 bg-[#38bdf8] px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 min-[360px]:text-[10px] sm:hidden"
+          className="inline-flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#38bdf8] px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 min-[360px]:text-[10px] sm:hidden"
           aria-label={hasMobileBriefingDraft ? "Continuar briefing salvo" : "Abrir briefing do projeto"}
         >
           <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
