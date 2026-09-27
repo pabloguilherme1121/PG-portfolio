@@ -227,7 +227,7 @@ test.describe("portfólio profissional", () => {
     const profile = page.locator('[data-professional-snapshot="true"]');
     await expect(profile).toBeVisible();
     await expect(profile.getByRole("heading", { name: /avaliação profissional/i })).toBeVisible();
-    await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(6);
+    await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(5);
 
     const resumeProof = profile.locator('[data-professional-proof-id="resume"]');
     await expect(resumeProof).toHaveAttribute("href", "#curriculo-web");
@@ -243,10 +243,6 @@ test.describe("portfólio profissional", () => {
     await expect(profile.getByRole("link", { name: /ver trajeto/i })).toHaveAttribute(
       "href",
       "https://github.com/Pabloguilherme01/trajeto-web",
-    );
-    await expect(profile.getByRole("link", { name: /assistir peça/i })).toHaveAttribute(
-      "href",
-      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
     );
     await expect(profile.getByRole("link", { name: /ver qualidade/i })).toHaveAttribute("href", "#qualidade");
 
@@ -294,7 +290,7 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const services = page.locator("#servicos");
-    await expect(services.locator('[data-service-offer="true"]')).toHaveCount(3);
+    await expect(services.locator('[data-service-offer="true"]')).toHaveCount(2);
 
     const dashboard = services.locator('[data-service-id="dashboard"]');
     await expect(dashboard.getByRole("link", { name: /ver prova.*observatório/i })).toHaveAttribute("href", "#observatorio");
@@ -308,18 +304,14 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|indicadores|contexto/i);
 
-    const content = services.locator('[data-service-id="content"]');
-    await expect(content.getByRole("link", { name: /ver prova.*peça vertical/i })).toHaveAttribute(
-      "href",
-      "?projeto=TEC.08#projetos",
-    );
+    await expect(services.locator('[data-service-id="content"]')).toHaveCount(0);
   });
 
   test("estudos de caso levam a evidências verificáveis", async ({ page }) => {
     await page.goto("/");
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(3);
+    await expect(studies).toHaveCount(2);
 
     const observatorioStudy = studies.filter({ hasText: "Observatório" });
     await expect(observatorioStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
@@ -331,20 +323,20 @@ test.describe("portfólio profissional", () => {
       "https://github.com/Pabloguilherme01/observatorio",
     );
 
-    const videoStudy = studies.filter({ hasText: /Site vendendo enquanto você dorme/i });
-    await expect(videoStudy.getByRole("link", { name: /assistir peça/i })).toHaveAttribute(
+    const trajetoStudy = studies.filter({ hasText: "Trajeto" });
+    await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
       "href",
-      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
+      "https://github.com/Pabloguilherme01/trajeto-web",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(4);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
   });
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
     await page.goto("/");
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(3);
+    await expect(studies).toHaveCount(2);
 
     const trajetoStudy = studies.filter({ hasText: "Trajeto" });
     await expect(trajetoStudy).toContainText(/produto.*evolução|em evolução/i);
@@ -353,7 +345,7 @@ test.describe("portfólio profissional", () => {
       "https://github.com/Pabloguilherme01/trajeto-web",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(4);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
 
     const featured = page.locator('[data-featured-project="TEC.09"]');
     await expect(featured).toBeVisible();
@@ -378,7 +370,7 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const featured = page.locator("[data-featured-project]");
-    await expect(featured).toHaveCount(2);
+    await expect(featured).toHaveCount(1);
 
     const trajeto = page.locator('[data-featured-project="TEC.09"]');
     await expect(trajeto.locator('[data-project-status="true"]')).toContainText(/em evolução/i);
@@ -388,29 +380,18 @@ test.describe("portfólio profissional", () => {
     );
     await expect(trajeto.getByRole("button", { name: /ver detalhes.*trajeto/i })).toBeVisible();
 
-    const video = page.locator('[data-featured-project="TEC.08"]');
-    await expect(video.locator('[data-project-status="true"]')).toContainText(/publicado/i);
-    await expect(video.getByRole("link", { name: /abrir prova.*vídeo/i })).toHaveAttribute(
-      "href",
-      /portfolio-media\/pg-site-vendendo-2026\.mp4$/,
-    );
-    await expect(video.getByRole("button", { name: /ver detalhes.*site vendendo/i })).toBeVisible();
-
-    await expect(page.locator('[data-featured-evidence="true"]')).toHaveCount(2);
+    await expect(page.locator('[data-featured-evidence="true"]')).toHaveCount(1);
   });
 
-  test("usa o retrato versionado e publica o case vertical válido", async ({ page, request }) => {
+  test("usa o retrato profissional versionado", async ({ page, request }) => {
     await page.goto("/");
 
     const portrait = page.locator(".hero-portrait-card img");
     await expect(portrait).toHaveAttribute("src", /portfolio-media\/pablo-profile-2026\.webp$/);
-    await expect(page.getByText(/Site vendendo enquanto você dorme/i).first()).toBeVisible();
 
     for (const asset of [
       "/portfolio-media/pablo-profile-2026.avif",
       "/portfolio-media/pablo-profile-2026.webp",
-      "/portfolio-media/pg-site-vendendo-2026-poster.webp",
-      "/portfolio-media/pg-site-vendendo-2026.mp4",
     ]) {
       const response = await request.get(asset);
       expect(response.ok(), `${asset} não foi servido corretamente`).toBeTruthy();
@@ -482,9 +463,9 @@ test.describe("portfólio profissional", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
 
-    await page.goto("/?projeto=TEC.08#projetos");
+    await page.goto("/?projeto=TEC.09#projetos");
     await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible({ timeout: 30000 });
-    await expect(page.locator('[data-project-details-dialog="true"]')).toContainText(/Site vendendo enquanto você dorme/i);
+    await expect(page.locator('[data-project-details-dialog="true"]')).toContainText(/Trajeto/i);
   });
 
   test("mantém mobile sem overflow e com alvos principais acessíveis", async ({ page }) => {
@@ -604,23 +585,6 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
-
-  test("mobile não oferece recursos de lightbox sem dados reais", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?imagem=TEC.08");
-
-    const lightbox = page.locator('[data-lightbox-modal]');
-    await expect(lightbox).toBeVisible();
-
-    await expect(lightbox.getByText("comparação visual", { exact: true })).toHaveCount(0);
-    await expect(lightbox.getByRole("button", { name: /WebP otimizado/i })).toHaveCount(0);
-    await expect(lightbox.getByRole("button", { name: /AVIF otimizado/i })).toHaveCount(0);
-
-    await lightbox.getByText("mais ações", { exact: true }).click();
-    await expect(lightbox.getByRole("button", { name: /baixar imagem original/i })).toBeVisible();
-
-    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
-  });
 
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
