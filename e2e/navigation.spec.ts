@@ -368,6 +368,26 @@ test.describe("portfólio profissional", () => {
     ).toBe(1);
   });
 
+  test("carrega a prévia PDF apenas quando existe intenção do visitante", async ({ page }) => {
+    const previewRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/PortfolioResumePreview/i.test(request.url())) previewRequests.push(request.url());
+    });
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(previewRequests).toEqual([]);
+
+    const resumeAction = page.locator('[data-resume-header="true"]').first();
+    await expect(resumeAction).toBeVisible();
+    await resumeAction.hover();
+    await expect.poll(() => previewRequests.length).toBeGreaterThan(0);
+
+    await resumeAction.click();
+    await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
+  });
+
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
     await page.goto("/");
 
@@ -660,6 +680,55 @@ test.describe("portfólio profissional", () => {
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(3)).toContainText(/sobrevivência|MD5/i);
   });
 
+  test("mobile esconde o dock enquanto o menu está aberto", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const dock = page.locator('[data-mobile-contact-bar="true"]');
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    await expect(page.locator("#mobile-navigation")).toBeVisible();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
+    await expect(dock).toHaveAttribute("aria-hidden", "true");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
+  });
+
+  test("mobile oferece instalação PWA apenas quando o navegador disponibiliza", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "__pwaPromptCalls", { value: 0, writable: true });
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.evaluate(() => {
+      const event = new Event("beforeinstallprompt", { cancelable: true });
+      Object.defineProperty(event, "prompt", {
+        value: async () => {
+          const target = window as Window & { __pwaPromptCalls: number };
+          target.__pwaPromptCalls += 1;
+        },
+      });
+      Object.defineProperty(event, "userChoice", {
+        value: Promise.resolve({ outcome: "accepted", platform: "web" }),
+      });
+      window.dispatchEvent(event);
+    });
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const installAction = page.locator('[data-mobile-install-action="true"]');
+    await expect(installAction).toBeVisible();
+    await expect(installAction).toContainText(/instalar/i);
+    await installAction.click();
+
+    await expect.poll(() =>
+      page.evaluate(() => (window as Window & { __pwaPromptCalls: number }).__pwaPromptCalls),
+    ).toBe(1);
+    await expect(installAction).toHaveCount(0);
+  });
+
   test("mobile prioriza navegação curta e CTA de projeto ao alcance do polegar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -816,6 +885,17 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+
+  test("PWA expõe atalhos úteis para projetos, contato e PG Arcade", async ({ request }) => {
+    const response = await request.get("/manifest.webmanifest");
+    expect(response.ok()).toBeTruthy();
+    const manifest = await response.json() as { shortcuts?: Array<{ name?: string; url?: string }> };
+    expect(manifest.shortcuts).toEqual(expect.arrayContaining([
+      expect.objectContaining({ name: "Ver trabalhos", url: "./#projetos" }),
+      expect.objectContaining({ name: "Entrar em contato", url: "./#contato" }),
+      expect.objectContaining({ name: "Abrir PG Arcade", url: "./#pg-lab" }),
+    ]));
+  });
 
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
