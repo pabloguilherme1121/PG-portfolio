@@ -129,7 +129,7 @@ test.describe("portfólio profissional", () => {
     await expect(game.locator('[data-game-cell="true"]:has-text("O")')).toHaveCount(1);
     await expect(game.locator('[data-game-status="true"]')).toContainText(/sua vez|você|empate|pg bot/i);
 
-    await game.getByRole("button", { name: /reiniciar rodada/i }).click();
+    await game.getByRole("button", { name: /reiniciar partida/i }).click();
     for (let index = 0; index < 9; index += 1) {
       await expect(cells.nth(index)).toHaveText("");
     }
