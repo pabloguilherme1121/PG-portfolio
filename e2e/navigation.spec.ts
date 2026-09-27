@@ -564,6 +564,25 @@ test.describe("portfólio profissional", () => {
     expect(actionBox?.width ?? 0).toBeGreaterThanOrEqual(160);
   });
 
+  test("menu mobile prioriza próxima ação e evita atalhos redundantes", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto("/");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    const menu = page.locator("#mobile-navigation");
+    const nextAction = menu.locator('[data-mobile-menu-primary="true"]');
+    const shortcuts = menu.locator('[data-mobile-shortcuts="true"]');
+
+    await expect(nextAction).toHaveAttribute("href", "#diagnostico");
+    await expect(nextAction).toContainText(/começar diagnóstico/i);
+    await expect(shortcuts.getByRole("link")).toHaveCount(2);
+    await expect(shortcuts.getByRole("link", { name: /perfil/i })).toBeVisible();
+    await expect(shortcuts.getByRole("link", { name: /observatório/i })).toBeVisible();
+
+    const box = await nextAction.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+  });
+
   test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
