@@ -48,7 +48,7 @@ type ConversionProperties = Partial<{
   professionalEvidence: "resume" | "profile" | "github" | "product" | "fullstack" | "media" | "quality";
   briefingPreset: "site" | "dashboard" | "content";
   gameResult: "player" | "bot" | "draw";
-  arcadePreset: "quick" | "competitive" | "local";
+  arcadePreset: "quick" | "competitive" | "local" | "survival";
   experienceRoute: "client" | "recruiter" | "explorer";
 }>;
 
