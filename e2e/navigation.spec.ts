@@ -590,6 +590,8 @@ test.describe("portfólio profissional", () => {
     await expect(lightbox.getByText("comparação visual", { exact: true })).toHaveCount(0);
     await expect(lightbox.getByRole("button", { name: /WebP otimizado/i })).toHaveCount(0);
     await expect(lightbox.getByRole("button", { name: /AVIF otimizado/i })).toHaveCount(0);
+
+    await lightbox.getByText("mais ações", { exact: true }).click();
     await expect(lightbox.getByRole("button", { name: /baixar imagem original/i })).toBeVisible();
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
