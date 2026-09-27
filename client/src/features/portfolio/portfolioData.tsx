@@ -280,9 +280,6 @@ export const repositories: Repository[] = [
   },
 ];
 
-export const optimizedLightboxImages: Record<string, { webp: string; avif: string }> = {};
-export const comparisonPairs: Record<string, { before: string; after: string }> = {};
-
 export const technologyFilters = ["Todos", "Web", "React", "TypeScript", "Vídeo", "Conteúdo"];
 export const categoryFilters = ["Todos", "Produto digital", "Conteúdo"];
 export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Vertical"] as const;
