@@ -85,7 +85,7 @@ export function chooseTicTacToeBotMoveByDifficulty(
 }
 
 
-export type TicTacToePreset = "quick" | "competitive" | "local";
+export type TicTacToePreset = "quick" | "competitive" | "local" | "survival";
 
 export type TicTacToeLifetimeStats = {
   games: number;
@@ -94,6 +94,8 @@ export type TicTacToeLifetimeStats = {
   draws: number;
   currentWinStreak: number;
   bestWinStreak: number;
+  hintsUsed: number;
+  perfectWins: number;
 };
 
 export const emptyTicTacToeLifetimeStats: TicTacToeLifetimeStats = {
@@ -103,6 +105,8 @@ export const emptyTicTacToeLifetimeStats: TicTacToeLifetimeStats = {
   draws: 0,
   currentWinStreak: 0,
   bestWinStreak: 0,
+  hintsUsed: 0,
+  perfectWins: 0,
 };
 
 export function getTicTacToePresetConfig(preset: TicTacToePreset) {
@@ -111,6 +115,9 @@ export function getTicTacToePresetConfig(preset: TicTacToePreset) {
   }
   if (preset === "local") {
     return { mode: "local" as const, difficulty: "normal" as const, seriesLength: 3 as const };
+  }
+  if (preset === "survival") {
+    return { mode: "bot" as const, difficulty: "impossible" as const, seriesLength: 5 as const };
   }
   return { mode: "bot" as const, difficulty: "normal" as const, seriesLength: 1 as const };
 }
@@ -162,6 +169,7 @@ export function getTicTacToeHintMove(board: TicTacToeBoard, mark: TicTacToeMark)
 export function updateTicTacToeLifetimeStats(
   stats: TicTacToeLifetimeStats | undefined,
   result: "player" | "bot" | "draw",
+  options: { usedHint?: boolean; perfectWin?: boolean } = {},
 ): TicTacToeLifetimeStats {
   const current = stats ?? emptyTicTacToeLifetimeStats;
   const currentWinStreak = result === "player" ? current.currentWinStreak + 1 : 0;
@@ -172,13 +180,22 @@ export function updateTicTacToeLifetimeStats(
     draws: current.draws + (result === "draw" ? 1 : 0),
     currentWinStreak,
     bestWinStreak: Math.max(current.bestWinStreak, currentWinStreak),
+    hintsUsed: current.hintsUsed + (options.usedHint ? 1 : 0),
+    perfectWins: current.perfectWins + (result === "player" && options.perfectWin ? 1 : 0),
   };
 }
 
 export function getTicTacToeAchievements(stats: TicTacToeLifetimeStats) {
-  const achievements: Array<"primeira-vitoria" | "trinca" | "invicto"> = [];
+  const achievements: Array<"primeira-vitoria" | "trinca" | "invicto" | "sem-ajuda" | "estrategista"> = [];
   if (stats.wins >= 1) achievements.push("primeira-vitoria");
   if (stats.bestWinStreak >= 3) achievements.push("trinca");
   if (stats.games >= 5 && stats.losses === 0) achievements.push("invicto");
+  if (stats.perfectWins >= 1) achievements.push("sem-ajuda");
+  if (stats.hintsUsed >= 3) achievements.push("estrategista");
   return achievements;
+}
+
+export function getTicTacToeWinRate(stats: TicTacToeLifetimeStats) {
+  if (!stats.games) return 0;
+  return Math.round((stats.wins / stats.games) * 100);
 }
