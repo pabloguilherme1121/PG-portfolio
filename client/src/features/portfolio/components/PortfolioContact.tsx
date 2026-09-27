@@ -34,7 +34,7 @@ import {
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
@@ -171,6 +171,19 @@ export function PortfolioContact({
   useEffect(() => () => {
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
   }, []);
+
+  useLayoutEffect(() => {
+    const form = briefingFormRef.current;
+    if (!form) return;
+    for (const fieldName of briefingFieldNames) {
+      const field = form.elements.namedItem(fieldName);
+      const value = briefingDraft[fieldName] ?? "";
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+        field.value = value;
+      }
+    }
+  }, [briefingDraft, briefingRevision]);
+
 
   useEffect(() => {
     if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
