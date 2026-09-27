@@ -13,9 +13,12 @@ describe("mobileJourney", () => {
     expect(hasMeaningfulBriefingDraft({ name: "Visitante mobile" })).toBe(true);
     expect(hasMeaningfulBriefingDraft({ objective: "Quero melhorar meu site" })).toBe(true);
   });
-  it("transforma progresso do briefing em CTA de retomada com contexto", () => {
-    expect(getMobilePrimaryAction(false)).toEqual({ href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" });
-    expect(getMobilePrimaryAction(true)).toEqual({ href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" });
+  it("transforma intenção e progresso em uma próxima ação coerente", () => {
+    expect(getMobilePrimaryAction("client", false)).toEqual({ href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" });
+    expect(getMobilePrimaryAction("recruiter", false)).toEqual({ href: "#perfil-profissional", label: "ver perfil", ariaLabel: "Avaliar perfil profissional" });
+    expect(getMobilePrimaryAction("explorer", false)).toEqual({ href: "#projetos", label: "explorar", ariaLabel: "Explorar projetos selecionados" });
+    expect(getMobilePrimaryAction("client", true)).toEqual({ href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" });
+    expect(getMobilePrimaryAction("recruiter", true)).toEqual({ href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" });
   });
 
   it("prioriza uma única próxima ação por intenção", () => {
