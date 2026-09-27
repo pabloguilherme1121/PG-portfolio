@@ -56,6 +56,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
+import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import PortfolioWebResume from "@/features/portfolio/components/PortfolioWebResume";
@@ -1707,6 +1708,8 @@ export default function Home() {
           isDesktopViewport={isDesktopViewport}
           heroCtaRef={heroCtaRef}
         />
+
+        <PortfolioExperienceHub />
 
         <ProjectDiagnostic />
 
