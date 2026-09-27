@@ -54,10 +54,17 @@ export function getMobileContextAction(route: MobileExperienceRoute) {
   return { href: "#diagnostico", label: "diagnóstico" } as const;
 }
 
-export function getMobilePrimaryAction(hasBriefingDraft: boolean) {
-  return hasBriefingDraft
-    ? { href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" } as const
-    : { href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" } as const;
+export function getMobilePrimaryAction(route: MobileExperienceRoute, hasBriefingDraft: boolean) {
+  if (hasBriefingDraft) {
+    return { href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" } as const;
+  }
+  if (route === "recruiter") {
+    return { href: "#perfil-profissional", label: "ver perfil", ariaLabel: "Avaliar perfil profissional" } as const;
+  }
+  if (route === "explorer") {
+    return { href: "#projetos", label: "explorar", ariaLabel: "Explorar projetos selecionados" } as const;
+  }
+  return { href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" } as const;
 }
 
 export function getMobileJourneyHint(route: MobileExperienceRoute, hasBriefingDraft: boolean) {

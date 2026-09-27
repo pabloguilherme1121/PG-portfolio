@@ -284,7 +284,7 @@ export default function Home() {
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
   const mobileContextAction = getMobileContextAction(mobileExperienceRoute);
-  const mobilePrimaryAction = getMobilePrimaryAction(hasMobileBriefingDraft);
+  const mobilePrimaryAction = getMobilePrimaryAction(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
   const MobileContextIcon = mobileExperienceRoute === "recruiter" ? UserRound : mobileExperienceRoute === "explorer" ? Eye : Compass;
 
@@ -1193,7 +1193,7 @@ export default function Home() {
                 onClick={closeMenu}
                 className="mt-3 flex min-h-12 items-center justify-between rounded-[10px] bg-[#38bdf8] px-3 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               >
-                <span className="inline-flex items-center gap-2"><ClipboardCheck className="h-4 w-4" aria-hidden="true" />{hasMobileBriefingDraft ? "retomar briefing" : "começar diagnóstico"}</span>
+                <span className="inline-flex items-center gap-2"><ClipboardCheck className="h-4 w-4" aria-hidden="true" />{mobilePrimaryAction.ariaLabel}</span>
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <div data-mobile-shortcuts="true" className="mt-2 grid grid-cols-2 gap-2" aria-label="Atalhos rápidos">

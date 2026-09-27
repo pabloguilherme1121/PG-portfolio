@@ -605,6 +605,9 @@ test.describe("portfólio profissional", () => {
     await hub.getByRole("tab", { name: /quero avaliar seu perfil/i }).click();
     await expect(contextAction).toHaveAttribute("href", "#perfil-profissional");
     await expect(contextAction).toContainText(/perfil/i);
+    await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
+    await expect(primaryAction).toContainText(/ver perfil/i);
+    await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/perfil.*provas.*contato/i);
 
     await page.reload();
     await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
@@ -614,6 +617,9 @@ test.describe("portfólio profissional", () => {
     await hub.getByRole("tab", { name: /quero explorar/i }).click();
     await expect(contextAction).toHaveAttribute("href", "#projetos");
     await expect(contextAction).toContainText(/projetos/i);
+    await expect(primaryAction).toHaveAttribute("href", "#projetos");
+    await expect(primaryAction).toContainText(/explorar/i);
+    await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/projetos.*cases.*código/i);
 
     await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
     await page.locator('#contato-briefing input[name="name"]').fill("Visitante mobile");
