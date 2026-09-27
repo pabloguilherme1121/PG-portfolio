@@ -34,7 +34,7 @@ import {
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
@@ -143,6 +143,7 @@ export function PortfolioContact({
   const availabilityClearTimerRef = useRef<number | null>(null);
   const briefingStartedRef = useRef(false);
   const briefingFormRef = useRef<HTMLFormElement>(null);
+  const [briefingFormReady, setBriefingFormReady] = useState(false);
   const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
   const [briefingRevision, setBriefingRevision] = useState(0);
   const [briefingStep, setBriefingStep] = useState(0);
@@ -167,6 +168,11 @@ export function PortfolioContact({
   const briefingCompletedFields = briefingReadinessFields.filter((field) => briefingDraft[field]?.trim()).length;
   const briefingProgress = Math.round((briefingCompletedFields / briefingReadinessFields.length) * 100);
   const briefingStatus = briefingProgress >= 88 ? "pronto para análise" : briefingProgress >= 55 ? "bom contexto" : "em construção";
+
+  const setBriefingFormNode = useCallback((node: HTMLFormElement | null) => {
+    briefingFormRef.current = node;
+    setBriefingFormReady(Boolean(node));
+  }, []);
 
   useEffect(() => () => {
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
@@ -418,7 +424,7 @@ export function PortfolioContact({
         <div className="min-w-0 px-4 py-14 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
           <form
             key={briefingRevision}
-            ref={briefingFormRef}
+            ref={setBriefingFormNode}
             id="contato-briefing"
             aria-busy={isQuoteRequestPending}
             onSubmit={handleSubmit}
@@ -469,7 +475,7 @@ export function PortfolioContact({
               </div>
             </div>
 
-            <BriefingQuickStart onSelect={applyBriefingPreset} />
+            <BriefingQuickStart onSelect={applyBriefingPreset} interactive={briefingFormReady} />
 
             <label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
               <span>Website</span>
