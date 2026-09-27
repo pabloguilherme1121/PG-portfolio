@@ -5,7 +5,6 @@ import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
  * metadados, linha de progresso e linguagem visual de arquivo em evolução.
  */
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { calculateMiniMapPosition, calculatePinchZoom, formatMiniMapPositionAnnouncement, getCancelledInteractionState, getViewportOrientation } from "@/lib/lightboxInteractions";
 import {
   ArrowDown,
   ArrowUp,
@@ -48,9 +47,8 @@ import {
   LayoutGrid,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { favoriteImageStorageKey, normalizeFavoriteImageIds, toggleFavoriteImageId } from "@/lib/imageFavorites";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
@@ -70,7 +68,7 @@ import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
-import { buildFavoritesShareUrl, buildLightboxContext, buildLightboxEmailPayload, buildLightboxShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
+import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
@@ -247,17 +245,6 @@ export default function Home() {
       return [];
     }
   });
-  const [favoriteImageIds, setFavoriteImageIds] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = window.localStorage.getItem(favoriteImageStorageKey);
-      return normalizeFavoriteImageIds(stored ? JSON.parse(stored) : [], repositories.filter((repository) => Boolean(repository.cover)).map((repository) => repository.id));
-    } catch {
-      return [];
-    }
-  });
-  const [isImageCollectionOpen, setIsImageCollectionOpen] = useState(false);
-  const [favoriteImageStatus, setFavoriteImageStatus] = useState("");
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [savedProjectSearch, setSavedProjectSearch] = useState("");
   const [savedProjectSortMode, setSavedProjectSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
@@ -274,24 +261,6 @@ export default function Home() {
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
-  const [lightboxShareStatus, setLightboxShareStatus] = useState<"idle" | "copied" | "shared" | "error">("idle");
-  const [lightboxCopiedAction, setLightboxCopiedAction] = useState<"link" | "context" | null>(null);
-  const [showLightboxMobileDetails, setShowLightboxMobileDetails] = useState(false);
-  const [lightboxRedirectingChannel, setLightboxRedirectingChannel] = useState<"whatsapp" | "linkedin" | null>(null);
-  const [lightboxEmailStatus, setLightboxEmailStatus] = useState<"idle" | "opening">("idle");
-  const [lightboxFullscreen, setLightboxFullscreen] = useState(false);
-  const [lightboxFullscreenNotice, setLightboxFullscreenNotice] = useState("");
-  const [lightboxSwipeDirection, setLightboxSwipeDirection] = useState<"previous" | "next" | null>(null);
-  const [showSwipeHint, setShowSwipeHint] = useState(false);
-  const [lightboxPanning, setLightboxPanning] = useState(false);
-  const [lightboxZoomFeedback, setLightboxZoomFeedback] = useState<number | null>(null);
-  const [lightboxZoomLimitFeedback, setLightboxZoomLimitFeedback] = useState<"min" | "max" | null>(null);
-  const [viewportOrientation, setViewportOrientation] = useState<"portrait" | "landscape">(() => getViewportOrientation(window.innerWidth, window.innerHeight));
-  const [showLightboxShortcutLegend, setShowLightboxShortcutLegend] = useState(false);
-  const [miniMapDragging, setMiniMapDragging] = useState(false);
-  const [lightboxPositionAnnouncement, setLightboxPositionAnnouncement] = useState("");
-  const [lightboxResetting, setLightboxResetting] = useState(false);
-  const [lightboxClosing, setLightboxClosing] = useState(false);
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
@@ -307,38 +276,11 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
   const projectDetailsSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
-  const [lightboxProjectId, setLightboxProjectId] = useState<string | null>(null);
-  const [lightboxZoom, setLightboxZoom] = useState(1);
-  const [lightboxOffset, setLightboxOffset] = useState({ x: 0, y: 0 });
-  const [lightboxImageLoading, setLightboxImageLoading] = useState(true);
-  const [lightboxImageError, setLightboxImageError] = useState(false);
-  const [lightboxImageAttempt, setLightboxImageAttempt] = useState(0);
-  const pinchStartDistanceRef = useRef(0);
-  const pinchStartZoomRef = useRef(1);
-  const pinchWasActiveRef = useRef(false);
-  const swipeStartRef = useRef({ x: 0, y: 0 });
-  const panStartRef = useRef({ active: false, x: 0, y: 0, offsetX: 0, offsetY: 0 });
-  const panPointerRef = useRef({ active: false, pointerId: -1, x: 0, y: 0, offsetX: 0, offsetY: 0 });
-  const zoomFeedbackTimerRef = useRef<number | null>(null);
-  const zoomLimitFeedbackTimerRef = useRef<number | null>(null);
-  const shortcutLegendTimerRef = useRef<number | null>(null);
-  const miniMapDragRef = useRef({ active: false, pointerId: -1 });
-  const lightboxCloseRef = useRef<HTMLButtonElement>(null);
-  const lightboxModalRef = useRef<HTMLDivElement>(null);
-  const lightboxImageRef = useRef<HTMLImageElement>(null);
-  const lightboxImageContainerRef = useRef<HTMLDivElement>(null);
-  const lightboxActiveThumbRef = useRef<HTMLButtonElement>(null);
-  const lightboxReturnFocusRef = useRef<HTMLElement | null>(null);
   const heroCtaRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
-  const lightboxProjects = useMemo(() => repositories.filter((repository) => Boolean(repository.cover)), []);
-  const lightboxProject = lightboxProjectId ? lightboxProjects.find((repository) => repository.id === lightboxProjectId) ?? null : null;
-  const lightboxProjectIndex = lightboxProject ? lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) : -1;
-  const lightboxNextProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex + 1) % lightboxProjects.length] : null;
-  const lightboxPreviousProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null;
-  const shouldHideContactFloat = Boolean(lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
+  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
 
   useEffect(() => {
     const target = heroCtaRef.current;
@@ -374,17 +316,6 @@ export default function Home() {
     };
   }, []);
 
-  useEffect(() => {
-    setLightboxImageLoading(Boolean(lightboxProject));
-    setLightboxImageError(false);
-    setLightboxImageAttempt(0);
-    [lightboxNextProject, lightboxPreviousProject].forEach((project) => {
-      if (!project?.cover) return;
-      const preloader = new Image();
-      preloader.decoding = "async";
-      preloader.src = project.cover;
-    });
-  }, [lightboxProject?.id]);
 
   useEffect(() => {
     const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 120 : 420;
@@ -399,282 +330,6 @@ export default function Home() {
     if (sharedProject) openProjectDetails(sharedProject);
   }, [repositories, selectedProject]);
 
-  useEffect(() => {
-    if (!lightboxProjectId) return;
-    const handleViewportChange = () => {
-      setViewportOrientation(getViewportOrientation(window.innerWidth, window.innerHeight));
-      setLightboxOffset((offset) => clampPanOffset(offset.x, offset.y));
-    };
-    window.addEventListener("resize", handleViewportChange, { passive: true });
-    window.addEventListener("orientationchange", handleViewportChange, { passive: true });
-    window.screen.orientation?.addEventListener?.("change", handleViewportChange);
-    return () => {
-      window.removeEventListener("resize", handleViewportChange);
-      window.removeEventListener("orientationchange", handleViewportChange);
-      window.screen.orientation?.removeEventListener?.("change", handleViewportChange);
-    };
-  }, [lightboxProjectId, lightboxZoom]);
-
-  const closeProjectLightbox = () => {
-    if (lightboxClosing) return;
-    setLightboxClosing(true);
-    if (document.fullscreenElement) void document.exitFullscreen?.();
-    setLightboxFullscreen(false);
-    window.setTimeout(() => {
-      setLightboxProjectId(null);
-      setLightboxClosing(false);
-      setLightboxZoom(1);
-      setLightboxOffset({ x: 0, y: 0 });
-      lightboxReturnFocusRef.current?.focus();
-    }, 180);
-  };
-
-  const toggleLightboxFullscreen = async () => {
-    const modal = lightboxModalRef.current;
-    if (!modal) return;
-    try {
-      if (document.fullscreenElement) {
-        await document.exitFullscreen?.();
-      } else if (modal.requestFullscreen) {
-        await modal.requestFullscreen();
-      }
-    } catch {
-      setLightboxFullscreen(false);
-      setLightboxFullscreenNotice("A tela cheia foi bloqueada pelo navegador. Você ainda pode ampliar a imagem usando os controles de zoom.");
-      window.setTimeout(() => setLightboxFullscreenNotice(""), 4200);
-      return;
-    }
-    setLightboxFullscreen(Boolean(document.fullscreenElement));
-  };
-
-  const setProjectZoom = (nextZoom: number, announceLimit = true) => {
-    const clampedZoom = Math.min(3, Math.max(1, nextZoom));
-    const hitLimit = announceLimit && (nextZoom <= 1 || nextZoom >= 3);
-    if (hitLimit) {
-      const limit = nextZoom < 1 ? "min" : "max";
-      setLightboxZoomLimitFeedback(limit);
-      if (zoomLimitFeedbackTimerRef.current) window.clearTimeout(zoomLimitFeedbackTimerRef.current);
-      zoomLimitFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomLimitFeedback(null), 1200);
-    }
-    setLightboxZoom(clampedZoom);
-    try { window.sessionStorage.setItem("arquivo-profundo-lightbox-zoom", String(clampedZoom)); } catch { /* sessionStorage pode estar indisponível */ }
-    setLightboxZoomFeedback(Math.round(clampedZoom * 100));
-    if (zoomFeedbackTimerRef.current) window.clearTimeout(zoomFeedbackTimerRef.current);
-    zoomFeedbackTimerRef.current = window.setTimeout(() => setLightboxZoomFeedback(null), 900);
-    if (clampedZoom === 1) setLightboxOffset({ x: 0, y: 0 });
-  };
-
-  const resetProjectZoom = () => {
-    setLightboxResetting(true);
-    setProjectZoom(1, false);
-    setLightboxOffset({ x: 0, y: 0 });
-    window.setTimeout(() => setLightboxResetting(false), 320);
-  };
-
-  const revealShortcutLegend = () => {
-    setShowLightboxShortcutLegend(true);
-    if (shortcutLegendTimerRef.current) window.clearTimeout(shortcutLegendTimerRef.current);
-    shortcutLegendTimerRef.current = window.setTimeout(() => setShowLightboxShortcutLegend(false), 3600);
-  };
-
-  const clearLightboxSessionPreferences = () => {
-    try { window.sessionStorage.removeItem("arquivo-profundo-lightbox-zoom"); } catch { /* sessionStorage pode estar indisponível */ }
-    resetProjectZoom();
-    revealShortcutLegend();
-  };
-
-  const getTouchDistance = (touches: TouchEvent<HTMLImageElement>["touches"]) => {
-    const first = touches[0];
-    const second = touches[1];
-    return Math.hypot(second.clientX - first.clientX, second.clientY - first.clientY);
-  };
-
-  const getPanBounds = () => {
-    const image = lightboxImageRef.current;
-    const container = lightboxImageContainerRef.current;
-    if (!image || !container || !image.naturalWidth || !image.naturalHeight) return { x: 0, y: 0 };
-    const containerRect = container.getBoundingClientRect();
-    const aspectRatio = image.naturalWidth / image.naturalHeight;
-    const fitWidth = Math.min(containerRect.width, containerRect.height * aspectRatio);
-    const fitHeight = fitWidth / aspectRatio;
-    return { x: Math.max(0, (fitWidth * lightboxZoom - containerRect.width) / 2), y: Math.max(0, (fitHeight * lightboxZoom - containerRect.height) / 2) };
-  };
-
-  const clampPanOffset = (x: number, y: number) => {
-    const bounds = getPanBounds();
-    return { x: Math.min(bounds.x, Math.max(-bounds.x, x)), y: Math.min(bounds.y, Math.max(-bounds.y, y)) };
-  };
-
-  const handleMiniMapPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    revealShortcutLegend();
-    miniMapDragRef.current = { active: true, pointerId: event.pointerId };
-    setMiniMapDragging(true);
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-    repositionFromMiniMap(event.clientX, event.clientY, event.currentTarget);
-  };
-
-  const handleMiniMapPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!miniMapDragRef.current.active || miniMapDragRef.current.pointerId !== event.pointerId) return;
-    event.preventDefault();
-    repositionFromMiniMap(event.clientX, event.clientY, event.currentTarget);
-  };
-
-  const handleMiniMapPointerEnd = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (miniMapDragRef.current.pointerId === event.pointerId) {
-      miniMapDragRef.current.active = false;
-      setMiniMapDragging(false);
-    }
-  };
-
-  const repositionFromMiniMap = (clientX: number, clientY: number, element: HTMLElement) => {
-    const rect = element.getBoundingClientRect();
-    const xRatio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    const yRatio = Math.min(1, Math.max(0, (clientY - rect.top) / rect.height));
-    const bounds = getPanBounds();
-    const nextOffset = clampPanOffset((0.5 - xRatio) * 2 * bounds.x, (0.5 - yRatio) * 2 * bounds.y);
-    setLightboxOffset(nextOffset);
-    setLightboxPositionAnnouncement(formatMiniMapPositionAnnouncement(calculateMiniMapPosition(lightboxZoom, nextOffset, bounds)));
-  };
-
-  const handleLightboxPointerDown = (event: React.PointerEvent<HTMLImageElement>) => {
-    if (event.pointerType === "touch" || lightboxZoom <= 1 || !lightboxImageRef.current) return;
-    event.preventDefault();
-    panPointerRef.current = { active: true, pointerId: event.pointerId, x: event.clientX, y: event.clientY, offsetX: lightboxOffset.x, offsetY: lightboxOffset.y };
-    setLightboxPanning(true);
-    event.currentTarget.setPointerCapture?.(event.pointerId);
-  };
-
-  const handleLightboxPointerMove = (event: React.PointerEvent<HTMLImageElement>) => {
-    if (!panPointerRef.current.active || panPointerRef.current.pointerId !== event.pointerId) return;
-    event.preventDefault();
-    setLightboxOffset(clampPanOffset(panPointerRef.current.offsetX + event.clientX - panPointerRef.current.x, panPointerRef.current.offsetY + event.clientY - panPointerRef.current.y));
-  };
-
-  const handleLightboxPointerEnd = (event: React.PointerEvent<HTMLImageElement>) => {
-    if (panPointerRef.current.pointerId === event.pointerId) {
-      panPointerRef.current.active = getCancelledInteractionState().isPanning;
-      setLightboxPanning(false);
-    }
-  };
-
-  const handleLightboxTouchStart = (event: TouchEvent<HTMLImageElement>) => {
-    if (event.touches.length === 1) {
-      const touch = event.touches[0];
-      swipeStartRef.current = { x: touch.clientX, y: touch.clientY };
-      panStartRef.current = { active: lightboxZoom > 1, x: touch.clientX, y: touch.clientY, offsetX: lightboxOffset.x, offsetY: lightboxOffset.y };
-    }
-    if (event.touches.length === 2) {
-      event.preventDefault();
-      panStartRef.current.active = false;
-      pinchWasActiveRef.current = true;
-      pinchStartDistanceRef.current = getTouchDistance(event.touches);
-      pinchStartZoomRef.current = lightboxZoom;
-    }
-  };
-
-  const handleLightboxTouchMove = (event: TouchEvent<HTMLImageElement>) => {
-    if (event.touches.length === 1 && panStartRef.current.active && lightboxZoom > 1) {
-      event.preventDefault();
-      const touch = event.touches[0];
-      const nextX = panStartRef.current.offsetX + touch.clientX - panStartRef.current.x;
-      const nextY = panStartRef.current.offsetY + touch.clientY - panStartRef.current.y;
-      setLightboxOffset(clampPanOffset(nextX, nextY));
-      return;
-    }
-    if (event.touches.length !== 2 || pinchStartDistanceRef.current <= 0) return;
-    event.preventDefault();
-    setProjectZoom(calculatePinchZoom(pinchStartZoomRef.current, pinchStartDistanceRef.current, getTouchDistance(event.touches)));
-  };
-
-  const handleLightboxTouchEnd = (event: TouchEvent<HTMLImageElement>) => {
-    if (panStartRef.current.active) {
-      panStartRef.current.active = false;
-      pinchStartDistanceRef.current = 0;
-      return;
-    }
-    if (event.changedTouches.length === 1 && lightboxZoom === 1 && lightboxProject && pinchStartDistanceRef.current === 0 && !pinchWasActiveRef.current) {
-      const touch = event.changedTouches[0];
-      const deltaX = touch.clientX - swipeStartRef.current.x;
-      const deltaY = touch.clientY - swipeStartRef.current.y;
-      if (Math.abs(deltaX) > 48 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        const currentIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
-        const direction = deltaX < 0 ? 1 : -1;
-        setLightboxSwipeDirection(direction === 1 ? "next" : "previous");
-        window.setTimeout(() => setLightboxSwipeDirection(null), 520);
-        const nextProject = lightboxProjects[(currentIndex + direction + lightboxProjects.length) % lightboxProjects.length];
-        if (nextProject?.cover) setLightboxProjectId(nextProject.id);
-      }
-    }
-    pinchStartDistanceRef.current = 0;
-    pinchWasActiveRef.current = false;
-  };
-
-  useEffect(() => {
-    if (!lightboxProjectId) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.setTimeout(() => lightboxCloseRef.current?.focus(), 0);
-    const handleFullscreenChange = () => setLightboxFullscreen(document.fullscreenElement === document.querySelector("[data-lightbox-modal]"));
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    const handleLightboxKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Tab") {
-        const modal = document.querySelector<HTMLElement>("[data-lightbox-modal]");
-        const focusable = modal ? Array.from(modal.querySelectorAll<HTMLElement>('button:not([disabled]), summary, a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')).filter((element) => element.getClientRects().length > 0) : [];
-        if (focusable.length) {
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-          if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first.focus();
-          }
-        }
-        return;
-      }
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeProjectLightbox();
-        return;
-      }
-      if (!lightboxProject) return;
-      const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id);
-      if (event.key === "+" || event.key === "=") {
-        event.preventDefault();
-        setProjectZoom(lightboxZoom + 0.25);
-        return;
-      }
-      if (event.key === "-" || event.key === "_") {
-        event.preventDefault();
-        setProjectZoom(lightboxZoom - 0.25);
-        return;
-      }
-      if (["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"].includes(event.key) && lightboxZoom > 1) {
-        event.preventDefault();
-        const step = 48;
-        const deltaX = event.key === "ArrowRight" ? -step : event.key === "ArrowLeft" ? step : 0;
-        const deltaY = event.key === "ArrowDown" ? -step : event.key === "ArrowUp" ? step : 0;
-        setLightboxOffset((offset) => clampPanOffset(offset.x + deltaX, offset.y + deltaY));
-        return;
-      }
-      if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
-        event.preventDefault();
-        const direction = event.key === "ArrowRight" ? 1 : -1;
-        const nextIndex = (projectIndex + direction + lightboxProjects.length) % lightboxProjects.length;
-        const nextProject = lightboxProjects[nextIndex];
-        if (nextProject?.cover) setLightboxProjectId(nextProject.id);
-      }
-    };
-    window.addEventListener("keydown", handleLightboxKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleLightboxKeyDown);
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      if (document.fullscreenElement) void document.exitFullscreen?.();
-    };
-  }, [lightboxProjectId, lightboxProject, lightboxProjects, lightboxZoom]);
 
   useEffect(() => {
     if (!resumePreviewOpen) return;
@@ -712,14 +367,7 @@ export default function Home() {
     };
   }, [resumePreviewOpen, resumePreviewLoading]);
 
-  useEffect(() => {
-    if (!lightboxProjectId) return;
-    let savedZoom = 1;
-    try { savedZoom = Math.min(3, Math.max(1, Number(window.sessionStorage.getItem("arquivo-profundo-lightbox-zoom")) || 1)); } catch { savedZoom = 1; }
-    setLightboxZoom(savedZoom);
-    setLightboxOffset({ x: 0, y: 0 });
-    window.requestAnimationFrame(() => lightboxActiveThumbRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" }));
-  }, [lightboxProjectId]);
+
   const successMessageRef = useRef<HTMLDivElement>(null);
   const projectFilterTimerRef = useRef<number | null>(null);
   const galleryLoadingTimerRef = useRef<number | null>(null);
@@ -727,8 +375,6 @@ export default function Home() {
   const favoriteExportTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
-  const favoriteImageIdSet = useMemo(() => new Set(favoriteImageIds), [favoriteImageIds]);
-  const favoriteImageProjects = useMemo(() => lightboxProjects.filter((project) => favoriteImageIdSet.has(project.id)), [favoriteImageIdSet, lightboxProjects]);
   const sharedProjectIdSet = useMemo(() => new Set(sharedProjectIds ?? []), [sharedProjectIds]);
   const {
     data: blockedDates = [],
@@ -883,11 +529,6 @@ export default function Home() {
     window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
   }, []);
 
-  useEffect(() => {
-    const sharedImageId = new URLSearchParams(window.location.search).get("imagem");
-    if (!sharedImageId || !lightboxProjects.some((project) => project.id === sharedImageId)) return;
-    setLightboxProjectId(sharedImageId);
-  }, [lightboxProjects]);
 
   useEffect(() => {
     try {
@@ -897,13 +538,6 @@ export default function Home() {
     }
   }, [favoriteProjectIds]);
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(favoriteImageStorageKey, JSON.stringify(favoriteImageIds));
-    } catch {
-      // A coleção continua disponível durante a sessão quando o armazenamento está indisponível.
-    }
-  }, [favoriteImageIds]);
 
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
@@ -1140,16 +774,6 @@ export default function Home() {
     }
   }
 
-  function toggleFavoriteImage(projectId: string, event?: React.MouseEvent | React.KeyboardEvent) {
-    event?.preventDefault();
-    event?.stopPropagation();
-    const isAlreadySaved = favoriteImageIdSet.has(projectId);
-    const projectName = lightboxProjects.find((project) => project.id === projectId)?.name ?? "Imagem";
-    setFavoriteImageIds((current) => toggleFavoriteImageId(current, projectId));
-    setFavoriteImageStatus(isAlreadySaved ? `Imagem ${projectName} removida da coleção pessoal.` : `Imagem ${projectName} salva na coleção pessoal.`);
-    window.setTimeout(() => setFavoriteImageStatus(""), 2600);
-  }
-
   function getSelectedProjectUrl() {
     if (!selectedProject) return "";
     return buildProjectShareUrl(window.location.href, selectedProject.id);
@@ -1205,106 +829,6 @@ export default function Home() {
       setShareStatus("error");
     }
     window.setTimeout(() => setShareStatus("idle"), 2600);
-  }
-
-  function getLightboxShareUrl(project: Repository) {
-    return buildLightboxShareUrl(window.location.href, project.id);
-  }
-
-  async function copyLightboxProjectLink() {
-    if (!lightboxProject) return;
-    try {
-      await navigator.clipboard.writeText(getLightboxShareUrl(lightboxProject));
-      setLightboxShareStatus("copied");
-      setLightboxCopiedAction("link");
-      trackPortfolioEvent("share_project", { channel: "copy_link", projectId: lightboxProject.id });
-    } catch {
-      setLightboxShareStatus("error");
-    }
-    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
-  }
-
-  function downloadLightboxImage() {
-    if (!lightboxProject?.cover) return;
-    const safeName = lightboxProject.name.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "imagem";
-    const source = lightboxProject.cover;
-    const extension = source.split(".").pop()?.split("?")[0] || "jpg";
-    const anchor = document.createElement("a");
-    anchor.href = source;
-    anchor.download = `pablo-${safeName}.${extension}`;
-    anchor.target = "_blank";
-    anchor.rel = "noreferrer";
-    document.body.appendChild(anchor);
-    anchor.click();
-    anchor.remove();
-    trackPortfolioEvent("download_project", { format: "original", projectId: lightboxProject.id });
-  }
-
-  async function copyLightboxProjectContext() {
-    if (!lightboxProject) return;
-    const context = buildLightboxContext(lightboxProject, getLightboxShareUrl(lightboxProject));
-    try {
-      await navigator.clipboard.writeText(context);
-      setLightboxShareStatus("copied");
-      setLightboxCopiedAction("context");
-    } catch {
-      setLightboxShareStatus("error");
-    }
-    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
-  }
-
-  function shareLightboxToWhatsApp() {
-    if (!lightboxProject || lightboxRedirectingChannel) return;
-    const projectId = lightboxProject.id;
-    const projectName = lightboxProject.name;
-    const shareText = `${projectName} — ${getLightboxShareUrl(lightboxProject)}`;
-    setLightboxRedirectingChannel("whatsapp");
-    trackPortfolioEvent("share_project", { channel: "whatsapp", projectId });
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
-    window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
-  }
-
-  function shareLightboxToLinkedIn() {
-    if (!lightboxProject || lightboxRedirectingChannel) return;
-    const projectId = lightboxProject.id;
-    setLightboxRedirectingChannel("linkedin");
-    trackPortfolioEvent("share_project", { channel: "linkedin", projectId });
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(getLightboxShareUrl(lightboxProject))}`, "_blank", "noopener,noreferrer");
-    window.setTimeout(() => setLightboxRedirectingChannel(null), 1400);
-  }
-
-  function shareLightboxByEmail() {
-    if (!lightboxProject || lightboxEmailStatus === "opening") return;
-    const projectId = lightboxProject.id;
-    const projectUrl = getLightboxShareUrl(lightboxProject);
-    const { subject, body } = buildLightboxEmailPayload(lightboxProject, projectUrl);
-    setLightboxEmailStatus("opening");
-    trackPortfolioEvent("share_project", { channel: "email", projectId });
-    window.setTimeout(() => setLightboxEmailStatus("idle"), 1800);
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  }
-
-  async function shareLightboxProject() {
-    if (!lightboxProject) return;
-    const shareData = {
-      title: `${lightboxProject.name} — Pablo Guilherme`,
-      text: lightboxProject.description,
-      url: getLightboxShareUrl(lightboxProject),
-    };
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        setLightboxShareStatus("shared");
-        trackPortfolioEvent("share_project", { channel: "native", projectId: lightboxProject.id });
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setLightboxShareStatus("error");
-      }
-    } else {
-      await copyLightboxProjectLink();
-      return;
-    }
-    window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
   async function exportFavorites(format: FavoriteExportFormat) {
@@ -1760,7 +1284,7 @@ export default function Home() {
 
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
-      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
+      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
         <a data-mobile-primary-action="true" href="#contato" className="inline-flex min-h-12 min-w-[168px] flex-[1.25] items-center justify-center gap-2 bg-[#38bdf8] px-3 min-[360px]:px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden">
           iniciar projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -1802,65 +1326,6 @@ export default function Home() {
           setResumePreviewError(true);
         }}
       />
-
-      {lightboxProject?.cover && (
-        <div ref={lightboxModalRef} className={`project-lightbox fixed inset-0 z-[75] grid place-items-center bg-[#02050a]/95 p-2 sm:p-4 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-200 ${lightboxFullscreen ? "lightbox-fullscreen" : ""} ${lightboxClosing ? "lightbox-closing" : ""}`} data-lightbox-modal="true" data-viewport-orientation={viewportOrientation} role="dialog" aria-modal="true" aria-labelledby="project-lightbox-title" aria-describedby="project-lightbox-description" onMouseDown={(event) => { revealShortcutLegend(); if (event.target === event.currentTarget) closeProjectLightbox(); }} onPointerDown={revealShortcutLegend} onFocus={revealShortcutLegend}>
-          <div className="relative flex h-[min(92svh,900px)] max-h-[100svh] w-full max-w-6xl flex-col overflow-hidden border border-[#67e8f9]/35 bg-[#07101e] shadow-[0_24px_100px_rgba(0,0,0,0.62)]">
-            <button ref={lightboxCloseRef} type="button" onClick={closeProjectLightbox} aria-label="Fechar visualizador de imagem" title="Fechar visualizador" className="absolute right-3 top-3 z-20 grid h-11 w-11 place-items-center border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><X className="h-5 w-5" aria-hidden="true" /></button>
-            <button type="button" onClick={toggleLightboxFullscreen} data-tooltip={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} aria-label={lightboxFullscreen ? "Sair da tela cheia" : "Abrir visualizador em tela cheia"} title={lightboxFullscreen ? "Sair da tela cheia" : "Abrir em tela cheia"} className="absolute right-16 top-3 z-20 hidden h-11 w-11 place-items-center sm:grid border border-white/20 bg-[#060a10]/90 text-white transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95"><Maximize2 className="h-5 w-5" aria-hidden="true" /></button>
-            <div className="relative flex h-[min(44svh,360px)] min-h-0 flex-none items-center justify-center overflow-hidden bg-[#030812] p-2 sm:h-auto sm:min-h-0 sm:flex-1 sm:p-6">
-              {lightboxSwipeDirection && <div className="pointer-events-none absolute inset-x-0 top-1/2 z-30 flex -translate-y-1/2 justify-between px-5" aria-hidden="true"><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "previous" ? "opacity-100" : "opacity-30"}`}><ChevronLeft className="h-5 w-5" /></span><span className={`grid h-10 w-10 place-items-center rounded-full border border-[#67e8f9]/45 bg-[#06172f]/90 text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.3)] motion-safe:animate-in motion-safe:fade-in ${lightboxSwipeDirection === "next" ? "opacity-100" : "opacity-30"}`}><ChevronRight className="h-5 w-5" /></span></div>}
-              {lightboxFullscreenNotice && <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2 border border-amber-200/35 bg-[#2a1d0b]/95 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.3)]" role="status" aria-live="polite"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-amber-100">tela cheia indisponível</p><p className="mt-1 max-w-sm font-body text-xs leading-5 text-amber-50">{lightboxFullscreenNotice}</p></div>}
-              {lightboxZoomFeedback !== null && <div className="pointer-events-none absolute left-1/2 top-4 z-30 -translate-x-1/2 border border-[#67e8f9]/40 bg-[#06172f]/95 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#bdf7ff] shadow-[0_8px_24px_rgba(0,0,0,0.28)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomFeedback}%</div>}
-              {lightboxZoomLimitFeedback && <div className="pointer-events-none absolute left-1/2 top-16 z-30 -translate-x-1/2 border border-[#67e8f9]/35 bg-[#06172f]/90 px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.1em] text-[#bdf7ff] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite">zoom {lightboxZoomLimitFeedback === "max" ? "máximo · 300%" : "mínimo · 100%"}</div>}
-              <div className="absolute left-3 top-3 z-20 flex items-center gap-1 border border-white/15 bg-[#06172f]/90 p-1 font-mono text-[9px] uppercase tracking-[0.08em] text-[#c8e5f0]" role="group" aria-label="Controles de zoom"><button type="button" onClick={() => setProjectZoom(lightboxZoom - 0.25)} aria-label="Reduzir zoom (mínimo 100%)" className="grid h-11 w-11 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">−</button><span className="min-w-[3.5rem] text-center" aria-live="polite">{Math.round(lightboxZoom * 100)}%</span><button type="button" onClick={() => setProjectZoom(lightboxZoom + 0.25)} aria-label="Aumentar zoom (máximo 300%)" className="grid h-11 w-11 place-items-center text-lg transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">+</button><button type="button" onClick={resetProjectZoom} disabled={lightboxZoom === 1} aria-label="Redefinir zoom e posição da imagem" data-tooltip="Redefinir zoom e posição" className="min-h-11 border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">1:1</button><button type="button" onClick={clearLightboxSessionPreferences} aria-label="Limpar preferência de zoom desta sessão" data-tooltip="Limpar zoom salvo na sessão" className="min-h-11 border-l border-white/15 px-2 py-2 text-[8px] transition-colors hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">limpar</button></div>
-              {showLightboxShortcutLegend && <div className="pointer-events-none absolute bottom-4 left-4 z-20 hidden border border-white/15 bg-[#06172f]/85 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.08em] text-[#b8d9e7] motion-safe:animate-in motion-safe:fade-in sm:block" aria-label="Atalhos do lightbox">atalhos: +/− zoom · setas movem · ←→ navegam</div>}
-              <div className="sr-only" aria-live="polite" aria-atomic="true">{lightboxPositionAnnouncement}</div>
-              {lightboxZoom > 1 && (() => { const mapPosition = calculateMiniMapPosition(lightboxZoom, lightboxOffset, getPanBounds()); const { left, top, viewportWidth, viewportHeight, xPercent: positionX, yPercent: positionY } = mapPosition; return <div className={`absolute bottom-4 right-4 z-20 hidden h-20 w-28 touch-none overflow-hidden border border-[#67e8f9]/40 bg-[#06172f]/90 shadow-[0_8px_24px_rgba(0,0,0,0.3)] sm:block ${miniMapDragging ? "cursor-grabbing" : "cursor-grab"}`} role="button" tabIndex={0} aria-label={`Mini-mapa interativo da imagem ampliada em ${Math.round(lightboxZoom * 100)}%. Arraste o quadro para reposicionar`} onPointerDown={handleMiniMapPointerDown} onPointerMove={handleMiniMapPointerMove} onPointerUp={handleMiniMapPointerEnd} onPointerCancel={handleMiniMapPointerEnd} onClick={(event) => { if (!miniMapDragRef.current.active) repositionFromMiniMap(event.clientX, event.clientY, event.currentTarget); }} onFocus={revealShortcutLegend} onKeyDown={(event) => { revealShortcutLegend(); if (event.key === "Enter" || event.key === " ") { event.preventDefault(); repositionFromMiniMap(event.currentTarget.getBoundingClientRect().left + event.currentTarget.getBoundingClientRect().width / 2, event.currentTarget.getBoundingClientRect().top + event.currentTarget.getBoundingClientRect().height / 2, event.currentTarget); } }} style={{ backgroundImage: `url(${lightboxProject.cover})`, backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute border-2 border-[#a5f3fc] bg-[#67e8f9]/20" style={{ left: `${left}%`, top: `${top}%`, width: `${viewportWidth}%`, height: `${viewportHeight}%` }} /><span className="pointer-events-none absolute inset-x-1 bottom-1 bg-[#030812]/85 px-1 py-0.5 text-center font-mono text-[7px] uppercase tracking-[0.08em] text-[#d9fbff]" aria-live="polite">{positionX}% · {positionY}%</span></div>; })()}
-              <div ref={lightboxImageContainerRef} className="relative flex h-full min-h-0 w-full items-center justify-center overflow-hidden">
-                {showSwipeHint && <div className="pointer-events-none absolute bottom-4 left-1/2 z-20 -translate-x-1/2 border border-[#67e8f9]/30 bg-[#06172f]/90 px-4 py-2 text-center shadow-[0_8px_24px_rgba(0,0,0,0.25)] motion-safe:animate-in motion-safe:fade-in" role="status" aria-live="polite"><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]">deslize para navegar</span></div>}
-                {lightboxImageLoading && !lightboxImageError && <div className="pointer-events-none absolute inset-0 z-10 grid place-items-center px-6" role="status" aria-live="polite"><span className="inline-flex max-w-sm flex-col items-center gap-2 border border-[#67e8f9]/25 bg-[#06172f]/90 px-4 py-3 text-center shadow-[0_10px_30px_rgba(0,0,0,0.25)] backdrop-blur-sm"><span className="inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff]"><span className="h-3 w-3 animate-spin rounded-full border border-[#67e8f9]/30 border-t-[#a5f3fc] motion-reduce:animate-none" aria-hidden="true" /> carregando imagem</span><strong className="font-display text-lg font-medium tracking-[-0.03em] text-white">{lightboxProject.name}</strong><span className="font-body text-xs leading-5 text-[#b8d9e7]">{lightboxProject.description}</span></span></div>}
-                {lightboxImageError && <div className="absolute inset-0 z-10 grid place-items-center px-6 text-center" role="alert"><div className="max-w-sm border border-[#fb7185]/35 bg-[#190f1c]/95 px-5 py-5 shadow-[0_10px_30px_rgba(0,0,0,0.28)]"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#fda4af]">imagem indisponível</p><p className="mt-2 font-display text-xl font-medium tracking-[-0.03em] text-white">Não conseguimos abrir esta imagem agora.</p><p className="mt-2 font-body text-sm leading-6 text-[#f6d8df]">Você pode tentar novamente ou continuar navegando pelos projetos.</p><button type="button" onClick={() => { setLightboxImageError(false); setLightboxImageLoading(true); setLightboxImageAttempt((attempt) => attempt + 1); }} className="mt-4 border border-[#fda4af]/55 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#ffe4e8] transition-colors hover:bg-[#4b1d2a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#fda4af]">tentar novamente</button></div></div>}
-                <img ref={lightboxImageRef} data-lightbox-image="true" key={`${lightboxProject.id}-${lightboxImageAttempt}`} src={lightboxProject.cover} alt={`Imagem ampliada do projeto ${lightboxProject.name}`} onLoad={() => { setLightboxImageLoading(false); setLightboxImageError(false); }} onError={() => { setLightboxImageLoading(false); setLightboxImageError(true); }} onTouchStart={handleLightboxTouchStart} onTouchMove={handleLightboxTouchMove} onTouchEnd={handleLightboxTouchEnd} onTouchCancel={handleLightboxTouchEnd} onPointerDown={handleLightboxPointerDown} onPointerMove={handleLightboxPointerMove} onPointerUp={handleLightboxPointerEnd} onPointerCancel={handleLightboxPointerEnd} onDoubleClick={() => setProjectZoom(lightboxZoom > 1 ? 1 : 3)} style={{ transform: `translate(${lightboxOffset.x}px, ${lightboxOffset.y}px) scale(${lightboxZoom})`, transformOrigin: "center center", touchAction: "none" }} className={`h-auto max-h-full max-w-full w-auto object-contain ${lightboxZoom > 1 ? (lightboxPanning ? "cursor-grabbing" : "cursor-grab") : "cursor-default"} transition-[transform,opacity] ${lightboxResetting ? "duration-300" : "duration-150"} motion-reduce:transition-none ${lightboxImageLoading || lightboxImageError ? "opacity-0" : "opacity-100"}`} />
-              </div>
-              <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const previousProject = lightboxProjects[(projectIndex - 1 + lightboxProjects.length) % lightboxProjects.length]; if (previousProject?.cover) setLightboxProjectId(previousProject.id); }} aria-label="Imagem anterior" className="absolute left-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:left-6"><ChevronLeft className="h-5 w-5" aria-hidden="true" /></button>
-              <button type="button" onClick={() => { const projectIndex = lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id); const nextProject = lightboxProjects[(projectIndex + 1) % lightboxProjects.length]; if (nextProject?.cover) setLightboxProjectId(nextProject.id); }} aria-label="Próxima imagem" className="absolute right-3 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center border border-white/20 bg-[#06172f]/90 text-white transition-all hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-95 sm:right-6"><ChevronRight className="h-5 w-5" aria-hidden="true" /></button>
-            </div>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[env(safe-area-inset-bottom)]">
-            <div className="shrink-0 flex flex-col gap-3 border-t border-white/10 px-4 py-4 sm:flex-row sm:items-end sm:justify-between sm:px-7">
-              <div className="min-w-0"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">arquivo / imagem ampliada</p><h2 id="project-lightbox-title" className="mt-1 break-words font-display text-2xl font-medium tracking-[-0.04em] text-white [overflow-wrap:anywhere]">{lightboxProject.name}</h2><p id="project-lightbox-description" className="mt-2 max-w-2xl break-words font-body text-sm leading-6 text-[#c8e5f0] [overflow-wrap:anywhere]">{lightboxProject.description}</p></div>
-              <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:justify-end">
-                <button type="button" data-lightbox-image-favorite="true" onClick={() => toggleFavoriteImage(lightboxProject.id)} aria-pressed={favoriteImageIdSet.has(lightboxProject.id)} aria-label={favoriteImageIdSet.has(lightboxProject.id) ? `Remover imagem de ${lightboxProject.name} da coleção pessoal` : `Salvar imagem de ${lightboxProject.name} na coleção pessoal`} title={favoriteImageIdSet.has(lightboxProject.id) ? "Remover imagem da coleção pessoal" : "Salvar imagem na coleção pessoal"} className={`inline-flex min-h-11 items-center gap-2 border px-3 font-mono text-[8px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97] ${favoriteImageIdSet.has(lightboxProject.id) ? "border-[#67e8f9] bg-[#0b3156] text-[#bdf7ff]" : "border-white/15 bg-[#06172f]/80 text-[#c8e5f0] hover:bg-[#0b2746] hover:text-white"}`}><Heart className={`h-3.5 w-3.5 ${favoriteImageIdSet.has(lightboxProject.id) ? "fill-current" : ""}`} aria-hidden="true" /><span className="hidden sm:inline">{favoriteImageIdSet.has(lightboxProject.id) ? "imagem salva" : "salvar imagem"}</span></button>
-                <div className="inline-flex border border-white/15 bg-[#06172f]/80" role="group" aria-label="Compartilhar projeto">
-                  <button type="button" data-tooltip="Compartilhar usando o menu do seu dispositivo" onClick={shareLightboxProject} className="inline-flex min-h-11 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
-                </div>
-                <details data-lightbox-more-actions="true" className="group relative col-span-full sm:contents"><summary className="inline-flex min-h-11 w-full cursor-pointer list-none items-center justify-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"><span>mais ações</span><ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180" aria-hidden="true" /></summary><div className="hidden gap-2 group-open:grid sm:flex sm:flex-wrap sm:justify-end">
-                  <button type="button" data-tooltip="Baixar a imagem publicada" title="Baixar imagem" onClick={downloadLightboxImage} aria-label={`Baixar imagem original de ${lightboxProject.name}`} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></button>
-                  <button type="button" data-tooltip={lightboxCopiedAction === "link" ? "Link copiado" : "Copiar link do projeto"} onClick={copyLightboxProjectLink} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title={lightboxCopiedAction === "link" ? "Copiado!" : "Copiar link"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "link" ? "Copiado!" : "copiar link"}</span></button>
-                  <button type="button" data-tooltip={lightboxCopiedAction === "context" ? "Link e legenda copiados" : "Copiar link e legenda expandida"} onClick={copyLightboxProjectContext} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title={lightboxCopiedAction === "context" ? "Copiado!" : "Copiar link e legenda"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "context" ? "Copiado!" : "copiar contexto"}</span></button>
-                  <button type="button" data-tooltip="Abrir o WhatsApp com o link do projeto" onClick={shareLightboxToWhatsApp} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex min-h-11 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Abrir o WhatsApp com o link deste projeto"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "whatsapp" ? "Redirecionando..." : "WhatsApp"}</span></button>
-                  <button type="button" data-tooltip="Abrir o LinkedIn para compartilhar o projeto" onClick={shareLightboxToLinkedIn} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex min-h-11 items-center gap-2 border border-[#70a9e8]/35 bg-[#092545]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e1ff] transition-colors hover:bg-[#123e70] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no LinkedIn" title="Abrir o LinkedIn com o link deste projeto"><Linkedin className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "linkedin" ? "Redirecionando..." : "LinkedIn"}</span></button>
-                  <button type="button" data-tooltip={lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : "Abrir um e-mail com assunto e detalhes preenchidos"} onClick={shareLightboxByEmail} disabled={lightboxEmailStatus === "opening"} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto por e-mail" title="Abrir e-mail com detalhes do projeto"><Mail className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : "e-mail"}</span></button>
-                  <span role="status" aria-live="polite" className="sr-only">{lightboxEmailStatus === "opening" ? "Abrindo e-mail..." : lightboxRedirectingChannel ? `Redirecionando para ${lightboxRedirectingChannel === "whatsapp" ? "o WhatsApp" : "o LinkedIn"}...` : lightboxShareStatus === "copied" ? "Link e contexto copiados." : lightboxShareStatus === "shared" ? "Projeto compartilhado." : lightboxShareStatus === "error" ? "Não foi possível compartilhar o projeto." : ""}</span>
-                </div></details>
-                <div className="shrink-0 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9eb5d2]">{lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) + 1} / {lightboxProjects.length}</div>
-              </div>
-            </div>
-            <button type="button" data-lightbox-mobile-details-toggle="true" onClick={() => setShowLightboxMobileDetails((open) => !open)} aria-expanded={showLightboxMobileDetails} className="flex min-h-11 w-full items-center justify-between border-t border-white/10 bg-[#06101e] px-5 py-3 text-left font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:hidden"><span>{showLightboxMobileDetails ? "ocultar contexto e miniaturas" : "ver contexto e miniaturas"}</span><ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showLightboxMobileDetails ? "rotate-180" : ""}`} aria-hidden="true" /></button>
-            <section className={`${showLightboxMobileDetails ? "block" : "hidden"} sm:block border-t border-white/10 bg-[#06101e] px-5 py-4 sm:px-7`} aria-label={`Legenda expandida de ${lightboxProject.name}`}><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">leitura do projeto</p><div className="mt-3 grid gap-4 sm:grid-cols-3"><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">papel</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.role || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">processo</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.process || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">resultado</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.result || "Informação não registrada."}</p></div></div></section>
-            
-            <div className={`${showLightboxMobileDetails ? "block" : "hidden"} sm:block shrink-0 border-t border-white/10 bg-[#050b15] px-4 py-3 sm:px-6`} role="group" aria-label="Miniaturas dos projetos">
-              <div className="flex gap-2 overflow-x-auto pb-1" role="list">
-                {lightboxProjects.map((project) => {
-                  const isActive = project.id === lightboxProject.id;
-                  return <button key={`lightbox-thumb-${project.id}`} ref={isActive ? lightboxActiveThumbRef : undefined} type="button" onClick={() => setLightboxProjectId(project.id)} aria-current={isActive ? "true" : undefined} aria-label={`Ver imagem de ${project.name}`} title={project.name} className={`group relative w-24 shrink-0 overflow-hidden border text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.98] sm:w-28 ${isActive ? "border-[#67e8f9] shadow-[0_0_0_1px_rgba(103,232,249,0.4)]" : "border-white/15 opacity-65 hover:border-[#67e8f9]/70 hover:opacity-100"}`} role="listitem"><img src={project.cover} alt={`Miniatura do projeto ${project.name}`} loading="lazy" decoding="async" className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" /><span className={`absolute inset-x-0 bottom-0 truncate bg-[#030812]/85 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.08em] ${isActive ? "text-[#bdf7ff]" : "text-[#c1d1e5]"}`}>{project.name}</span></button>;
-                })}
-              </div>
-            </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (
