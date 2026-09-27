@@ -572,4 +572,26 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
     await expect(page.getByText("modelo", { exact: true }).first()).toBeVisible();
   });
+  test("experience hub orienta perfis diferentes sem quebrar a jornada principal", async ({ page }) => {
+    await page.goto("/");
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    await expect(hub).toBeVisible();
+    await expect(hub.getByRole("heading", { name: /escolha como quer explorar este portfólio/i })).toBeVisible();
+
+    await expect(hub.locator('[data-experience-route="true"]')).toHaveCount(3);
+
+    await hub.getByRole("button", { name: /quero contratar/i }).click();
+    await expect(hub.locator('[data-experience-panel="client"]')).toBeVisible();
+    await expect(hub.getByRole("link", { name: /diagnosticar meu projeto/i })).toHaveAttribute("href", "#diagnostico");
+
+    await hub.getByRole("button", { name: /quero avaliar seu perfil/i }).click();
+    await expect(hub.locator('[data-experience-panel="recruiter"]')).toBeVisible();
+    await expect(hub.getByRole("link", { name: /abrir perfil profissional/i })).toHaveAttribute("href", "#perfil-profissional");
+
+    await hub.getByRole("button", { name: /quero explorar/i }).click();
+    await expect(hub.locator('[data-experience-panel="explorer"]')).toBeVisible();
+    await expect(hub.getByRole("link", { name: /ver projetos selecionados/i })).toHaveAttribute("href", "#projetos");
+  });
+
 });
