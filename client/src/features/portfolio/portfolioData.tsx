@@ -138,12 +138,12 @@ export type Repository = {
   result: string;
   technologies: string[];
   url: string;
-  kind: "repository" | "video";
+  kind: "repository";
   status: "Em evolução" | "Publicado";
   evidence: {
-    label: "código" | "vídeo";
+    label: "código";
     href: string;
-    type: "code" | "media";
+    type: "code";
   };
   cover?: string;
   featured?: boolean;
