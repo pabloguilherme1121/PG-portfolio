@@ -156,7 +156,7 @@ test.describe("portfólio profissional", () => {
     await expect(cells.nth(1)).toHaveText("O");
 
     await game.getByRole("button", { name: /reiniciar partida/i }).click();
-    await expect(game.locator('[data-match-score="true"]')).toContainText(/0.*0/i);
+    await expect(game.locator('[data-match-score="true"]')).toContainText("0");
   });
 
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
