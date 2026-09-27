@@ -165,7 +165,7 @@ test.describe("portfólio profissional", () => {
       }));
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
@@ -185,7 +185,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade respeita a troca para O e deixa o PG Bot abrir com X", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await game.locator('[data-arcade-advanced="true"] summary').click();
@@ -572,7 +572,7 @@ test.describe("portfólio profissional", () => {
         if (box) expect(box.height).toBeGreaterThanOrEqual(44);
       }
 
-      await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+      await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
       const game = page.locator('[data-tic-tac-toe="true"]');
       await game.scrollIntoViewIfNeeded();
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
