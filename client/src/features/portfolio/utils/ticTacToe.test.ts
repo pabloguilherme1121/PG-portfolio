@@ -8,6 +8,7 @@ import {
   getTicTacToePresetConfig,
   getTicTacToeAchievements,
   getTicTacToeWinRate,
+  normalizeTicTacToeLifetimeStats,
   updateTicTacToeLifetimeStats,
   type TicTacToeBoard,
 } from "./ticTacToe";
@@ -78,6 +79,23 @@ describe("ticTacToe", () => {
     const stats = updateTicTacToeLifetimeStats(undefined, "player", { usedHint: true, perfectWin: false });
     expect(stats).toMatchObject({ games: 1, wins: 1, hintsUsed: 1, perfectWins: 0 });
     expect(getTicTacToeWinRate(stats)).toBe(100);
+  });
+
+  it("migra estatísticas antigas sem transformar campos novos em NaN", () => {
+    const migrated = normalizeTicTacToeLifetimeStats({
+      games: 4,
+      wins: 2,
+      losses: 1,
+      draws: 1,
+      currentWinStreak: 1,
+      bestWinStreak: 2,
+    });
+    expect(migrated).toMatchObject({ games: 4, wins: 2, hintsUsed: 0, perfectWins: 0 });
+    expect(updateTicTacToeLifetimeStats(migrated, "player", { perfectWin: true })).toMatchObject({
+      games: 5,
+      wins: 3,
+      perfectWins: 1,
+    });
   });
   it("permite ao bot calcular corretamente quando joga com X", () => {
     const board: TicTacToeBoard = ["X", "X", null, "O", "O", null, null, null, null];
