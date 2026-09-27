@@ -557,7 +557,8 @@ test.describe("portfólio profissional", () => {
     await mobileMenuButton.click();
     const mobilePrimaryAction = page.locator('[data-mobile-primary-action="true"]');
     await expect(mobilePrimaryAction).toBeVisible();
-    await expect(mobilePrimaryAction).toHaveAttribute("href", "#contato");
+    await expect(mobilePrimaryAction).toHaveAttribute("href", "#diagnostico");
+    await expect(mobilePrimaryAction).toContainText(/começar/i);
     const actionBox = await mobilePrimaryAction.boundingBox();
     expect(actionBox?.height ?? 0).toBeGreaterThanOrEqual(48);
     expect(actionBox?.width ?? 0).toBeGreaterThanOrEqual(160);
@@ -576,8 +577,9 @@ test.describe("portfólio profissional", () => {
     await expect(quickBar).toBeVisible();
     await expect(contextAction).toHaveAttribute("href", "#diagnostico");
     await expect(contextAction).toContainText(/diagnóstico/i);
-    await expect(primaryAction).toHaveAttribute("href", "#contato");
-    await expect(primaryAction).toContainText(/briefing/i);
+    await expect(primaryAction).toHaveAttribute("href", "#diagnostico");
+    await expect(primaryAction).toContainText(/começar/i);
+    await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/diagnóstico.*briefing.*contato/i);
     await expect(whatsappAction).toBeVisible();
 
     const hub = page.locator('[data-experience-hub="true"]');
@@ -598,7 +600,9 @@ test.describe("portfólio profissional", () => {
     await page.locator('#contato-briefing input[name="name"]').fill("Visitante mobile");
     await page.locator("#contato").getByRole("heading", { name: /solução clara/i }).click();
 
-    await expect(primaryAction).toContainText(/continuar/i);
+    await expect(primaryAction).toHaveAttribute("href", "#contato-briefing");
+    await expect(primaryAction).toContainText(/retomar/i);
+    await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/briefing salvo/i);
 
     for (const action of [contextAction, primaryAction, whatsappAction]) {
       const box = await action.boundingBox();
