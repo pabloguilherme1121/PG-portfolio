@@ -13,7 +13,7 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
     <section
       data-briefing-quick-start="true"
       aria-labelledby="briefing-quick-start-title"
-      className="mb-6 border border-[#67e8f9]/20 bg-[#06172f]/70 p-3.5 sm:mb-7 sm:p-5"
+      className="mb-6 min-w-0 border border-[#67e8f9]/20 bg-[#06172f]/70 p-3.5 sm:mb-7 sm:p-5"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
@@ -32,7 +32,7 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
         </p>
       </div>
 
-      <div className="mt-4 grid gap-2 lg:grid-cols-3">
+      <div className="mt-4 grid min-w-0 gap-2 lg:grid-cols-3">
         {briefingQuickStartPresets.map((preset) => (
           <button
             key={preset.id}
@@ -40,7 +40,7 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
             data-briefing-preset="true"
             onClick={() => onSelect(preset)}
             aria-label={`Usar modelo ${preset.title}`}
-            className="group min-h-[116px] border border-white/10 bg-[#07111f] p-3.5 sm:min-h-[132px] sm:p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none"
+            className="group min-w-0 min-h-[116px] border border-white/10 bg-[#07111f] p-3.5 sm:min-h-[132px] sm:p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none"
           >
             <div className="flex items-start justify-between gap-3">
               <LayoutTemplate className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
