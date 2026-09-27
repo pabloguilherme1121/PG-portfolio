@@ -584,7 +584,7 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/?imagem=TEC.09");
 
-    const lightbox = page.locator('[data-lightbox-modal="true"]');
+    const lightbox = page.locator('[data-lightbox-modal]');
     await expect(lightbox).toBeVisible();
 
     await expect(lightbox.getByText("comparação visual", { exact: true })).toHaveCount(0);
