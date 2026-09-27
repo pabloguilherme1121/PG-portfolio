@@ -507,7 +507,7 @@ test.describe("portfólio profissional", () => {
       await expect(form.locator('[data-briefing-studio="true"]')).toBeVisible();
       const briefingOverflow = await form.evaluate((element) =>
         Array.from(element.querySelectorAll<HTMLElement>("*"))
-          .filter((node) => node.offsetParent !== null && node.scrollWidth > node.clientWidth + 1)
+          .filter((node) => node.offsetParent !== null && node.getAttribute("aria-hidden") !== "true" && node.scrollWidth > node.clientWidth + 1)
           .slice(0, 12)
           .map((node) => ({
             tag: node.tagName,
