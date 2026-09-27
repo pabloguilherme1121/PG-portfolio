@@ -13,6 +13,7 @@ test.describe("acessibilidade pública", () => {
       await section.scrollIntoViewIfNeeded();
       await page.waitForTimeout(100);
       const results = await new AxeBuilder({ page })
+        .include(selector)
         .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
         .analyze();
       violations.push(...results.violations);
