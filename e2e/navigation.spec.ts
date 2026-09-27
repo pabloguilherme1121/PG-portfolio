@@ -440,7 +440,7 @@ test.describe("portfólio profissional", () => {
           .__portfolioAnalyticsEvents.map((event) => event.eventName),
       );
 
-    await page.locator("#inicio").getByRole("link", { name: /iniciar um projeto/i }).click();
+    await page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i }).click();
     await expect.poll(emittedEventNames).toContain("quote_cta");
 
     await page.locator("#contato-briefing input").first().focus();
@@ -477,7 +477,7 @@ test.describe("portfólio profissional", () => {
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 
-    const primaryCta = page.locator("#inicio").getByRole("link", { name: /iniciar um projeto/i });
+    const primaryCta = page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i });
     expect(await primaryCta.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
 
     const skipLink = page.locator(".skip-link");
@@ -564,6 +564,25 @@ test.describe("portfólio profissional", () => {
     expect(actionBox?.width ?? 0).toBeGreaterThanOrEqual(160);
   });
 
+  test("menu mobile prioriza próxima ação e evita atalhos redundantes", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto("/");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    const menu = page.locator("#mobile-navigation");
+    const nextAction = menu.locator('[data-mobile-menu-primary="true"]');
+    const shortcuts = menu.locator('[data-mobile-shortcuts="true"]');
+
+    await expect(nextAction).toHaveAttribute("href", "#diagnostico");
+    await expect(nextAction).toContainText(/começar diagnóstico/i);
+    await expect(shortcuts.getByRole("link")).toHaveCount(2);
+    await expect(shortcuts.getByRole("link", { name: /perfil/i })).toBeVisible();
+    await expect(shortcuts.getByRole("link", { name: /observatório/i })).toBeVisible();
+
+    const box = await nextAction.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+  });
+
   test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -621,13 +640,13 @@ test.describe("portfólio profissional", () => {
     const shortcuts = menu.locator('[data-mobile-shortcuts="true"]');
 
     await expect(shortcuts).toBeVisible();
-    await expect(shortcuts.getByRole("link", { name: /diagnóstico/i })).toHaveAttribute("href", "#diagnostico");
+    await expect(menu.locator('[data-mobile-menu-primary="true"]')).toHaveAttribute("href", "#diagnostico");
     await expect(shortcuts.getByRole("link", { name: /perfil/i })).toHaveAttribute("href", "#perfil-profissional");
     await expect(shortcuts.getByRole("link", { name: /observatório/i })).toHaveAttribute("href", /observatorio/);
 
     const shortcutLinks = shortcuts.getByRole("link");
-    expect(await shortcutLinks.count()).toBe(3);
-    for (let index = 0; index < 3; index += 1) {
+    expect(await shortcutLinks.count()).toBe(2);
+    for (let index = 0; index < 2; index += 1) {
       const box = await shortcutLinks.nth(index).boundingBox();
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
     }

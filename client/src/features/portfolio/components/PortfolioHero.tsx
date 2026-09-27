@@ -70,7 +70,7 @@ export default function PortfolioHero({
 
           <div className="reveal delay-2 mt-7 flex max-w-xl flex-col gap-5 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Do problema ao deploy, crio sites, interfaces e dashboards claros, responsivos e verificáveis. A ideia vira fluxo, interface, código, teste e publicação.
+              Transformo problemas em produtos digitais claros e publicados. Estratégia, interface, código, teste e deploy em uma única execução.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
               Produto digital · React + TypeScript · dashboards · publicação web
@@ -82,10 +82,10 @@ export default function PortfolioHero({
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
                 className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
               >
-                iniciar um projeto <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
+                começar diagnóstico <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
               <a href="#observatorio" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
-                ver trabalho em produção <ArrowDownRight className="h-3.5 w-3.5" />
+                ver projeto em produção <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
