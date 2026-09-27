@@ -101,13 +101,14 @@ test.describe("portfólio profissional", () => {
     await expect(sitePreset).toHaveAttribute("data-briefing-interactive", "true");
     await expect(sitePreset).toBeEnabled();
     await sitePreset.click();
+    await expect(page.getByText("Modelo aplicado", { exact: true })).toBeVisible();
+    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect.poll(() =>
       page.evaluate(() => {
         const raw = window.localStorage.getItem("pablo-portfolio-briefing-draft");
         return raw ? JSON.parse(raw).service : "";
       }),
     ).toBe("Site ou landing page");
-    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
     await expect(form.locator('input[name="audience"]')).toHaveValue(/clientes|visitantes/i);
