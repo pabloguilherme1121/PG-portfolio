@@ -84,6 +84,16 @@ export default function PortfolioTicTacToe() {
     }
   }, [lifetimeStats]);
 
+  useEffect(() => {
+    if (mode !== "bot" || playerMark !== "O" || started || result || matchWinner || board.some(Boolean)) return;
+    const botMove = chooseTicTacToeBotMoveByDifficulty(board, difficulty, Math.random, "X");
+    if (botMove < 0) return;
+    const next = [...board];
+    next[botMove] = "X";
+    setBoard(next);
+    setTurn("O");
+  }, [board, difficulty, matchWinner, mode, playerMark, result, started]);
+
   const status = matchWinner === "player"
     ? mode === "bot" ? "Série vencida. Você superou o PG Bot." : "Jogador 1 venceu a série."
     : matchWinner === "opponent"
@@ -148,7 +158,7 @@ export default function PortfolioTicTacToe() {
       return;
     }
 
-    const botMove = chooseTicTacToeBotMoveByDifficulty(next, difficulty);
+    const botMove = chooseTicTacToeBotMoveByDifficulty(next, difficulty, Math.random, opponentMark);
     if (botMove >= 0) next[botMove] = opponentMark;
     setBoard(next);
 
