@@ -10,6 +10,7 @@ import {
   toDateKey,
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { briefingDraftStorageKey, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
 import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
 import {
   ArrowDown,
@@ -43,7 +44,6 @@ const briefingDefaultValues: BriefingDraft = {
   budget: "Preciso de orientação",
 };
 
-const briefingDraftStorageKey = "pablo-portfolio-briefing-draft";
 const briefingFieldNames = [
   "name",
   "email",
@@ -227,6 +227,14 @@ export function PortfolioContact({
     trackPortfolioEvent("briefing_started");
   }
 
+  function notifyBriefingProgress(nextDraft: BriefingDraft) {
+    window.dispatchEvent(
+      new CustomEvent<{ hasDraft: boolean }>("portfolio:briefing-progress", {
+        detail: { hasDraft: hasMeaningfulBriefingDraft(nextDraft) },
+      }),
+    );
+  }
+
   function captureBriefingDraft(form: HTMLFormElement) {
     const data = new FormData(form);
     const nextDraft = Object.fromEntries(briefingFieldNames.map((field) => [field, String(data.get(field) || "")])) as BriefingDraft;
@@ -236,6 +244,7 @@ export function PortfolioContact({
     } catch {
       // O formulário continua utilizável mesmo quando o armazenamento local está indisponível.
     }
+    notifyBriefingProgress(nextDraft);
   }
 
   function validateBriefingStep(stepIndex: number) {
@@ -269,7 +278,9 @@ export function PortfolioContact({
     } catch {
       // Nada a fazer: o reset visual ainda funciona.
     }
-    setBriefingDraft({ ...briefingDefaultValues });
+    const resetDraft = { ...briefingDefaultValues };
+    setBriefingDraft(resetDraft);
+    notifyBriefingProgress(resetDraft);
     setBriefingStep(0);
     setBriefingRevision((value) => value + 1);
     setFormSent(false);
@@ -290,6 +301,7 @@ export function PortfolioContact({
       } catch {
         // A direção ainda é aplicada quando o armazenamento local está indisponível.
       }
+      notifyBriefingProgress(nextDraft);
       toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
     };
 
@@ -399,7 +411,7 @@ export function PortfolioContact({
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
-                  <h3 className="mt-2 font-display text-[1.35rem] font-medium leading-tight tracking-[-0.04em] text-white sm:text-2xl">Construa um briefing que já começa útil.</h3>
+                  <h3 className="mt-2 font-display text-[1.35rem] font-medium leading-tight tracking-[-0.04em] text-white sm:text-2xl">Transforme contexto em um briefing pronto para avançar.</h3>
                 </div>
                 <div className="sm:text-right">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7892b8]">qualidade do contexto</p>
