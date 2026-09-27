@@ -118,7 +118,7 @@ export default function PortfolioExperienceHub() {
               id="experience-hub-title"
               className="mt-3 max-w-4xl font-display text-[clamp(2.05rem,10vw,5.6rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white sm:mt-4 sm:leading-[0.92] sm:tracking-[-0.06em]"
             >
-              Escolha o caminho mais útil para você.
+              Escolha como quer explorar este portfólio pelo caminho mais útil para você.
             </h2>
           </div>
           <div className="lg:pb-1">
