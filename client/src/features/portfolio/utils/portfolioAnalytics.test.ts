@@ -52,4 +52,24 @@ describe("trackPortfolioEvent", () => {
     expect(track).toHaveBeenCalledWith("experience_route_selected", { experienceRoute: "client" });
   });
 
+  it("registra presets e uso de dica do PG Arcade sem PII", () => {
+    const track = vi.fn();
+    vi.stubGlobal("CustomEvent", class {
+      detail: unknown;
+      constructor(_name: string, init: { detail: unknown }) {
+        this.detail = init.detail;
+      }
+    });
+    vi.stubGlobal("window", {
+      location: { pathname: "/" },
+      dispatchEvent: vi.fn(),
+      umami: { track },
+    });
+
+    trackPortfolioEvent("tic_tac_toe_preset_selected", { arcadePreset: "competitive" });
+    trackPortfolioEvent("tic_tac_toe_hint_used");
+
+    expect(track).toHaveBeenNthCalledWith(1, "tic_tac_toe_preset_selected", { arcadePreset: "competitive" });
+    expect(track).toHaveBeenNthCalledWith(2, "tic_tac_toe_hint_used", {});
+  });
 });

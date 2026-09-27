@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
 
 describe("mobileJourney", () => {
   it("mapeia cada intenção para um atalho móvel direto", () => {
@@ -28,4 +28,9 @@ describe("mobileJourney", () => {
     expect(getMobileJourneyHint("client", true)).toBe("briefing salvo · continue de onde parou");
   });
 
+  it("adapta o atalho secundário à intenção sem repetir a ação principal", () => {
+    expect(getMobileSecondaryShortcut("client")).toEqual({ href: "#servicos", label: "serviços" });
+    expect(getMobileSecondaryShortcut("recruiter")).toEqual({ href: "#curriculo-web", label: "currículo" });
+    expect(getMobileSecondaryShortcut("explorer")).toEqual({ href: "#pg-lab", label: "PG Arcade" });
+  });
 });

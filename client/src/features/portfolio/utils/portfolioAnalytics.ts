@@ -25,6 +25,8 @@ export const conversionEventNames = [
   "tic_tac_toe_started",
   "tic_tac_toe_completed",
   "tic_tac_toe_restarted",
+  "tic_tac_toe_preset_selected",
+  "tic_tac_toe_hint_used",
   "experience_route_selected",
   "experience_route_cta",
 ] as const;
@@ -46,6 +48,7 @@ type ConversionProperties = Partial<{
   professionalEvidence: "resume" | "profile" | "github" | "product" | "fullstack" | "media" | "quality";
   briefingPreset: "site" | "dashboard" | "content";
   gameResult: "player" | "bot" | "draw";
+  arcadePreset: "quick" | "competitive" | "local";
   experienceRoute: "client" | "recruiter" | "explorer";
 }>;
 
