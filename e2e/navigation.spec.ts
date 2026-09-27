@@ -368,6 +368,23 @@ test.describe("portfólio profissional", () => {
     ).toBe(1);
   });
 
+  test("mantém currículo web fora do carregamento inicial e preserva a âncora", async ({ page }) => {
+    const resumeRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/PortfolioWebResume/i.test(request.url())) resumeRequests.push(request.url());
+    });
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(resumeRequests).toEqual([]);
+    await expect(page.locator("#curriculo-web")).toHaveCount(1);
+
+    await page.goto("/#curriculo-web");
+    await expect(page.locator('[data-web-resume="true"]')).toBeVisible();
+    await expect.poll(() => resumeRequests.length).toBeGreaterThan(0);
+  });
+
   test("carrega a prévia PDF apenas quando existe intenção do visitante", async ({ page }) => {
     const previewRequests: string[] = [];
     page.on("request", (request) => {
@@ -680,6 +697,32 @@ test.describe("portfólio profissional", () => {
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(1)).toContainText(/impossível|estratégia/i);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(2)).toContainText(/local|1.*1/i);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(3)).toContainText(/sobrevivência|MD5/i);
+  });
+
+  test("economia de dados evita preload especulativo mas mantém Arcade funcional no toque", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(navigator, "connection", {
+        configurable: true,
+        value: { saveData: true, effectiveType: "2g" },
+      });
+    });
+
+    const optionalRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/Portfolio(TicTacToe|ResumePreview)/i.test(request.url())) optionalRequests.push(request.url());
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+
+    const arcadeControl = page.locator('[data-arcade-open-control="true"]');
+    await arcadeControl.hover();
+    expect(optionalRequests.filter((url) => /PortfolioTicTacToe/i.test(url))).toEqual([]);
+
+    await arcadeControl.click();
+    await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
+    await expect.poll(() => optionalRequests.filter((url) => /PortfolioTicTacToe/i.test(url)).length).toBeGreaterThan(0);
   });
 
   test("mobile esconde o dock enquanto o menu está aberto", async ({ page }) => {
