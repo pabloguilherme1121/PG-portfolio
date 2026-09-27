@@ -97,7 +97,9 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="deadline"]')).toHaveValue("");
     await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
 
-    await quickStart.getByRole("button", { name: /site.*landing/i }).click();
+    const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
+    await expect(sitePreset).toBeEnabled();
+    await sitePreset.click();
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
 
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
