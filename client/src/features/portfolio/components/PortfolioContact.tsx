@@ -237,17 +237,15 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    flushSync(() => {
-      setBriefingDraft(nextDraft);
-      setBriefingRevision((value) => value + 1);
-    });
-    const refreshedForm = briefingFormRef.current;
-    if (refreshedForm) {
-      for (const [name, value] of Object.entries(preset.values)) {
-        const field = refreshedForm.elements.namedItem(name);
-        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-          field.value = value;
-        }
+    setBriefingDraft(nextDraft);
+    for (const [name, value] of Object.entries(preset.values)) {
+      const field = form.elements.namedItem(name);
+      if (
+        field instanceof HTMLInputElement
+        || field instanceof HTMLTextAreaElement
+        || field instanceof HTMLSelectElement
+      ) {
+        field.value = value;
       }
     }
     try {
