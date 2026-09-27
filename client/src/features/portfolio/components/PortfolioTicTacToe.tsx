@@ -53,7 +53,7 @@ const achievementCopy = {
   trinca: { label: "sequência x3", icon: Flame },
   invicto: { label: "5 jogos invicto", icon: Award },
   "sem-ajuda": { label: "vitória sem dica", icon: Zap },
-  estrategista: { label: "3 dicas usadas", icon: Lightbulb },
+  estrategista: { label: "3 partidas com dica", icon: Lightbulb },
 } as const;
 
 export default function PortfolioTicTacToe() {
