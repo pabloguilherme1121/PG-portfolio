@@ -72,11 +72,11 @@ export default function PortfolioExperienceHub() {
 
     if (nextIndex === null) return;
     event.preventDefault();
+    const tabList = event.currentTarget.closest('[role="tablist"]');
     const nextRoute = experienceRoutes[nextIndex];
     selectRoute(nextRoute.id);
     window.requestAnimationFrame(() => {
-      event.currentTarget
-        .closest('[role="tablist"]')
+      tabList
         ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
         [nextIndex]?.focus();
     });
