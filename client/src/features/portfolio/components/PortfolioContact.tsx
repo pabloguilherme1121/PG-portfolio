@@ -239,11 +239,12 @@ export function PortfolioContact({
 
   function applyBriefingPreset(preset: BriefingPreset) {
     const form = briefingFormRef.current;
-    if (!form) return;
-    const data = new FormData(form);
-    const currentDraft = Object.fromEntries(
-      briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
-    ) as BriefingDraft;
+    const formData = form ? new FormData(form) : null;
+    const currentDraft = formData
+      ? Object.fromEntries(
+          briefingFieldNames.map((field) => [field, String(formData.get(field) || "")]),
+        ) as BriefingDraft
+      : briefingDraft;
     const nextDraft = {
       ...briefingDefaultValues,
       ...currentDraft,
