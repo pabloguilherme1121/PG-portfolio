@@ -132,8 +132,8 @@ test.describe("portfólio profissional", () => {
     await presets.getByRole("button", { name: /competir/i }).click();
     const advanced = game.locator('[data-arcade-advanced="true"]');
     await advanced.locator("summary").click();
-    await expect(game.getByRole("button", { name: /impossível/i })).toHaveAttribute("aria-pressed", "true");
-    await expect(game.getByRole("button", { name: /MD3/i })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: "impossível", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: "MD3", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await presets.getByRole("button", { name: /dupla/i }).click();
     await expect(game.getByRole("button", { name: /duas pessoas/i })).toHaveAttribute("aria-pressed", "true");
@@ -587,6 +587,35 @@ test.describe("portfólio profissional", () => {
       expect(boardBox?.width ?? 0).toBeGreaterThanOrEqual(72);
       expect(boardBox?.height ?? 0).toBeGreaterThanOrEqual(72);
     }
+  });
+
+  test("mobile incorpora hierarquia visual do mockup sem aumentar a carga de navegação", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const heroProofs = page.locator('[data-mobile-hero-proof-rail="true"]');
+    await expect(heroProofs).toBeVisible();
+    await expect(heroProofs.locator('[data-mobile-hero-proof="true"]')).toHaveCount(3);
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const menu = page.locator("#mobile-navigation");
+    const profile = menu.locator('[data-mobile-menu-profile="true"]');
+    await expect(profile).toBeVisible();
+    await expect(profile).toContainText(/Pablo Guilherme/i);
+    await expect(profile).toContainText(/produtos digitais/i);
+    await expect(profile).toContainText(/disponível/i);
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const dock = page.locator('[data-mobile-contact-bar="true"]');
+    await expect(dock).toHaveAttribute("data-mobile-dock", "true");
+    await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
+
+    await page.getByRole("button", { name: /abrir.*pg arcade/i }).click();
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(3);
+    await expect(game.locator('[data-arcade-preset-card="true"]').nth(0)).toContainText(/contra.*bot|contra.*ia/i);
+    await expect(game.locator('[data-arcade-preset-card="true"]').nth(1)).toContainText(/impossível|estratégia/i);
+    await expect(game.locator('[data-arcade-preset-card="true"]').nth(2)).toContainText(/local|1.*1/i);
   });
 
   test("mobile prioriza navegação curta e CTA de projeto ao alcance do polegar", async ({ page }) => {

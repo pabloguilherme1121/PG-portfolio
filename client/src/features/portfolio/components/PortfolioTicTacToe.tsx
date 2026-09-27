@@ -236,9 +236,9 @@ export default function PortfolioTicTacToe() {
           <div data-arcade-presets="true" className="mt-6">
             <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">começar rápido</p>
             <div className="grid grid-cols-3 gap-2">
-              <button data-arcade-preset="quick" type="button" aria-pressed={selectedPreset === "quick"} onClick={() => applyPreset("quick")} className={optionClass(selectedPreset === "quick")}><Zap className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />rápido</button>
-              <button data-arcade-preset="competitive" type="button" aria-pressed={selectedPreset === "competitive"} onClick={() => applyPreset("competitive")} className={optionClass(selectedPreset === "competitive")}><Swords className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />competir</button>
-              <button data-arcade-preset="local" type="button" aria-pressed={selectedPreset === "local"} onClick={() => applyPreset("local")} className={optionClass(selectedPreset === "local")}><UsersRound className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />dupla</button>
+              <button data-arcade-preset="quick" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "quick"} onClick={() => applyPreset("quick")} className={`${optionClass(selectedPreset === "quick")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Zap className="h-4 w-4" aria-hidden="true" /><span>rápido</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">contra bot</span></button>
+              <button data-arcade-preset="competitive" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "competitive"} onClick={() => applyPreset("competitive")} className={`${optionClass(selectedPreset === "competitive")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Swords className="h-4 w-4" aria-hidden="true" /><span>competir</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">impossível · MD3</span></button>
+              <button data-arcade-preset="local" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "local"} onClick={() => applyPreset("local")} className={`${optionClass(selectedPreset === "local")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><UsersRound className="h-4 w-4" aria-hidden="true" /><span>dupla</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">1 × 1 local</span></button>
             </div>
           </div>
 

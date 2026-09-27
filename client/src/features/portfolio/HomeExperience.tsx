@@ -1179,6 +1179,17 @@ export default function Home() {
         {menuOpen && (
           <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
+              <div data-mobile-menu-profile="true" className="mb-3 flex items-center gap-3 rounded-[16px] border border-[#67e8f9]/15 bg-[linear-gradient(135deg,rgba(10,39,70,0.92),rgba(7,19,38,0.92))] p-3 shadow-[0_12px_34px_rgba(0,0,0,0.22)]">
+                <img src={portraitUrl} alt="" width="64" height="64" loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-full border border-[#67e8f9]/35 object-cover object-top" />
+                <div className="min-w-0">
+                  <p className="truncate font-display text-lg tracking-[-0.035em] text-white">Pablo Guilherme</p>
+                  <p className="mt-0.5 font-body text-xs text-[#a9bfd8]">Desenvolvimento de produtos digitais</p>
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#b8ffd0]">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" aria-hidden="true" />
+                    disponível para novos projetos
+                  </p>
+                </div>
+              </div>
               {[
                 ["01 / início", "#inicio", "inicio"],
                 ["02 / projetos", "#projetos", "projetos"],
@@ -1329,7 +1340,7 @@ export default function Home() {
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
+      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" data-mobile-dock="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
         <a
           data-mobile-context-action="true"
           href={mobileContextAction.href}
@@ -1341,6 +1352,7 @@ export default function Home() {
         </a>
         <a
           data-mobile-primary-action="true"
+          data-mobile-dock-primary="true"
           href={mobilePrimaryAction.href}
           onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
           className="inline-flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 sm:hidden"
