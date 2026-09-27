@@ -405,6 +405,8 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByText(/Site vendendo enquanto você dorme/i)).toHaveCount(0);
     await expect(page.getByText("Conteúdo e audiovisual", { exact: true })).toHaveCount(0);
     await expect(page.locator('a[href*="pg-site-vendendo-2026"]')).toHaveCount(0);
+    await expect(page.locator('[data-showreel="true"]')).toHaveCount(0);
+    await expect(page.getByText(/showreel em preparação/i)).toHaveCount(0);
 
     await page.goto("/?projeto=TEC.08#projetos");
     await expect(page.locator('[data-project-details-dialog="true"]')).toHaveCount(0);
