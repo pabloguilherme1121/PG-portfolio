@@ -594,4 +594,33 @@ test.describe("portfólio profissional", () => {
     await expect(hub.getByRole("link", { name: /ver projetos selecionados/i })).toHaveAttribute("href", "#projetos");
   });
 
+  test("experience hub oferece navegação premium por teclado e progresso de rota", async ({ page }) => {
+    await page.goto("/");
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    const routes = hub.getByRole("tab");
+    await expect(routes).toHaveCount(3);
+
+    const first = routes.nth(0);
+    const second = routes.nth(1);
+    const third = routes.nth(2);
+
+    await first.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-panel="recruiter"]')).toBeVisible();
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "2");
+
+    await page.keyboard.press("End");
+    await expect(third).toBeFocused();
+    await expect(third).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "3");
+
+    await page.keyboard.press("Home");
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "1");
+  });
+
 });
