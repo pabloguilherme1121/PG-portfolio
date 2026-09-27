@@ -1,4 +1,5 @@
 import { ArrowUpRight, LayoutTemplate } from "lucide-react";
+import { useEffect, useState } from "react";
 import {
   briefingQuickStartPresets,
   type BriefingPreset,
@@ -9,6 +10,12 @@ type BriefingQuickStartProps = {
 };
 
 export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps) {
+  const [interactive, setInteractive] = useState(false);
+
+  useEffect(() => {
+    setInteractive(true);
+  }, []);
+
   return (
     <section
       data-briefing-quick-start="true"
@@ -39,8 +46,10 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
             type="button"
             data-briefing-preset="true"
             onClick={() => onSelect(preset)}
+            disabled={!interactive}
+            aria-disabled={!interactive}
             aria-label={`Usar modelo ${preset.title}`}
-            className="group min-w-0 min-h-[116px] border border-white/10 bg-[#07111f] p-3.5 sm:min-h-[132px] sm:p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none"
+            className="group min-w-0 min-h-[116px] border border-white/10 bg-[#07111f] p-3.5 sm:min-h-[132px] sm:p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none disabled:cursor-wait disabled:opacity-60"
           >
             <div className="flex items-start justify-between gap-3">
               <LayoutTemplate className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
