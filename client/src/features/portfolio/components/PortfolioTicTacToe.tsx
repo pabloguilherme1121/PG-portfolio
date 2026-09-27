@@ -135,7 +135,7 @@ export default function PortfolioTicTacToe() {
 
   return (
     <section data-tic-tac-toe="true" aria-labelledby="tic-tac-toe-title" className="archive-chapter border-y border-white/[0.07] bg-[#06111e]">
-      <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-12 sm:px-8 sm:py-18 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
+      <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-12 sm:px-8 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Lab · arcade experimental</p>
           <h2 id="tic-tac-toe-title" className="mt-4 font-display text-[clamp(2.4rem,5vw,4.6rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">
