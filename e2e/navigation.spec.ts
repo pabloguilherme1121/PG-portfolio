@@ -407,6 +407,23 @@ test.describe("portfólio profissional", () => {
     }
   });
 
+  test("mantém contato e briefing fora do bundle inicial sem quebrar acesso direto", async ({ page }) => {
+    const contactRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/PortfolioContact/i.test(request.url())) contactRequests.push(request.url());
+    });
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(contactRequests).toEqual([]);
+    await expect(page.locator("#contato")).toHaveCount(1);
+
+    await page.goto("/#contato-briefing");
+    await expect(page.locator('[data-briefing-form="true"]')).toBeVisible();
+    await expect.poll(() => contactRequests.length).toBeGreaterThan(0);
+  });
+
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
     await page.goto("/");
 
