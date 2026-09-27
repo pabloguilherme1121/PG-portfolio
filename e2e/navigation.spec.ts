@@ -445,8 +445,26 @@ test.describe("portfólio profissional", () => {
     await expect(services.locator('[data-service-id="content"]')).toHaveCount(0);
   });
 
+  test("mantém estudos de caso fora do carregamento inicial e preserva acesso direto", async ({ page }) => {
+    const caseStudyRequests: string[] = [];
+    page.on("request", (request) => {
+      if (/PortfolioCaseStudies/i.test(request.url())) caseStudyRequests.push(request.url());
+    });
+
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    expect(caseStudyRequests).toEqual([]);
+    await expect(page.locator("#estudos-de-caso")).toHaveCount(1);
+
+    await page.goto("/#estudos-de-caso");
+    await expect(page.locator('[data-case-study="true"]')).toHaveCount(2);
+    await expect.poll(() => caseStudyRequests.length).toBeGreaterThan(0);
+  });
+
   test("estudos de caso levam a evidências verificáveis", async ({ page }) => {
     await page.goto("/");
+    await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
 
     const studies = page.locator('[data-case-study="true"]');
     await expect(studies).toHaveCount(2);
@@ -472,6 +490,7 @@ test.describe("portfólio profissional", () => {
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
     await page.goto("/");
+    await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
 
     const studies = page.locator('[data-case-study="true"]');
     await expect(studies).toHaveCount(2);
@@ -756,6 +775,40 @@ test.describe("portfólio profissional", () => {
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
+  });
+
+  test("mobile compartilha o portfólio pela API nativa sem poluir a navegação", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "__portfolioShareCalls", { value: 0, writable: true });
+      Object.defineProperty(window, "__portfolioSharePayload", { value: null, writable: true });
+      Object.defineProperty(navigator, "share", {
+        configurable: true,
+        value: async (payload: ShareData) => {
+          const target = window as Window & { __portfolioShareCalls: number; __portfolioSharePayload: ShareData | null };
+          target.__portfolioShareCalls += 1;
+          target.__portfolioSharePayload = payload;
+        },
+      });
+    });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    const action = page.locator('[data-mobile-share-action="true"]');
+    await expect(action).toBeVisible();
+    await expect(action).toContainText(/compartilhar/i);
+    await action.click();
+
+    await expect.poll(() =>
+      page.evaluate(() => (window as Window & { __portfolioShareCalls: number }).__portfolioShareCalls),
+    ).toBe(1);
+    const payload = await page.evaluate(() =>
+      (window as Window & { __portfolioSharePayload: ShareData | null }).__portfolioSharePayload,
+    );
+    expect(payload?.title).toMatch(/Pablo Guilherme/i);
+    expect(payload?.url).toBe(new URL("/", baseURL).toString());
+    await expect(action).toContainText(/compartilhado/i);
   });
 
   test("mobile oferece instalação PWA apenas quando o navegador disponibiliza", async ({ page }) => {
