@@ -70,7 +70,7 @@ export default function PortfolioHero({
 
           <div className="reveal delay-2 mt-7 flex max-w-xl flex-col gap-5 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Crio sites, interfaces e dashboards com foco em clareza, responsividade e entrega real. Organizo o problema, desenho a experiência, desenvolvo, valido e publico.
+              Do problema ao deploy, crio sites, interfaces e dashboards claros, responsivos e verificáveis. A ideia vira fluxo, interface, código, teste e publicação.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
               Produto digital · React + TypeScript · dashboards · publicação web
@@ -78,7 +78,7 @@ export default function PortfolioHero({
 
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
-                href="#contato"
+                href="#diagnostico"
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
                 className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
               >
