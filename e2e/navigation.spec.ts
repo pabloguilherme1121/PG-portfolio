@@ -144,7 +144,7 @@ test.describe("portfólio profissional", () => {
     await expect(studio).toBeVisible();
     await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
     await expect(studio.locator('[data-briefing-step="direction"]')).toBeHidden();
-    await expect(studio.getByText(/etapa 1 de 4/i)).toBeVisible();
+    await expect(studio.getByText(/etapa 1 de 5/i)).toBeVisible();
 
     await studio.getByRole("button", { name: /continuar.*direção/i }).click();
     await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
@@ -155,11 +155,47 @@ test.describe("portfólio profissional", () => {
 
     await expect(studio.locator('[data-briefing-step="contact"]')).toBeHidden();
     await expect(studio.locator('[data-briefing-step="direction"]')).toBeVisible();
-    await expect(studio.getByText(/etapa 2 de 4/i)).toBeVisible();
+    await expect(studio.getByText(/etapa 2 de 5/i)).toBeVisible();
 
     await studio.getByRole("button", { name: /voltar.*contato/i }).click();
     await expect(studio.locator('[data-briefing-step="contact"]')).toBeVisible();
     await expect(form.locator('input[name="name"]')).toHaveValue("Visitante guiado");
+  });
+
+  test("briefing profissional coleta requisitos, conteúdo, integrações e qualidade antes da revisão", async ({ page }) => {
+    await page.goto("/");
+
+    const form = page.locator("#contato-briefing");
+    await form.scrollIntoViewIfNeeded();
+
+    await form.locator('input[name="name"]').fill("Cliente profissional");
+    await form.locator('input[name="email"]').fill("cliente@example.com");
+    await form.getByRole("button", { name: /continuar.*direção/i }).click();
+
+    await form.locator('select[name="service"]').selectOption({ label: "Site ou landing page" });
+    await form.locator('select[name="projectType"]').selectOption({ label: "Marca ou negócio" });
+    await form.locator('textarea[name="objective"]').fill("Gerar pedidos de orçamento qualificados.");
+    await form.locator('input[name="audience"]').fill("Empresas que precisam contratar o serviço");
+    await form.getByRole("button", { name: /continuar.*escopo/i }).click();
+
+    await form.getByRole("button", { name: /continuar.*requisitos/i }).click();
+    await expect(form.locator('[data-briefing-step="requirements"]')).toBeVisible();
+
+    await expect(form.locator('select[name="contentStatus"]')).toBeVisible();
+    await expect(form.locator('select[name="visualIdentity"]')).toBeVisible();
+    await expect(form.locator('textarea[name="pagesScreens"]')).toBeVisible();
+    await expect(form.locator('textarea[name="features"]')).toBeVisible();
+    await expect(form.locator('textarea[name="integrations"]')).toBeVisible();
+    await expect(form.locator('select[name="qualityPriority"]')).toBeVisible();
+    await expect(form.locator('select[name="postLaunch"]')).toBeVisible();
+
+    await form.locator('select[name="contentStatus"]').selectOption({ label: "Conteúdo parcialmente pronto" });
+    await form.locator('select[name="qualityPriority"]').selectOption({ label: "Conversão e clareza" });
+    await form.getByRole("button", { name: /continuar.*revisão/i }).click();
+
+    await expect(form.locator('[data-briefing-step="review"]')).toBeVisible();
+    await expect(form.locator('[data-briefing-professional-review="true"]')).toContainText("Conteúdo parcialmente pronto");
+    await expect(form.locator('[data-briefing-professional-review="true"]')).toContainText("Conversão e clareza");
   });
 
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
