@@ -1,7 +1,6 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
 import PortfolioProofDeck from "@/features/portfolio/components/PortfolioProofDeck";
-import PortfolioShowreel from "@/features/portfolio/components/PortfolioShowreel";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
@@ -21,8 +20,6 @@ type PortfolioHeroProps = {
   markUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
-  showreelAvailable: boolean;
-  isDesktopViewport: boolean;
   heroCtaRef: RefObject<HTMLDivElement | null>;
 };
 
@@ -31,8 +28,6 @@ export default function PortfolioHero({
   markUrl,
   portraitUrl,
   portraitResponsive,
-  showreelAvailable,
-  isDesktopViewport,
   heroCtaRef,
 }: PortfolioHeroProps) {
   return (
@@ -96,7 +91,6 @@ export default function PortfolioHero({
 
             <PortfolioProofDeck />
 
-            <PortfolioShowreel available={showreelAvailable} isDesktopViewport={isDesktopViewport} />
           </div>
         </div>
 
