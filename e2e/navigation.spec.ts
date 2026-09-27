@@ -101,7 +101,7 @@ test.describe("portfólio profissional", () => {
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game).toBeHidden();
-    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
     await game.scrollIntoViewIfNeeded();
     await expect(game).toBeVisible();
     await expect(game.getByRole("heading", { name: /jogo da velha/i })).toBeVisible();
@@ -122,7 +122,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade combina presets rápidos, controles avançados e modo local", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     const presets = game.locator('[data-arcade-presets="true"]');
@@ -161,7 +161,7 @@ test.describe("portfólio profissional", () => {
       }));
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
@@ -176,6 +176,19 @@ test.describe("portfólio profissional", () => {
     const hintCell = game.locator('[data-hint-cell="true"]');
     await hintCell.click();
     await expect(game.locator('[data-hint-cell="true"]')).toHaveCount(0);
+  });
+
+  test("PG Arcade respeita a troca para O e deixa o PG Bot abrir com X", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await game.locator('[data-arcade-advanced="true"] summary').click();
+    await game.getByRole("button", { name: /jogar com o símbolo x/i }).click();
+
+    await expect(game.locator('[data-game-cell="true"]:has-text("X")')).toHaveCount(1);
+    await expect(game.locator('[data-game-cell="true"]:has-text("O")')).toHaveCount(0);
+    await expect(game.locator('[data-game-status="true"]')).toContainText(/sua vez.*O/i);
   });
 
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
@@ -554,7 +567,7 @@ test.describe("portfólio profissional", () => {
         if (box) expect(box.height).toBeGreaterThanOrEqual(44);
       }
 
-      await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+      await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
       const game = page.locator('[data-tic-tac-toe="true"]');
       await game.scrollIntoViewIfNeeded();
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
@@ -613,7 +626,7 @@ test.describe("portfólio profissional", () => {
     await expect(nextAction).toHaveAttribute("href", "#diagnostico");
     await expect(nextAction).toContainText(/começar diagnóstico/i);
     await expect(shortcuts.getByRole("link")).toHaveCount(2);
-    await expect(shortcuts.getByRole("link", { name: /perfil/i })).toBeVisible();
+    await expect(shortcuts.getByRole("link", { name: /serviços/i })).toHaveAttribute("href", "#servicos");
     await expect(shortcuts.getByRole("link", { name: /observatório/i })).toBeVisible();
 
     const box = await nextAction.boundingBox();
@@ -684,7 +697,7 @@ test.describe("portfólio profissional", () => {
 
     await expect(shortcuts).toBeVisible();
     await expect(menu.locator('[data-mobile-menu-primary="true"]')).toHaveAttribute("href", "#diagnostico");
-    await expect(shortcuts.getByRole("link", { name: /perfil/i })).toHaveAttribute("href", "#perfil-profissional");
+    await expect(shortcuts.getByRole("link", { name: /serviços/i })).toHaveAttribute("href", "#servicos");
     await expect(shortcuts.getByRole("link", { name: /observatório/i })).toHaveAttribute("href", /observatorio/);
 
     const shortcutLinks = shortcuts.getByRole("link");
@@ -693,6 +706,24 @@ test.describe("portfólio profissional", () => {
       const box = await shortcutLinks.nth(index).boundingBox();
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
     }
+  });
+
+  test("atalho mobile contextual leva exploradores direto ao PG Arcade", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    await hub.scrollIntoViewIfNeeded();
+    await hub.getByRole("tab", { name: /quero explorar/i }).click();
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const shortcut = page.locator('[data-mobile-shortcut-contextual="true"]');
+    await expect(shortcut).toHaveAttribute("href", "#pg-lab");
+    await expect(shortcut).toContainText(/PG Arcade/i);
+    await shortcut.click();
+
+    await expect(page.locator("#pg-lab")).toBeVisible();
+    await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
 
   test("mobile reduz densidade dos projetos e mantém CTAs principais em largura confortável", async ({ page }) => {
