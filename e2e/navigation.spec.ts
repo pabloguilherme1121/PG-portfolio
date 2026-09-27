@@ -677,4 +677,43 @@ test.describe("portfólio profissional", () => {
     await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "1");
   });
 
+  test("experience hub vira uma navegação compacta e confortável no mobile", async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+
+      const hub = page.locator('[data-experience-hub="true"]');
+      await hub.scrollIntoViewIfNeeded();
+
+      const routeStrip = hub.locator('[data-experience-route-strip="true"]');
+      await expect(routeStrip).toBeVisible();
+      await expect(hub.locator('[data-experience-route="true"]')).toHaveCount(3);
+
+      const stripOverflow = await routeStrip.evaluate((element) => ({
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+        overflowX: getComputedStyle(element).overflowX,
+      }));
+      expect(stripOverflow.scrollWidth).toBeGreaterThan(stripOverflow.clientWidth);
+      expect(["auto", "scroll"]).toContain(stripOverflow.overflowX);
+
+      const firstRoute = hub.locator('[data-experience-route="true"]').first();
+      const routeBox = await firstRoute.boundingBox();
+      expect(routeBox?.height ?? 0).toBeGreaterThanOrEqual(64);
+      expect(routeBox?.height ?? 999).toBeLessThanOrEqual(84);
+
+      const progress = hub.locator('[data-experience-progress="true"]');
+      expect(await progress.evaluate((element) => getComputedStyle(element).position)).toBe("static");
+
+      const panel = hub.locator('[data-experience-panel="client"]');
+      await expect(panel).toBeVisible();
+      const cta = panel.getByRole("link", { name: /diagnosticar meu projeto/i });
+      const ctaBox = await cta.boundingBox();
+      expect(ctaBox?.height ?? 0).toBeGreaterThanOrEqual(48);
+      expect(ctaBox?.width ?? 0).toBeGreaterThanOrEqual(width - 64);
+
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    }
+  });
+
 });

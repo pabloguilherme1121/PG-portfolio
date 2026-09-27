@@ -250,15 +250,17 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    flushSync(() => {
-      setBriefingDraft(nextDraft);
-      setBriefingRevision((value) => value + 1);
-    });
     try {
       window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
     } catch {
       // O preset continua funcional mesmo quando o armazenamento local está indisponível.
     }
+    // Mantém o formulário montado durante o clique. O useLayoutEffect sincroniza
+    // os campos não controlados logo após o draft mudar, sem abrir uma janela
+    // de remount que poderia perder a persistência do preset.
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+    });
 
     trackBriefingStarted();
     trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });

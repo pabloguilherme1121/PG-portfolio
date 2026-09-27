@@ -1348,14 +1348,27 @@ html.theme-transitioning .arquivo-page * {
 }
 
 @media (max-width: 639px) {
+  .experience-route-strip {
+    scrollbar-width: none;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 0.25rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .experience-route-strip::-webkit-scrollbar {
+    display: none;
+  }
+
   .experience-route-card {
-    min-height: 5.5rem;
+    min-height: 4.5rem;
   }
 
   [data-experience-progress="true"] {
-    position: sticky;
-    bottom: calc(4.75rem + env(safe-area-inset-bottom));
-    z-index: 3;
-    backdrop-filter: blur(14px);
+    position: static;
+    backdrop-filter: none;
+  }
+
+  .experience-panel-enter {
+    box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
   }
 }
