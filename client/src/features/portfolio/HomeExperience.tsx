@@ -67,7 +67,7 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
@@ -286,7 +286,9 @@ export default function Home() {
   const mobileContextAction = getMobileContextAction(mobileExperienceRoute);
   const mobilePrimaryAction = getMobilePrimaryAction(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
+  const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileContextIcon = mobileExperienceRoute === "recruiter" ? UserRound : mobileExperienceRoute === "explorer" ? Eye : Compass;
+  const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
@@ -1197,8 +1199,19 @@ export default function Home() {
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <div data-mobile-shortcuts="true" className="mt-2 grid grid-cols-2 gap-2" aria-label="Atalhos rápidos">
-                <a href="#perfil-profissional" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><UserRound className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>perfil</span></a>
-                <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
+                <a
+                  data-mobile-shortcut-contextual="true"
+                  href={mobileSecondaryShortcut.href}
+                  onClick={() => {
+                    if (mobileExperienceRoute === "explorer") setPgLabOpen(true);
+                    closeMenu();
+                  }}
+                  className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                >
+                  <MobileSecondaryIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
+                  <span>{mobileSecondaryShortcut.label}</span>
+                </a>
+                <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
               </div>
               {resumeAvailable && <button type="button" onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> visualizar portfólio PDF</button>}
             </div>
@@ -1298,14 +1311,14 @@ export default function Home() {
           onBriefingFocusChange={setIsBriefingFieldFocused}
         />
 
-        <section className="archive-chapter border-t border-white/[0.07] bg-[#040a13] px-4 py-9 min-[360px]:px-5 sm:px-8 sm:py-10 lg:px-12" aria-labelledby="pg-lab-title">
+        <section id="pg-lab" className="archive-chapter scroll-mt-24 border-t border-white/[0.07] bg-[#040a13] px-4 py-9 min-[360px]:px-5 sm:px-8 sm:py-10 lg:px-12" aria-labelledby="pg-lab-title">
           <div className="mx-auto max-w-[1440px] border border-[#67e8f9]/20 bg-[#06172f]/55 p-4 min-[360px]:p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-7">
             <div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Lab · opcional</p>
-              <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação rápida?</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">O contato principal termina acima. Este laboratório é uma demonstração curta de lógica, estados e acessibilidade — abra apenas se quiser explorar.</p>
+              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · opcional</p>
+              <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Depois da jornada principal, este laboratório mostra lógica, estado, persistência e acessibilidade em um jogo curto. Escolha um preset e jogue.</p>
             </div>
-            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Lab" : "abrir PG Lab · jogar jogo da velha"}</button>
+            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Arcade" : "abrir PG Arcade"}</button>
           </div>
           <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
             <PortfolioTicTacToe />
