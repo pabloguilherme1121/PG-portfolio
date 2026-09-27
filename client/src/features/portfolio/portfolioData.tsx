@@ -1,6 +1,5 @@
-import { Braces, Clapperboard } from "lucide-react";
+import { Braces } from "lucide-react";
 
-const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 
 export const skillTracks = [
   {
@@ -17,9 +16,9 @@ export const skillTracks = [
   },
   {
     number: "03",
-    title: "Comunicação da solução",
-    text: "Uso conteúdo e audiovisual como apoio quando a entrega precisa ser explicada, demonstrada ou apresentada com mais clareza.",
-    tools: "Roteiro · vídeo · demonstração · narrativa visual",
+    title: "Qualidade e publicação",
+    text: "Valido fluxos, responsividade, acessibilidade e desempenho antes de publicar e evoluir a entrega.",
+    tools: "Playwright · Vitest · CI/CD · acessibilidade · performance",
   },
 ];
 
@@ -67,29 +66,7 @@ export const serviceOffers = [
       briefing: "Quero transformar dados, fontes ou indicadores em uma experiência navegável, com hierarquia de informação, interface responsiva e contexto suficiente para consulta e decisão.",
     },
   },
-  {
-    id: "content",
-    number: "03",
-    label: "comunicação complementar",
-    title: "Conteúdo e audiovisual",
-    text: "Peças visuais para explicar uma solução, demonstrar um produto ou apresentar um projeto de forma mais direta.",
-    detail: "MENSAGEM · DEMONSTRAÇÃO · NARRATIVA",
-    delivery: "Vídeo · conteúdo vertical · captação",
-    duration: "Conforme a necessidade",
-    Icon: Clapperboard,
-    evidence: {
-      label: "ver prova: peça vertical",
-      href: "?projeto=TEC.08#projetos",
-    },
-    briefingSeed: {
-      service: "Criação de conteúdo",
-      projectType: "Marca ou negócio",
-      objective: "Explicar, demonstrar ou apresentar uma proposta com conteúdo visual direto.",
-      delivery: "Vertical 9:16 para Reels",
-      success: "Comunicar a ideia central com clareza em um formato rápido e publicável.",
-      briefing: "Quero transformar uma proposta, produto ou projeto em conteúdo visual direto, com mensagem central clara, formato adequado ao canal e uma demonstração fácil de entender.",
-    },
-  },
+
 ];
 
 export const processSteps = [
@@ -149,22 +126,7 @@ export const caseStudies = [
       },
     ],
   },
-  {
-    id: "TEC.08",
-    title: "Site vendendo enquanto você dorme — comunicação de uma proposta digital",
-    context: "Peça autoral curta criada para apresentar uma proposta ligada a presença digital em um formato rápido.",
-    method: "Mensagem central, hierarquia tipográfica e edição vertical para mostrar uma ideia sem competir pela atenção com argumentos demais.",
-    learning: "Quando a proposta é curta, clareza e hierarquia importam mais do que quantidade de informação.",
-    tags: ["Web", "Conteúdo", "Vídeo"],
-    proofs: [
-      {
-        label: "Assistir peça",
-        description: "Arquivo vertical publicado no próprio portfólio.",
-        href: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
-        type: "media" as const,
-      },
-    ],
-  },
+
 ];
 
 export type Repository = {
@@ -205,8 +167,8 @@ export type Repository = {
 
 /**
  * Projetos públicos com evidência verificável.
- * Mídia usa arquivos versionados no portfólio; projetos de software apontam
- * para repositórios públicos quando ainda não existe uma produção verificável.
+ * Projetos de software apontam para repositórios públicos quando ainda não
+ * existe uma produção verificável.
  */
 export const repositories: Repository[] = [
   {
@@ -243,50 +205,16 @@ export const repositories: Repository[] = [
       learning: "Transparência de fonte e redução de passos são parte do produto quando a interface apoia uma decisão prática.",
     },
   },
-  {
-    id: "TEC.08",
-    name: "PG — Site vendendo enquanto você dorme",
-    description: "Peça vertical de comunicação digital que apresenta uma proposta de valor ligada a presença web e automação.",
-    role: "Conceito, estrutura da mensagem e produção do conteúdo.",
-    process: "Roteiro curto, hierarquia visual e edição vertical pensados para leitura rápida em canais digitais.",
-    result: "Uma demonstração compacta de como produto, mensagem e conteúdo podem trabalhar juntos.",
-    technologies: ["Vídeo", "Conteúdo", "Web"],
-    url: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
-    kind: "video",
-    status: "Publicado",
-    evidence: {
-      label: "vídeo",
-      href: portfolioMediaPath("pg-site-vendendo-2026.mp4"),
-      type: "media",
-    },
-    cover: portfolioMediaPath("pg-site-vendendo-2026-poster.webp"),
-    featured: true,
-    addedOrder: 12,
-    relevance: 94,
-    catalog: {
-      description: "Conteúdo vertical sobre presença digital e produto web.",
-      tags: ["Vídeo", "Conteúdo", "Web", "Vertical"],
-    },
-    caseStudy: {
-      context: "Peça curta criada para comunicar uma proposta de presença digital de forma direta.",
-      problem: "Explicar valor em poucos segundos sem transformar o conteúdo em uma apresentação longa.",
-      objective: "Conectar uma mensagem comercial a uma demonstração visual simples e adequada ao formato vertical.",
-      function: "Comunicação de produto e presença digital.",
-      process: "Estruturação da mensagem, seleção de elementos visuais e edição curta.",
-      decisions: "Priorizar uma ideia central e reduzir elementos concorrentes para manter a leitura rápida.",
-      result: "Uma peça compacta que conecta desenvolvimento web e comunicação.",
-      learning: "Mensagens curtas funcionam melhor quando cada elemento visual reforça a mesma ideia central.",
-    },
-  },
+
 ];
 
-export const technologyFilters = ["Todos", "Web", "React", "TypeScript", "Vídeo", "Conteúdo"];
-export const categoryFilters = ["Todos", "Produto digital", "Conteúdo"];
-export const tagFilters = ["Todos", "Web", "Conteúdo", "Vídeo", "Vertical"] as const;
+export const technologyFilters = ["Todos", "Web", "React", "TypeScript"];
+export const categoryFilters = ["Todos", "Produto digital"];
+export const tagFilters = ["Todos", "Web"] as const;
 export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
 
 export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.09", "TEC.08"] },
+  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.09"] },
 ];
 
 export const sortOptions = [
