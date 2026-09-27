@@ -11,7 +11,6 @@ import {
   ArrowUpRight,
   CalendarDays,
   ClipboardCheck,
-  Compass,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -41,7 +40,6 @@ import {
   Settings2,
   List,
   LayoutGrid,
-  UserRound,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -66,7 +64,7 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
@@ -79,7 +77,8 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
-const PortfolioTicTacToe = lazy(() => import("@/features/portfolio/components/PortfolioTicTacToe"));
+const loadPortfolioTicTacToe = () => import("@/features/portfolio/components/PortfolioTicTacToe");
+const PortfolioTicTacToe = lazy(loadPortfolioTicTacToe);
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
@@ -282,12 +281,10 @@ export default function Home() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
-  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
-  const mobileContextAction = getMobileContextAction(mobileExperienceRoute);
+  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen);
   const mobilePrimaryAction = getMobilePrimaryAction(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
-  const MobileContextIcon = mobileExperienceRoute === "recruiter" ? UserRound : mobileExperienceRoute === "explorer" ? Eye : Compass;
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
   useEffect(() => {
@@ -644,6 +641,29 @@ export default function Home() {
       toast.error("Não foi possível enviar", { description: message });
     },
   });
+
+  function preloadPgArcade() {
+    void loadPortfolioTicTacToe();
+  }
+
+  function openPgArcade() {
+    preloadPgArcade();
+    setPgLabOpen(true);
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById("pg-lab");
+      if (!target) return;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+  }
+
+  function togglePgArcade() {
+    if (pgLabOpen) {
+      setPgLabOpen(false);
+      return;
+    }
+    openPgArcade();
+  }
 
   function closeMenu() {
     setMenuOpen(false);
@@ -1214,7 +1234,7 @@ export default function Home() {
                   data-mobile-shortcut-contextual="true"
                   href={mobileSecondaryShortcut.href}
                   onClick={() => {
-                    if (mobileExperienceRoute === "explorer") setPgLabOpen(true);
+                    if (mobileExperienceRoute === "explorer") openPgArcade();
                     closeMenu();
                   }}
                   className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
@@ -1329,7 +1349,18 @@ export default function Home() {
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
               <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma prova técnica opcional de lógica, estado, persistência e acessibilidade. O jogo só é carregado quando você abre o Arcade.</p>
             </div>
-            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Arcade" : "jogar no PG Arcade"}</button>
+            <button
+              type="button"
+              data-arcade-open-control="true"
+              data-arcade-preload="intent"
+              onPointerEnter={preloadPgArcade}
+              onFocus={preloadPgArcade}
+              onTouchStart={preloadPgArcade}
+              onClick={togglePgArcade}
+              aria-expanded={pgLabOpen}
+              aria-controls="pg-lab-game"
+              className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto"
+            >{pgLabOpen ? "fechar PG Arcade" : "jogar no PG Arcade"}</button>
           </div>
           <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
             {pgLabOpen && (
@@ -1344,22 +1375,20 @@ export default function Home() {
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" data-mobile-dock="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm sm:bg-[#07101e]/95 sm:backdrop-blur-md`}>
-        <a
-          data-mobile-context-action="true"
-          href={mobileContextAction.href}
-          onClick={() => trackPortfolioEvent("experience_route_cta", { experienceRoute: mobileExperienceRoute })}
-          className="mobile-context-action flex min-h-12 basis-[78px] flex-col items-center justify-center gap-1 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:basis-[92px] sm:hidden"
-        >
-          <MobileContextIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-          <span>{mobileContextAction.label}</span>
-        </a>
+      <nav
+        aria-label="Ações rápidas"
+        aria-hidden={shouldHideContactFloat ? "true" : undefined}
+        inert={shouldHideContactFloat ? true : undefined}
+        data-mobile-contact-bar="true"
+        data-mobile-dock="true"
+        data-mobile-dock-hidden={shouldHideContactFloat ? "true" : "false"}
+        className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} grid grid-cols-[minmax(0,1fr)_3.5rem] items-stretch gap-2 border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md`}>
         <a
           data-mobile-primary-action="true"
           data-mobile-dock-primary="true"
           href={mobilePrimaryAction.href}
           onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
-          className="inline-flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 sm:hidden"
+          className="inline-flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:px-3 sm:hidden"
           aria-label={mobilePrimaryAction.ariaLabel}
         >
           <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em]">
