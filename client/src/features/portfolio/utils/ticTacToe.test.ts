@@ -7,6 +7,8 @@ import {
   getTicTacToeHintMove,
   getTicTacToePresetConfig,
   getTicTacToeAchievements,
+  getTicTacToeWinRate,
+  normalizeTicTacToeLifetimeStats,
   updateTicTacToeLifetimeStats,
   type TicTacToeBoard,
 } from "./ticTacToe";
@@ -50,6 +52,7 @@ describe("ticTacToe", () => {
     expect(getTicTacToePresetConfig("quick")).toEqual({ mode: "bot", difficulty: "normal", seriesLength: 1 });
     expect(getTicTacToePresetConfig("competitive")).toEqual({ mode: "bot", difficulty: "impossible", seriesLength: 3 });
     expect(getTicTacToePresetConfig("local")).toEqual({ mode: "local", difficulty: "normal", seriesLength: 3 });
+    expect(getTicTacToePresetConfig("survival")).toEqual({ mode: "bot", difficulty: "impossible", seriesLength: 5 });
   });
 
   it("oferece uma dica estratégica para o jogador atual", () => {
@@ -68,8 +71,31 @@ describe("ticTacToe", () => {
   });
 
   it("libera conquistas a partir do histórico real", () => {
-    expect(getTicTacToeAchievements({ games: 5, wins: 3, losses: 0, draws: 2, currentWinStreak: 3, bestWinStreak: 3 }))
-      .toEqual(expect.arrayContaining(["primeira-vitoria", "trinca", "invicto"]));
+    expect(getTicTacToeAchievements({ games: 5, wins: 3, losses: 0, draws: 2, currentWinStreak: 3, bestWinStreak: 3, hintsUsed: 3, perfectWins: 1 }))
+      .toEqual(expect.arrayContaining(["primeira-vitoria", "trinca", "invicto", "sem-ajuda", "estrategista"]));
+  });
+
+  it("calcula taxa de vitória e métricas de progressão", () => {
+    const stats = updateTicTacToeLifetimeStats(undefined, "player", { usedHint: true, perfectWin: false });
+    expect(stats).toMatchObject({ games: 1, wins: 1, hintsUsed: 1, perfectWins: 0 });
+    expect(getTicTacToeWinRate(stats)).toBe(100);
+  });
+
+  it("migra estatísticas antigas sem transformar campos novos em NaN", () => {
+    const migrated = normalizeTicTacToeLifetimeStats({
+      games: 4,
+      wins: 2,
+      losses: 1,
+      draws: 1,
+      currentWinStreak: 1,
+      bestWinStreak: 2,
+    });
+    expect(migrated).toMatchObject({ games: 4, wins: 2, hintsUsed: 0, perfectWins: 0 });
+    expect(updateTicTacToeLifetimeStats(migrated, "player", { perfectWin: true })).toMatchObject({
+      games: 5,
+      wins: 3,
+      perfectWins: 1,
+    });
   });
   it("permite ao bot calcular corretamente quando joga com X", () => {
     const board: TicTacToeBoard = ["X", "X", null, "O", "O", null, null, null, null];

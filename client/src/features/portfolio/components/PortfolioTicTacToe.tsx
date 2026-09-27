@@ -2,6 +2,7 @@ import {
   Award,
   Bot,
   Flame,
+  Gauge,
   Lightbulb,
   RotateCcw,
   SlidersHorizontal,
@@ -21,6 +22,8 @@ import {
   getTicTacToePresetConfig,
   getTicTacToeWinner,
   getTicTacToeWinningLine,
+  getTicTacToeWinRate,
+  normalizeTicTacToeLifetimeStats,
   updateTicTacToeLifetimeStats,
   type TicTacToeBoard,
   type TicTacToeDifficulty,
@@ -39,11 +42,7 @@ function readLifetimeStats(): TicTacToeLifetimeStats {
   if (typeof window === "undefined") return emptyTicTacToeLifetimeStats;
   try {
     const parsed = JSON.parse(window.localStorage.getItem(arcadeStatsStorageKey) || "{}");
-    const numbers = ["games", "wins", "losses", "draws", "currentWinStreak", "bestWinStreak"] as const;
-    if (!parsed || typeof parsed !== "object" || numbers.some((key) => !Number.isFinite(parsed[key]) || parsed[key] < 0)) {
-      return emptyTicTacToeLifetimeStats;
-    }
-    return parsed as TicTacToeLifetimeStats;
+    return normalizeTicTacToeLifetimeStats(parsed && typeof parsed === "object" ? parsed : null);
   } catch {
     return emptyTicTacToeLifetimeStats;
   }
@@ -53,6 +52,8 @@ const achievementCopy = {
   "primeira-vitoria": { label: "primeira vitória", icon: Trophy },
   trinca: { label: "sequência x3", icon: Flame },
   invicto: { label: "5 jogos invicto", icon: Award },
+  "sem-ajuda": { label: "vitória sem dica", icon: Zap },
+  estrategista: { label: "3 partidas com dica", icon: Lightbulb },
 } as const;
 
 export default function PortfolioTicTacToe() {
@@ -68,12 +69,14 @@ export default function PortfolioTicTacToe() {
   const [started, setStarted] = useState(false);
   const [selectedPreset, setSelectedPreset] = useState<TicTacToePreset | null>("quick");
   const [hintIndex, setHintIndex] = useState<number | null>(null);
+  const [usedHintThisRound, setUsedHintThisRound] = useState(false);
   const [lifetimeStats, setLifetimeStats] = useState<TicTacToeLifetimeStats>(readLifetimeStats);
 
   const opponentMark: TicTacToeMark = playerMark === "X" ? "O" : "X";
   const winsNeeded = Math.ceil(seriesLength / 2);
   const winningLine = useMemo(() => getTicTacToeWinningLine(board), [board]);
   const achievements = useMemo(() => getTicTacToeAchievements(lifetimeStats), [lifetimeStats]);
+  const winRate = useMemo(() => getTicTacToeWinRate(lifetimeStats), [lifetimeStats]);
   const matchWinner = score.player >= winsNeeded ? "player" : score.opponent >= winsNeeded ? "opponent" : null;
 
   useEffect(() => {
@@ -116,7 +119,10 @@ export default function PortfolioTicTacToe() {
       draws: current.draws + (nextResult === "draw" ? 1 : 0),
     }));
     if (mode === "bot") {
-      setLifetimeStats((current) => updateTicTacToeLifetimeStats(current, nextResult));
+      setLifetimeStats((current) => updateTicTacToeLifetimeStats(current, nextResult, {
+        usedHint: usedHintThisRound,
+        perfectWin: nextResult === "player" && !usedHintThisRound,
+      }));
     }
     trackPortfolioEvent("tic_tac_toe_completed", { gameResult: nextResult });
   }
@@ -173,6 +179,7 @@ export default function PortfolioTicTacToe() {
     setResult(null);
     setStarted(false);
     setHintIndex(null);
+    setUsedHintThisRound(false);
     setTurn("X");
   }
 
@@ -215,7 +222,10 @@ export default function PortfolioTicTacToe() {
     if (mode !== "bot" || result || matchWinner) return;
     const nextHint = getTicTacToeHintMove(board, playerMark);
     setHintIndex(nextHint >= 0 ? nextHint : null);
-    if (nextHint >= 0) trackPortfolioEvent("tic_tac_toe_hint_used");
+    if (nextHint >= 0) {
+      setUsedHintThisRound(true);
+      trackPortfolioEvent("tic_tac_toe_hint_used");
+    }
   }
 
   const optionClass = (active: boolean) => `inline-flex min-h-12 items-center justify-center rounded-[10px] border px-3 font-mono text-[8px] font-semibold uppercase tracking-[0.08em] transition-[border-color,background-color,color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.98] motion-reduce:transition-none ${active ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 text-[#91adbf] hover:border-[#67e8f9]/60 hover:text-white"}`;
@@ -230,15 +240,16 @@ export default function PortfolioTicTacToe() {
             <br />Estratégia em 1 toque.
           </h2>
           <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7] sm:leading-7">
-            Entre rápido com um preset e jogue. Se quiser, abra as configurações avançadas. Progresso, sequência e conquistas ficam salvos neste dispositivo.
+            Escolha um modo e jogue sem cadastro. O Arcade acompanha evolução, taxa de vitória, sequência e conquistas neste dispositivo.
           </p>
 
           <div data-arcade-presets="true" className="mt-6">
             <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">começar rápido</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-4">
               <button data-arcade-preset="quick" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "quick"} onClick={() => applyPreset("quick")} className={`${optionClass(selectedPreset === "quick")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Zap className="h-4 w-4" aria-hidden="true" /><span>rápido</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">contra bot</span></button>
               <button data-arcade-preset="competitive" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "competitive"} onClick={() => applyPreset("competitive")} className={`${optionClass(selectedPreset === "competitive")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Swords className="h-4 w-4" aria-hidden="true" /><span>competir</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">impossível · MD3</span></button>
               <button data-arcade-preset="local" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "local"} onClick={() => applyPreset("local")} className={`${optionClass(selectedPreset === "local")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><UsersRound className="h-4 w-4" aria-hidden="true" /><span>dupla</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">1 × 1 local</span></button>
+              <button data-arcade-preset="survival" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "survival"} onClick={() => applyPreset("survival")} className={`${optionClass(selectedPreset === "survival")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Flame className="h-4 w-4" aria-hidden="true" /><span>sobrevivência</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">impossível · MD5</span></button>
             </div>
           </div>
 
@@ -280,10 +291,11 @@ export default function PortfolioTicTacToe() {
             </div>
           </details>
 
-          <div data-arcade-stats="true" className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-[12px] bg-white/10">
+          <div data-arcade-stats="true" className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] bg-white/10 min-[420px]:grid-cols-4">
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">partidas</p><p className="mt-1 font-display text-xl text-white">{lifetimeStats.games}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">vitórias</p><p className="mt-1 font-display text-xl text-[#67e8f9]">{lifetimeStats.wins}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">melhor sequência</p><p className="mt-1 font-display text-xl text-[#f4d67a]">{lifetimeStats.bestWinStreak}</p></div>
+            <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">taxa de vitória</p><p className="mt-1 inline-flex items-center justify-center gap-1 font-display text-xl text-white"><Gauge className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />{winRate}%</p></div>
           </div>
 
           {achievements.length > 0 && (
@@ -307,7 +319,7 @@ export default function PortfolioTicTacToe() {
         <div className="mx-auto w-full max-w-[540px] rounded-[16px] border border-[#67e8f9]/20 bg-[#071827]/80 p-3.5 min-[360px]:p-4 sm:p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
-              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena</p>
+              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena · {selectedPreset === "survival" ? "sobrevivência" : selectedPreset === "competitive" ? "competitiva" : selectedPreset === "local" ? "dupla" : "rápida"}</p>
               <p data-game-status="true" role="status" aria-live="polite" className="mt-1 font-body text-sm text-[#d5edf7]">{status}</p>
             </div>
             <Swords className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />

@@ -58,7 +58,6 @@ import PortfolioWebResume from "@/features/portfolio/components/PortfolioWebResu
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
-import PortfolioTicTacToe from "@/features/portfolio/components/PortfolioTicTacToe";
 import { PortfolioContact } from "@/features/portfolio/components/PortfolioContact";
 import { PortfolioResumePreview } from "@/features/portfolio/components/PortfolioResumePreview";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
@@ -80,6 +79,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioTicTacToe = lazy(() => import("@/features/portfolio/components/PortfolioTicTacToe"));
 
 const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
 const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
@@ -1135,7 +1135,7 @@ export default function Home() {
   return (
     <div data-theme={theme} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <a href="#conteudo-principal" className="skip-link">pular para o conteúdo</a>
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/90 backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/94 backdrop-blur-md md:bg-[#07111f]/90 md:backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
           <a href="#inicio" aria-label="Ir ao início" className="group flex min-w-0 items-center gap-2.5 sm:gap-3" onClick={closeMenu}>
             <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
@@ -1177,7 +1177,7 @@ export default function Home() {
           </div>
         </div>
         {menuOpen && (
-          <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl md:hidden" aria-label="Navegação móvel">
+          <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_20px_48px_rgba(0,0,0,0.42)] backdrop-blur-md md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               <div data-mobile-menu-profile="true" className="mb-3 flex items-center gap-3 rounded-[16px] border border-[#67e8f9]/15 bg-[linear-gradient(135deg,rgba(10,39,70,0.92),rgba(7,19,38,0.92))] p-3 shadow-[0_12px_34px_rgba(0,0,0,0.22)]">
                 <img src={portraitUrl} alt="" width="64" height="64" loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-full border border-[#67e8f9]/35 object-cover object-top" />
@@ -1327,12 +1327,16 @@ export default function Home() {
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · opcional</p>
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Depois da jornada principal, este laboratório mostra lógica, estado, persistência e acessibilidade em um jogo curto. Escolha um preset e jogue.</p>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma prova técnica opcional de lógica, estado, persistência e acessibilidade. O jogo só é carregado quando você abre o Arcade.</p>
             </div>
-            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Arcade" : "abrir PG Arcade"}</button>
+            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Arcade" : "jogar no PG Arcade"}</button>
           </div>
           <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
-            <PortfolioTicTacToe />
+            {pgLabOpen && (
+              <Suspense fallback={<div data-arcade-loading="true" role="status" aria-live="polite" className="mx-4 my-5 min-h-24 rounded-[14px] border border-[#67e8f9]/20 bg-[#06172f]/70 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc] min-[360px]:mx-5 sm:mx-0">carregando PG Arcade…</div>}>
+                <PortfolioTicTacToe />
+              </Suspense>
+            )}
           </div>
         </section>
       </main>
@@ -1340,7 +1344,7 @@ export default function Home() {
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" data-mobile-dock="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
+      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" data-mobile-dock="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm sm:bg-[#07101e]/95 sm:backdrop-blur-md`}>
         <a
           data-mobile-context-action="true"
           href={mobileContextAction.href}
