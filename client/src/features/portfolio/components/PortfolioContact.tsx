@@ -237,15 +237,20 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    setBriefingDraft(nextDraft);
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+    });
+    const activeForm = briefingFormRef.current ?? form;
     for (const [name, value] of Object.entries(preset.values)) {
-      const field = form.elements.namedItem(name);
+      const field = activeForm.elements.namedItem(name);
       if (
         field instanceof HTMLInputElement
         || field instanceof HTMLTextAreaElement
         || field instanceof HTMLSelectElement
       ) {
         field.value = value;
+        field.dispatchEvent(new Event("input", { bubbles: true }));
+        field.dispatchEvent(new Event("change", { bubbles: true }));
       }
     }
     try {
