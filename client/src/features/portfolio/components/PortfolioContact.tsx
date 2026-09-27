@@ -10,12 +10,7 @@ import {
   toDateKey,
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
-import BriefingQuickStart from "@/features/portfolio/components/BriefingQuickStart";
 import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
-import {
-  briefingDefaultValues,
-  type BriefingPreset,
-} from "@/features/portfolio/briefingPresets";
 import {
   ArrowDown,
   ArrowUpRight,
