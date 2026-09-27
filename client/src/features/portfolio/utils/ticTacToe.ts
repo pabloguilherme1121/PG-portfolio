@@ -109,6 +109,22 @@ export const emptyTicTacToeLifetimeStats: TicTacToeLifetimeStats = {
   perfectWins: 0,
 };
 
+export function normalizeTicTacToeLifetimeStats(
+  stats: Partial<TicTacToeLifetimeStats> | null | undefined,
+): TicTacToeLifetimeStats {
+  const safeCount = (value: unknown) => typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0;
+  return {
+    games: safeCount(stats?.games),
+    wins: safeCount(stats?.wins),
+    losses: safeCount(stats?.losses),
+    draws: safeCount(stats?.draws),
+    currentWinStreak: safeCount(stats?.currentWinStreak),
+    bestWinStreak: safeCount(stats?.bestWinStreak),
+    hintsUsed: safeCount(stats?.hintsUsed),
+    perfectWins: safeCount(stats?.perfectWins),
+  };
+}
+
 export function getTicTacToePresetConfig(preset: TicTacToePreset) {
   if (preset === "competitive") {
     return { mode: "bot" as const, difficulty: "impossible" as const, seriesLength: 3 as const };
@@ -171,7 +187,7 @@ export function updateTicTacToeLifetimeStats(
   result: "player" | "bot" | "draw",
   options: { usedHint?: boolean; perfectWin?: boolean } = {},
 ): TicTacToeLifetimeStats {
-  const current = stats ?? emptyTicTacToeLifetimeStats;
+  const current = normalizeTicTacToeLifetimeStats(stats);
   const currentWinStreak = result === "player" ? current.currentWinStreak + 1 : 0;
   return {
     games: current.games + 1,
@@ -186,16 +202,18 @@ export function updateTicTacToeLifetimeStats(
 }
 
 export function getTicTacToeAchievements(stats: TicTacToeLifetimeStats) {
+  const current = normalizeTicTacToeLifetimeStats(stats);
   const achievements: Array<"primeira-vitoria" | "trinca" | "invicto" | "sem-ajuda" | "estrategista"> = [];
-  if (stats.wins >= 1) achievements.push("primeira-vitoria");
-  if (stats.bestWinStreak >= 3) achievements.push("trinca");
-  if (stats.games >= 5 && stats.losses === 0) achievements.push("invicto");
-  if (stats.perfectWins >= 1) achievements.push("sem-ajuda");
-  if (stats.hintsUsed >= 3) achievements.push("estrategista");
+  if (current.wins >= 1) achievements.push("primeira-vitoria");
+  if (current.bestWinStreak >= 3) achievements.push("trinca");
+  if (current.games >= 5 && current.losses === 0) achievements.push("invicto");
+  if (current.perfectWins >= 1) achievements.push("sem-ajuda");
+  if (current.hintsUsed >= 3) achievements.push("estrategista");
   return achievements;
 }
 
 export function getTicTacToeWinRate(stats: TicTacToeLifetimeStats) {
-  if (!stats.games) return 0;
-  return Math.round((stats.wins / stats.games) * 100);
+  const current = normalizeTicTacToeLifetimeStats(stats);
+  if (!current.games) return 0;
+  return Math.round((current.wins / current.games) * 100);
 }
