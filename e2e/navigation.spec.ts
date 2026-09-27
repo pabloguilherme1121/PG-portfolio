@@ -994,7 +994,9 @@ test.describe("portfólio profissional", () => {
       }
     }
 
+    await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
     const caseStudy = projects.locator('[data-case-study="true"]').first();
+    await expect(caseStudy).toBeVisible();
     const caseBox = await caseStudy.boundingBox();
     expect(caseBox?.width ?? 0).toBeLessThanOrEqual(288);
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
