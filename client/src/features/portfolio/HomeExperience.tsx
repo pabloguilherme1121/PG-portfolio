@@ -67,7 +67,7 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import { getMobileContextAction, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
@@ -284,6 +284,8 @@ export default function Home() {
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
   const mobileContextAction = getMobileContextAction(mobileExperienceRoute);
+  const mobilePrimaryAction = getMobilePrimaryAction(hasMobileBriefingDraft);
+  const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
   const MobileContextIcon = mobileExperienceRoute === "recruiter" ? UserRound : mobileExperienceRoute === "explorer" ? Eye : Compass;
 
   useEffect(() => {
@@ -1318,13 +1320,18 @@ export default function Home() {
         </a>
         <a
           data-mobile-primary-action="true"
-          href="#contato"
+          href={mobilePrimaryAction.href}
           onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
-          className="inline-flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-[10px] bg-[#38bdf8] px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 min-[360px]:text-[10px] sm:hidden"
-          aria-label={hasMobileBriefingDraft ? "Continuar briefing salvo" : "Abrir briefing do projeto"}
+          className="inline-flex min-h-12 min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 sm:hidden"
+          aria-label={mobilePrimaryAction.ariaLabel}
         >
-          <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-          {hasMobileBriefingDraft ? "continuar" : "briefing"}
+          <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em]">
+            <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+            {mobilePrimaryAction.label}
+          </span>
+          <span data-mobile-journey-hint="true" className="mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px]">
+            {mobileJourneyHint}
+          </span>
         </a>
         <a data-mobile-whatsapp-action="true" href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp mobile-whatsapp-action group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
