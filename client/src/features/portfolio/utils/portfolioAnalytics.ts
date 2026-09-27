@@ -25,6 +25,8 @@ export const conversionEventNames = [
   "tic_tac_toe_started",
   "tic_tac_toe_completed",
   "tic_tac_toe_restarted",
+  "experience_route_selected",
+  "experience_route_cta",
 ] as const;
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
@@ -44,6 +46,7 @@ type ConversionProperties = Partial<{
   professionalEvidence: "resume" | "profile" | "github" | "product" | "fullstack" | "media" | "quality";
   briefingPreset: "site" | "dashboard" | "content";
   gameResult: "player" | "bot" | "draw";
+  experienceRoute: "client" | "recruiter" | "explorer";
 }>;
 
 export function trackPortfolioEvent(eventName: ConversionEventName, properties: ConversionProperties = {}) {
