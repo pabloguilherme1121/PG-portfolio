@@ -582,7 +582,7 @@ test.describe("portfólio profissional", () => {
 
   test("mobile não oferece recursos de lightbox sem dados reais", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/?imagem=TEC.09");
+    await page.goto("/?imagem=TEC.08");
 
     const lightbox = page.locator('[data-lightbox-modal]');
     await expect(lightbox).toBeVisible();
