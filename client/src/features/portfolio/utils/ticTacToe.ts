@@ -37,11 +37,11 @@ function findFinishingMove(board: TicTacToeBoard, mark: TicTacToeMark) {
   return null;
 }
 
-export function chooseTicTacToeBotMove(board: TicTacToeBoard) {
-  const winningMove = findFinishingMove(board, "O");
+export function chooseTicTacToeBotMove(board: TicTacToeBoard, botMark: TicTacToeMark = "O") {
+  const winningMove = findFinishingMove(board, botMark);
   if (winningMove !== null) return winningMove;
 
-  const blockingMove = findFinishingMove(board, "X");
+  const blockingMove = findFinishingMove(board, otherMark(botMark));
   if (blockingMove !== null) return blockingMove;
 
   if (!board[4]) return 4;
@@ -53,30 +53,14 @@ export function chooseTicTacToeBotMove(board: TicTacToeBoard) {
   return board.findIndex((cell) => cell === null);
 }
 
-function minimax(board: TicTacToeBoard, maximizing: boolean): number {
-  const winner = getTicTacToeWinner(board);
-  if (winner === "O") return 10;
-  if (winner === "X") return -10;
-  if (board.every(Boolean)) return 0;
-
-  const scores: number[] = [];
-  for (let index = 0; index < board.length; index += 1) {
-    if (board[index]) continue;
-    const candidate = [...board];
-    candidate[index] = maximizing ? "O" : "X";
-    scores.push(minimax(candidate, !maximizing));
-  }
-  return maximizing ? Math.max(...scores) : Math.min(...scores);
-}
-
-function chooseImpossibleMove(board: TicTacToeBoard) {
+function chooseImpossibleMove(board: TicTacToeBoard, botMark: TicTacToeMark) {
   let bestScore = -Infinity;
   let bestMove = -1;
   for (let index = 0; index < board.length; index += 1) {
     if (board[index]) continue;
     const candidate = [...board];
-    candidate[index] = "O";
-    const score = minimax(candidate, false);
+    candidate[index] = botMark;
+    const score = minimaxForMark(candidate, botMark, otherMark(botMark), 0);
     if (score > bestScore) {
       bestScore = score;
       bestMove = index;
@@ -89,14 +73,15 @@ export function chooseTicTacToeBotMoveByDifficulty(
   board: TicTacToeBoard,
   difficulty: TicTacToeDifficulty,
   random: () => number = Math.random,
+  botMark: TicTacToeMark = "O",
 ) {
   const available = board.flatMap((cell, index) => cell === null ? [index] : []);
   if (!available.length) return -1;
   if (difficulty === "easy") {
     return available[Math.min(available.length - 1, Math.floor(random() * available.length))];
   }
-  if (difficulty === "impossible") return chooseImpossibleMove(board);
-  return chooseTicTacToeBotMove(board);
+  if (difficulty === "impossible") return chooseImpossibleMove(board, botMark);
+  return chooseTicTacToeBotMove(board, botMark);
 }
 
 
