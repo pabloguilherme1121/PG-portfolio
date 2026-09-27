@@ -39,7 +39,12 @@ export default function BriefingQuickStart({ onSelect, interactive }: BriefingQu
             key={preset.id}
             type="button"
             data-briefing-preset="true"
-            onClick={() => onSelect(preset)}
+            onPointerUp={(event) => {
+              if (event.pointerType) onSelect(preset);
+            }}
+            onClick={(event) => {
+              if (event.detail === 0) onSelect(preset);
+            }}
             disabled={!interactive}
             data-briefing-interactive={interactive ? "true" : "false"}
             aria-disabled={!interactive}
