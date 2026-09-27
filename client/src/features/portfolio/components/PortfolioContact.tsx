@@ -475,8 +475,6 @@ export function PortfolioContact({
                       <option value="" disabled>Selecione um serviço</option>
                       <option>Site ou landing page</option>
                       <option>Dashboard ou produto digital</option>
-                      <option>Criação de conteúdo</option>
-                      <option>Captação audiovisual / drone</option>
                       <option>Solução combinada</option>
                       <option>Outro projeto</option>
                     </select>
@@ -488,9 +486,6 @@ export function PortfolioContact({
                       <option>Produto ou serviço digital</option>
                       <option>Marca ou negócio</option>
                       <option>Projeto com dados / dashboard</option>
-                      <option>Evento social ou corporativo</option>
-                      <option>Imóvel, espaço ou operação</option>
-                      <option>Esporte ou atividade externa</option>
                       <option>Outro</option>
                     </select>
                   </label>
@@ -543,9 +538,6 @@ export function PortfolioContact({
                       <option>Site responsivo</option>
                       <option>Landing page</option>
                       <option>Dashboard / interface</option>
-                      <option>Vertical 9:16 para Reels</option>
-                      <option>Horizontal 16:9</option>
-                      <option>Fotos e vídeos</option>
                       <option>Solução combinada</option>
                     </select>
                   </label>

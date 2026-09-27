@@ -6,7 +6,6 @@ type PortfolioWebResumeProps = {
   resumeUrl: string;
 };
 
-const mediaUrl = `${import.meta.env.BASE_URL}portfolio-media/pg-site-vendendo-2026.mp4`;
 
 export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: PortfolioWebResumeProps) {
   function handlePrint() {
@@ -31,7 +30,7 @@ export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: Portf
               Currículo profissional
             </h2>
             <p className="mt-4 max-w-2xl font-body text-base leading-7 text-[#365166]">
-              Pablo Guilherme · produtos digitais, interfaces e dados. Formação em Análise e Desenvolvimento de Sistemas, com projetos públicos que demonstram produto, frontend, full-stack, testes e comunicação digital.
+              Pablo Guilherme · produtos digitais, interfaces e dados. Formação em Análise e Desenvolvimento de Sistemas, com projetos públicos que demonstram produto, frontend, full-stack, testes e publicação.
             </p>
           </div>
 
@@ -150,18 +149,7 @@ export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: Portf
                   <p className="mt-3 text-sm leading-6 text-[#536c7c]">Produto para decisões de rota e abastecimento com React/TypeScript, API tRPC/Express, MySQL/Drizzle, validação, testes e CI.</p>
                 </article>
 
-                <article className="border border-[#bfd1dc] bg-white p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#0e7490]">comunicação digital</p>
-                      <h4 className="mt-2 font-display text-2xl tracking-[-0.04em] text-[#0b2235]">Peça vertical autoral</h4>
-                    </div>
-                    <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#0e7490]">
-                      assistir peça <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                  </div>
-                  <p className="mt-3 text-sm leading-6 text-[#536c7c]">Demonstração de mensagem, hierarquia visual e comunicação de uma proposta digital em formato vertical.</p>
-                </article>
+
               </div>
             </section>
           </div>

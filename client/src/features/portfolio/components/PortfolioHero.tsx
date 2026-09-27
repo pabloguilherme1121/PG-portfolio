@@ -1,7 +1,6 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
 import PortfolioProofDeck from "@/features/portfolio/components/PortfolioProofDeck";
-import PortfolioShowreel from "@/features/portfolio/components/PortfolioShowreel";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
@@ -21,8 +20,6 @@ type PortfolioHeroProps = {
   markUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
-  showreelAvailable: boolean;
-  isDesktopViewport: boolean;
   heroCtaRef: RefObject<HTMLDivElement | null>;
 };
 
@@ -31,8 +28,6 @@ export default function PortfolioHero({
   markUrl,
   portraitUrl,
   portraitResponsive,
-  showreelAvailable,
-  isDesktopViewport,
   heroCtaRef,
 }: PortfolioHeroProps) {
   return (
@@ -69,13 +64,13 @@ export default function PortfolioHero({
             <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1">
               <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</span>
               <span className="mt-1 block truncate font-display text-lg tracking-[-0.03em] text-white">Pablo Guilherme</span>
-              <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">ADS · React · TypeScript · audiovisual</span>
+              <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.1em] text-[#8fa8c7]">ADS · React · TypeScript · produtos digitais</span>
             </figcaption>
           </figure>
 
           <div className="reveal delay-2 mt-7 flex max-w-xl flex-col gap-5 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Crio sites, interfaces e dashboards com foco em clareza, responsividade e entrega real. Organizo o problema, desenho a experiência, desenvolvo e publico; conteúdo visual entra quando ajuda a explicar ou demonstrar melhor a solução.
+              Crio sites, interfaces e dashboards com foco em clareza, responsividade e entrega real. Organizo o problema, desenho a experiência, desenvolvo, valido e publico.
             </p>
             <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
               Produto digital · React + TypeScript · dashboards · publicação web
@@ -96,7 +91,6 @@ export default function PortfolioHero({
 
             <PortfolioProofDeck />
 
-            <PortfolioShowreel available={showreelAvailable} isDesktopViewport={isDesktopViewport} />
           </div>
         </div>
 

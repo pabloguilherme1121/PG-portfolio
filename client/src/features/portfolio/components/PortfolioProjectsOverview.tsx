@@ -34,7 +34,7 @@ export default function PortfolioProjectsOverview({
         </div>
         <div className="max-w-sm">
           <p className="font-body text-sm leading-7 text-[#b6d7eb]">Cada case mostra o que precisava ser resolvido, como a solução foi construída e o que pode ser examinado funcionando.</p>
-          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> 1 produto em produção · 1 produto full-stack em evolução · 1 peça audiovisual</div>
+          <div className="mt-5 flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fb7] light-muted-ink"><span className="h-px w-8 bg-[#38bdf8]" /> 1 produto em produção · 1 produto full-stack em evolução</div>
         </div>
       </div>
 
@@ -59,7 +59,7 @@ export default function PortfolioProjectsOverview({
 
       <div className="showroom-portrait-entry mt-7 grid gap-4 sm:mt-8 sm:gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
         <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
-        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">O eixo principal é transformar problemas de informação e uso em produtos digitais claros. Conteúdo e audiovisual entram quando ajudam a explicar, demonstrar ou apresentar melhor a entrega.</p></div>
+        <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">O eixo principal é transformar problemas de informação e uso em produtos digitais claros, responsivos, testáveis e fáceis de avaliar.</p></div>
         <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">sobre mim <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
       </div>
 
@@ -71,7 +71,7 @@ export default function PortfolioProjectsOverview({
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar o que foi feito, por que as decisões foram tomadas e qual valor cada entrega demonstra.</p>
         </div>
-        <div className="mt-6 grid gap-px bg-[#3b82f6]/15 md:grid-cols-2" aria-busy={!featuredCardsReady}>
+        <div className="mt-6 grid gap-px bg-[#3b82f6]/15" aria-busy={!featuredCardsReady}>
           <div role="status" aria-live="polite" className="sr-only">
             {featuredCardsReady
               ? `${featuredRepositories.length} projetos destacados com prova direta e detalhes disponíveis.`

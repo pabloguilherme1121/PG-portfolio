@@ -8,10 +8,8 @@ durante o build. Coloque os arquivos originais e derivados em
 Antes de disponibilizar as mídias, `pnpm audit:assets` apresenta o inventário
 ausente. Quando o primeiro arquivo for adicionado, o CI passa a exigir todos os
 arquivos referenciados; execute `pnpm audit:assets --strict` para conferir a lista
-antes de enviar. A imagem de abertura e o showreel ficam ocultos quando seus
-arquivos principais ainda não existem no build estático; fotografias ausentes
-recebem uma indicação visual explícita. O currículo só aparece quando o PDF
-original está presente.
+antes de enviar. A imagem de abertura só é usada quando seu arquivo existe no
+build estático. O currículo só aparece quando o PDF original está presente.
 
 Não substitua trabalhos reais por conteúdo sintético. Para cada trabalho,
 confirme autoria e associação entre título, arquivo, capa e formatos otimizados.
