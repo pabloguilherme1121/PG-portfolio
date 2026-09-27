@@ -38,7 +38,7 @@ export default function PortfolioAbout({
               </p>
               <div className="mt-9 max-w-2xl space-y-5 font-body text-base leading-8 text-[#b8c8df]">
                 <p>Antes de escolher tecnologia ou formato, identifico o problema, a pessoa que vai usar a solução e a informação que precisa ganhar clareza. Depois organizo a experiência, desenvolvo, testo e publico.</p>
-                <p>O Observatório é a prova mais completa desse processo: informação pública organizada em uma experiência navegável, com indicadores, dashboard e publicação real. O conteúdo audiovisual permanece como competência complementar para explicar, demonstrar e apresentar melhor uma solução.</p>
+                <p>O Observatório é a prova mais completa desse processo: informação pública organizada em uma experiência navegável, com indicadores, dashboard e publicação real.</p>
               </div>
 
               <aside className="human-note mt-9 max-w-2xl p-5 sm:p-6">
