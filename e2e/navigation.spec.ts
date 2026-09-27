@@ -68,7 +68,8 @@ test.describe("portfólio profissional", () => {
     await studio.getByRole("button", { name: /continuar.*escopo/i }).click();
     await form.locator('input[name="location"]').fill("Remoto");
 
-    await studio.getByRole("button", { name: /continuar.*contexto/i }).click();
+    await studio.getByRole("button", { name: /continuar.*requisitos/i }).click();
+    await studio.getByRole("button", { name: /continuar.*revisão/i }).click();
     await form.locator('textarea[name="briefing"]').fill("Precisamos centralizar dados dispersos e facilitar a consulta.");
     await page.reload();
 
