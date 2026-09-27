@@ -93,6 +93,8 @@ function readBriefingDraft(): BriefingDraft {
   }
 }
 
+type BriefingSeed = Partial<Pick<BriefingDraft, "service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing">>;
+
 type PortfolioContactProps = {
   whatsAppUrl: string;
   telegramUrl: string;
@@ -112,6 +114,8 @@ type PortfolioContactProps = {
   isStaticDeploy: boolean;
   briefingWhatsAppUrl: string | null;
   onBriefingFocusChange: (focused: boolean) => void;
+  embedded?: boolean;
+  initialBriefingSeed?: BriefingSeed | null;
 };
 
 export function PortfolioContact({
@@ -133,6 +137,8 @@ export function PortfolioContact({
   isStaticDeploy,
   briefingWhatsAppUrl,
   onBriefingFocusChange,
+  embedded = false,
+  initialBriefingSeed = null,
 }: PortfolioContactProps) {
   const today = new Date();
   const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -287,30 +293,50 @@ export function PortfolioContact({
     toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
   }
 
+  function applyBriefingSeed(detail: BriefingSeed, announce: boolean) {
+    const nextDraft = { ...readBriefingDraft(), ...briefingDraft, ...detail };
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+      setBriefingRevision((value) => value + 1);
+    });
+    try {
+      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+    } catch {
+      // A direção ainda é aplicada quando o armazenamento local está indisponível.
+    }
+    notifyBriefingProgress(nextDraft);
+    if (announce) {
+      toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
+    }
+  }
+
   useEffect(() => {
     const applySeed = (event: Event) => {
-      const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing">>>).detail;
+      const detail = (event as CustomEvent<BriefingSeed>).detail;
       if (!detail) return;
-      const nextDraft = { ...briefingDraft, ...detail };
-      flushSync(() => {
-        setBriefingDraft(nextDraft);
-        setBriefingRevision((value) => value + 1);
-      });
-      try {
-        window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
-      } catch {
-        // A direção ainda é aplicada quando o armazenamento local está indisponível.
-      }
-      notifyBriefingProgress(nextDraft);
-      toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
+      applyBriefingSeed(detail, true);
     };
 
     window.addEventListener("portfolio:briefing-seed", applySeed);
     return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
   }, [briefingDraft]);
 
+  useEffect(() => {
+    if (!initialBriefingSeed) return;
+    applyBriefingSeed(initialBriefingSeed, false);
+  }, [initialBriefingSeed]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || window.location.hash !== "#contato-briefing") return;
+    const frame = window.requestAnimationFrame(() => {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      briefingFormRef.current?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   return (
-    <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
+    <section id={embedded ? undefined : "contato"} className="archive-chapter relative overflow-hidden bg-[#070a10]">
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
       <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
         <div className="min-w-0 border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
