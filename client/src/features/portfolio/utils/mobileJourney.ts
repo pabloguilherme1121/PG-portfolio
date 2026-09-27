@@ -53,3 +53,16 @@ export function getMobileContextAction(route: MobileExperienceRoute) {
   if (route === "explorer") return { href: "#projetos", label: "projetos" } as const;
   return { href: "#diagnostico", label: "diagnóstico" } as const;
 }
+
+export function getMobilePrimaryAction(hasBriefingDraft: boolean) {
+  return hasBriefingDraft
+    ? { href: "#contato-briefing", label: "retomar", ariaLabel: "Retomar briefing salvo" } as const
+    : { href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" } as const;
+}
+
+export function getMobileJourneyHint(route: MobileExperienceRoute, hasBriefingDraft: boolean) {
+  if (hasBriefingDraft) return "briefing salvo · continue de onde parou";
+  if (route === "recruiter") return "perfil · provas · contato";
+  if (route === "explorer") return "projetos · cases · código";
+  return "1. diagnóstico · 2. briefing · 3. contato";
+}
