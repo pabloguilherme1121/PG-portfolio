@@ -26,10 +26,10 @@ export default function PortfolioProjectsOverview({
 }: PortfolioProjectsOverviewProps) {
   return (
     <>
-      <div className="flex flex-col justify-between gap-6 border-b border-white/[0.1] pb-9 sm:flex-row sm:items-end">
+      <div className="flex flex-col justify-between gap-5 border-b border-white/[0.1] pb-7 sm:gap-6 sm:pb-9 sm:flex-row sm:items-end">
         <div>
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#77a9fc]">Projetos selecionados</p>
-          <h2 className="mt-4 font-display text-[clamp(2.4rem,4.4vw,5rem)] font-medium leading-none tracking-[-0.06em] text-white">Provas de trabalho, não apenas peças.<br className="hidden sm:block" /> Processo, decisões e entrega.</h2>
+          <h2 className="mt-4 font-display text-[clamp(2.1rem,10vw,5rem)] font-medium leading-[0.95] tracking-[-0.055em] sm:leading-none sm:tracking-[-0.06em] text-white">Provas de trabalho, não apenas peças.<br className="hidden sm:block" /> Processo, decisões e entrega.</h2>
           <div className="mt-6 flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.13em] text-[#7795bf]"><img src={markUrl} alt="" width="20" height="20" loading="lazy" decoding="async" className="h-5 w-5 object-contain" /> PG // projetos & estudos de caso</div>
         </div>
         <div className="max-w-sm">
@@ -38,7 +38,7 @@ export default function PortfolioProjectsOverview({
         </div>
       </div>
 
-      <article id="observatorio" className="mt-8 scroll-mt-28 grid gap-6 border border-[#67e8f9]/30 bg-[#081a2e] p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
+      <article id="observatorio" className="mt-7 scroll-mt-28 grid gap-5 border border-[#67e8f9]/30 bg-[#081a2e] p-4 min-[360px]:p-5 sm:mt-8 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
@@ -52,18 +52,18 @@ export default function PortfolioProjectsOverview({
           </div>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
-          <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
-          <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#67e8f9]/35 px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
+          <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
+          <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
         </div>
       </article>
 
-      <div className="showroom-portrait-entry mt-8 grid gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
+      <div className="showroom-portrait-entry mt-7 grid gap-4 sm:mt-8 sm:gap-5 border-y border-[#67e8f9]/20 bg-[#07111f]/65 p-4 sm:grid-cols-[112px_1fr_auto] sm:items-center sm:p-5">
         <picture><source type="image/avif" srcSet={portraitResponsive.avif} sizes="112px" /><source type="image/webp" srcSet={portraitResponsive.webp} sizes="112px" /><img src={portraitUrl} alt="Retrato profissional de Pablo Guilherme no início do Showroom" width="720" height="900" loading="lazy" decoding="async" className="h-28 w-28 object-cover object-top" /></picture>
         <div><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</p><p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#c4d9ee]">O eixo principal é transformar problemas de informação e uso em produtos digitais claros. Conteúdo e audiovisual entram quando ajudam a explicar, demonstrar ou apresentar melhor a entrega.</p></div>
         <a href="#sobre" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">sobre mim <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" /></a>
       </div>
 
-      <section aria-labelledby="trabalhos-destaque-title" className="mt-8 border-y border-[#3b82f6]/25 bg-[#06172f]/55 py-6 sm:py-8">
+      <section aria-labelledby="trabalhos-destaque-title" className="mt-7 border-y border-[#3b82f6]/25 sm:mt-8 bg-[#06172f]/55 py-6 sm:py-8">
         <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6">
           <div>
             <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">destaques</p>
