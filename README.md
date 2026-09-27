@@ -8,7 +8,7 @@
 
 **[Abrir o portfólio](https://pabloguilherme1121.github.io/PG-portfolio/)** · **[Abrir o Observatório](https://pabloguilherme01.github.io/observatorio/#dashboard)**
 
-Portfólio profissional de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, conteúdo e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
+Portfólio profissional de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, dados e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
 
 O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma galeria: produto em produção, produto full-stack em evolução, decisões de interface, código verificável, testes automatizados e uma jornada de contato que transforma uma necessidade inicial em briefing estruturado.
 
@@ -20,9 +20,8 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
 - **Briefing Studio:** fluxo progressivo em quatro etapas, com autosave local, validação e resumo do contexto.
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
-- **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto, audiovisual e qualidade reunidos em uma matriz única de provas.
+- **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
-- **Briefing com início rápido:** três modelos editáveis pré-preenchem direção, escopo e contexto, mantendo os dados de contato sob controle do visitante.
 - **Pausa interativa opcional:** jogo da velha contra o PG Bot, com lógica local, placar e controles acessíveis, sem bloquear a jornada de conversão.
 - **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
 
@@ -134,7 +133,6 @@ Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mant�
 - [Portfólio publicado](https://pabloguilherme1121.github.io/PG-portfolio/)
 - [GitHub](https://github.com/pabloguilherme1121)
 - [Instagram pessoal](https://www.instagram.com/pablogui000/) · @pablogui000
-- [Instagram audiovisual](https://www.instagram.com/mpjstoryworks/) · @mpjstoryworks
 
 ## Licença
 
