@@ -132,8 +132,8 @@ test.describe("portfólio profissional", () => {
     await presets.getByRole("button", { name: /competir/i }).click();
     const advanced = game.locator('[data-arcade-advanced="true"]');
     await advanced.locator("summary").click();
-    await expect(game.getByRole("button", { name: /impossível/i })).toHaveAttribute("aria-pressed", "true");
-    await expect(game.getByRole("button", { name: /MD3/i })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: "impossível", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: "MD3", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await presets.getByRole("button", { name: /dupla/i }).click();
     await expect(game.getByRole("button", { name: /duas pessoas/i })).toHaveAttribute("aria-pressed", "true");
