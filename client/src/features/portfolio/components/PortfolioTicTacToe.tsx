@@ -173,7 +173,7 @@ export default function PortfolioTicTacToe() {
               </div>
               <div>
                 <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">símbolo do jogador 1</p>
-                <button type="button" onClick={changeMark} className={optionClass(true)} aria-label={`Jogar com ${playerMark}. Clique para trocar`}>jogar com {playerMark} · trocar</button>
+                <button type="button" onClick={changeMark} className={optionClass(true)} aria-label={`Jogar com o símbolo ${playerMark}. Clique para trocar`}>jogar com {playerMark} · trocar</button>
               </div>
             </div>
           </div>
