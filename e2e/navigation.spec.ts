@@ -100,8 +100,8 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const game = page.locator('[data-tic-tac-toe="true"]');
-    await expect(game).toBeHidden();
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await expect(game).toHaveCount(0);
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
     await game.scrollIntoViewIfNeeded();
     await expect(game).toBeVisible();
     await expect(game.getByRole("heading", { name: /jogo da velha/i })).toBeVisible();
@@ -122,11 +122,11 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade combina presets rápidos, controles avançados e modo local", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*jogo da velha/i }).click();
+    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     const presets = game.locator('[data-arcade-presets="true"]');
-    await expect(presets.getByRole("button")).toHaveCount(3);
+    await expect(presets.getByRole("button")).toHaveCount(4);
     await expect(presets.getByRole("button", { name: /rápido/i })).toHaveAttribute("aria-pressed", "true");
 
     await presets.getByRole("button", { name: /competir/i }).click();
@@ -134,6 +134,10 @@ test.describe("portfólio profissional", () => {
     await advanced.locator("summary").click();
     await expect(game.getByRole("button", { name: "impossível", exact: true })).toHaveAttribute("aria-pressed", "true");
     await expect(game.getByRole("button", { name: "MD3", exact: true })).toHaveAttribute("aria-pressed", "true");
+
+    await presets.getByRole("button", { name: /sobrevivência/i }).click();
+    await expect(game.getByRole("button", { name: "impossível", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: "MD5", exact: true })).toHaveAttribute("aria-pressed", "true");
 
     await presets.getByRole("button", { name: /dupla/i }).click();
     await expect(game.getByRole("button", { name: /duas pessoas/i })).toHaveAttribute("aria-pressed", "true");
@@ -165,6 +169,7 @@ test.describe("portfólio profissional", () => {
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
+    await expect(game.locator('[data-arcade-stats="true"]')).toContainText("60%");
     await expect(game.locator('[data-arcade-achievement="primeira-vitoria"]')).toBeVisible();
     await expect(game.locator('[data-arcade-achievement="trinca"]')).toBeVisible();
     await expect(game.locator('[data-arcade-achievement="invicto"]')).toBeVisible();
