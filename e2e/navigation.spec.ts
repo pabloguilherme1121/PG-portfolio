@@ -56,7 +56,7 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="delivery"]')).toHaveValue("Dashboard / interface");
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/consulta|decis/i);
     await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/dados|fontes|indicadores/i);
-    await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
+    await expect(form.locator('[data-briefing-progress="true"]')).not.toHaveText(/^0%/);
 
     await form.locator('input[name="name"]').fill("Visitante de teste");
     await form.locator('input[name="email"]').fill("visitante@example.com");
@@ -107,7 +107,7 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('textarea[name="success"]')).toHaveValue(/contato|orçamento|cadastro/i);
     await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
     await expect(form.locator('select[name="deadline"]')).toHaveValue("");
-    await expect(form.locator('[data-briefing-progress="true"]')).not.toContainText("0%");
+    await expect(form.locator('[data-briefing-progress="true"]')).not.toHaveText(/^0%/);
   });
 
   test("jogo da velha oferece pausa interativa acessível e reiniciável", async ({ page }) => {
