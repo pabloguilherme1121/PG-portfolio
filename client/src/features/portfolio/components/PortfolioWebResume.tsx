@@ -4,10 +4,11 @@ import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalyti
 type PortfolioWebResumeProps = {
   resumeAvailable: boolean;
   resumeUrl: string;
+  embedded?: boolean;
 };
 
 
-export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: PortfolioWebResumeProps) {
+export default function PortfolioWebResume({ resumeAvailable, resumeUrl, embedded = false }: PortfolioWebResumeProps) {
   function handlePrint() {
     trackPortfolioEvent("professional_resume_printed");
     window.print();
@@ -15,7 +16,7 @@ export default function PortfolioWebResume({ resumeAvailable, resumeUrl }: Portf
 
   return (
     <section
-      id="curriculo-web"
+      id={embedded ? undefined : "curriculo-web"}
       data-web-resume="true"
       className="resume-print-root archive-chapter scroll-mt-24 border-t border-white/[0.07] bg-[#f5fbff] text-[#102033]"
       aria-labelledby="web-resume-title"
