@@ -14,9 +14,9 @@ export default function PortfolioCaseStudies() {
       </div>
       <div className="mt-8 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-2 xl:grid-cols-3">
         {caseStudies.map((study) => (
-          <article key={study.id} data-case-study="true" className="relative bg-[#071326] p-6 sm:p-8">
+          <article key={study.id} data-case-study="true" className="relative bg-[#071326] p-5 sm:p-8">
             <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
-            <h4 className="mt-7 font-display text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
+            <h4 className="mt-6 font-display text-[1.75rem] leading-tight sm:mt-7 sm:text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
             <dl className="mt-6 grid gap-5 font-body text-sm leading-7 text-[#bcd9e7]">
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">contexto</dt><dd className="mt-1">{study.context}</dd></div>
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">como resolvi</dt><dd className="mt-1">{study.method}</dd></div>
