@@ -575,7 +575,7 @@ test.describe("portfólio profissional", () => {
       await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(3);
       await game.locator('[data-arcade-advanced="true"] summary').click();
 
-      for (const name of [/contra o bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
+      for (const name of [/contra (o )?bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
         const button = game.getByRole("button", { name }).first();
         await expect(button).toBeVisible();
         const box = await button.boundingBox();
@@ -600,7 +600,7 @@ test.describe("portfólio profissional", () => {
     await expect(mobileNavigation).toBeVisible();
     await expect(mobileNavigation.getByRole("link", { name: /início/i })).toBeVisible();
     await expect(mobileNavigation.getByRole("link", { name: /projetos/i })).toBeVisible();
-    await expect(mobileNavigation.getByRole("link", { name: /serviços/i })).toBeVisible();
+    await expect(mobileNavigation.getByRole("link", { name: "03 / serviços", exact: true })).toBeVisible();
     await expect(mobileNavigation.getByRole("link", { name: /contato/i })).toBeVisible();
     expect(await mobileNavigation.getByRole("link").count()).toBeLessThanOrEqual(7);
 
