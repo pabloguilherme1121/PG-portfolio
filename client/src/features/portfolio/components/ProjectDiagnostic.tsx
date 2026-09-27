@@ -121,13 +121,13 @@ export default function ProjectDiagnostic() {
         className="pointer-events-none absolute -right-24 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl"
       />
 
-      <div className="relative mx-auto max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
+      <div className="relative mx-auto max-w-[1440px] px-4 py-12 min-[360px]:px-5 min-[360px]:py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
         <div className="grid gap-8 border-b border-white/10 pb-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
           <div>
             <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
               Project Lens · experiência interativa
             </p>
-            <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.6rem,5vw,5.7rem)] font-medium leading-[0.9] tracking-[-0.065em] text-white">
+            <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.25rem,10vw,5.7rem)] font-medium leading-[0.94] tracking-[-0.055em] sm:leading-[0.9] sm:tracking-[-0.065em] text-white">
               Transforme uma ideia vaga em uma rota de projeto.
             </h2>
           </div>
@@ -159,7 +159,7 @@ export default function ProjectDiagnostic() {
                     setSelectedId(id);
                     trackPortfolioEvent("diagnostic_option_selected", { diagnosticPath: id });
                   }}
-                  className={`group relative min-h-[118px] overflow-hidden border px-4 py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:px-5 ${
+                  className={`group relative min-h-[104px] overflow-hidden border px-3.5 py-3.5 min-[360px]:px-4 min-[360px]:py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:px-5 ${
                     active
                       ? "border-[#67e8f9] bg-[#0b2746] shadow-[0_18px_50px_rgba(56,189,248,0.16)]"
                       : "border-white/10 bg-[#07101e]/70 hover:border-[#67e8f9]/50 hover:bg-[#091b30]"
@@ -193,7 +193,7 @@ export default function ProjectDiagnostic() {
             })}
           </div>
 
-          <div className="relative overflow-hidden border border-[#67e8f9]/30 bg-[#07111f]/95 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8">
+          <div className="relative overflow-hidden border border-[#67e8f9]/30 bg-[#07111f]/95 p-4 min-[360px]:p-5 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8">
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/30" aria-hidden="true" />
             <div className="flex items-center justify-between gap-4 border-b border-white/10 pb-4">
               <div>
