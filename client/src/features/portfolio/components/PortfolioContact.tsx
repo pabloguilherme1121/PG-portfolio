@@ -408,7 +408,7 @@ export function PortfolioContact({
           </div>
         </div>
 
-        <div className="min-w-0 px-5 py-16 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
+        <div className="min-w-0 px-4 py-14 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
           <form
             key={briefingRevision}
             ref={briefingFormRef}
@@ -420,11 +420,11 @@ export function PortfolioContact({
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
             className="max-w-2xl scroll-mt-24"
           >
-            <div data-briefing-header="true" className="mb-8 border border-[#67e8f9]/20 bg-[#07182a]/80 p-4 sm:p-5">
+            <div data-briefing-header="true" className="mb-6 border border-[#67e8f9]/20 bg-[#07182a]/80 p-3.5 sm:mb-8 sm:p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
-                  <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Construa um briefing que já começa útil.</h3>
+                  <h3 className="mt-2 font-display text-[1.35rem] font-medium leading-tight tracking-[-0.04em] text-white sm:text-2xl">Construa um briefing que já começa útil.</h3>
                 </div>
                 <div className="sm:text-right">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7892b8]">qualidade do contexto</p>
@@ -435,7 +435,7 @@ export function PortfolioContact({
               <div className="mt-4 h-1.5 overflow-hidden bg-white/10" aria-hidden="true">
                 <span className="block h-full origin-left bg-[#38bdf8] transition-transform duration-300 motion-reduce:transition-none" style={{ transform: `scaleX(${briefingProgress / 100})` }} />
               </div>
-              <ol className="mt-5 grid gap-px bg-white/10 sm:grid-cols-5" aria-label="Etapas do briefing">
+              <ol className="mt-5 grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-5" aria-label="Etapas do briefing">
                 {briefingSteps.map((step, index) => {
                   const active = index === briefingStep;
                   const completed = index < briefingStep;
@@ -443,7 +443,7 @@ export function PortfolioContact({
                     <li
                       key={step.id}
                       aria-current={active ? "step" : undefined}
-                      className={`bg-[#07111f] px-3 py-3 ${active ? "ring-1 ring-inset ring-[#67e8f9]" : ""}`}
+                      className={`min-w-0 bg-[#07111f] px-2.5 py-2.5 sm:px-3 sm:py-3 ${active ? "ring-1 ring-inset ring-[#67e8f9]" : ""}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <span className={`font-mono text-[8px] uppercase tracking-[0.12em] ${active || completed ? "text-[#67e8f9]" : "text-[#5f7695]"}`}>
@@ -474,7 +474,7 @@ export function PortfolioContact({
                 data-briefing-step="contact"
                 tabIndex={-1}
                 hidden={briefingStep !== 0}
-                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
               >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">01 · contato</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
@@ -493,7 +493,7 @@ export function PortfolioContact({
                 data-briefing-step="direction"
                 tabIndex={-1}
                 hidden={briefingStep !== 1}
-                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
               >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">02 · direção</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
@@ -550,7 +550,7 @@ export function PortfolioContact({
                 data-briefing-step="scope"
                 tabIndex={-1}
                 hidden={briefingStep !== 2}
-                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+                className="border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
               >
                 <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">03 · escopo</legend>
                 <div className="grid gap-7 sm:grid-cols-2">
@@ -608,7 +608,7 @@ export function PortfolioContact({
                 reviewHidden={briefingStep !== 4}
               />
             
-              <div className="grid gap-3 border border-white/10 bg-[#07111f]/85 p-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+              <div className="grid gap-3 border border-white/10 bg-[#07111f]/85 p-3.5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:p-4">
                 <button
                   type="button"
                   onClick={() => moveBriefingStep(briefingStep - 1)}
@@ -642,7 +642,7 @@ export function PortfolioContact({
 
             </div>
 
-            <aside data-briefing-summary="true" className="mt-7 border border-[#67e8f9]/25 bg-[#06172f]/80 p-5">
+            <aside data-briefing-summary="true" className="mt-7 border border-[#67e8f9]/25 bg-[#06172f]/80 p-4 sm:p-5">
               <div className="flex items-start gap-3">
                 <ClipboardCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#67e8f9]" aria-hidden="true" />
                 <div className="min-w-0">
