@@ -37,7 +37,7 @@ type ConversionProperties = Partial<{
   diagnosticPath: "presence" | "data" | "launch";
   diagnosticStage: "idea" | "evolve" | "ready";
   proofId: "produto" | "qualidade" | "briefing";
-  briefingStep: "contact" | "direction" | "scope" | "context";
+  briefingStep: "contact" | "direction" | "scope" | "requirements" | "review";
   caseId: string;
   evidenceType: "live" | "code" | "media";
   serviceId: string;
