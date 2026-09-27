@@ -18,7 +18,7 @@ export default function BriefingProfessionalLayer({
         data-briefing-step="requirements"
         tabIndex={-1}
         hidden={requirementsHidden}
-        className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+        className="border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
         <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           04 · requisitos
@@ -105,7 +105,7 @@ export default function BriefingProfessionalLayer({
         data-briefing-step="review"
         tabIndex={-1}
         hidden={reviewHidden}
-        className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
+        className="border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
         <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           05 · contexto e revisão
