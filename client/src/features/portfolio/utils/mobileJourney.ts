@@ -73,3 +73,10 @@ export function getMobileJourneyHint(route: MobileExperienceRoute, hasBriefingDr
   if (route === "explorer") return "projetos · cases · código";
   return "1. diagnóstico · 2. briefing · 3. contato";
 }
+
+
+export function getMobileSecondaryShortcut(route: MobileExperienceRoute) {
+  if (route === "recruiter") return { href: "#curriculo-web", label: "currículo" } as const;
+  if (route === "explorer") return { href: "#pg-lab", label: "PG Arcade" } as const;
+  return { href: "#servicos", label: "serviços" } as const;
+}
