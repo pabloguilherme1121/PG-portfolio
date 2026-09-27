@@ -1331,3 +1331,88 @@ html.theme-transitioning .arquivo-page * {
     box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
   }
 }
+
+
+/* Mobile product polish inspired by the approved mockup. */
+[data-mobile-hero-proof-rail="true"] {
+  backdrop-filter: blur(14px);
+  box-shadow: 0 14px 36px rgba(2, 17, 31, 0.22);
+}
+
+[data-mobile-menu-profile="true"] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-mobile-menu-profile="true"]::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(103, 232, 249, 0.72), transparent);
+  pointer-events: none;
+}
+
+[data-arcade-preset-card="true"] {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+[data-arcade-preset-card="true"][aria-pressed="true"] {
+  border-color: rgba(103, 232, 249, 0.92);
+  background: linear-gradient(145deg, #22d3ee, #38bdf8);
+  color: #02111f;
+  box-shadow: 0 10px 28px rgba(56, 189, 248, 0.22);
+}
+
+[data-arcade-preset-card="true"][aria-pressed="true"] span:last-child {
+  color: #0c4a5b !important;
+}
+
+@media (max-width: 639px) {
+  [data-mobile-dock="true"] {
+    border-radius: 18px;
+    border-color: rgba(103, 232, 249, 0.28);
+    background:
+      linear-gradient(180deg, rgba(8, 24, 39, 0.97), rgba(4, 14, 27, 0.98));
+    box-shadow:
+      0 20px 55px rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  [data-mobile-dock-primary="true"] {
+    min-height: 56px !important;
+    transform: translateY(-5px);
+    border-radius: 14px;
+    box-shadow:
+      0 10px 30px rgba(56, 189, 248, 0.32),
+      0 0 0 1px rgba(165, 243, 252, 0.12);
+  }
+
+  [data-mobile-dock-primary="true"]:active {
+    transform: translateY(-3px) scale(0.98);
+  }
+
+  [data-mobile-menu-profile="true"] {
+    background:
+      radial-gradient(circle at 12% 10%, rgba(56, 189, 248, 0.13), transparent 40%),
+      linear-gradient(135deg, rgba(10, 39, 70, 0.94), rgba(7, 19, 38, 0.96));
+  }
+
+  [data-tic-tac-toe="true"] [data-arcade-presets="true"] {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding-top: 0.25rem;
+    background: linear-gradient(180deg, #06111e 78%, rgba(6, 17, 30, 0));
+  }
+
+  [data-tic-tac-toe="true"] [data-game-cell="true"] {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-mobile-dock-primary="true"] {
+    transform: none;
+  }
+}
