@@ -98,6 +98,7 @@ export default function PortfolioExperienceHub() {
       className="experience-hub-surface archive-chapter relative overflow-hidden border-y border-white/[0.08] bg-[#050d18]"
     >
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
+      <div className="experience-pointer-glow pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl" aria-hidden="true" />
 
       <div className="relative mx-auto max-w-[1440px] px-4 py-12 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
