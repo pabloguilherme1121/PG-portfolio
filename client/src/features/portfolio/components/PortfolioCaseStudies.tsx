@@ -1,6 +1,6 @@
 import { caseStudies } from "@/features/portfolio/portfolioData";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
-import { ArrowUpRight, Github, Play } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
 
 export default function PortfolioCaseStudies() {
   return (
@@ -12,7 +12,7 @@ export default function PortfolioCaseStudies() {
         </div>
         <p className="max-w-sm font-body text-sm leading-7 text-[#accddd]">Cada estudo resume o que precisava ser resolvido, qual caminho foi escolhido e o que a entrega comprova.</p>
       </div>
-      <div className="mt-6 grid gap-px sm:mt-8 bg-cyan-100/[0.1] lg:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-px sm:mt-8 bg-cyan-100/[0.1] lg:grid-cols-2">
         {caseStudies.map((study) => (
           <article key={study.id} data-case-study="true" className="relative min-w-0 bg-[#071326] p-4 min-[360px]:p-5 sm:p-8">
             <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
@@ -27,7 +27,7 @@ export default function PortfolioCaseStudies() {
               <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">evidência verificável</p>
               <div className="mt-3 grid gap-2">
                 {study.proofs.map((proof) => {
-                  const Icon = proof.type === "code" ? Github : proof.type === "media" ? Play : ArrowUpRight;
+                  const Icon = proof.type === "code" ? Github : ArrowUpRight;
                   return (
                     <a
                       key={proof.label}
