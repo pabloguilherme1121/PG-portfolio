@@ -100,8 +100,15 @@ test.describe("portfólio profissional", () => {
     const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
     await expect(sitePreset).toBeEnabled();
     await sitePreset.click();
-    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
-
+    await expect.poll(() => page.evaluate(() => {
+      const raw = window.localStorage.getItem("pablo-portfolio-briefing-draft");
+      if (!raw) return "";
+      try {
+        return JSON.parse(raw).service ?? "";
+      } catch {
+        return "";
+      }
+    })).toBe("Site ou landing page");
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
