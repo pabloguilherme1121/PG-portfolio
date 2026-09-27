@@ -145,7 +145,7 @@ test.describe("portfólio profissional", () => {
     await expect(game.getByRole("button", { name: /fácil/i })).toBeVisible();
     await expect(game.getByRole("button", { name: /impossível/i })).toBeVisible();
     await expect(game.getByRole("button", { name: /melhor de 3/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /jogar com o/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /jogar com.*símbolo/i })).toBeVisible();
 
     await game.getByRole("button", { name: /duas pessoas/i }).click();
     const cells = game.locator('[data-game-cell="true"]');
