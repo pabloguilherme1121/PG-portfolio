@@ -237,40 +237,6 @@ export function PortfolioContact({
     }
   }
 
-  function applyBriefingPreset(preset: BriefingPreset) {
-    const form = briefingFormRef.current;
-    const formData = form ? new FormData(form) : null;
-    const currentDraft = formData
-      ? Object.fromEntries(
-          briefingFieldNames.map((field) => [field, String(formData.get(field) || "")]),
-        ) as BriefingDraft
-      : briefingDraft;
-    const nextDraft = {
-      ...briefingDefaultValues,
-      ...currentDraft,
-      ...preset.values,
-    };
-
-    try {
-      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
-    } catch {
-      // O preset continua funcional mesmo quando o armazenamento local está indisponível.
-    }
-    // Mantém o formulário montado durante o clique. O useLayoutEffect sincroniza
-    // os campos não controlados logo após o draft mudar, sem abrir uma janela
-    // de remount que poderia perder a persistência do preset.
-    flushSync(() => {
-      setBriefingDraft(nextDraft);
-    });
-
-    trackBriefingStarted();
-    trackPortfolioEvent("briefing_preset_selected", { briefingPreset: preset.id });
-
-    toast.success("Modelo aplicado", {
-      description: "Direção, escopo e contexto foram pré-preenchidos. Revise a rota e ajuste o que precisar.",
-    });
-  }
-
   function validateBriefingStep(stepIndex: number) {
     const form = briefingFormRef.current;
     if (!form) return false;
@@ -468,10 +434,7 @@ export function PortfolioContact({
                 <p className="font-body text-xs leading-5 text-[#8fb6c9]">O rascunho é salvo apenas neste dispositivo para você não perder o preenchimento. Nada é enviado enquanto você não concluir a ação final.</p>
               </div>
             </div>
-
-            <BriefingQuickStart onSelect={applyBriefingPreset} />
-
-            <label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
+<label aria-hidden="true" className="absolute -left-[10000px] top-auto h-px w-px overflow-hidden">
               <span>Website</span>
               <input tabIndex={-1} autoComplete="off" name="website" defaultValue="" />
             </label>
