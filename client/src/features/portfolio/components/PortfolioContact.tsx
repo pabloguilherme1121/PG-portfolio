@@ -37,6 +37,12 @@ type BlockedDate = { dateKey: string };
 
 type BriefingDraft = Record<string, string>;
 
+const briefingDefaultValues: BriefingDraft = {
+  location: "Remoto / online",
+  deadline: "",
+  budget: "Preciso de orientação",
+};
+
 const briefingDraftStorageKey = "pablo-portfolio-briefing-draft";
 const briefingFieldNames = [
   "name",
