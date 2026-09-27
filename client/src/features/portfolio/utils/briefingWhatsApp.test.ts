@@ -16,6 +16,13 @@ describe("buildBriefingWhatsAppUrl", () => {
     data.set("deadline", "1 a 2 meses");
     data.set("budget", "R$ 3.000 a R$ 6.000");
     data.set("success", "Equipe encontra o indicador certo sem apoio.");
+    data.set("contentStatus", "Conteúdo parcialmente pronto");
+    data.set("visualIdentity", "Identidade visual existente");
+    data.set("pagesScreens", "Dashboard executivo; detalhe do indicador; filtros");
+    data.set("features", "Filtros, exportação e estados vazios");
+    data.set("integrations", "API interna e autenticação");
+    data.set("qualityPriority", "Performance e acessibilidade");
+    data.set("postLaunch", "Evolução contínua");
     data.set("briefing", "Hoje os dados estão espalhados em planilhas.");
 
     const url = new URL(buildBriefingWhatsAppUrl("5561992903029", data));
@@ -29,6 +36,12 @@ describe("buildBriefingWhatsAppUrl", () => {
     expect(message).toContain("Entrega: Dashboard / interface");
     expect(message).toContain("Prazo: 1 a 2 meses");
     expect(message).toContain("Critério de sucesso: Equipe encontra o indicador certo sem apoio.");
+    expect(message).toContain("REQUISITOS");
+    expect(message).toContain("Conteúdo: Conteúdo parcialmente pronto");
+    expect(message).toContain("Telas / páginas: Dashboard executivo; detalhe do indicador; filtros");
+    expect(message).toContain("Integrações: API interna e autenticação");
+    expect(message).toContain("Prioridade de qualidade: Performance e acessibilidade");
+    expect(message).toContain("Pós-lançamento: Evolução contínua");
     expect(message).not.toContain("Referências:");
   });
 
