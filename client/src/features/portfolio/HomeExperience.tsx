@@ -75,8 +75,6 @@ import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedba
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
-  comparisonPairs,
-  optimizedLightboxImages,
   predefinedOrderProfiles,
   repositories,
   sortOptions,
@@ -320,7 +318,6 @@ export default function Home() {
   const [lightboxImageLoading, setLightboxImageLoading] = useState(true);
   const [lightboxImageError, setLightboxImageError] = useState(false);
   const [lightboxImageAttempt, setLightboxImageAttempt] = useState(0);
-  const [lightboxComparisonPosition, setLightboxComparisonPosition] = useState(50);
   const pinchStartDistanceRef = useRef(0);
   const pinchStartZoomRef = useRef(1);
   const pinchWasActiveRef = useRef(false);
@@ -346,7 +343,6 @@ export default function Home() {
   const lightboxProjectIndex = lightboxProject ? lightboxProjects.findIndex((repository) => repository.id === lightboxProject.id) : -1;
   const lightboxNextProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex + 1) % lightboxProjects.length] : null;
   const lightboxPreviousProject = lightboxProjectIndex >= 0 ? lightboxProjects[(lightboxProjectIndex - 1 + lightboxProjects.length) % lightboxProjects.length] : null;
-  const lightboxComparison = lightboxProject ? comparisonPairs[lightboxProject.id] ?? null : null;
   const shouldHideContactFloat = Boolean(lightboxProjectId || selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
 
   useEffect(() => {
@@ -387,7 +383,6 @@ export default function Home() {
     setLightboxImageLoading(Boolean(lightboxProject));
     setLightboxImageError(false);
     setLightboxImageAttempt(0);
-    setLightboxComparisonPosition(50);
     [lightboxNextProject, lightboxPreviousProject].forEach((project) => {
       if (!project?.cover) return;
       const preloader = new Image();
@@ -424,28 +419,6 @@ export default function Home() {
       window.screen.orientation?.removeEventListener?.("change", handleViewportChange);
     };
   }, [lightboxProjectId, lightboxZoom]);
-
-  const openProjectLightbox = (projectId: string, event: MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setShowLightboxMobileDetails(false);
-    lightboxReturnFocusRef.current = event.currentTarget;
-    setLightboxClosing(false);
-    setLightboxFullscreenNotice("");
-    setLightboxSwipeDirection(null);
-    try {
-      const swipeHintSeen = window.localStorage.getItem("arquivo-profundo-swipe-hint-seen") === "true";
-      if (!swipeHintSeen) {
-        setShowSwipeHint(true);
-        window.localStorage.setItem("arquivo-profundo-swipe-hint-seen", "true");
-        window.setTimeout(() => setShowSwipeHint(false), 3200);
-      }
-    } catch {
-      setShowSwipeHint(true);
-      window.setTimeout(() => setShowSwipeHint(false), 3200);
-    }
-    trackPortfolioEvent("project_opened", { projectId, surface: "lightbox" });
-    setLightboxProjectId(projectId);
-  };
 
   const closeProjectLightbox = () => {
     if (lightboxClosing) return;
@@ -1256,13 +1229,11 @@ export default function Home() {
     window.setTimeout(() => { setLightboxShareStatus("idle"); setLightboxCopiedAction(null); }, 2600);
   }
 
-  function downloadLightboxImage(format: "original" | "webp" | "avif") {
+  function downloadLightboxImage() {
     if (!lightboxProject?.cover) return;
     const safeName = lightboxProject.name.toLocaleLowerCase("pt-BR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "imagem";
-    const optimized = optimizedLightboxImages[lightboxProject.cover];
-    const source = format === "webp" ? optimized?.webp : format === "avif" ? optimized?.avif : lightboxProject.cover;
-    if (!source) return;
-    const extension = format === "original" ? source.split(".").pop()?.split("?")[0] || "jpg" : format;
+    const source = lightboxProject.cover;
+    const extension = source.split(".").pop()?.split("?")[0] || "jpg";
     const anchor = document.createElement("a");
     anchor.href = source;
     anchor.download = `pablo-${safeName}.${extension}`;
@@ -1271,7 +1242,7 @@ export default function Home() {
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
-    trackPortfolioEvent("download_project", { format, projectId: lightboxProject.id });
+    trackPortfolioEvent("download_project", { format: "original", projectId: lightboxProject.id });
   }
 
   async function copyLightboxProjectContext() {
@@ -1869,7 +1840,7 @@ export default function Home() {
                   <button type="button" data-tooltip="Compartilhar usando o menu do seu dispositivo" onClick={shareLightboxProject} className="inline-flex min-h-11 items-center gap-2 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto"><Share2 className="h-3.5 w-3.5" aria-hidden="true" /><span className="hidden sm:inline">compartilhar</span></button>
                 </div>
                 <details data-lightbox-more-actions="true" className="group relative col-span-full sm:contents"><summary className="inline-flex min-h-11 w-full cursor-pointer list-none items-center justify-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"><span>mais ações</span><ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180" aria-hidden="true" /></summary><div className="hidden gap-2 group-open:grid sm:flex sm:flex-wrap sm:justify-end">
-                  <details className="relative"><summary data-tooltip="Escolha original, WebP ou AVIF otimizado" title="Escolha original, WebP ou AVIF otimizado" className="inline-flex min-h-11 cursor-pointer list-none items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></summary><div className="absolute right-0 top-11 z-30 min-w-44 border border-white/15 bg-[#07101e] p-1 shadow-[0_14px_35px_rgba(0,0,0,0.35)]"><button type="button" onClick={() => downloadLightboxImage("original")} aria-label={`Baixar imagem original de ${lightboxProject.name}`} className="block min-h-11 w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">original</button><button type="button" onClick={() => downloadLightboxImage("webp")} aria-label={`Baixar ${lightboxProject.name} em WebP otimizado`} disabled={!optimizedLightboxImages[lightboxProject.cover]?.webp} className="block min-h-11 w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">WebP otimizado</button><button type="button" onClick={() => downloadLightboxImage("avif")} aria-label={`Baixar ${lightboxProject.name} em AVIF otimizado`} disabled={!optimizedLightboxImages[lightboxProject.cover]?.avif} className="block min-h-11 w-full px-3 py-2 text-left font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] hover:bg-[#0b2746] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">AVIF otimizado</button></div></details>
+                  <button type="button" data-tooltip="Baixar a imagem publicada" title="Baixar imagem" onClick={downloadLightboxImage} aria-label={`Baixar imagem original de ${lightboxProject.name}`} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-3.5 w-3.5" aria-hidden="true" /><span>baixar imagem</span></button>
                   <button type="button" data-tooltip={lightboxCopiedAction === "link" ? "Link copiado" : "Copiar link do projeto"} onClick={copyLightboxProjectLink} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link do projeto" title={lightboxCopiedAction === "link" ? "Copiado!" : "Copiar link"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "link" ? "Copiado!" : "copiar link"}</span></button>
                   <button type="button" data-tooltip={lightboxCopiedAction === "context" ? "Link e legenda copiados" : "Copiar link e legenda expandida"} onClick={copyLightboxProjectContext} className="inline-flex min-h-11 items-center gap-2 border border-white/15 bg-[#06172f]/80 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#c8e5f0] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Copiar link e legenda expandida" title={lightboxCopiedAction === "context" ? "Copiado!" : "Copiar link e legenda"}><Copy className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxCopiedAction === "context" ? "Copiado!" : "copiar contexto"}</span></button>
                   <button type="button" data-tooltip="Abrir o WhatsApp com o link do projeto" onClick={shareLightboxToWhatsApp} disabled={Boolean(lightboxRedirectingChannel)} className="inline-flex min-h-11 items-center gap-2 border border-[#25d366]/35 bg-[#07351f]/70 px-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#b8ffd0] transition-colors hover:bg-[#0b5d35] disabled:cursor-wait disabled:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]" aria-label="Compartilhar projeto no WhatsApp" title="Abrir o WhatsApp com o link deste projeto"><MessageCircle className="h-3.5 w-3.5" aria-hidden="true" /><span>{lightboxRedirectingChannel === "whatsapp" ? "Redirecionando..." : "WhatsApp"}</span></button>
@@ -1882,7 +1853,7 @@ export default function Home() {
             </div>
             <button type="button" data-lightbox-mobile-details-toggle="true" onClick={() => setShowLightboxMobileDetails((open) => !open)} aria-expanded={showLightboxMobileDetails} className="flex min-h-11 w-full items-center justify-between border-t border-white/10 bg-[#06101e] px-5 py-3 text-left font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:hidden"><span>{showLightboxMobileDetails ? "ocultar contexto e miniaturas" : "ver contexto e miniaturas"}</span><ChevronDown className={`h-4 w-4 transition-transform duration-200 ${showLightboxMobileDetails ? "rotate-180" : ""}`} aria-hidden="true" /></button>
             <section className={`${showLightboxMobileDetails ? "block" : "hidden"} sm:block border-t border-white/10 bg-[#06101e] px-5 py-4 sm:px-7`} aria-label={`Legenda expandida de ${lightboxProject.name}`}><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">leitura do projeto</p><div className="mt-3 grid gap-4 sm:grid-cols-3"><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">papel</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.role || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">processo</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.process || "Informação não registrada."}</p></div><div><p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#87b8c9]">resultado</p><p className="mt-1 font-body text-xs leading-5 text-[#c8e5f0]">{lightboxProject.result || "Informação não registrada."}</p></div></div></section>
-            {lightboxProject.technologies.includes("Interface") && (lightboxComparison ? <section className="border-t border-white/10 bg-[#050b15] px-5 py-4 sm:px-7" aria-label={`Comparação antes e depois de ${lightboxProject.name}`}><div className="flex items-end justify-between gap-3"><div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">comparação visual</p><p className="mt-1 font-body text-xs text-[#c8e5f0]">Arraste o controle para comparar antes e depois.</p></div><span className="font-mono text-[9px] text-[#9eb5d2]">{lightboxComparisonPosition}%</span></div><div className="relative mt-3 aspect-video overflow-hidden border border-white/15 bg-[#030812]"><img src={lightboxComparison.before} alt="Antes" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-y-0 left-0 overflow-hidden" style={{ width: `${lightboxComparisonPosition}%` }}><img src={lightboxComparison.after} alt="Depois" className="h-full w-full max-w-none object-cover" style={{ width: `${100 / (lightboxComparisonPosition / 100)}%` }} /></div><span className="pointer-events-none absolute left-3 top-3 bg-[#030812]/80 px-2 py-1 font-mono text-[8px] uppercase tracking-[0.1em] text-white">antes / depois</span><input type="range" min="0" max="100" value={lightboxComparisonPosition} onChange={(event) => setLightboxComparisonPosition(Number(event.target.value))} aria-label="Posição da comparação antes e depois" className="absolute inset-x-3 bottom-3 z-10 accent-[#67e8f9]" /></div></section> : <section className="border-t border-white/10 bg-[#050b15] px-5 py-4 sm:px-7" aria-label="Comparação antes e depois indisponível"><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">comparação visual</p><p className="mt-2 font-body text-xs leading-5 text-[#9fb7ca]">Este projeto ainda não possui um par antes/depois real publicado. O comparador será habilitado quando as duas imagens estiverem disponíveis.</p></section>)}
+            
             <div className={`${showLightboxMobileDetails ? "block" : "hidden"} sm:block shrink-0 border-t border-white/10 bg-[#050b15] px-4 py-3 sm:px-6`} role="group" aria-label="Miniaturas dos projetos">
               <div className="flex gap-2 overflow-x-auto pb-1" role="list">
                 {lightboxProjects.map((project) => {
