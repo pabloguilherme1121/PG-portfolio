@@ -237,7 +237,12 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    setBriefingDraft(nextDraft);
+    // Commit the draft before touching uncontrolled form fields. React may reconcile
+    // defaultValue props after an ordinary batched update and overwrite an imperative
+    // value assignment, which made quick-start presets intermittently appear to do nothing.
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+    });
     for (const [name, value] of Object.entries(preset.values)) {
       const field = form.elements.namedItem(name);
       if (
