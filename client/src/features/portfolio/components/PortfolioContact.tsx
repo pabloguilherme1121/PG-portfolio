@@ -239,20 +239,8 @@ export function PortfolioContact({
 
     flushSync(() => {
       setBriefingDraft(nextDraft);
+      setBriefingRevision((value) => value + 1);
     });
-    const activeForm = briefingFormRef.current ?? form;
-    for (const [name, value] of Object.entries(preset.values)) {
-      const field = activeForm.elements.namedItem(name);
-      if (
-        field instanceof HTMLInputElement
-        || field instanceof HTMLTextAreaElement
-        || field instanceof HTMLSelectElement
-      ) {
-        field.value = value;
-        field.dispatchEvent(new Event("input", { bubbles: true }));
-        field.dispatchEvent(new Event("change", { bubbles: true }));
-      }
-    }
     try {
       window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
     } catch {
