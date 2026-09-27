@@ -47,6 +47,7 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
             data-briefing-preset="true"
             onClick={() => onSelect(preset)}
             disabled={!interactive}
+            data-briefing-interactive={interactive ? "true" : "false"}
             aria-disabled={!interactive}
             aria-label={`Usar modelo ${preset.title}`}
             className="group min-w-0 min-h-[116px] border border-white/10 bg-[#07111f] p-3.5 sm:min-h-[132px] sm:p-4 text-left transition-[border-color,background-color,transform] hover:-translate-y-0.5 hover:border-[#67e8f9]/50 hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none disabled:cursor-wait disabled:opacity-60"
