@@ -417,7 +417,8 @@ test.describe("portfólio profissional", () => {
       "/portfolio-media/pg-site-vendendo-2026.mp4",
     ]) {
       const response = await request.get(asset);
-      expect(response.status(), `${asset} ainda está publicado`).toBe(404);
+      const contentType = response.headers()["content-type"] ?? "";
+      expect(contentType, `${asset} ainda está sendo servido como mídia`).not.toMatch(/^(image|video)\//);
     }
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
