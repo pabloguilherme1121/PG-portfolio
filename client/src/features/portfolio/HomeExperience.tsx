@@ -209,6 +209,7 @@ export default function Home() {
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
+  const [deferredContactReady, setDeferredContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const [contactHashRequested, setContactHashRequested] = useState(() =>
     typeof window !== "undefined" && (window.location.hash === "#contato" || window.location.hash === "#contato-briefing"),
@@ -314,7 +315,7 @@ export default function Home() {
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
-  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed);
+  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || deferredContactReady;
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -324,6 +325,24 @@ export default function Home() {
     connection.addEventListener("change", syncNetworkPreference);
     return () => connection.removeEventListener?.("change", syncNetworkPreference);
   }, []);
+
+  useEffect(() => {
+    if (avoidSpeculativePreload || deferredContactReady) return;
+
+    let timer: number | null = null;
+    const scheduleDeferredContact = () => {
+      if (timer !== null) return;
+      timer = window.setTimeout(() => setDeferredContactReady(true), 2200);
+    };
+
+    if (document.readyState === "complete") scheduleDeferredContact();
+    else window.addEventListener("load", scheduleDeferredContact, { once: true });
+
+    return () => {
+      window.removeEventListener("load", scheduleDeferredContact);
+      if (timer !== null) window.clearTimeout(timer);
+    };
+  }, [avoidSpeculativePreload, deferredContactReady]);
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (event: Event) => {
