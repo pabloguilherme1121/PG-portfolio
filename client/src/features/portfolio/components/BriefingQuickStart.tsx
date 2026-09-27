@@ -24,11 +24,11 @@ export default function BriefingQuickStart({ onSelect }: BriefingQuickStartProps
             id="briefing-quick-start-title"
             className="mt-2 font-display text-xl font-medium tracking-[-0.035em] text-white"
           >
-            Comece com um modelo e ajuste só o que importa.
+            Comece com uma rota profissional e personalize o necessário.
           </h4>
         </div>
         <p className="max-w-xs font-body text-xs leading-5 text-[#8fb6c9]">
-          Um clique preenche direção, escopo e contexto. Nome e e-mail continuam por sua conta.
+          Um clique sugere direção, escopo, requisitos e qualidade. Você revisa tudo antes de enviar.
         </p>
       </div>
 
