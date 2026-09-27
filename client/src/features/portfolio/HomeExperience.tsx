@@ -10,6 +10,8 @@ import {
   ArrowUp,
   ArrowUpRight,
   CalendarDays,
+  ClipboardCheck,
+  Compass,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
@@ -39,6 +41,7 @@ import {
   Settings2,
   List,
   LayoutGrid,
+  UserRound,
   X,
 } from "lucide-react";
 import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -64,6 +67,7 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
+import { getMobileContextAction, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
   categoryFilters,
@@ -252,6 +256,12 @@ export default function Home() {
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
+  const [mobileExperienceRoute, setMobileExperienceRoute] = useState<MobileExperienceRoute>(() =>
+    readStoredExperienceRoute(typeof window === "undefined" ? null : window.sessionStorage),
+  );
+  const [hasMobileBriefingDraft, setHasMobileBriefingDraft] = useState(() =>
+    readStoredBriefingProgress(typeof window === "undefined" ? null : window.localStorage),
+  );
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
@@ -273,6 +283,26 @@ export default function Home() {
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen);
+  const mobileContextAction = getMobileContextAction(mobileExperienceRoute);
+  const MobileContextIcon = mobileExperienceRoute === "recruiter" ? UserRound : mobileExperienceRoute === "explorer" ? Eye : Compass;
+
+  useEffect(() => {
+    const handleExperienceRoute = (event: Event) => {
+      const routeId = (event as CustomEvent<{ routeId?: unknown }>).detail?.routeId;
+      if (isMobileExperienceRoute(routeId)) setMobileExperienceRoute(routeId);
+    };
+    const handleBriefingProgress = (event: Event) => {
+      const hasDraft = (event as CustomEvent<{ hasDraft?: unknown }>).detail?.hasDraft;
+      if (typeof hasDraft === "boolean") setHasMobileBriefingDraft(hasDraft);
+    };
+
+    window.addEventListener("portfolio:experience-route", handleExperienceRoute);
+    window.addEventListener("portfolio:briefing-progress", handleBriefingProgress);
+    return () => {
+      window.removeEventListener("portfolio:experience-route", handleExperienceRoute);
+      window.removeEventListener("portfolio:briefing-progress", handleBriefingProgress);
+    };
+  }, []);
 
   useEffect(() => {
     const target = heroCtaRef.current;
@@ -1079,7 +1109,7 @@ export default function Home() {
     );
   }
 
-  const openResumePreview = (event: MouseEvent<HTMLAnchorElement>) => {
+  const openResumePreview = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
     resumePreviewReturnFocusRef.current = event.currentTarget;
     setResumePreviewError(false);
@@ -1155,8 +1185,12 @@ export default function Home() {
                   {label}
                 </a>
               ))}
-              <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mt-2 inline-flex min-h-12 items-center justify-between border border-[#67e8f9]/40 bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff]">05 / observatório <ArrowUpRight className="h-4 w-4" /></a>
-              {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>}
+              <div data-mobile-shortcuts="true" className="mt-3 grid grid-cols-3 gap-2 border-t border-white/[0.07] pt-3" aria-label="Atalhos rápidos">
+                <a href="#diagnostico" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Compass className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>diagnóstico</span></a>
+                <a href="#perfil-profissional" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><UserRound className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>perfil</span></a>
+                <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
+              </div>
+              {resumeAvailable && <button type="button" onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> visualizar portfólio PDF</button>}
             </div>
           </nav>
         )}
@@ -1273,10 +1307,26 @@ export default function Home() {
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
-        <a data-mobile-primary-action="true" href="#contato" className="inline-flex min-h-12 min-w-[168px] flex-[1.25] items-center justify-center gap-2 bg-[#38bdf8] px-3 min-[360px]:px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden">
-          iniciar projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+        <a
+          data-mobile-context-action="true"
+          href={mobileContextAction.href}
+          onClick={() => trackPortfolioEvent("experience_route_cta", { experienceRoute: mobileExperienceRoute })}
+          className="mobile-context-action hidden min-h-12 basis-[78px] flex-col items-center justify-center gap-1 border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:basis-[92px] sm:hidden"
+        >
+          <MobileContextIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
+          <span>{mobileContextAction.label}</span>
         </a>
-        <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">
+        <a
+          data-mobile-primary-action="true"
+          href="#contato"
+          onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
+          className="inline-flex min-h-12 min-w-0 flex-1 items-center justify-center gap-2 bg-[#38bdf8] px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[160px] min-[360px]:px-3 min-[360px]:text-[10px] sm:hidden"
+          aria-label={hasMobileBriefingDraft ? "Continuar briefing salvo" : "Abrir briefing do projeto"}
+        >
+          <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
+          {hasMobileBriefingDraft ? "continuar" : "briefing"}
+        </a>
+        <a data-mobile-whatsapp-action="true" href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp mobile-whatsapp-action group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
         </a>
