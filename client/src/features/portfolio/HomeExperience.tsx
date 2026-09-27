@@ -57,7 +57,6 @@ import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
 import { PortfolioContact } from "@/features/portfolio/components/PortfolioContact";
-import { PortfolioResumePreview } from "@/features/portfolio/components/PortfolioResumePreview";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -77,6 +76,11 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const loadPortfolioResumePreview = () =>
+  import("@/features/portfolio/components/PortfolioResumePreview").then((module) => ({
+    default: module.PortfolioResumePreview,
+  }));
+const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
 const loadPortfolioTicTacToe = () => import("@/features/portfolio/components/PortfolioTicTacToe");
 const PortfolioTicTacToe = lazy(loadPortfolioTicTacToe);
 
@@ -100,6 +104,11 @@ const telegramUrl = "https://t.me/mpjmarketing";
 type SearchSuggestion = {
   value: string;
   source: "projeto" | "tecnologia" | "descrição";
+};
+
+type PwaInstallPromptEvent = Event & {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
 const descriptionStopWords = new Set([
@@ -175,6 +184,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PwaInstallPromptEvent | null>(null);
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
@@ -281,11 +291,28 @@ export default function Home() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
-  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen);
+  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
   const mobilePrimaryAction = getMobilePrimaryAction(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      const promptEvent = event as PwaInstallPromptEvent;
+      if (typeof promptEvent.prompt !== "function") return;
+      event.preventDefault();
+      setPwaInstallPrompt(promptEvent);
+    };
+    const handleAppInstalled = () => setPwaInstallPrompt(null);
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    window.addEventListener("appinstalled", handleAppInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener("appinstalled", handleAppInstalled);
+    };
+  }, []);
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
@@ -641,6 +668,22 @@ export default function Home() {
       toast.error("Não foi possível enviar", { description: message });
     },
   });
+
+  function preloadResumePreview() {
+    void loadPortfolioResumePreview();
+  }
+
+  async function installPortfolioPwa() {
+    const promptEvent = pwaInstallPrompt;
+    if (!promptEvent) return;
+    try {
+      await promptEvent.prompt();
+      await promptEvent.userChoice;
+    } finally {
+      setPwaInstallPrompt(null);
+      setMenuOpen(false);
+    }
+  }
 
   function preloadPgArcade() {
     void loadPortfolioTicTacToe();
@@ -1135,6 +1178,7 @@ export default function Home() {
 
   const openResumePreview = (event: MouseEvent<HTMLElement>) => {
     event.preventDefault();
+    preloadResumePreview();
     resumePreviewReturnFocusRef.current = event.currentTarget;
     setResumePreviewError(false);
     setResumePreviewProgress(8);
@@ -1172,7 +1216,7 @@ export default function Home() {
             ))}
             <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="nav-link text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-[#a5f3fc] transition-colors hover:text-white">observatório <ArrowUpRight className="ml-1 inline h-3 w-3" /></a>
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-            {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            {resumeAvailable && <a href={resumeUrl} onPointerEnter={preloadResumePreview} onFocus={preloadResumePreview} onTouchStart={preloadResumePreview} onClick={openResumePreview} data-resume-header="true" data-resume-preview-preload="intent" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
             </a>}
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
@@ -1244,7 +1288,18 @@ export default function Home() {
                 </a>
                 <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
               </div>
-              {resumeAvailable && <button type="button" onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> visualizar portfólio PDF</button>}
+              {pwaInstallPrompt && (
+                <button
+                  type="button"
+                  data-mobile-install-action="true"
+                  onClick={() => void installPortfolioPwa()}
+                  className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/35 bg-[#071827] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                >
+                  <Download className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
+                  instalar portfólio
+                </button>
+              )}
+              {resumeAvailable && <button type="button" onPointerEnter={preloadResumePreview} onFocus={preloadResumePreview} onTouchStart={preloadResumePreview} onClick={openResumePreview} data-resume-header="true" data-resume-preview-preload="intent" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> visualizar portfólio PDF</button>}
             </div>
           </nav>
         )}
@@ -1413,29 +1468,33 @@ export default function Home() {
         </a>
       </nav>
 
-      <PortfolioResumePreview
-        open={resumePreviewOpen}
-        loading={resumePreviewLoading}
-        error={resumePreviewError}
-        progress={resumePreviewProgress}
-        resumeUrl={resumeUrl}
-        closeRef={resumePreviewCloseRef}
-        onClose={closeResumePreview}
-        onRetry={() => {
-          setResumePreviewError(false);
-          setResumePreviewProgress(8);
-          setResumePreviewLoading(true);
-        }}
-        onLoad={() => {
-          setResumePreviewProgress(100);
-          setResumePreviewLoading(false);
-          setResumePreviewError(false);
-        }}
-        onError={() => {
-          setResumePreviewLoading(false);
-          setResumePreviewError(true);
-        }}
-      />
+      {resumePreviewOpen && (
+        <Suspense fallback={<div data-resume-preview-loading-shell="true" role="status" aria-live="polite" className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-6 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c8f7ff]">carregando leitor do portfólio…</div>}>
+          <PortfolioResumePreview
+            open={resumePreviewOpen}
+            loading={resumePreviewLoading}
+            error={resumePreviewError}
+            progress={resumePreviewProgress}
+            resumeUrl={resumeUrl}
+            closeRef={resumePreviewCloseRef}
+            onClose={closeResumePreview}
+            onRetry={() => {
+              setResumePreviewError(false);
+              setResumePreviewProgress(8);
+              setResumePreviewLoading(true);
+            }}
+            onLoad={() => {
+              setResumePreviewProgress(100);
+              setResumePreviewLoading(false);
+              setResumePreviewError(false);
+            }}
+            onError={() => {
+              setResumePreviewLoading(false);
+              setResumePreviewError(true);
+            }}
+          />
+        </Suspense>
+      )}
 
       <Dialog open={Boolean(selectedProject)} onOpenChange={(open) => { if (!open) setSelectedProject(null); }}>
         {selectedProject && (

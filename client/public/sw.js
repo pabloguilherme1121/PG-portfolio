@@ -1,4 +1,4 @@
-const CACHE_NAME = "pg-portfolio-pwa-v1";
+const CACHE_NAME = "pg-portfolio-pwa-v2";
 const SCOPE_URL = new URL(self.registration.scope);
 const APP_SHELL_URL = new URL("./", SCOPE_URL).href;
 const CORE_ASSETS = [
