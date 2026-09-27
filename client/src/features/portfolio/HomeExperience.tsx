@@ -54,7 +54,6 @@ import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
-import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -75,6 +74,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioCaseStudies = lazy(() => import("@/features/portfolio/components/PortfolioCaseStudies"));
 const PortfolioContact = lazy(() =>
   import("@/features/portfolio/components/PortfolioContact").then((module) => ({
     default: module.PortfolioContact,
@@ -190,6 +190,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
@@ -213,6 +214,9 @@ export default function Home() {
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const [contactHashRequested, setContactHashRequested] = useState(() =>
     typeof window !== "undefined" && (window.location.hash === "#contato" || window.location.hash === "#contato-briefing"),
+  );
+  const [caseStudiesHashRequested, setCaseStudiesHashRequested] = useState(() =>
+    typeof window !== "undefined" && window.location.hash === "#estudos-de-caso",
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -276,6 +280,7 @@ export default function Home() {
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
   const [shareStatus, setShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
+  const [portfolioShareStatus, setPortfolioShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectDetailsLoading, setProjectDetailsLoading] = useState(false);
@@ -315,6 +320,7 @@ export default function Home() {
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+  const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
   const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || deferredContactReady;
 
   useEffect(() => {
@@ -386,11 +392,12 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const syncContactHash = () => {
+    const syncDeferredHashes = () => {
       setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
+      setCaseStudiesHashRequested(window.location.hash === "#estudos-de-caso");
     };
-    window.addEventListener("hashchange", syncContactHash);
-    return () => window.removeEventListener("hashchange", syncContactHash);
+    window.addEventListener("hashchange", syncDeferredHashes);
+    return () => window.removeEventListener("hashchange", syncDeferredHashes);
   }, []);
 
   useEffect(() => {
@@ -980,6 +987,37 @@ export default function Home() {
     window.setTimeout(() => setShareStatus("idle"), 2600);
   }
 
+  async function sharePortfolio() {
+    const canonicalUrl =
+      document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ||
+      new URL(import.meta.env.BASE_URL || "/", window.location.origin).toString();
+
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({
+          title: "Pablo Guilherme — Portfólio profissional",
+          text: "Projetos, produtos digitais, experiência técnica e formas de contato.",
+          url: canonicalUrl,
+        });
+        trackPortfolioEvent("share_portfolio", { source: "mobile_menu", channel: "native" });
+        setPortfolioShareStatus("shared");
+        window.setTimeout(() => setPortfolioShareStatus("idle"), 2600);
+        return;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(canonicalUrl);
+      trackPortfolioEvent("share_portfolio", { source: "mobile_menu", channel: "copy_link" });
+      setPortfolioShareStatus("copied");
+    } catch {
+      setPortfolioShareStatus("error");
+    }
+    window.setTimeout(() => setPortfolioShareStatus("idle"), 2600);
+  }
+
   async function exportFavorites(format: FavoriteExportFormat) {
     const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
     if (!favoriteProjects.length) return;
@@ -1351,6 +1389,21 @@ export default function Home() {
                 </a>
                 <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Eye className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" /><span>observatório</span></a>
               </div>
+              <button
+                type="button"
+                data-mobile-share-action="true"
+                onClick={() => void sharePortfolio()}
+                className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              >
+                <Share2 className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
+                {portfolioShareStatus === "shared"
+                  ? "portfólio compartilhado"
+                  : portfolioShareStatus === "copied"
+                    ? "link copiado"
+                    : portfolioShareStatus === "error"
+                      ? "tentar compartilhar novamente"
+                      : "compartilhar portfólio"}
+              </button>
               {pwaInstallPrompt && (
                 <button
                   type="button"
@@ -1451,7 +1504,29 @@ export default function Home() {
               <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
             </div>
 
-            <PortfolioCaseStudies />
+            <div
+              id="estudos-de-caso"
+              ref={caseStudiesSectionRef}
+              data-case-studies-anchor="true"
+              aria-busy={!shouldRenderCaseStudies}
+              className="scroll-mt-24"
+            >
+              {shouldRenderCaseStudies ? (
+                <Suspense
+                  fallback={
+                    <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:mt-16 sm:pt-10">
+                      carregando estudos de caso…
+                    </div>
+                  }
+                >
+                  <PortfolioCaseStudies />
+                </Suspense>
+              ) : (
+                <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 sm:mt-16 sm:pt-10">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">estudos de caso carregam ao aproximar</p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
