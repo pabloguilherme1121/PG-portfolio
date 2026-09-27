@@ -120,19 +120,24 @@ test.describe("portfólio profissional", () => {
     }
   });
 
-  test("PG Arcade permite alternar modo, dificuldade, símbolo e série", async ({ page }) => {
+  test("PG Arcade combina presets rápidos, controles avançados e modo local", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
-    await expect(game.getByRole("button", { name: /contra o bot/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /duas pessoas/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /fácil/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /impossível/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /melhor de 3/i })).toBeVisible();
-    await expect(game.getByRole("button", { name: /jogar com.*símbolo/i })).toBeVisible();
+    const presets = game.locator('[data-arcade-presets="true"]');
+    await expect(presets.getByRole("button")).toHaveCount(3);
+    await expect(presets.getByRole("button", { name: /rápido/i })).toHaveAttribute("aria-pressed", "true");
 
-    await game.getByRole("button", { name: /duas pessoas/i }).click();
+    await presets.getByRole("button", { name: /competir/i }).click();
+    const advanced = game.locator('[data-arcade-advanced="true"]');
+    await advanced.locator("summary").click();
+    await expect(game.getByRole("button", { name: /impossível/i })).toHaveAttribute("aria-pressed", "true");
+    await expect(game.getByRole("button", { name: /MD3/i })).toHaveAttribute("aria-pressed", "true");
+
+    await presets.getByRole("button", { name: /dupla/i }).click();
+    await expect(game.getByRole("button", { name: /duas pessoas/i })).toHaveAttribute("aria-pressed", "true");
+
     const cells = game.locator('[data-game-cell="true"]');
     await cells.nth(0).click();
     await expect(cells.nth(0)).toHaveText("X");
@@ -142,6 +147,35 @@ test.describe("portfólio profissional", () => {
 
     await game.getByRole("button", { name: /reiniciar partida/i }).click();
     await expect(game.locator('[data-match-score="true"]')).toContainText("0");
+  });
+
+  test("PG Arcade oferece dica estratégica e recupera progressão local", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-pg-arcade-stats", JSON.stringify({
+        games: 5,
+        wins: 3,
+        losses: 0,
+        draws: 2,
+        currentWinStreak: 3,
+        bestWinStreak: 3,
+      }));
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
+    await expect(game.locator('[data-arcade-achievement="primeira-vitoria"]')).toBeVisible();
+    await expect(game.locator('[data-arcade-achievement="trinca"]')).toBeVisible();
+    await expect(game.locator('[data-arcade-achievement="invicto"]')).toBeVisible();
+
+    await game.getByRole("button", { name: /dica estratégica/i }).click();
+    await expect(game.locator('[data-hint-cell="true"]')).toHaveCount(1);
+    await expect(game.locator('[data-hint-cell="true"]')).toHaveAttribute("aria-label", /dica sugerida/i);
+
+    const hintCell = game.locator('[data-hint-cell="true"]');
+    await hintCell.click();
+    await expect(game.locator('[data-hint-cell="true"]')).toHaveCount(0);
   });
 
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
@@ -524,6 +558,9 @@ test.describe("portfólio profissional", () => {
       const game = page.locator('[data-tic-tac-toe="true"]');
       await game.scrollIntoViewIfNeeded();
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
+
+      await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(3);
+      await game.locator('[data-arcade-advanced="true"] summary').click();
 
       for (const name of [/contra o bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
         const button = game.getByRole("button", { name }).first();
