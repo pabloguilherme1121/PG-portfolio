@@ -38,17 +38,17 @@ const diagnosticPaths = [
   {
     id: "launch",
     number: "03",
-    label: "Quero lançar ou demonstrar algo",
-    title: "Produto + comunicação",
-    recommendation: "Solução combinada",
-    objective: "Construir a experiência digital e explicar seu valor com conteúdo visual direto.",
-    signal: ["produto", "demonstração", "interesse"],
-    audience: "Pessoas que precisam experimentar, entender ou compartilhar a nova solução",
+    label: "Quero lançar ou evoluir um produto",
+    title: "Produto pronto para demonstrar",
+    recommendation: "Produto digital",
+    objective: "Construir uma experiência digital clara, demonstrável e pronta para publicação.",
+    signal: ["produto", "fluxo", "publicação"],
+    audience: "Pessoas que precisam experimentar, entender ou validar a nova solução",
     stage: "Ideia inicial",
-    delivery: "Solução combinada",
-    success: "Colocar a solução no ar com uma demonstração clara, consistente e pronta para apresentação.",
-    briefing: "O projeto combina uma entrega digital com comunicação visual. Precisamos definir a experiência principal, o que deve ser demonstrado e quais peças ajudam o público a entender o valor rapidamente.",
-    deliverables: ["Experiência digital", "Demonstração visual", "Pacote de lançamento"],
+    delivery: "Produto web",
+    success: "Colocar a solução no ar com um fluxo claro, verificável e pronto para evolução.",
+    briefing: "O projeto precisa transformar a proposta em uma experiência digital demonstrável. Vamos definir o fluxo principal, os estados essenciais, a validação e a publicação.",
+    deliverables: ["Experiência digital", "Fluxo demonstrável", "Validação e publicação"],
     Icon: Sparkles,
   },
 ] as const;
@@ -128,12 +128,12 @@ export default function ProjectDiagnostic() {
               Project Lens · experiência interativa
             </p>
             <h2 className="mt-5 max-w-3xl font-display text-[clamp(2.25rem,10vw,5.7rem)] font-medium leading-[0.94] tracking-[-0.055em] sm:leading-[0.9] sm:tracking-[-0.065em] text-white">
-              Transforme uma ideia vaga em uma rota de projeto.
+              Em poucas escolhas, transforme uma ideia em próximos passos.
             </h2>
           </div>
           <div className="lg:pb-2">
             <p className="max-w-2xl font-body text-base leading-8 text-[#badbec]">
-              Escolha o problema mais próximo do seu cenário. O portfólio monta uma direção inicial, mostra o que faria parte da entrega e leva essa lógica para um briefing já estruturado.
+              Escolha o cenário mais próximo do seu. O diagnóstico organiza direção, estágio e entrega e leva esse contexto direto para o briefing.
             </p>
             <div className="mt-5 grid grid-cols-3 gap-px bg-white/10">
               {["problema", "rota", "briefing"].map((step, index) => (

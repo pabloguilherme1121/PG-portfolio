@@ -563,6 +563,72 @@ test.describe("portfólio profissional", () => {
     expect(actionBox?.width ?? 0).toBeGreaterThanOrEqual(160);
   });
 
+  test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+
+    const quickBar = page.locator('[data-mobile-contact-bar="true"]');
+    const contextAction = page.locator('[data-mobile-context-action="true"]');
+    const primaryAction = page.locator('[data-mobile-primary-action="true"]');
+    const whatsappAction = page.locator('[data-mobile-whatsapp-action="true"]');
+
+    await expect(quickBar).toBeVisible();
+    await expect(contextAction).toHaveAttribute("href", "#diagnostico");
+    await expect(contextAction).toContainText(/diagnóstico/i);
+    await expect(primaryAction).toHaveAttribute("href", "#contato");
+    await expect(primaryAction).toContainText(/briefing/i);
+    await expect(whatsappAction).toBeVisible();
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    await hub.getByRole("tab", { name: /quero avaliar seu perfil/i }).click();
+    await expect(contextAction).toHaveAttribute("href", "#perfil-profissional");
+    await expect(contextAction).toContainText(/perfil/i);
+
+    await page.reload();
+    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+    await expect(hub.getByRole("tab", { name: /quero avaliar seu perfil/i })).toHaveAttribute("aria-selected", "true");
+    await expect(contextAction).toHaveAttribute("href", "#perfil-profissional");
+
+    await hub.getByRole("tab", { name: /quero explorar/i }).click();
+    await expect(contextAction).toHaveAttribute("href", "#projetos");
+    await expect(contextAction).toContainText(/projetos/i);
+
+    await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
+    await page.locator('#contato-briefing input[name="name"]').fill("Visitante mobile");
+    await page.locator("#contato").getByRole("heading", { name: /solução clara/i }).click();
+
+    await expect(primaryAction).toContainText(/continuar/i);
+
+    for (const action of [contextAction, primaryAction, whatsappAction]) {
+      const box = await action.boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+    }
+
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
+  test("menu mobile oferece atalhos diretos sem aumentar a navegação principal", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const menu = page.locator("#mobile-navigation");
+    const shortcuts = menu.locator('[data-mobile-shortcuts="true"]');
+
+    await expect(shortcuts).toBeVisible();
+    await expect(shortcuts.getByRole("link", { name: /diagnóstico/i })).toHaveAttribute("href", "#diagnostico");
+    await expect(shortcuts.getByRole("link", { name: /perfil/i })).toHaveAttribute("href", "#perfil-profissional");
+    await expect(shortcuts.getByRole("link", { name: /observatório/i })).toHaveAttribute("href", /observatorio/);
+
+    const shortcutLinks = shortcuts.getByRole("link");
+    expect(await shortcutLinks.count()).toBe(3);
+    for (let index = 0; index < 3; index += 1) {
+      const box = await shortcutLinks.nth(index).boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+    }
+  });
+
   test("mobile reduz densidade dos projetos e mantém CTAs principais em largura confortável", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");

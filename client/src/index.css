@@ -782,6 +782,19 @@ html.theme-transitioning .arquivo-page * {
   isolation: isolate;
 }
 
+.mobile-shortcut-card,
+.mobile-context-action {
+  transition:
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1),
+    background-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.mobile-shortcut-card:active,
+.mobile-context-action:active {
+  transform: scale(0.97);
+}
+
 .contact-float-link {
   display: inline-flex;
   min-height: 2.75rem;
@@ -832,6 +845,7 @@ html.theme-transitioning .arquivo-page * {
     width: calc(100vw - 1rem);
     max-width: 30rem;
     justify-content: stretch;
+    border-radius: 14px;
   }
   .contact-float-link {
     min-width: 0;
@@ -841,7 +855,28 @@ html.theme-transitioning .arquivo-page * {
     font-size: 0.625rem;
     letter-spacing: 0.025em;
   }
+  .mobile-whatsapp-action {
+    width: 48px;
+    min-width: 48px;
+    flex: 0 0 48px;
+    border-radius: 10px;
+    padding-inline: 0;
+  }
+  .mobile-whatsapp-action span { display: none; }
+  .contact-float-telegram,
+  .contact-float-instagram { display: none; }
   .contact-float-link svg { flex: 0 0 auto; }
+
+  .mobile-shortcut-card {
+    border-radius: 10px;
+    touch-action: manipulation;
+  }
+
+  .mobile-context-action,
+  [data-mobile-primary-action="true"],
+  .mobile-whatsapp-action {
+    touch-action: manipulation;
+  }
 
   input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
   select,
@@ -911,8 +946,12 @@ html.theme-transitioning .arquivo-page * {
   .featured-project-card,
   .featured-project-card::before { transition: none; }
 
-  .contact-float-link { transition: none; }
-  .contact-float-link:active { transform: none; }
+  .contact-float-link,
+  .mobile-shortcut-card,
+  .mobile-context-action { transition: none; }
+  .contact-float-link:active,
+  .mobile-shortcut-card:active,
+  .mobile-context-action:active { transform: none; }
 }
 
 .arquivo-page[data-theme="light"] .contact-float {
