@@ -98,6 +98,7 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
 
     const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
+    await expect(sitePreset).toHaveAttribute("data-briefing-interactive", "true");
     await expect(sitePreset).toBeEnabled();
     await sitePreset.click();
     await expect.poll(() => page.evaluate(() => {
