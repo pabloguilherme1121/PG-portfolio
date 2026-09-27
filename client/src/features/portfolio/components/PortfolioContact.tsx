@@ -11,6 +11,7 @@ import {
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import BriefingQuickStart from "@/features/portfolio/components/BriefingQuickStart";
+import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
 import {
   briefingDefaultValues,
   type BriefingPreset,
@@ -34,6 +35,7 @@ import {
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { toast } from "sonner";
 
 type BlockedDate = { dateKey: string };
@@ -54,17 +56,25 @@ const briefingFieldNames = [
   "delivery",
   "deadline",
   "budget",
+  "contentStatus",
+  "visualIdentity",
+  "pagesScreens",
+  "features",
+  "integrations",
+  "qualityPriority",
+  "postLaunch",
   "success",
   "references",
   "constraints",
   "briefing",
 ] as const;
-const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "success", "briefing"] as const;
+const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "contentStatus", "qualityPriority", "success", "briefing"] as const;
 const briefingSteps = [
   { id: "contact", label: "Contato", description: "Quem é você e como retorno." },
   { id: "direction", label: "Direção", description: "Problema, público e objetivo." },
   { id: "scope", label: "Escopo", description: "Formato, prazo e investimento." },
-  { id: "context", label: "Contexto", description: "Sucesso, referências e detalhes." },
+  { id: "requirements", label: "Requisitos", description: "Conteúdo, funcionalidades, integrações e qualidade." },
+  { id: "review", label: "Revisão", description: "Critérios de sucesso, referências e contexto final." },
 ] as const;
 
 function readBriefingDraft(): BriefingDraft {
@@ -227,22 +237,14 @@ export function PortfolioContact({
       ...preset.values,
     };
 
-    setBriefingDraft(nextDraft);
+    flushSync(() => {
+      setBriefingDraft(nextDraft);
+      setBriefingRevision((value) => value + 1);
+    });
     try {
       window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
     } catch {
       // O preset continua funcional mesmo quando o armazenamento local está indisponível.
-    }
-
-    for (const [name, value] of Object.entries(preset.values)) {
-      const field = form.elements.namedItem(name);
-      if (
-        field instanceof HTMLInputElement
-        || field instanceof HTMLTextAreaElement
-        || field instanceof HTMLSelectElement
-      ) {
-        field.value = value;
-      }
     }
 
     trackBriefingStarted();
@@ -294,23 +296,23 @@ export function PortfolioContact({
   useEffect(() => {
     const applySeed = (event: Event) => {
       const detail = (event as CustomEvent<Partial<Pick<BriefingDraft, "service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing">>>).detail;
-      const form = briefingFormRef.current;
-      if (!form || !detail) return;
-
-      for (const [name, value] of Object.entries(detail)) {
-        if (!value) continue;
-        const field = form.elements.namedItem(name);
-        if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-          field.value = value;
-        }
+      if (!detail) return;
+      const nextDraft = { ...briefingDraft, ...detail };
+      flushSync(() => {
+        setBriefingDraft(nextDraft);
+        setBriefingRevision((value) => value + 1);
+      });
+      try {
+        window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
+      } catch {
+        // A direção ainda é aplicada quando o armazenamento local está indisponível.
       }
-      captureBriefingDraft(form);
       toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
     };
 
     window.addEventListener("portfolio:briefing-seed", applySeed);
     return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
-  }, []);
+  }, [briefingDraft]);
 
   return (
     <section id="contato" className="archive-chapter relative overflow-hidden bg-[#070a10]">
@@ -424,7 +426,7 @@ export function PortfolioContact({
               <div className="mt-4 h-1.5 overflow-hidden bg-white/10" aria-hidden="true">
                 <span className="block h-full origin-left bg-[#38bdf8] transition-transform duration-300 motion-reduce:transition-none" style={{ transform: `scaleX(${briefingProgress / 100})` }} />
               </div>
-              <ol className="mt-5 grid gap-px bg-white/10 sm:grid-cols-4" aria-label="Etapas do briefing">
+              <ol className="mt-5 grid gap-px bg-white/10 sm:grid-cols-5" aria-label="Etapas do briefing">
                 {briefingSteps.map((step, index) => {
                   const active = index === briefingStep;
                   const completed = index < briefingStep;
@@ -591,32 +593,11 @@ export function PortfolioContact({
                 </label>
               </fieldset>
 
-              <fieldset
-                data-briefing-step="context"
-                tabIndex={-1}
-                hidden={briefingStep !== 3}
-                className="border border-white/[0.1] bg-[#080f1a]/60 p-5 outline-none sm:p-6"
-              >
-                <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">04 · contexto e qualidade</legend>
-                <label className="block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
-                  <textarea maxLength={600} name="success" rows={3} defaultValue={briefingDraft.success ?? ""} placeholder="Ex.: mais pedidos de orçamento, informação mais fácil de consultar, lançamento pronto para uso." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                </label>
-                <div className="mt-7 grid gap-7 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">referências / links</span>
-                    <textarea maxLength={1000} name="references" rows={3} defaultValue={briefingDraft.references ?? ""} placeholder="Sites, perfis ou produtos que ajudam a explicar a direção." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                  </label>
-                  <label className="block">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">restrições / integrações</span>
-                    <textarea maxLength={1000} name="constraints" rows={3} defaultValue={briefingDraft.constraints ?? ""} placeholder="Ex.: domínio existente, plataforma obrigatória, identidade visual, APIs." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                  </label>
-                </div>
-                <label className="mt-7 block">
-                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
-                  <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={briefingDraft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
-                </label>
-              </fieldset>
+              <BriefingProfessionalLayer
+                draft={briefingDraft}
+                requirementsHidden={briefingStep !== 3}
+                reviewHidden={briefingStep !== 4}
+              />
             
               <div className="grid gap-3 border border-white/10 bg-[#07111f]/85 p-4 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
                 <button
