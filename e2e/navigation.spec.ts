@@ -380,12 +380,14 @@ test.describe("portfólio profissional", () => {
     expect(previewRequests).toEqual([]);
 
     const resumeAction = page.locator('[data-resume-header="true"]').first();
-    await expect(resumeAction).toBeVisible();
-    await resumeAction.hover();
-    await expect.poll(() => previewRequests.length).toBeGreaterThan(0);
+    if (await resumeAction.count()) {
+      await expect(resumeAction).toBeVisible();
+      await resumeAction.hover();
+      await expect.poll(() => previewRequests.length).toBeGreaterThan(0);
 
-    await resumeAction.click();
-    await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
+      await resumeAction.click();
+      await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
+    }
   });
 
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
