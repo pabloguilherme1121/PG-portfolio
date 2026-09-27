@@ -131,11 +131,11 @@ export default function PortfolioTicTacToe() {
     restartMatch();
   }
 
-  const optionClass = (active: boolean) => `min-h-10 border px-3 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${active ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 text-[#91adbf] hover:border-[#67e8f9]/60 hover:text-white"}`;
+  const optionClass = (active: boolean) => `inline-flex min-h-11 items-center justify-center border px-3 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${active ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 text-[#91adbf] hover:border-[#67e8f9]/60 hover:text-white"}`;
 
   return (
     <section data-tic-tac-toe="true" aria-labelledby="tic-tac-toe-title" className="archive-chapter border-y border-white/[0.07] bg-[#06111e]">
-      <div className="mx-auto grid max-w-[1180px] gap-8 px-5 py-14 sm:px-8 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
+      <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-12 sm:px-8 sm:py-18 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Lab · arcade experimental</p>
           <h2 id="tic-tac-toe-title" className="mt-4 font-display text-[clamp(2.4rem,5vw,4.6rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">
@@ -149,7 +149,7 @@ export default function PortfolioTicTacToe() {
           <div className="mt-7 space-y-5">
             <div>
               <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">modo</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:flex-wrap">
                 <button type="button" aria-pressed={mode === "bot"} onClick={() => changeMode("bot")} className={optionClass(mode === "bot")}><Bot className="mr-2 inline h-3.5 w-3.5" aria-hidden="true" />contra o bot</button>
                 <button type="button" aria-pressed={mode === "local"} onClick={() => changeMode("local")} className={optionClass(mode === "local")}><UsersRound className="mr-2 inline h-3.5 w-3.5" aria-hidden="true" />duas pessoas</button>
               </div>
@@ -157,7 +157,7 @@ export default function PortfolioTicTacToe() {
 
             {mode === "bot" && <div>
               <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">dificuldade</p>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:flex-wrap">
                 {([["easy", "fácil"], ["normal", "normal"], ["impossible", "impossível"]] as const).map(([value, label]) => (
                   <button key={value} type="button" aria-pressed={difficulty === value} onClick={() => { setDifficulty(value); restartMatch(); }} className={optionClass(difficulty === value)}>{label}</button>
                 ))}
@@ -167,7 +167,7 @@ export default function PortfolioTicTacToe() {
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
                 <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">série</p>
-                <div className="flex flex-wrap gap-2">
+                <div className="grid grid-cols-2 gap-2 min-[420px]:flex min-[420px]:flex-wrap">
                   {([1, 3, 5] as const).map((length) => <button key={length} type="button" aria-pressed={seriesLength === length} onClick={() => { setSeriesLength(length); restartMatch(); }} className={optionClass(seriesLength === length)}>{length === 1 ? "partida única" : `melhor de ${length}`}</button>)}
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function PortfolioTicTacToe() {
           <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">rodada {round} · primeiro a {winsNeeded} vitória{winsNeeded > 1 ? "s" : ""}</p>
         </div>
 
-        <div className="mx-auto w-full max-w-[540px] border border-[#67e8f9]/20 bg-[#071827]/80 p-4 sm:p-6">
+        <div className="mx-auto w-full max-w-[540px] border border-[#67e8f9]/20 bg-[#071827]/80 p-3.5 min-[360px]:p-4 sm:p-6">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena</p>
