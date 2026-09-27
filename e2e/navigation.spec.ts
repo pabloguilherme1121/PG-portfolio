@@ -101,6 +101,12 @@ test.describe("portfólio profissional", () => {
     await expect(sitePreset).toHaveAttribute("data-briefing-interactive", "true");
     await expect(sitePreset).toBeEnabled();
     await sitePreset.click();
+    await expect.poll(() =>
+      page.evaluate(() => {
+        const raw = window.localStorage.getItem("pablo-portfolio-briefing-draft");
+        return raw ? JSON.parse(raw).service : "";
+      }),
+    ).toBe("Site ou landing page");
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
@@ -629,17 +635,46 @@ test.describe("portfólio profissional", () => {
 
     await expect(hub.locator('[data-experience-route="true"]')).toHaveCount(3);
 
-    await hub.getByRole("button", { name: /quero contratar/i }).click();
+    await hub.getByRole("tab", { name: /quero contratar/i }).click();
     await expect(hub.locator('[data-experience-panel="client"]')).toBeVisible();
     await expect(hub.getByRole("link", { name: /diagnosticar meu projeto/i })).toHaveAttribute("href", "#diagnostico");
 
-    await hub.getByRole("button", { name: /quero avaliar seu perfil/i }).click();
+    await hub.getByRole("tab", { name: /quero avaliar seu perfil/i }).click();
     await expect(hub.locator('[data-experience-panel="recruiter"]')).toBeVisible();
     await expect(hub.getByRole("link", { name: /abrir perfil profissional/i })).toHaveAttribute("href", "#perfil-profissional");
 
-    await hub.getByRole("button", { name: /quero explorar/i }).click();
+    await hub.getByRole("tab", { name: /quero explorar/i }).click();
     await expect(hub.locator('[data-experience-panel="explorer"]')).toBeVisible();
     await expect(hub.getByRole("link", { name: /ver projetos selecionados/i })).toHaveAttribute("href", "#projetos");
+  });
+
+  test("experience hub oferece navegação premium por teclado e progresso de rota", async ({ page }) => {
+    await page.goto("/");
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    const routes = hub.getByRole("tab");
+    await expect(routes).toHaveCount(3);
+
+    const first = routes.nth(0);
+    const second = routes.nth(1);
+    const third = routes.nth(2);
+
+    await first.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(second).toBeFocused();
+    await expect(second).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-panel="recruiter"]')).toBeVisible();
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "2");
+
+    await page.keyboard.press("End");
+    await expect(third).toBeFocused();
+    await expect(third).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "3");
+
+    await page.keyboard.press("Home");
+    await expect(first).toBeFocused();
+    await expect(first).toHaveAttribute("aria-selected", "true");
+    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "1");
   });
 
 });

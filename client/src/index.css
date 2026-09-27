@@ -1223,3 +1223,139 @@ html.theme-transitioning .arquivo-page * {
     break-inside: avoid;
   }
 }
+
+
+/* Experience Hub premium — interação contextual, iluminação e feedback de rota. */
+.experience-hub-surface {
+  --experience-x: 72%;
+  --experience-y: 28%;
+}
+
+.experience-pointer-glow {
+  background:
+    radial-gradient(
+      34rem circle at var(--experience-x) var(--experience-y),
+      rgba(103, 232, 249, 0.11),
+      rgba(56, 189, 248, 0.045) 34%,
+      transparent 66%
+    );
+  opacity: 0.95;
+  transition: opacity 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.experience-route-card {
+  isolation: isolate;
+}
+
+.experience-route-card::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2px;
+  content: "";
+  background: #67e8f9;
+  opacity: 0;
+  transform: scaleY(0.35);
+  transform-origin: center;
+  transition:
+    opacity 180ms cubic-bezier(0.23, 1, 0.32, 1),
+    transform 220ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.experience-route-card[aria-selected="true"]::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.experience-route-card[aria-selected="true"] {
+  box-shadow:
+    inset 0 0 0 1px rgba(103, 232, 249, 0.08),
+    0 16px 48px rgba(2, 17, 31, 0.28);
+}
+
+.experience-progress-bar {
+  box-shadow: 0 0 14px rgba(103, 232, 249, 0.72);
+  transition: width 260ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.experience-panel-enter {
+  animation: experience-panel-enter 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes experience-panel-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.992);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .experience-route-card:hover {
+    transform: translateX(3px);
+  }
+
+  .experience-route-card:hover::before {
+    opacity: 0.65;
+    transform: scaleY(0.8);
+  }
+
+  .experience-route-card[aria-selected="true"]:hover::before {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+
+@media (hover: none) {
+  .experience-pointer-glow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-panel-enter {
+    animation: none;
+  }
+
+  .experience-progress-bar,
+  .experience-route-card,
+  .experience-route-card::before,
+  .experience-pointer-glow {
+    transition: none;
+  }
+
+  .experience-route-card:hover {
+    transform: none;
+  }
+}
+
+.arquivo-page[data-theme="light"] .experience-pointer-glow {
+  background:
+    radial-gradient(
+      32rem circle at var(--experience-x) var(--experience-y),
+      rgba(14, 116, 144, 0.10),
+      rgba(56, 189, 248, 0.035) 36%,
+      transparent 68%
+    );
+}
+
+.arquivo-page[data-theme="light"] .experience-route-card[aria-selected="true"] {
+  box-shadow:
+    inset 0 0 0 1px rgba(14, 116, 144, 0.10),
+    0 14px 36px rgba(16, 32, 51, 0.10);
+}
+
+@media (max-width: 639px) {
+  .experience-route-card {
+    min-height: 5.5rem;
+  }
+
+  [data-experience-progress="true"] {
+    position: sticky;
+    bottom: calc(4.75rem + env(safe-area-inset-bottom));
+    z-index: 3;
+    backdrop-filter: blur(14px);
+  }
+}

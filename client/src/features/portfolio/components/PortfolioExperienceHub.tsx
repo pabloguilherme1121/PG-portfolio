@@ -1,4 +1,5 @@
 import { ArrowDownRight, Briefcase, CheckCircle2, Compass, Sparkles, UserRound } from "lucide-react";
+import type { KeyboardEvent, PointerEvent } from "react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -49,19 +50,55 @@ type ExperienceRouteId = (typeof experienceRoutes)[number]["id"];
 export default function PortfolioExperienceHub() {
   const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>("client");
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
+  const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
 
   function selectRoute(routeId: ExperienceRouteId) {
     setActiveRoute(routeId);
     trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
   }
 
+  function handleRouteKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const lastIndex = experienceRoutes.length - 1;
+    const nextIndex =
+      event.key === "Home"
+        ? 0
+        : event.key === "End"
+          ? lastIndex
+          : event.key === "ArrowDown" || event.key === "ArrowRight"
+            ? index === lastIndex ? 0 : index + 1
+            : event.key === "ArrowUp" || event.key === "ArrowLeft"
+              ? index === 0 ? lastIndex : index - 1
+              : null;
+
+    if (nextIndex === null) return;
+    event.preventDefault();
+    const tabList = event.currentTarget.closest('[role="tablist"]');
+    const nextRoute = experienceRoutes[nextIndex];
+    selectRoute(nextRoute.id);
+    window.requestAnimationFrame(() => {
+      tabList
+        ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+        [nextIndex]?.focus();
+    });
+  }
+
+  function handlePointerMove(event: PointerEvent<HTMLElement>) {
+    if (event.pointerType === "touch") return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--experience-x", `${event.clientX - bounds.left}px`);
+    event.currentTarget.style.setProperty("--experience-y", `${event.clientY - bounds.top}px`);
+  }
+
   return (
     <section
       data-experience-hub="true"
+      data-active-route={selected.id}
       aria-labelledby="experience-hub-title"
-      className="archive-chapter relative overflow-hidden border-y border-white/[0.08] bg-[#050d18]"
+      onPointerMove={handlePointerMove}
+      className="experience-hub-surface archive-chapter relative overflow-hidden border-y border-white/[0.08] bg-[#050d18]"
     >
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
+      <div className="experience-pointer-glow pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl" aria-hidden="true" />
 
       <div className="relative mx-auto max-w-[1440px] px-4 py-12 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
@@ -90,7 +127,8 @@ export default function PortfolioExperienceHub() {
         </div>
 
         <div className="mt-7 grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
-          <div className="grid gap-2" role="group" aria-label="Escolha como quer explorar o portfólio">
+          <div>
+            <div className="grid gap-2" role="tablist" aria-label="Escolha como quer explorar o portfólio">
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
               const active = activeRoute === id;
               return (
@@ -98,9 +136,14 @@ export default function PortfolioExperienceHub() {
                   key={id}
                   type="button"
                   data-experience-route="true"
-                  aria-pressed={active}
+                  id={`experience-route-${id}`}
+                  role="tab"
+                  aria-selected={active}
+                  aria-controls={`experience-panel-${id}`}
+                  tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
-                  className={`group relative min-h-[92px] overflow-hidden border px-4 py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none ${
+                  onKeyDown={(event) => handleRouteKeyDown(event, index)}
+                  className={`experience-route-card group relative min-h-[92px] overflow-hidden border px-4 py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
@@ -123,12 +166,37 @@ export default function PortfolioExperienceHub() {
                 </button>
               );
             })}
+            </div>
+            <div
+              data-experience-progress="true"
+              role="progressbar"
+              aria-label="Progresso entre as rotas do portfólio"
+              aria-valuemin={1}
+              aria-valuemax={experienceRoutes.length}
+              aria-valuenow={selectedIndex + 1}
+              className="mt-4 border border-white/10 bg-[#07111f]/70 p-3"
+            >
+              <div className="flex items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7597b4]">
+                <span>rota {selectedIndex + 1} de {experienceRoutes.length}</span>
+                <span className="text-[#a5f3fc]">{selected.label}</span>
+              </div>
+              <div className="mt-2 h-px overflow-hidden bg-white/10">
+                <span
+                  className="experience-progress-bar block h-full bg-[#67e8f9]"
+                  style={{ width: `${((selectedIndex + 1) / experienceRoutes.length) * 100}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
           </div>
 
           <div
             key={selected.id}
+            id={`experience-panel-${selected.id}`}
+            role="tabpanel"
+            aria-labelledby={`experience-route-${selected.id}`}
             data-experience-panel={selected.id}
-            className="relative overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] min-[360px]:p-5 sm:p-7 lg:p-8"
+            className="experience-panel-enter relative overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] min-[360px]:p-5 sm:p-7 lg:p-8"
           >
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/25" aria-hidden="true" />
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
