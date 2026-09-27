@@ -59,6 +59,18 @@
           "type": "image/svg+xml"
         }
       ]
+    },
+    {
+      "name": "Abrir PG Arcade",
+      "short_name": "PG Arcade",
+      "url": "./#pg-lab",
+      "icons": [
+        {
+          "src": "favicon.svg",
+          "sizes": "any",
+          "type": "image/svg+xml"
+        }
+      ]
     }
   ]
 }
