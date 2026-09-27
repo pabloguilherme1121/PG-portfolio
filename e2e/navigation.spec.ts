@@ -495,6 +495,44 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator("#conteudo-principal")).toBeFocused();
   });
 
+  test("mantém briefing e PG Arcade confortáveis entre 320 e 430px", async ({ page }) => {
+    for (const width of [320, 360, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+
+      const form = page.locator("#contato-briefing");
+      await form.scrollIntoViewIfNeeded();
+      await expect(form.locator('[data-briefing-studio="true"]')).toBeVisible();
+      await expect.poll(() => form.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
+
+      const briefingButtons = form.getByRole("button");
+      const briefingCount = await briefingButtons.count();
+      for (let index = 0; index < Math.min(briefingCount, 8); index += 1) {
+        const box = await briefingButtons.nth(index).boundingBox();
+        if (box) expect(box.height).toBeGreaterThanOrEqual(44);
+      }
+
+      await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+      const game = page.locator('[data-tic-tac-toe="true"]');
+      await game.scrollIntoViewIfNeeded();
+      await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
+
+      for (const name of [/contra o bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
+        const button = game.getByRole("button", { name }).first();
+        await expect(button).toBeVisible();
+        const box = await button.boundingBox();
+        expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+      }
+
+      const board = game.locator('[data-game-cell="true"]').first();
+      const boardBox = await board.boundingBox();
+      expect(boardBox?.width ?? 0).toBeGreaterThanOrEqual(72);
+      expect(boardBox?.height ?? 0).toBeGreaterThanOrEqual(72);
+    }
+  });
+
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
 
