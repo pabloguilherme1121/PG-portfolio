@@ -837,6 +837,20 @@ html.theme-transitioning .arquivo-page * {
 .contact-float-link:active { transform: scale(0.96); }
 
 @media (max-width: 639px) {
+  .arquivo-page {
+    text-rendering: optimizeSpeed;
+  }
+
+  .archive-chapter {
+    content-visibility: auto;
+    contain-intrinsic-size: 700px;
+  }
+
+  .contact-float,
+  #mobile-navigation {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
+  }
+
   .arquivo-page #inicio { padding-bottom: 5.5rem; }
   .arquivo-page #contato-rodape { padding-bottom: 5rem; }
   .archive-quick-route { min-height: 5.25rem; }
@@ -856,9 +870,11 @@ html.theme-transitioning .arquivo-page * {
     letter-spacing: 0.025em;
   }
   .mobile-whatsapp-action {
-    width: 48px;
-    min-width: 48px;
-    flex: 0 0 48px;
+    width: 56px;
+    min-width: 56px;
+    height: 56px;
+    min-height: 56px;
+    flex: 0 0 56px;
     border-radius: 10px;
     padding-inline: 0;
   }

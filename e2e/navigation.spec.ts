@@ -170,6 +170,10 @@ test.describe("portfólio profissional", () => {
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("60%");
+    const streakProgress = game.locator('[data-arcade-streak-progress="true"]');
+    await expect(streakProgress).toContainText(/sequência atual 3/i);
+    await expect(streakProgress).toContainText(/meta 5/i);
+    await expect(streakProgress.getByRole("progressbar")).toHaveAttribute("aria-valuenow", "60");
     await expect(game.locator('[data-arcade-achievement="primeira-vitoria"]')).toBeVisible();
     await expect(game.locator('[data-arcade-achievement="trinca"]')).toBeVisible();
     await expect(game.locator('[data-arcade-achievement="invicto"]')).toBeVisible();
@@ -181,6 +185,32 @@ test.describe("portfólio profissional", () => {
     const hintCell = game.locator('[data-hint-cell="true"]');
     await hintCell.click();
     await expect(game.locator('[data-hint-cell="true"]')).toHaveCount(0);
+  });
+
+  test("PG Arcade registra a última rodada e usa feedback tátil quando disponível", async ({ page }) => {
+    await page.addInitScript(() => {
+      const target = window as Window & { __arcadeVibrations?: Array<number | number[]> };
+      target.__arcadeVibrations = [];
+      Object.defineProperty(navigator, "vibrate", {
+        configurable: true,
+        value: (pattern: number | number[]) => {
+          target.__arcadeVibrations?.push(pattern);
+          return true;
+        },
+      });
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await game.locator('[data-arcade-presets="true"]').getByRole("button", { name: /dupla/i }).click();
+    const cells = game.locator('[data-game-cell="true"]');
+    for (const index of [0, 3, 1, 4, 2]) await cells.nth(index).click();
+
+    await expect(game.locator('[data-arcade-last-result="true"]')).toContainText(/vitória/i);
+    const vibrations = await page.evaluate(() => (window as Window & { __arcadeVibrations?: Array<number | number[]> }).__arcadeVibrations ?? []);
+    expect(vibrations).toContain(12);
+    expect(vibrations.some((pattern) => Array.isArray(pattern) && pattern.join(",") === "25,35,45")).toBeTruthy();
   });
 
   test("PG Arcade respeita a troca para O e deixa o PG Bot abrir com X", async ({ page }) => {
@@ -528,6 +558,8 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+    await expect(page.locator(".archive-chapter").first()).toHaveCSS("content-visibility", "auto");
+    expect((await page.locator(".arquivo-page").evaluate((element) => getComputedStyle(element).textRendering)).toLowerCase()).toBe("optimizespeed");
 
     const primaryCta = page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i });
     expect(await primaryCta.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
@@ -578,6 +610,8 @@ test.describe("portfólio profissional", () => {
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
 
       await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(4);
+      const presetColumns = await game.locator('[data-arcade-preset-grid="true"]').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
+      expect(presetColumns).toBe(2);
       await game.locator('[data-arcade-advanced="true"] summary').click();
 
       for (const name of [/contra (o )?bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
@@ -614,8 +648,10 @@ test.describe("portfólio profissional", () => {
     const dock = page.locator('[data-mobile-contact-bar="true"]');
     await expect(dock).toHaveAttribute("data-mobile-dock", "true");
     await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
+    await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: /abrir.*pg arcade|jogar.*pg arcade/i }).click();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(4);
     await expect(game.locator('[data-arcade-preset-card="true"]').nth(0)).toContainText(/contra.*bot|contra.*ia/i);
@@ -674,13 +710,11 @@ test.describe("portfólio profissional", () => {
     await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
 
     const quickBar = page.locator('[data-mobile-contact-bar="true"]');
-    const contextAction = page.locator('[data-mobile-context-action="true"]');
     const primaryAction = page.locator('[data-mobile-primary-action="true"]');
     const whatsappAction = page.locator('[data-mobile-whatsapp-action="true"]');
 
     await expect(quickBar).toBeVisible();
-    await expect(contextAction).toHaveAttribute("href", "#diagnostico");
-    await expect(contextAction).toContainText(/diagnóstico/i);
+    await expect(quickBar.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
     await expect(primaryAction).toHaveAttribute("href", "#diagnostico");
     await expect(primaryAction).toContainText(/começar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/diagnóstico.*briefing.*contato/i);
@@ -688,8 +722,6 @@ test.describe("portfólio profissional", () => {
 
     const hub = page.locator('[data-experience-hub="true"]');
     await hub.getByRole("tab", { name: /quero avaliar seu perfil/i }).click();
-    await expect(contextAction).toHaveAttribute("href", "#perfil-profissional");
-    await expect(contextAction).toContainText(/perfil/i);
     await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
     await expect(primaryAction).toContainText(/ver perfil/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/perfil.*provas.*contato/i);
@@ -697,11 +729,9 @@ test.describe("portfólio profissional", () => {
     await page.reload();
     await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
     await expect(hub.getByRole("tab", { name: /quero avaliar seu perfil/i })).toHaveAttribute("aria-selected", "true");
-    await expect(contextAction).toHaveAttribute("href", "#perfil-profissional");
+    await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
 
     await hub.getByRole("tab", { name: /quero explorar/i }).click();
-    await expect(contextAction).toHaveAttribute("href", "#projetos");
-    await expect(contextAction).toContainText(/projetos/i);
     await expect(primaryAction).toHaveAttribute("href", "#projetos");
     await expect(primaryAction).toContainText(/explorar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/projetos.*cases.*código/i);
@@ -714,7 +744,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction).toContainText(/retomar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/briefing salvo/i);
 
-    for (const action of [contextAction, primaryAction, whatsappAction]) {
+    for (const action of [primaryAction, whatsappAction]) {
       const box = await action.boundingBox();
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
     }

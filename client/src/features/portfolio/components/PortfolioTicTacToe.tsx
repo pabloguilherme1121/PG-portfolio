@@ -22,6 +22,8 @@ import {
   getTicTacToePresetConfig,
   getTicTacToeWinner,
   getTicTacToeWinningLine,
+  getTicTacToeStreakGoal,
+  getTicTacToeStreakProgress,
   getTicTacToeWinRate,
   normalizeTicTacToeLifetimeStats,
   updateTicTacToeLifetimeStats,
@@ -37,6 +39,12 @@ const arcadeStatsStorageKey = "pablo-pg-arcade-stats";
 type GameResult = "player" | "bot" | "draw" | null;
 type GameMode = "bot" | "local";
 type SeriesLength = 1 | 3 | 5;
+
+function giveMobileFeedback(pattern: number | number[] = 20) {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (typeof navigator.vibrate === "function") navigator.vibrate(pattern);
+}
 
 function readLifetimeStats(): TicTacToeLifetimeStats {
   if (typeof window === "undefined") return emptyTicTacToeLifetimeStats;
@@ -70,6 +78,7 @@ export default function PortfolioTicTacToe() {
   const [selectedPreset, setSelectedPreset] = useState<TicTacToePreset | null>("quick");
   const [hintIndex, setHintIndex] = useState<number | null>(null);
   const [usedHintThisRound, setUsedHintThisRound] = useState(false);
+  const [lastResult, setLastResult] = useState<Exclude<GameResult, null> | null>(null);
   const [lifetimeStats, setLifetimeStats] = useState<TicTacToeLifetimeStats>(readLifetimeStats);
 
   const opponentMark: TicTacToeMark = playerMark === "X" ? "O" : "X";
@@ -77,6 +86,8 @@ export default function PortfolioTicTacToe() {
   const winningLine = useMemo(() => getTicTacToeWinningLine(board), [board]);
   const achievements = useMemo(() => getTicTacToeAchievements(lifetimeStats), [lifetimeStats]);
   const winRate = useMemo(() => getTicTacToeWinRate(lifetimeStats), [lifetimeStats]);
+  const nextStreakGoal = useMemo(() => getTicTacToeStreakGoal(lifetimeStats.bestWinStreak), [lifetimeStats.bestWinStreak]);
+  const streakProgress = useMemo(() => getTicTacToeStreakProgress(lifetimeStats.currentWinStreak, nextStreakGoal), [lifetimeStats.currentWinStreak, nextStreakGoal]);
   const matchWinner = score.player >= winsNeeded ? "player" : score.opponent >= winsNeeded ? "opponent" : null;
 
   useEffect(() => {
@@ -112,7 +123,9 @@ export default function PortfolioTicTacToe() {
               : `Sua vez · você joga com ${playerMark}`;
 
   function recordRound(nextResult: Exclude<GameResult, null>) {
+    setLastResult(nextResult);
     setResult(nextResult);
+    if (nextResult === "player") giveMobileFeedback([25, 35, 45]);
     setScore((current) => ({
       player: current.player + (nextResult === "player" ? 1 : 0),
       opponent: current.opponent + (nextResult === "bot" ? 1 : 0),
@@ -143,6 +156,7 @@ export default function PortfolioTicTacToe() {
 
   function play(index: number) {
     if (board[index] || result || matchWinner) return;
+    giveMobileFeedback(12);
     setHintIndex(null);
     if (!started) {
       setStarted(true);
@@ -245,7 +259,7 @@ export default function PortfolioTicTacToe() {
 
           <div data-arcade-presets="true" className="mt-6">
             <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">começar rápido</p>
-            <div className="grid grid-cols-2 gap-2 min-[420px]:grid-cols-4">
+            <div data-arcade-preset-grid="true" className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <button data-arcade-preset="quick" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "quick"} onClick={() => applyPreset("quick")} className={`${optionClass(selectedPreset === "quick")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Zap className="h-4 w-4" aria-hidden="true" /><span>rápido</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">contra bot</span></button>
               <button data-arcade-preset="competitive" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "competitive"} onClick={() => applyPreset("competitive")} className={`${optionClass(selectedPreset === "competitive")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><Swords className="h-4 w-4" aria-hidden="true" /><span>competir</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">impossível · MD3</span></button>
               <button data-arcade-preset="local" data-arcade-preset-card="true" type="button" aria-pressed={selectedPreset === "local"} onClick={() => applyPreset("local")} className={`${optionClass(selectedPreset === "local")} min-h-[82px] flex-col gap-1 px-2 py-2.5`}><UsersRound className="h-4 w-4" aria-hidden="true" /><span>dupla</span><span className="font-body text-[9px] font-normal normal-case tracking-normal text-[#8fa8c7]">1 × 1 local</span></button>
@@ -291,11 +305,28 @@ export default function PortfolioTicTacToe() {
             </div>
           </details>
 
-          <div data-arcade-stats="true" className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] bg-white/10 min-[420px]:grid-cols-4">
+          <div data-arcade-stats="true" className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-[12px] bg-white/10 sm:grid-cols-4">
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">partidas</p><p className="mt-1 font-display text-xl text-white">{lifetimeStats.games}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">vitórias</p><p className="mt-1 font-display text-xl text-[#67e8f9]">{lifetimeStats.wins}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">melhor sequência</p><p className="mt-1 font-display text-xl text-[#f4d67a]">{lifetimeStats.bestWinStreak}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">taxa de vitória</p><p className="mt-1 inline-flex items-center justify-center gap-1 font-display text-xl text-white"><Gauge className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />{winRate}%</p></div>
+          </div>
+
+          <div data-arcade-streak-progress="true" className="mt-3 rounded-[10px] border border-white/10 bg-[#071827] px-3 py-3">
+            <div className="flex items-center justify-between gap-3 font-mono text-[7px] uppercase tracking-[0.08em] text-[#7191a8]">
+              <span>sequência atual {lifetimeStats.currentWinStreak}</span>
+              <span>meta {nextStreakGoal}</span>
+            </div>
+            <div
+              role="progressbar"
+              aria-label="Progresso da sequência de vitórias"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={streakProgress}
+              className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"
+            >
+              <div className="h-full bg-[#67e8f9] transition-[width] duration-200 motion-reduce:transition-none" style={{ width: `${streakProgress}%` }} />
+            </div>
           </div>
 
           {achievements.length > 0 && (
@@ -313,6 +344,14 @@ export default function PortfolioTicTacToe() {
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">{mode === "bot" ? "PG Bot" : "jogador 2"}</p><p className="mt-1 font-display text-2xl text-white">{score.opponent}</p></div>
             <div className="bg-[#071827] p-3 text-center"><p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">empates</p><p className="mt-1 font-display text-2xl text-[#b8cce0]">{score.draws}</p></div>
           </div>
+          {lastResult && (
+            <div data-arcade-last-result="true" className="mt-3 flex min-h-11 items-center justify-between rounded-[10px] border border-white/10 bg-[#071827] px-3">
+              <span className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">última rodada</span>
+              <span className="font-mono text-[9px] font-semibold uppercase text-[#d9fbff]">
+                {lastResult === "player" ? "vitória" : lastResult === "bot" ? "derrota" : "empate"}
+              </span>
+            </div>
+          )}
           <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">rodada {round} · primeiro a {winsNeeded} vitória{winsNeeded > 1 ? "s" : ""}</p>
         </div>
 

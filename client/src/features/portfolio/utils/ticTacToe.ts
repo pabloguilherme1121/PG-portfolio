@@ -217,3 +217,15 @@ export function getTicTacToeWinRate(stats: TicTacToeLifetimeStats) {
   if (!current.games) return 0;
   return Math.round((current.wins / current.games) * 100);
 }
+
+export function getTicTacToeStreakGoal(bestWinStreak: number) {
+  if (bestWinStreak < 3) return 3;
+  if (bestWinStreak < 5) return 5;
+  return 10;
+}
+
+export function getTicTacToeStreakProgress(currentWinStreak: number, goal: number) {
+  if (!Number.isFinite(goal) || goal <= 0) return 0;
+  const safeCurrent = Number.isFinite(currentWinStreak) && currentWinStreak > 0 ? currentWinStreak : 0;
+  return Math.min(100, Math.round((safeCurrent / goal) * 100));
+}

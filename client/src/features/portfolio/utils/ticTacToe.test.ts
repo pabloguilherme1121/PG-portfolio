@@ -7,6 +7,8 @@ import {
   getTicTacToeHintMove,
   getTicTacToePresetConfig,
   getTicTacToeAchievements,
+  getTicTacToeStreakGoal,
+  getTicTacToeStreakProgress,
   getTicTacToeWinRate,
   normalizeTicTacToeLifetimeStats,
   updateTicTacToeLifetimeStats,
@@ -79,6 +81,14 @@ describe("ticTacToe", () => {
     const stats = updateTicTacToeLifetimeStats(undefined, "player", { usedHint: true, perfectWin: false });
     expect(stats).toMatchObject({ games: 1, wins: 1, hintsUsed: 1, perfectWins: 0 });
     expect(getTicTacToeWinRate(stats)).toBe(100);
+  });
+
+  it("define metas de sequência e limita o progresso visual a 100%", () => {
+    expect(getTicTacToeStreakGoal(0)).toBe(3);
+    expect(getTicTacToeStreakGoal(3)).toBe(5);
+    expect(getTicTacToeStreakGoal(5)).toBe(10);
+    expect(getTicTacToeStreakProgress(3, 5)).toBe(60);
+    expect(getTicTacToeStreakProgress(12, 10)).toBe(100);
   });
 
   it("migra estatísticas antigas sem transformar campos novos em NaN", () => {
