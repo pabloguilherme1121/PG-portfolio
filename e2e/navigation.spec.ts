@@ -135,6 +135,30 @@ test.describe("portfólio profissional", () => {
     }
   });
 
+  test("PG Arcade permite alternar modo, dificuldade, símbolo e série", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /abrir.*pg lab|jogar.*jogo da velha/i }).click();
+
+    const game = page.locator('[data-tic-tac-toe="true"]');
+    await expect(game.getByRole("button", { name: /contra o bot/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /duas pessoas/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /fácil/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /impossível/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /melhor de 3/i })).toBeVisible();
+    await expect(game.getByRole("button", { name: /jogar com o/i })).toBeVisible();
+
+    await game.getByRole("button", { name: /duas pessoas/i }).click();
+    const cells = game.locator('[data-game-cell="true"]');
+    await cells.nth(0).click();
+    await expect(cells.nth(0)).toHaveText("X");
+    await expect(game.locator('[data-game-cell="true"]:has-text("O")')).toHaveCount(0);
+    await cells.nth(1).click();
+    await expect(cells.nth(1)).toHaveText("O");
+
+    await game.getByRole("button", { name: /reiniciar partida/i }).click();
+    await expect(game.locator('[data-match-score="true"]')).toContainText(/0.*0/i);
+  });
+
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
     await page.goto("/");
 
