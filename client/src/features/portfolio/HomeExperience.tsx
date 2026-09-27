@@ -1622,14 +1622,12 @@ export default function Home() {
     <div data-theme={theme} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <a href="#conteudo-principal" className="skip-link">pular para o conteúdo</a>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/90 backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-5 sm:px-8 lg:px-12">
-          <a href="#inicio" aria-label="Ir ao início" className="group flex items-center gap-3" onClick={closeMenu}>
+        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
+          <a href="#inicio" aria-label="Ir ao início" className="group flex min-w-0 items-center gap-2.5 sm:gap-3" onClick={closeMenu}>
             <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
               <img src={markUrl} alt="Símbolo PG" width="28" height="28" decoding="async" className="h-7 w-7 object-contain" />
             </span>
-            <span className="font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-[#b7cdf1]">
-              Pablo <span className="text-[#67e8f9]">/</span> Guilherme
-            </span>
+            <span className="truncate font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-[#b7cdf1] min-[360px]:text-[10px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
           </a>
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
@@ -1778,16 +1776,16 @@ export default function Home() {
           onBriefingFocusChange={setIsBriefingFieldFocused}
         />
 
-        <section className="archive-chapter border-t border-white/[0.07] bg-[#040a13] px-5 py-10 sm:px-8 lg:px-12" aria-labelledby="pg-lab-title">
-          <div className="mx-auto max-w-[1440px] border border-[#67e8f9]/20 bg-[#06172f]/55 p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-7">
+        <section className="archive-chapter border-t border-white/[0.07] bg-[#040a13] px-4 py-9 min-[360px]:px-5 sm:px-8 sm:py-10 lg:px-12" aria-labelledby="pg-lab-title">
+          <div className="mx-auto max-w-[1440px] border border-[#67e8f9]/20 bg-[#06172f]/55 p-4 min-[360px]:p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-7">
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Lab · opcional</p>
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação rápida?</h2>
               <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">O contato principal termina acima. Este laboratório é uma demonstração curta de lógica, estados e acessibilidade — abra apenas se quiser explorar.</p>
             </div>
-            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-11 shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0">{pgLabOpen ? "fechar PG Lab" : "abrir PG Lab · jogar jogo da velha"}</button>
+            <button type="button" onClick={() => setPgLabOpen((open) => !open)} aria-expanded={pgLabOpen} aria-controls="pg-lab-game" className="mt-5 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto">{pgLabOpen ? "fechar PG Lab" : "abrir PG Lab · jogar jogo da velha"}</button>
           </div>
-          <div id="pg-lab-game" hidden={!pgLabOpen} className="mx-auto max-w-[1440px]">
+          <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
             <PortfolioTicTacToe />
           </div>
         </section>
