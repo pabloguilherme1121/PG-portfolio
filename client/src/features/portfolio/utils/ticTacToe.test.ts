@@ -71,4 +71,9 @@ describe("ticTacToe", () => {
     expect(getTicTacToeAchievements({ games: 5, wins: 3, losses: 0, draws: 2, currentWinStreak: 3, bestWinStreak: 3 }))
       .toEqual(expect.arrayContaining(["primeira-vitoria", "trinca", "invicto"]));
   });
+  it("permite ao bot calcular corretamente quando joga com X", () => {
+    const board: TicTacToeBoard = ["X", "X", null, "O", "O", null, null, null, null];
+    expect(chooseTicTacToeBotMoveByDifficulty(board, "normal", () => 0.5, "X")).toBe(2);
+  });
+
 });
