@@ -208,7 +208,7 @@ export default function PortfolioTicTacToe() {
     setDifficulty(config.difficulty);
     setSeriesLength(config.seriesLength);
     restartMatch();
-    trackPortfolioEvent("tic_tac_toe_preset_selected", { preset });
+    trackPortfolioEvent("tic_tac_toe_preset_selected", { arcadePreset: preset });
   }
 
   function showHint() {
