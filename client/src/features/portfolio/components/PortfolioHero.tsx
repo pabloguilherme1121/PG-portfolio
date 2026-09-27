@@ -36,7 +36,7 @@ export default function PortfolioHero({
   heroCtaRef,
 }: PortfolioHeroProps) {
   return (
-    <section id="inicio" className="relative isolate min-h-[680px] overflow-hidden pt-[76px] sm:min-h-[850px]">
+    <section id="inicio" className="relative isolate min-h-[640px] overflow-hidden pt-[76px] min-[390px]:min-h-[680px] sm:min-h-[850px]">
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
       {heroAvailable && (
         <picture className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-70 lg:w-[72%]">
@@ -51,7 +51,7 @@ export default function PortfolioHero({
         <img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[604px] max-w-[1440px] flex-col justify-between px-4 pb-8 pt-10 min-[360px]:px-5 min-[360px]:pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
+      <div className="relative mx-auto flex min-h-[564px] max-w-[1440px] min-[390px]:min-h-[604px] flex-col justify-between px-4 pb-7 pt-8 min-[390px]:pb-8 min-[390px]:pt-10 min-[360px]:px-5 min-[360px]:pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />

@@ -98,10 +98,9 @@ test.describe("portfólio profissional", () => {
     await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
 
     const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
+    await expect(sitePreset).toHaveAttribute("data-briefing-interactive", "true");
     await expect(sitePreset).toBeEnabled();
     await sitePreset.click();
-    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
-
     await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
     await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
     await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
@@ -545,6 +544,55 @@ test.describe("portfólio profissional", () => {
       expect(boardBox?.width ?? 0).toBeGreaterThanOrEqual(72);
       expect(boardBox?.height ?? 0).toBeGreaterThanOrEqual(72);
     }
+  });
+
+  test("mobile prioriza navegação curta e CTA de projeto ao alcance do polegar", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const mobileMenuButton = page.locator('[data-mobile-menu-toggle="true"]');
+    await mobileMenuButton.click();
+
+    const mobileNavigation = page.locator("#mobile-navigation");
+    await expect(mobileNavigation).toBeVisible();
+    await expect(mobileNavigation.getByRole("link", { name: /início/i })).toBeVisible();
+    await expect(mobileNavigation.getByRole("link", { name: /projetos/i })).toBeVisible();
+    await expect(mobileNavigation.getByRole("link", { name: /serviços/i })).toBeVisible();
+    await expect(mobileNavigation.getByRole("link", { name: /contato/i })).toBeVisible();
+    expect(await mobileNavigation.getByRole("link").count()).toBeLessThanOrEqual(7);
+
+    await mobileMenuButton.click();
+    const mobilePrimaryAction = page.locator('[data-mobile-primary-action="true"]');
+    await expect(mobilePrimaryAction).toBeVisible();
+    await expect(mobilePrimaryAction).toHaveAttribute("href", "#contato");
+    const actionBox = await mobilePrimaryAction.boundingBox();
+    expect(actionBox?.height ?? 0).toBeGreaterThanOrEqual(48);
+    expect(actionBox?.width ?? 0).toBeGreaterThanOrEqual(160);
+  });
+
+  test("mobile reduz densidade dos projetos e mantém CTAs principais em largura confortável", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+
+    const projects = page.locator("#projetos");
+    await projects.scrollIntoViewIfNeeded();
+    const observatorio = projects.locator("#observatorio");
+    await expect(observatorio).toBeVisible();
+
+    const proofActions = observatorio.getByRole("link");
+    const proofCount = await proofActions.count();
+    for (let index = 0; index < proofCount; index += 1) {
+      const box = await proofActions.nth(index).boundingBox();
+      if (box) {
+        expect(box.height).toBeGreaterThanOrEqual(48);
+        expect(box.width).toBeGreaterThanOrEqual(240);
+      }
+    }
+
+    const caseStudy = projects.locator('[data-case-study="true"]').first();
+    const caseBox = await caseStudy.boundingBox();
+    expect(caseBox?.width ?? 0).toBeLessThanOrEqual(288);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {

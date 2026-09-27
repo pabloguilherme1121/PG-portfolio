@@ -1664,22 +1664,20 @@ export default function Home() {
           </div>
         </div>
         {menuOpen && (
-          <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16] px-5 py-5 md:hidden" aria-label="Navegação móvel">
+          <nav id="mobile-navigation" className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_24px_60px_rgba(0,0,0,0.5)] backdrop-blur-xl md:hidden" aria-label="Navegação móvel">
             <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
               {[
-                ["01 / sobre", "#sobre", "sobre"],
-                ["02 / competências", "#trilha", "trilha"],
+                ["01 / início", "#inicio", "inicio"],
+                ["02 / projetos", "#projetos", "projetos"],
                 ["03 / serviços", "#servicos", "servicos"],
-                ["04 / projetos", "#projetos", "projetos"],
-                ["05 / contato", "#contato", "contato"],
+                ["04 / contato", "#contato", "contato"],
               ].map(([label, href, id]) => (
-                <a key={label} href={href} onClick={closeMenu} aria-current={activeSection === id ? "location" : undefined} className={`min-h-12 border-b border-white/[0.07] py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white ${activeSection === id ? "bg-[#0b2746] text-[#67e8f9]" : "text-[#b7cdf1]"}`}>
+                <a key={label} href={href} onClick={closeMenu} aria-current={activeSection === id ? "location" : undefined} className={`flex min-h-12 items-center border-b border-white/[0.07] px-2 py-3 font-mono text-xs uppercase tracking-[0.12em] transition-colors hover:bg-[#0b2746] hover:text-white focus-visible:bg-[#0b2746] focus-visible:text-white ${activeSection === id ? "bg-[#0b2746] text-[#67e8f9]" : "text-[#b7cdf1]"}`}>
                   {label}
                 </a>
               ))}
-              <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mt-2 inline-flex min-h-12 items-center justify-between border border-[#67e8f9]/40 bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff]">06 / observatório <ArrowUpRight className="h-4 w-4" /></a>
+              <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" onClick={closeMenu} className="mt-2 inline-flex min-h-12 items-center justify-between border border-[#67e8f9]/40 bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff]">05 / observatório <ArrowUpRight className="h-4 w-4" /></a>
               {resumeAvailable && <a href={resumeUrl} onClick={openResumePreview} data-resume-header="true" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Download className="h-4 w-4" aria-hidden="true" /> baixar portfólio PDF</a>}
-              <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} className="mt-3 inline-flex min-h-12 items-center gap-3 border border-white/[0.12] px-3 py-3 font-mono text-xs uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><span className="grid h-7 w-7 place-items-center border border-[#67e8f9]/35">{theme === "dark" ? <Sun className="h-3.5 w-3.5" aria-hidden="true" /> : <Moon className="h-3.5 w-3.5" aria-hidden="true" />}</span>{theme === "dark" ? "ativar modo claro" : "ativar modo escuro"}</button>
             </div>
           </nav>
         )}
@@ -1734,7 +1732,7 @@ export default function Home() {
         <PortfolioProcess />
 
         <section id="projetos" className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
-          <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+          <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             <PortfolioProjectsOverview
               markUrl={markUrl}
               portraitUrl={portraitUrl}
@@ -1796,17 +1794,20 @@ export default function Home() {
 
       <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
 
-      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-24 right-5 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav aria-label="Canais de contato" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-1/2 z-[60] transition-opacity duration-200 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex -translate-x-1/2 items-center gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md sm:bottom-5 sm:left-auto sm:right-5 sm:translate-x-0`}>
-        <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group border-[#38bdf8]/70 bg-[#38bdf8]/10">
+      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || Boolean(lightboxProjectId)} tabIndex={showBackToTop && !lightboxProjectId ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !lightboxProjectId ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
+      <nav aria-label="Ações rápidas" data-mobile-contact-bar="true" className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} flex items-stretch gap-1.5 border border-[#67e8f9]/35 bg-[#07101e]/95 p-1.5 shadow-[0_16px_44px_rgba(0,0,0,0.42)] backdrop-blur-md`}>
+        <a data-mobile-primary-action="true" href="#contato" className="inline-flex min-h-12 min-w-[168px] flex-[1.25] items-center justify-center gap-2 bg-[#38bdf8] px-3 min-[360px]:px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden">
+          iniciar projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+        </a>
+        <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">
           <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
           <span>WhatsApp</span>
         </a>
-        <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" title="Telegram" className="contact-float-link contact-float-telegram group">
+        <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" title="Telegram" className="contact-float-link contact-float-telegram group hidden sm:flex">
           <Send className="h-4 w-4" aria-hidden="true" />
           <span>Telegram</span>
         </a>
-        <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Abrir Instagram @pablogui000" title="Instagram" className="contact-float-link contact-float-instagram group">
+        <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Abrir Instagram @pablogui000" title="Instagram" className="contact-float-link contact-float-instagram group hidden sm:flex">
           <Instagram className="h-4 w-4" aria-hidden="true" />
           <span>Instagram</span>
         </a>
