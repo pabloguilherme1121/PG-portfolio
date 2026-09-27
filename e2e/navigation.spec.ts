@@ -83,39 +83,17 @@ test.describe("portfólio profissional", () => {
   });
 
 
-  test("briefing oferece início rápido com opções pré-selecionadas e editáveis", async ({ page }) => {
+  test("briefing mantém apenas o fluxo estável e editável", async ({ page }) => {
     await page.goto("/");
 
-    const form = page.locator("#contato-briefing");
-    await form.scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-briefing-quick-start="true"]')).toHaveCount(0);
 
-    const quickStart = form.locator('[data-briefing-quick-start="true"]');
-    await expect(quickStart).toBeVisible();
-    await expect(quickStart.locator('[data-briefing-preset="true"]')).toHaveCount(3);
-
-    await expect(form.locator('input[name="location"]')).toHaveValue("Remoto / online");
-    await expect(form.locator('select[name="deadline"]')).toHaveValue("");
-    await expect(form.locator('select[name="budget"]')).toHaveValue("Preciso de orientação");
-
-    const sitePreset = quickStart.getByRole("button", { name: /site.*landing/i });
-    await expect(sitePreset).toHaveAttribute("data-briefing-interactive", "true");
-    await expect(sitePreset).toBeEnabled();
-    await sitePreset.click();
-    await expect.poll(() =>
-      page.evaluate(() => {
-        const raw = window.localStorage.getItem("pablo-portfolio-briefing-draft");
-        return raw ? JSON.parse(raw).service : "";
-      }),
-    ).toBe("Site ou landing page");
-    await expect(form.locator('select[name="service"]')).toHaveValue("Site ou landing page");
-    await expect(form.locator('select[name="projectType"]')).toHaveValue("Marca ou negócio");
-    await expect(form.locator('textarea[name="objective"]')).toHaveValue(/apresentar.*oferta|proposta.*clareza/i);
-    await expect(form.locator('input[name="audience"]')).toHaveValue(/clientes|visitantes/i);
-    await expect(form.locator('select[name="delivery"]')).toHaveValue("Site responsivo");
-    await expect(form.locator('textarea[name="success"]')).toHaveValue(/contato|orçamento|cadastro/i);
-    await expect(form.locator('textarea[name="briefing"]')).toHaveValue(/presença digital|site/i);
-    await expect(form.locator('select[name="deadline"]')).toHaveValue("");
-    await expect(form.locator('[data-briefing-progress="true"]')).not.toHaveText(/^0%/);
+    const form = page.locator('[data-briefing-form="true"]');
+    await expect(form).toBeVisible();
+    await expect(form.locator('input[name="name"]')).toBeEditable();
+    await expect(form.locator('input[name="email"]')).toBeEditable();
+    await expect(form.locator('select[name="service"]')).toBeEditable();
+    await expect(form.locator('textarea[name="objective"]')).toBeEditable();
   });
 
   test("jogo da velha oferece pausa interativa acessível e reiniciável", async ({ page }) => {
