@@ -505,7 +505,19 @@ test.describe("portfólio profissional", () => {
       const form = page.locator("#contato-briefing");
       await form.scrollIntoViewIfNeeded();
       await expect(form.locator('[data-briefing-studio="true"]')).toBeVisible();
-      await expect.poll(() => form.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
+      const briefingOverflow = await form.evaluate((element) =>
+        Array.from(element.querySelectorAll<HTMLElement>("*"))
+          .filter((node) => node.offsetParent !== null && node.scrollWidth > node.clientWidth + 1)
+          .slice(0, 12)
+          .map((node) => ({
+            tag: node.tagName,
+            className: node.className,
+            scrollWidth: node.scrollWidth,
+            clientWidth: node.clientWidth,
+            text: node.textContent?.trim().slice(0, 80),
+          })),
+      );
+      expect(briefingOverflow).toEqual([]);
 
       const briefingButtons = form.getByRole("button");
       const briefingCount = await briefingButtons.count();
