@@ -33,4 +33,23 @@ describe("trackPortfolioEvent", () => {
     const detail = dispatched[0]?.detail as { properties: Record<string, unknown> };
     expect(Object.keys(detail.properties)).not.toEqual(expect.arrayContaining(["name", "email", "phone", "briefing", "address"]));
   });
+  it("registra a rota escolhida no experience hub sem dados pessoais", () => {
+    const track = vi.fn();
+    vi.stubGlobal("CustomEvent", class {
+      detail: unknown;
+      constructor(_name: string, init: { detail: unknown }) {
+        this.detail = init.detail;
+      }
+    });
+    vi.stubGlobal("window", {
+      location: { pathname: "/" },
+      dispatchEvent: vi.fn(),
+      umami: { track },
+    });
+
+    trackPortfolioEvent("experience_route_selected", { experienceRoute: "client" });
+
+    expect(track).toHaveBeenCalledWith("experience_route_selected", { experienceRoute: "client" });
+  });
+
 });
