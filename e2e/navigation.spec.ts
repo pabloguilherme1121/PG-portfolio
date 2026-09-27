@@ -579,6 +579,24 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+
+  test("mobile não oferece recursos de lightbox sem dados reais", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/?imagem=TEC.08");
+
+    const lightbox = page.locator('[data-lightbox-modal]');
+    await expect(lightbox).toBeVisible();
+
+    await expect(lightbox.getByText("comparação visual", { exact: true })).toHaveCount(0);
+    await expect(lightbox.getByRole("button", { name: /WebP otimizado/i })).toHaveCount(0);
+    await expect(lightbox.getByRole("button", { name: /AVIF otimizado/i })).toHaveCount(0);
+
+    await lightbox.getByText("mais ações", { exact: true }).click();
+    await expect(lightbox.getByRole("button", { name: /baixar imagem original/i })).toBeVisible();
+
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
 
