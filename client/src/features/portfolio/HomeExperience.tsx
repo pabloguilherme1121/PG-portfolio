@@ -55,7 +55,6 @@ import PortfolioProfessionalSnapshot from "@/features/portfolio/components/Portf
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import PortfolioCaseStudies from "@/features/portfolio/components/PortfolioCaseStudies";
-import { PortfolioContact } from "@/features/portfolio/components/PortfolioContact";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -76,6 +75,11 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioContact = lazy(() =>
+  import("@/features/portfolio/components/PortfolioContact").then((module) => ({
+    default: module.PortfolioContact,
+  })),
+);
 const PortfolioWebResume = lazy(() => import("@/features/portfolio/components/PortfolioWebResume"));
 const loadPortfolioResumePreview = () =>
   import("@/features/portfolio/components/PortfolioResumePreview").then((module) => ({
@@ -111,6 +115,8 @@ type PwaInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
+
+type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
 
 const descriptionStopWords = new Set([
   "a", "ao", "as", "com", "da", "de", "do", "dos", "e", "em", "na", "nas", "no", "nos", "o", "os", "ou", "para", "por", "que", "uma", "um",
@@ -184,6 +190,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -202,6 +209,10 @@ export default function Home() {
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
+  const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
+  const [contactHashRequested, setContactHashRequested] = useState(() =>
+    typeof window !== "undefined" && (window.location.hash === "#contato" || window.location.hash === "#contato-briefing"),
+  );
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -303,6 +314,7 @@ export default function Home() {
   const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed);
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -339,13 +351,27 @@ export default function Home() {
       const hasDraft = (event as CustomEvent<{ hasDraft?: unknown }>).detail?.hasDraft;
       if (typeof hasDraft === "boolean") setHasMobileBriefingDraft(hasDraft);
     };
+    const handleBriefingSeed = (event: Event) => {
+      const detail = (event as CustomEvent<BriefingSeed>).detail;
+      if (detail && typeof detail === "object") setPendingBriefingSeed({ ...detail });
+    };
 
     window.addEventListener("portfolio:experience-route", handleExperienceRoute);
     window.addEventListener("portfolio:briefing-progress", handleBriefingProgress);
+    window.addEventListener("portfolio:briefing-seed", handleBriefingSeed);
     return () => {
       window.removeEventListener("portfolio:experience-route", handleExperienceRoute);
       window.removeEventListener("portfolio:briefing-progress", handleBriefingProgress);
+      window.removeEventListener("portfolio:briefing-seed", handleBriefingSeed);
     };
+  }, []);
+
+  useEffect(() => {
+    const syncContactHash = () => {
+      setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
+    };
+    window.addEventListener("hashchange", syncContactHash);
+    return () => window.removeEventListener("hashchange", syncContactHash);
   }, []);
 
   useEffect(() => {
@@ -1413,26 +1439,50 @@ export default function Home() {
         <div ref={socialSectionRef} aria-hidden="true" className="h-px w-full" />
         {shouldLoadSocial ? <Suspense fallback={<section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Carregando repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">carregando repertório social</div></section>}><InstagramRepertoire /></Suspense> : <section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">repertório social será carregado ao rolar</div></section>}
 
-        <PortfolioContact
-          whatsAppUrl={whatsAppUrl}
-          telegramUrl={telegramUrl}
-          blockedDates={blockedDates}
-          isBlockedDatesError={isBlockedDatesError}
-          refetchBlockedDates={refetchBlockedDates}
-          availabilitySectionRef={availabilitySectionRef}
-          contextTransitionTarget={contextTransitionTarget}
-          navigateSavedAgendaContext={navigateSavedAgendaContext}
-          contextNavigationStatus={contextNavigationStatus}
-          handleSubmit={handleSubmit}
-          isQuoteRequestPending={quoteRequestMutation.isPending}
-          formError={formError}
-          formSent={formSent}
-          setFormSent={setFormSent}
-          successMessageRef={successMessageRef}
-          isStaticDeploy={isStaticDeploy}
-          briefingWhatsAppUrl={briefingWhatsAppUrl}
-          onBriefingFocusChange={setIsBriefingFieldFocused}
-        />
+        <div
+          id="contato"
+          ref={contactSectionRef}
+          data-contact-anchor="true"
+          aria-busy={!shouldRenderContact}
+          className="scroll-mt-24"
+        >
+          {shouldRenderContact ? (
+            <Suspense
+              fallback={
+                <section data-contact-placeholder="true" className="archive-chapter min-h-[720px] border-t border-white/[0.07] bg-[#070a10] px-5 py-16 sm:min-h-[820px] sm:px-8 sm:py-24" aria-label="Carregando contato e briefing">
+                  <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">carregando contato e briefing…</div>
+                </section>
+              }
+            >
+              <PortfolioContact
+                embedded
+                initialBriefingSeed={pendingBriefingSeed}
+                whatsAppUrl={whatsAppUrl}
+                telegramUrl={telegramUrl}
+                blockedDates={blockedDates}
+                isBlockedDatesError={isBlockedDatesError}
+                refetchBlockedDates={refetchBlockedDates}
+                availabilitySectionRef={availabilitySectionRef}
+                contextTransitionTarget={contextTransitionTarget}
+                navigateSavedAgendaContext={navigateSavedAgendaContext}
+                contextNavigationStatus={contextNavigationStatus}
+                handleSubmit={handleSubmit}
+                isQuoteRequestPending={quoteRequestMutation.isPending}
+                formError={formError}
+                formSent={formSent}
+                setFormSent={setFormSent}
+                successMessageRef={successMessageRef}
+                isStaticDeploy={isStaticDeploy}
+                briefingWhatsAppUrl={briefingWhatsAppUrl}
+                onBriefingFocusChange={setIsBriefingFieldFocused}
+              />
+            </Suspense>
+          ) : (
+            <section data-contact-placeholder="true" className="archive-chapter min-h-[720px] border-t border-white/[0.07] bg-[#070a10] px-5 py-16 sm:min-h-[820px] sm:px-8 sm:py-24" aria-label="Contato">
+              <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">contato e briefing serão carregados ao aproximar</div>
+            </section>
+          )}
+        </div>
 
         <section id="pg-lab" className="archive-chapter scroll-mt-24 border-t border-white/[0.07] bg-[#040a13] px-4 py-9 min-[360px]:px-5 sm:px-8 sm:py-10 lg:px-12" aria-labelledby="pg-lab-title">
           <div className="mx-auto max-w-[1440px] border border-[#67e8f9]/20 bg-[#06172f]/55 p-4 min-[360px]:p-5 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-7">
