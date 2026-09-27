@@ -101,15 +101,15 @@ export default function PortfolioExperienceHub() {
       <div className="experience-pointer-glow pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-[1440px] px-4 py-12 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
-        <div className="grid gap-7 border-b border-white/10 pb-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+      <div className="relative mx-auto max-w-[1440px] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
+        <div className="grid gap-5 border-b border-white/10 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
           <div>
             <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
               PG Experience · escolha sua rota
             </p>
             <h2
               id="experience-hub-title"
-              className="mt-4 max-w-4xl font-display text-[clamp(2.35rem,7vw,5.6rem)] font-medium leading-[0.92] tracking-[-0.06em] text-white"
+              className="mt-3 max-w-4xl font-display text-[clamp(2.05rem,10vw,5.6rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white sm:mt-4 sm:leading-[0.92] sm:tracking-[-0.06em]"
             >
               Escolha como quer explorar este portfólio.
             </h2>
@@ -126,9 +126,9 @@ export default function PortfolioExperienceHub() {
           </div>
         </div>
 
-        <div className="mt-7 grid gap-6 lg:grid-cols-[0.78fr_1.22fr]">
+        <div className="mt-6 grid gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
-            <div className="grid gap-2" role="tablist" aria-label="Escolha como quer explorar o portfólio">
+            <div data-experience-route-strip="true" className="experience-route-strip -mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
               const active = activeRoute === id;
               return (
@@ -143,14 +143,14 @@ export default function PortfolioExperienceHub() {
                   tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
                   onKeyDown={(event) => handleRouteKeyDown(event, index)}
-                  className={`experience-route-card group relative min-h-[92px] overflow-hidden border px-4 py-4 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none ${
+                  className={`experience-route-card group relative min-h-[72px] min-w-[78%] snap-start overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:min-w-0 sm:px-4 sm:py-4 ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
                   }`}
                 >
                   <span className="flex items-center gap-4">
-                    <span className={`grid h-11 w-11 shrink-0 place-items-center border ${
+                    <span className={`grid h-10 w-10 shrink-0 place-items-center border sm:h-11 sm:w-11 ${
                       active ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/10 text-[#91bad6]"
                     }`}>
                       <Icon className="h-4 w-4" aria-hidden="true" />
@@ -160,7 +160,7 @@ export default function PortfolioExperienceHub() {
                         <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f91b7]">0{index + 1} · {eyebrow}</span>
                         <span className={`h-2 w-2 rounded-full transition-all ${active ? "bg-[#67e8f9] shadow-[0_0_14px_rgba(103,232,249,0.9)]" : "bg-white/15"}`} aria-hidden="true" />
                       </span>
-                      <span className="mt-2 block font-display text-xl tracking-[-0.035em] text-white">{label}</span>
+                      <span className="mt-1.5 block font-display text-lg tracking-[-0.03em] text-white sm:mt-2 sm:text-xl sm:tracking-[-0.035em]">{label}</span>
                     </span>
                   </span>
                 </button>
@@ -174,7 +174,7 @@ export default function PortfolioExperienceHub() {
               aria-valuemin={1}
               aria-valuemax={experienceRoutes.length}
               aria-valuenow={selectedIndex + 1}
-              className="mt-4 border border-white/10 bg-[#07111f]/70 p-3"
+              className="mt-2 border border-white/10 bg-[#07111f]/70 p-3 sm:mt-4"
             >
               <div className="flex items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7597b4]">
                 <span>rota {selectedIndex + 1} de {experienceRoutes.length}</span>
@@ -196,43 +196,43 @@ export default function PortfolioExperienceHub() {
             role="tabpanel"
             aria-labelledby={`experience-route-${selected.id}`}
             data-experience-panel={selected.id}
-            className="experience-panel-enter relative overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.28)] min-[360px]:p-5 sm:p-7 lg:p-8"
+            className="experience-panel-enter relative overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-3.5 shadow-[0_24px_70px_rgba(0,0,0,0.28)] min-[360px]:p-4 sm:p-7 lg:p-8"
           >
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/25" aria-hidden="true" />
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
               <p className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#67e8f9]">{selected.eyebrow}</p>
-              <p className="font-mono text-[8px] uppercase tracking-[0.11em] text-[#7798b6]">rota ativa · {selected.proof}</p>
+              <p className="hidden font-mono text-[8px] uppercase tracking-[0.11em] text-[#7798b6] min-[390px]:block">rota ativa · {selected.proof}</p>
             </div>
 
             <div className="mt-6">
-              <h3 className="max-w-3xl font-display text-[clamp(2rem,4vw,3.8rem)] font-medium leading-[0.95] tracking-[-0.055em] text-white">
+              <h3 className="max-w-3xl font-display text-[clamp(1.75rem,9vw,3.8rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white sm:leading-[0.95] sm:tracking-[-0.055em]">
                 {selected.title}
               </h3>
               <p className="mt-4 max-w-2xl font-body text-sm leading-7 text-[#b9d6e5]">{selected.description}</p>
             </div>
 
-            <div className="mt-7 grid gap-px bg-white/10 sm:grid-cols-3" aria-label="Etapas desta rota">
+            <div className="mt-5 grid grid-cols-3 gap-px bg-white/10 sm:mt-7" aria-label="Etapas desta rota">
               {selected.steps.map((step, index) => (
-                <div key={step} className="relative bg-[#061423] px-4 py-4">
+                <div key={step} className="relative min-w-0 bg-[#061423] px-2.5 py-3 sm:px-4 sm:py-4">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-3.5 w-3.5 text-[#67e8f9]" aria-hidden="true" />
                     <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f91b7]">0{index + 1}</span>
                   </div>
-                  <p className="mt-2 font-body text-sm text-[#e2f4fb]">{step}</p>
+                  <p className="mt-1.5 break-words font-body text-[11px] leading-4 text-[#e2f4fb] sm:mt-2 sm:text-sm sm:leading-normal">{step}</p>
                 </div>
               ))}
             </div>
 
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="mt-5 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
               <a
                 href={selected.href}
                 onClick={() => trackPortfolioEvent("experience_route_cta", { experienceRoute: selected.id })}
-                className="group inline-flex min-h-12 items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_32px_rgba(56,189,248,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none"
+                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_32px_rgba(56,189,248,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:w-auto"
               >
                 {selected.cta}
                 <ArrowDownRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" aria-hidden="true" />
               </a>
-              <p className="font-mono text-[8px] uppercase leading-4 tracking-[0.1em] text-[#66849f]">
+              <p className="hidden font-mono text-[8px] uppercase leading-4 tracking-[0.1em] text-[#66849f] sm:block">
                 sem cadastro · sem perder sua posição · navegação direta
               </p>
             </div>
