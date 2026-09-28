@@ -1671,11 +1671,17 @@ html.theme-transitioning .arquivo-page * {
 
 /* Mobile snap navigation v13 — paginação real para carrosséis, com alvos de toque confortáveis. */
 .mobile-snap-pagination {
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 0.125rem;
   margin-top: 0.25rem;
+}
+
+@media (max-width: 639px) {
+  .mobile-snap-pagination {
+    display: flex;
+  }
 }
 
 .mobile-snap-page {
