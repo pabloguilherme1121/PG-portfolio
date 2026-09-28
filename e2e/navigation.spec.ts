@@ -1091,6 +1091,7 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toBeVisible();
     await expect(strip).toHaveCSS("overflow-x", "auto");
     await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+    await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
 
     await expect(strip).toHaveAttribute("aria-busy", "false");
     const cards = strip.locator("[data-featured-project]");
@@ -1171,6 +1172,7 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toBeVisible();
     await expect(strip).toHaveCSS("overflow-x", "auto");
     await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+    await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
 
     const steps = strip.locator('[data-process-step="true"]');
     await expect(steps).toHaveCount(3);
