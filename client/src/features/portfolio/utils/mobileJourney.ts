@@ -80,3 +80,17 @@ export function getMobileSecondaryShortcut(route: MobileExperienceRoute) {
   if (route === "explorer") return { href: "#pg-lab", label: "PG Arcade" } as const;
   return { href: "#servicos", label: "serviços" } as const;
 }
+
+
+export function getMobileDockModel(route: MobileExperienceRoute, hasBriefingDraft: boolean) {
+  return {
+    primary: getMobilePrimaryAction(route, hasBriefingDraft),
+    secondary: getMobileSecondaryShortcut(route),
+    hint: getMobileJourneyHint(route, hasBriefingDraft),
+  } as const;
+}
+
+export function normalizeScrollProgress(value: number) {
+  if (!Number.isFinite(value)) return 0;
+  return Math.round(Math.min(100, Math.max(0, value)));
+}
