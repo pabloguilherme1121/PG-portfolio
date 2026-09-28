@@ -810,6 +810,29 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => optionalRequests.filter((url) => /PortfolioTicTacToe/i.test(url)).length).toBeGreaterThan(0);
   });
 
+  test("header mobile mostra seção atual e progresso da jornada", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const context = page.locator('[data-mobile-scroll-context="true"]');
+    await expect(context).toBeVisible();
+    await expect(context.locator('[data-mobile-current-section="true"]')).toContainText(/início/i);
+    await expect(context.locator('[data-mobile-progress-value="true"]')).toContainText(/%/);
+
+    const ring = context.locator('[data-mobile-progress-ring="true"]');
+    const initialProgress = Number(await ring.getAttribute("data-progress"));
+    expect(initialProgress).toBeGreaterThanOrEqual(0);
+
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect.poll(async () => (await context.locator('[data-mobile-current-section="true"]').textContent()) ?? "")
+      .toMatch(/projetos/i);
+    await expect.poll(async () => Number(await ring.getAttribute("data-progress"))).toBeGreaterThan(initialProgress);
+
+    const box = await context.boundingBox();
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mobile esconde o dock enquanto o menu está aberto", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
