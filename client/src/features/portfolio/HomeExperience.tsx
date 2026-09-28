@@ -704,9 +704,11 @@ export default function Home() {
     const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
     const sections = sectionIds.map((id) => document.getElementById(id)).filter((section): section is HTMLElement => Boolean(section));
     const observer = new IntersectionObserver((entries) => {
-      const visibleEntry = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      const visibleEntry = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight * 0.22) - Math.abs(b.boundingClientRect.top - window.innerHeight * 0.22))[0];
       if (visibleEntry?.target.id) setActiveSection(visibleEntry.target.id);
-    }, { rootMargin: "-18% 0px -68% 0px", threshold: [0.1, 0.3, 0.6] });
+    }, { rootMargin: "-18% 0px -68% 0px", threshold: 0 });
     sections.forEach((section) => observer.observe(section));
     return () => observer.disconnect();
   }, []);
