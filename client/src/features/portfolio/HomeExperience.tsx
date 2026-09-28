@@ -326,6 +326,7 @@ export default function Home() {
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
+  const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
@@ -1673,11 +1674,11 @@ export default function Home() {
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav
         aria-label="Ações rápidas"
-        aria-hidden={shouldHideContactFloat ? "true" : undefined}
-        inert={shouldHideContactFloat ? true : undefined}
+        aria-hidden={isDockHidden ? "true" : undefined}
+        inert={isDockHidden ? true : undefined}
         data-mobile-contact-bar="true"
         data-mobile-dock="true"
-        data-mobile-dock-hidden={shouldHideContactFloat ? "true" : "false"}
+        data-mobile-dock-hidden={isDockHidden ? "true" : "false"}
         data-mobile-dock-compact={isMobileDockCompact ? "true" : "false"}
         className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}>
         <span data-mobile-dock-progress="true" aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-0 block h-px overflow-hidden rounded-full bg-white/10 sm:hidden">
