@@ -180,6 +180,16 @@ const navigationItems = [
   ["observatório", "#observatorio", "observatorio"],
 ] as const;
 
+const mobileSectionLabels: Record<string, string> = {
+  inicio: "início",
+  sobre: "sobre",
+  trilha: "competências",
+  servicos: "serviços",
+  projetos: "projetos",
+  observatorio: "observatório",
+  contato: "contato",
+};
+
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
@@ -670,14 +680,45 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+    let frameId: number | null = null;
+
+    const updateScrollState = () => {
+      frameId = null;
       const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress = scrollableHeight > 0
+        ? Math.min(100, Math.max(0, (window.scrollY / scrollableHeight) * 100))
+        : 0;
+      const readingLine = window.scrollY + window.innerHeight * 0.22;
+      let nextSection = "inicio";
+
+      for (const section of sections) {
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= readingLine + 1) nextSection = section.id;
+        else break;
+      }
+
       setShowBackToTop(window.scrollY > 640);
-      setScrollProgress(scrollableHeight > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollableHeight) * 100)) : 0);
+      setScrollProgress(nextProgress);
+      setActiveSection(nextSection);
     };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const scheduleScrollUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateScrollState);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollUpdate);
+    return () => {
+      window.removeEventListener("scroll", scheduleScrollUpdate);
+      window.removeEventListener("resize", scheduleScrollUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   useEffect(() => {
@@ -688,17 +729,6 @@ export default function Home() {
     };
     mediaQuery.addEventListener("change", handleViewportChange);
     return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
-
-  useEffect(() => {
-    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
-    const sections = sectionIds.map((id) => document.getElementById(id)).filter((section): section is HTMLElement => Boolean(section));
-    const observer = new IntersectionObserver((entries) => {
-      const visibleEntry = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (visibleEntry?.target.id) setActiveSection(visibleEntry.target.id);
-    }, { rootMargin: "-18% 0px -68% 0px", threshold: [0.1, 0.3, 0.6] });
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
@@ -1325,20 +1355,39 @@ export default function Home() {
             </a>
           </nav>
 
-          <div className="flex shrink-0 items-center gap-2 md:hidden">
+          <div className="flex shrink-0 items-center gap-1.5 md:hidden">
             <button
               ref={menuButtonRef}
               type="button"
               data-mobile-menu-toggle="true"
+              data-mobile-scroll-context="true"
               onClick={() => setMenuOpen((open) => !open)}
-              className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-              aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
+              className="group flex h-12 min-w-[108px] max-w-[136px] items-center gap-2 rounded-[14px] border border-[#67e8f9]/20 bg-[#071827]/92 px-1.5 text-[#d8e6fa] shadow-[0_10px_26px_rgba(2,17,31,0.24)] transition-[border-color,background-color,box-shadow] hover:border-[#67e8f9]/55 hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[124px] min-[390px]:min-w-[136px]"
+              aria-label={menuOpen ? "Fechar menu" : `Abrir menu · seção ${mobileSectionLabels[activeSection] ?? "portfólio"} · ${Math.round(scrollProgress)}% percorrido`}
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
             >
-              {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              <span
+                data-mobile-progress-ring="true"
+                data-progress={Math.round(scrollProgress)}
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full p-[2px] transition-[background] motion-reduce:transition-none"
+                style={{ background: `conic-gradient(#67e8f9 ${Math.round(scrollProgress)}%, rgba(103,232,249,0.12) 0)` }}
+                aria-hidden="true"
+              >
+                <span className="grid h-full w-full place-items-center rounded-full bg-[#07111f] shadow-inner">
+                  {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                </span>
+              </span>
+              <span className="min-w-0 flex-1 text-left">
+                <span data-mobile-current-section="true" className="block truncate font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
+                  {mobileSectionLabels[activeSection] ?? "portfólio"}
+                </span>
+                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#7fa5bf]">
+                  {Math.round(scrollProgress)}% percorrido
+                </span>
+              </span>
             </button>
-            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center border border-white/10 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
+            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center rounded-[12px] border border-white/10 bg-[#071326]/75 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
           </div>
         </div>
         {menuOpen && (
