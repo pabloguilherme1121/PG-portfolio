@@ -523,6 +523,29 @@ test.describe("portfólio profissional", () => {
     );
   });
 
+  test("projeto destacado responde à posição do toque para feedback visual contextual", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const card = page.locator('[data-featured-project="TEC.09"]');
+    await card.scrollIntoViewIfNeeded();
+    const box = await card.boundingBox();
+    expect(box).not.toBeNull();
+
+    await card.dispatchEvent("pointerdown", {
+      pointerType: "touch",
+      clientX: (box?.x ?? 0) + 54,
+      clientY: (box?.y ?? 0) + 86,
+    });
+
+    const vars = await card.evaluate((element) => ({
+      x: (element as HTMLElement).style.getPropertyValue("--project-x"),
+      y: (element as HTMLElement).style.getPropertyValue("--project-y"),
+    }));
+    expect(vars.x).toMatch(/px$/);
+    expect(vars.y).toMatch(/px$/);
+  });
+
   test("projetos destacados mostram estado, prova direta e detalhes separados", async ({ page }) => {
     await page.goto("/");
 
@@ -701,6 +724,32 @@ test.describe("portfólio profissional", () => {
       expect(boardBox?.width ?? 0).toBeGreaterThanOrEqual(72);
       expect(boardBox?.height ?? 0).toBeGreaterThanOrEqual(72);
     }
+  });
+
+  test("hero mobile em 320px transforma provas em rail de swipe sem comprimir leitura", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+
+    const rail = page.locator('[data-mobile-hero-proof-rail="true"]');
+    await expect(rail).toBeVisible();
+    const metrics = await rail.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const first = element.querySelector<HTMLElement>('[data-mobile-hero-proof="true"]');
+      return {
+        display: style.display,
+        overflowX: style.overflowX,
+        scrollSnapType: style.scrollSnapType,
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+        firstWidth: first?.getBoundingClientRect().width ?? 0,
+      };
+    });
+
+    expect(metrics.display).toBe("flex");
+    expect(["auto", "scroll"]).toContain(metrics.overflowX);
+    expect(metrics.scrollSnapType).toContain("x");
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+    expect(metrics.firstWidth).toBeGreaterThanOrEqual(220);
   });
 
   test("mobile incorpora hierarquia visual do mockup sem aumentar a carga de navegação", async ({ page }) => {
@@ -1088,6 +1137,30 @@ test.describe("portfólio profissional", () => {
     await expect(first).toBeFocused();
     await expect(first).toHaveAttribute("aria-selected", "true");
     await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "1");
+  });
+
+  test("experience hub centraliza automaticamente a rota escolhida no mobile", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+
+    const hub = page.locator('[data-experience-hub="true"]');
+    await hub.scrollIntoViewIfNeeded();
+    const strip = hub.locator('[data-experience-route-strip="true"]');
+    const third = hub.locator('[data-experience-route="true"]').nth(2);
+
+    await third.evaluate((element) => (element as HTMLButtonElement).click());
+    await expect(third).toHaveAttribute("aria-selected", "true");
+
+    await expect.poll(async () => strip.evaluate((element) => {
+      const active = element.querySelector<HTMLElement>('[aria-selected="true"]');
+      if (!active) return 999;
+      const stripRect = element.getBoundingClientRect();
+      const activeRect = active.getBoundingClientRect();
+      const stripCenter = stripRect.left + stripRect.width / 2;
+      const activeCenter = activeRect.left + activeRect.width / 2;
+      return Math.abs(stripCenter - activeCenter);
+    })).toBeLessThanOrEqual(24);
   });
 
   test("experience hub vira uma navegação compacta e confortável no mobile", async ({ page }) => {
