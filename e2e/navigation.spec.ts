@@ -1024,6 +1024,30 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
 
+  test("mobile apresenta projetos destacados em showcase horizontal por swipe", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const projects = page.locator("#projetos");
+    await projects.scrollIntoViewIfNeeded();
+
+    const strip = projects.locator('[data-featured-project-strip="true"]');
+    await expect(strip).toBeVisible();
+    await expect(strip).toHaveCSS("overflow-x", "auto");
+    await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+
+    const cards = strip.locator("[data-featured-project]");
+    await expect(cards).toHaveCount(2);
+    const firstBox = await cards.first().boundingBox();
+    expect(firstBox?.width ?? 0).toBeLessThan(390);
+    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
+
+    const initialScroll = await strip.evaluate((element) => element.scrollLeft);
+    await strip.evaluate((element) => element.scrollTo({ left: element.scrollWidth, behavior: "instant" as ScrollBehavior }));
+    await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mobile reduz densidade dos projetos e mantém CTAs principais em largura confortável", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");
