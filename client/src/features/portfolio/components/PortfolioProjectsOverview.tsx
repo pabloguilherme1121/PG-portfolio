@@ -5,9 +5,9 @@ import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHoriz
 import { useState } from "react";
 
 const observatorioInsights = [
-  { label: "Problema", text: "Dados e indicadores dispersos dificultam encontrar contexto e comparar informações." },
-  { label: "Solução", text: "Uma interface responsiva organiza indicadores, filtros e visualizações em uma jornada de consulta clara." },
-  { label: "Prova", text: "O produto publicado pode ser usado no navegador; o código-fonte permite examinar a implementação." },
+  { label: "Problema", text: "População e eleitorado vêm de fontes e datas diferentes. Sem contexto, é fácil comparar números que medem coisas distintas." },
+  { label: "Solução", text: "A leitura rápida mostra cinco indicadores com data de referência e caminho até a fonte; a mesma informação se reorganiza no celular." },
+  { label: "Prova", text: "No produto publicado, cada cartão permite conferir a origem. O repositório público mostra como a experiência foi construída." },
 ] as const;
 
 type ResponsiveSourceSet = {
@@ -33,6 +33,9 @@ export default function PortfolioProjectsOverview({
   openProjectDetails,
 }: PortfolioProjectsOverviewProps) {
   const [activeInsight, setActiveInsight] = useState<(typeof observatorioInsights)[number]["label"]>("Problema");
+  const [captureFormat, setCaptureFormat] = useState<"desktop" | "mobile">(() =>
+    typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches ? "mobile" : "desktop",
+  );
   const featuredCount = featuredCardsReady ? featuredRepositories.length : 0;
   const {
     activeIndex: activeFeaturedIndex,
@@ -57,11 +60,11 @@ export default function PortfolioProjectsOverview({
         </div>
       </div>
 
-      <article id="observatorio" className="mt-7 scroll-mt-28 grid gap-5 border border-[#67e8f9]/30 bg-[#081a2e] p-4 min-[360px]:p-5 sm:mt-8 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
+      <article id="observatorio" className="mt-7 scroll-mt-28 grid min-w-0 gap-6 overflow-hidden border border-[#67e8f9]/30 bg-[#081a2e] p-4 min-[360px]:p-5 sm:mt-8 sm:p-7 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-8">
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
-          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Um produto publicado que mostra como organizo informação complexa em uma experiência compreensível e navegável. O Observatório reúne estrutura de informação, interface responsiva, indicadores, dashboard e publicação web em uma entrega que pode ser aberta e avaliada.</p>
+          <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Indicadores de Águas Lindas de Goiás em uma leitura clara: números com data, contexto e acesso à fonte. Da arquitetura da informação à publicação, a interface ajuda a comparar dados sem perder sua origem.</p>
           <div className="mt-5" aria-label="Leitura guiada do case Observatório">
             <div className="grid grid-cols-3 gap-2" role="group" aria-label="Etapas do case">
               {observatorioInsights.map(({ label }) => (
@@ -82,7 +85,53 @@ export default function PortfolioProjectsOverview({
             <span className="border border-white/10 px-2 py-1">GitHub Pages</span>
           </div>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
+        <figure className="min-w-0 self-center">
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">dentro do produto</p>
+              <p className="mt-1 font-body text-xs text-[#bdd5e8]">A mesma leitura de dados em duas telas.</p>
+            </div>
+            <div role="group" aria-label="Formato da captura do Observatório" className="flex gap-1 border border-[#67e8f9]/25 p-1">
+              {(["desktop", "mobile"] as const).map((format) => (
+                <button
+                  key={format}
+                  type="button"
+                  aria-pressed={captureFormat === format}
+                  onClick={() => setCaptureFormat(format)}
+                  className="min-h-11 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                >
+                  {format === "desktop" ? "Desktop" : "Mobile"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid min-h-[330px] min-w-0 place-items-center overflow-hidden border border-[#67e8f9]/25 bg-[#04101f] p-3 sm:min-h-[390px] sm:p-5">
+            <div className={`min-w-0 overflow-hidden border border-[#c9e5f2]/30 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.3)] ${captureFormat === "mobile" ? "w-[min(100%,292px)] rounded-[22px] p-[6px]" : "w-full rounded-xl p-1.5"}`}>
+              <div aria-hidden="true" className="flex h-6 items-center gap-1.5 border-b border-[#d6e6ef] bg-[#f4f8fb] px-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#ff8b83]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#ffd277]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-[#82d9ad]" />
+                <span className="ml-2 truncate font-mono text-[8px] text-[#456178]">observatorio · indicadores</span>
+              </div>
+              <img
+                data-observatorio-capture="true"
+                src={`${import.meta.env.BASE_URL}portfolio-media/observatorio-dashboard-${captureFormat}.png`}
+                alt={captureFormat === "mobile"
+                  ? "Captura mobile do Observatório com leitura rápida e indicadores apresentados em cartões verticais."
+                  : "Captura desktop do Observatório com cinco indicadores, datas de referência e links para as fontes."}
+                width={captureFormat === "mobile" ? 351 : 1376}
+                height={captureFormat === "mobile" ? 510 : 530}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-full"
+              />
+            </div>
+          </div>
+          <figcaption className="mt-3 max-w-xl font-body text-[11px] leading-5 text-[#9fc4d8]">
+            Captura da interface publicada em setembro de 2026. Os números podem mudar; consulte o produto para dados e fontes atuais.
+          </figcaption>
+        </figure>
+        <div className="flex flex-col gap-2 sm:flex-row lg:col-span-2 lg:justify-end">
           <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
           <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
         </div>
