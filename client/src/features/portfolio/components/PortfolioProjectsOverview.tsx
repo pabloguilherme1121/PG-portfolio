@@ -71,7 +71,21 @@ export default function PortfolioProjectsOverview({
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Projetos selecionados para mostrar o que foi feito, por que as decisões foram tomadas e qual valor cada entrega demonstra.</p>
         </div>
-        <div className="mt-6 grid gap-px bg-[#3b82f6]/15" aria-busy={!featuredCardsReady}>
+        <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">
+          <p data-featured-swipe-hint="true" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+            deslize para comparar projetos
+          </p>
+          <span className="inline-flex items-center gap-1" aria-hidden="true">
+            <span className="h-1.5 w-5 rounded-full bg-[#67e8f9]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+          </span>
+        </div>
+        <div
+          data-featured-project-strip="true"
+          aria-label="Projetos em destaque — deslize horizontalmente no celular"
+          className="featured-project-showcase mt-3 bg-[#3b82f6]/15 sm:mt-6"
+          aria-busy={!featuredCardsReady}
+        >
           <div role="status" aria-live="polite" className="sr-only">
             {featuredCardsReady
               ? `${featuredRepositories.length} projetos destacados com prova direta e detalhes disponíveis.`
