@@ -62,6 +62,17 @@ export default function PortfolioExperienceHub() {
     }
     window.dispatchEvent(new CustomEvent<{ routeId: MobileExperienceRoute }>("portfolio:experience-route", { detail: { routeId } }));
     trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
+
+    if (window.matchMedia("(max-width: 639px)").matches) {
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      window.requestAnimationFrame(() => {
+        document.getElementById(`experience-route-${routeId}`)?.scrollIntoView({
+          behavior: reduceMotion ? "auto" : "smooth",
+          block: "nearest",
+          inline: "center",
+        });
+      });
+    }
   }
 
   function handleRouteKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
