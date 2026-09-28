@@ -1,4 +1,5 @@
 import { ArrowUpRight, Github, Play } from "lucide-react";
+import type { PointerEvent } from "react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -13,9 +14,20 @@ export default function PortfolioFeaturedProjectCard({
 }: PortfolioFeaturedProjectCardProps) {
   const EvidenceIcon = project.evidence.type === "code" ? Github : Play;
 
+  function updatePointerFeedback(event: PointerEvent<HTMLElement>) {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--project-x", `${event.clientX - bounds.left}px`);
+    event.currentTarget.style.setProperty("--project-y", `${event.clientY - bounds.top}px`);
+  }
+
   return (
     <article
       data-featured-project={project.id}
+      data-project-interaction="spotlight"
+      onPointerDown={updatePointerFeedback}
+      onPointerMove={(event) => {
+        if (event.pointerType !== "touch") updatePointerFeedback(event);
+      }}
       className="featured-project-card group flex min-h-full flex-col bg-[#07111f] p-4 text-left sm:p-5"
       aria-labelledby={`featured-title-${project.id}`}
     >
