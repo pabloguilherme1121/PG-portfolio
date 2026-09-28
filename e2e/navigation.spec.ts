@@ -1076,6 +1076,34 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mobile transforma serviços em explorador compacto por toque", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const services = page.locator("#servicos");
+    await services.scrollIntoViewIfNeeded();
+
+    const tabs = services.locator('[data-service-selector="true"] [role="tab"]');
+    await expect(tabs).toHaveCount(2);
+    await expect(tabs.nth(0)).toHaveAttribute("aria-selected", "true");
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "false");
+
+    const panels = services.locator('[data-service-panel="true"]');
+    await expect(panels).toHaveCount(2);
+    await expect(panels.nth(0)).toBeVisible();
+    await expect(panels.nth(1)).toBeHidden();
+
+    await tabs.nth(1).click();
+    await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+    await expect(panels.nth(0)).toBeHidden();
+    await expect(panels.nth(1)).toBeVisible();
+    await expect(panels.nth(1).getByRole("link", { name: /iniciar briefing/i })).toBeVisible();
+
+    const selectedBox = await panels.nth(1).boundingBox();
+    expect(selectedBox?.width ?? 0).toBeLessThanOrEqual(390);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mobile transforma o processo em linha do tempo horizontal por swipe", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
