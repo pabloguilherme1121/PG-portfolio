@@ -752,6 +752,31 @@ test.describe("portfólio profissional", () => {
     expect(metrics.firstWidth).toBeGreaterThanOrEqual(220);
   });
 
+  test("primeira dobra mobile mantém a ação legível e deixa provas detalhadas sob demanda", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto("/");
+    const hero = page.locator("#inicio");
+    const primaryAction = hero.getByRole("link", { name: /começar diagnóstico/i });
+    const proofDeck = hero.locator('[data-attention-hook="proof-deck"]');
+    const disclosure = proofDeck.getByRole("button", { name: /explorar provas/i });
+
+    await expect(disclosure).toHaveAttribute("aria-expanded", "false");
+    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir/i })).toBeHidden();
+    const firstFoldAction = await primaryAction.boundingBox();
+    expect((firstFoldAction?.y ?? 1000) + (firstFoldAction?.height ?? 0)).toBeLessThan(760);
+    await disclosure.click();
+    await expect(disclosure).toHaveAttribute("aria-expanded", "true");
+    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir/i })).toBeVisible();
+    await proofDeck.getByRole("button", { name: "qualidade", exact: true }).click();
+    await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const wideAction = await primaryAction.boundingBox();
+    expect(wideAction?.width ?? 0).toBeGreaterThanOrEqual(320);
+    expect(wideAction?.height ?? 1000).toBeLessThanOrEqual(60);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+
   test("mobile incorpora hierarquia visual do mockup sem aumentar a carga de navegação", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
