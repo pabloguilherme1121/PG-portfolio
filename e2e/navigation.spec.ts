@@ -772,6 +772,9 @@ test.describe("portfólio profissional", () => {
     const dock = page.locator('[data-mobile-contact-bar="true"]');
     await expect(dock).toHaveAttribute("data-mobile-dock", "true");
     await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
+    await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toBeVisible();
+    await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toHaveAttribute("href", "#servicos");
+    await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(1);
     await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
 
     await page.getByRole("button", { name: /abrir.*pg arcade|jogar.*pg arcade/i }).click();
@@ -967,11 +970,13 @@ test.describe("portfólio profissional", () => {
 
     const quickBar = page.locator('[data-mobile-contact-bar="true"]');
     const primaryAction = page.locator('[data-mobile-primary-action="true"]');
+    const secondaryAction = page.locator('[data-mobile-dock-secondary="true"]');
     const whatsappAction = page.locator('[data-mobile-whatsapp-action="true"]');
 
     await expect(quickBar).toBeVisible();
     await expect(quickBar.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
     await expect(primaryAction).toHaveAttribute("href", "#diagnostico");
+    await expect(secondaryAction).toHaveAttribute("href", "#servicos");
     await expect(primaryAction).toContainText(/começar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/diagnóstico.*briefing.*contato/i);
     await expect(whatsappAction).toBeVisible();
@@ -981,6 +986,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
     await expect(primaryAction).toContainText(/ver perfil/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/perfil.*provas.*contato/i);
+    await expect(secondaryAction).toHaveAttribute("href", "#curriculo-web");
 
     await page.reload();
     await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
@@ -991,6 +997,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction).toHaveAttribute("href", "#projetos");
     await expect(primaryAction).toContainText(/explorar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/projetos.*cases.*código/i);
+    await expect(secondaryAction).toHaveAttribute("href", "#pg-lab");
 
     await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
     await page.locator('#contato-briefing input[name="name"]').fill("Visitante mobile");
@@ -1000,7 +1007,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction).toContainText(/retomar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/briefing salvo/i);
 
-    for (const action of [primaryAction, whatsappAction]) {
+    for (const action of [primaryAction, secondaryAction, whatsappAction]) {
       const box = await action.boundingBox();
       expect(box?.height ?? 0).toBeGreaterThanOrEqual(48);
     }
