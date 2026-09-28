@@ -1503,6 +1503,13 @@ html.theme-transitioning .arquivo-page * {
     scroll-snap-stop: always;
   }
 
+  .experience-route-strip::before,
+  .experience-route-strip::after {
+    content: "";
+    flex: 0 0 clamp(3rem, 18vw, 4rem);
+    pointer-events: none;
+  }
+
   [data-experience-hub="true"] {
     contain-intrinsic-size: 920px;
   }
