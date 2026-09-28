@@ -1,4 +1,4 @@
-import { ArrowUpRight, BarChart3, ClipboardCheck, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, BarChart3, ChevronDown, ClipboardCheck, ShieldCheck } from "lucide-react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -40,6 +40,7 @@ const proofItems = [
 
 export default function PortfolioProofDeck() {
   const [activeId, setActiveId] = useState<(typeof proofItems)[number]["id"]>("produto");
+  const [mobileExpanded, setMobileExpanded] = useState(false);
   const active = proofItems.find((item) => item.id === activeId) ?? proofItems[0];
   const ActiveIcon = active.Icon;
 
@@ -47,10 +48,23 @@ export default function PortfolioProofDeck() {
     <aside
       data-attention-hook="proof-deck"
       aria-label="Provas interativas do portfólio"
-      className="relative overflow-hidden border border-[#67e8f9]/20 bg-[#061226]/88 shadow-[0_18px_60px_rgba(0,0,0,0.24)] backdrop-blur-md"
+      className="relative overflow-hidden border border-[#67e8f9]/20 bg-[#061226]/95 shadow-[0_18px_60px_rgba(0,0,0,0.24)] sm:backdrop-blur-md"
     >
+      <button
+        type="button"
+        aria-expanded={mobileExpanded}
+        aria-controls="portfolio-proof-deck-content"
+        onClick={() => setMobileExpanded((expanded) => !expanded)}
+        className="flex min-h-14 w-full items-center justify-between gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:hidden"
+      >
+        <span className="min-w-0">
+          <span className="block font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff]">Explorar provas</span>
+          <span className="mt-1 block font-body text-xs text-[#9fc4d8]">Produto publicado · qualidade · briefing</span>
+        </span>
+        <ChevronDown aria-hidden="true" className={`h-4 w-4 shrink-0 text-[#67e8f9] transition-transform motion-reduce:transition-none ${mobileExpanded ? "rotate-180" : ""}`} />
+      </button>
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-20" aria-hidden="true" />
-      <div className="relative grid gap-px bg-white/10 lg:grid-cols-[0.72fr_1.28fr]">
+      <div id="portfolio-proof-deck-content" className={`relative gap-px bg-white/10 lg:grid-cols-[0.72fr_1.28fr] ${mobileExpanded ? "grid" : "hidden sm:grid"}`}>
         <div className="bg-[#07111f]/96 p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>

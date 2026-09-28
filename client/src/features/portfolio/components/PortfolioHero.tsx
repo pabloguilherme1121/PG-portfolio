@@ -52,7 +52,7 @@ export default function PortfolioHero({
             <span className="h-px w-10 bg-[#38bdf8]" />
             Pablo Guilherme · produtos digitais do problema à publicação
           </div>
-          <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.35rem,11vw,3.15rem)] font-semibold leading-[0.9] tracking-[-0.06em] sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
+          <h1 className="reveal delay-1 mt-5 max-w-4xl font-display text-[clamp(2.05rem,9.7vw,3.15rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
           <figure className="hero-portrait-card mt-4 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
@@ -69,8 +69,8 @@ export default function PortfolioHero({
           </figure>
 
           <div className="reveal delay-2 mt-5 flex max-w-xl flex-col gap-4 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
-            <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
-              Transformo problemas em produtos digitais claros e publicados. Estratégia, interface, código, teste e deploy em uma única execução.
+            <p className="text-balance font-body text-base leading-7 text-[#bed0ea] sm:text-lg sm:leading-8">
+              Planejo, desenho e desenvolvo produtos digitais claros — do problema à publicação.
             </p>
             <p className="hidden max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff] sm:block">
               Produto digital · React + TypeScript · dashboards · publicação web
@@ -89,7 +89,7 @@ export default function PortfolioHero({
               ))}
             </div>
 
-            <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[390px]:grid-cols-[minmax(0,1fr)_auto] sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
+            <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
                 href="#diagnostico"
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
@@ -97,7 +97,7 @@ export default function PortfolioHero({
               >
                 começar diagnóstico <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
-              <a href="#observatorio" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white min-[390px]:w-auto min-[390px]:border-transparent sm:w-auto sm:border-transparent">
+              <a href="#observatorio" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white sm:w-auto sm:border-transparent">
                 ver projeto em produção <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
