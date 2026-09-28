@@ -3,6 +3,7 @@ import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { processSteps, serviceOffers, skillTracks } from "../portfolioData";
+import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHorizontalSnapNavigation";
 
 const textureUrl = publicMediaPath("/manus-storage/pablo-systems-texture_cf9aade1.png");
 const textureResponsive = {
@@ -77,6 +78,25 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
                   </article>
                 ))}
               </div>
+            </div>
+            <div
+              data-process-pagination="true"
+              className="mobile-snap-pagination sm:hidden"
+              role="group"
+              aria-label="Navegar entre etapas do processo"
+            >
+              {processSteps.map((step, index) => (
+                <button
+                  key={`process-page-${step.number}`}
+                  type="button"
+                  aria-label={`Ir para etapa ${index + 1}: ${step.title}`}
+                  aria-current={activeProcessIndex === index ? "step" : undefined}
+                  onClick={() => scrollToProcessIndex(index)}
+                  className="mobile-snap-page"
+                >
+                  <span aria-hidden="true" />
+                </button>
+              ))}
             </div>
           </div>
         </section>
@@ -218,6 +238,15 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
 }
 
 export function PortfolioProcess() {
+  const {
+    activeIndex: activeProcessIndex,
+    containerRef: processStripRef,
+    scrollToIndex: scrollToProcessIndex,
+  } = useHorizontalSnapNavigation({
+    itemSelector: "[data-process-step]",
+    itemCount: processSteps.length,
+  });
+
   return (
         <section id="processo" className="archive-chapter relative scroll-mt-24 overflow-hidden border-t border-white/[0.07] bg-[#061226]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
@@ -228,15 +257,14 @@ export function PortfolioProcess() {
               <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um processo direto para transformar contexto em escopo, execução, validação e uma entrega pronta para uso.</p>
               <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">iniciar um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
               <div className="mt-8 flex items-center justify-between gap-3 sm:hidden">
-                <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">deslize para percorrer as etapas</p>
-                <span className="inline-flex items-center gap-1" aria-hidden="true">
-                  <span className="h-1.5 w-5 rounded-full bg-[#67e8f9]" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+                <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">deslize ou toque para percorrer</p>
+                <span data-process-active-label="true" className="shrink-0 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff]">
+                  {activeProcessIndex + 1} / {processSteps.length}
                 </span>
               </div>
             </div>
             <div
+              ref={processStripRef}
               data-process-strip="true"
               role="list"
               aria-label="Etapas do processo — deslize horizontalmente no celular"
