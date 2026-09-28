@@ -154,7 +154,7 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
 
 export function PortfolioProcess() {
   return (
-        <section className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#061226]">
+        <section id="processo" className="archive-chapter relative scroll-mt-24 overflow-hidden border-t border-white/[0.07] bg-[#061226]">
           <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-35" />
           <div className="relative mx-auto grid max-w-[1440px] gap-10 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.82fr_1.18fr] lg:px-12 lg:py-28">
             <div>
@@ -162,11 +162,24 @@ export function PortfolioProcess() {
               <h2 className="mt-5 max-w-md font-display text-[clamp(2.7rem,4.8vw,5.5rem)] font-medium leading-[0.93] tracking-[-0.06em] text-white">Do problema à solução publicada.</h2>
               <p className="mt-6 max-w-sm font-body text-base leading-8 text-[#c0e3f4]">Um processo direto para transformar contexto em escopo, execução, validação e uma entrega pronta para uso.</p>
               <a href="#contato" className="mt-7 inline-flex items-center gap-2 border-b border-[#38bdf8] pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.13em] text-[#e3faff] transition-colors hover:text-[#a5f3fc]">iniciar um projeto <ArrowUpRight className="h-3.5 w-3.5" /></a>
+              <div className="mt-8 flex items-center justify-between gap-3 sm:hidden">
+                <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">deslize para percorrer as etapas</p>
+                <span className="inline-flex items-center gap-1" aria-hidden="true">
+                  <span className="h-1.5 w-5 rounded-full bg-[#67e8f9]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
+                </span>
+              </div>
             </div>
-            <div className="divide-y divide-cyan-100/[0.12] border-y border-cyan-100/[0.12]">
+            <div
+              data-process-strip="true"
+              role="list"
+              aria-label="Etapas do processo — deslize horizontalmente no celular"
+              className="process-step-strip border-y border-cyan-100/[0.12]"
+            >
               {processSteps.map((step) => (
-                <article key={step.number} className="grid gap-5 py-7 sm:grid-cols-[80px_1fr] sm:py-9">
-                  <span className="font-mono text-xl text-[#67e8f9]">{step.number}</span>
+                <article key={step.number} role="listitem" data-process-step="true" className="process-step-card grid gap-5 py-7 sm:grid-cols-[80px_1fr] sm:py-9">
+                  <span className="process-step-number font-mono text-xl text-[#67e8f9]">{step.number}</span>
                   <div>
                     <h3 className="font-display text-2xl font-medium text-white">{step.title}</h3>
                     <p className="mt-3 max-w-xl font-body text-sm leading-7 text-[#b9d8e8]">{step.text}</p>
