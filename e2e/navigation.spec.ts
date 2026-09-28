@@ -1076,6 +1076,30 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mobile transforma o processo em linha do tempo horizontal por swipe", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const process = page.locator("#processo");
+    await process.scrollIntoViewIfNeeded();
+
+    const strip = process.locator('[data-process-strip="true"]');
+    await expect(strip).toBeVisible();
+    await expect(strip).toHaveCSS("overflow-x", "auto");
+    await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+
+    const steps = strip.locator('[data-process-step="true"]');
+    await expect(steps).toHaveCount(3);
+    const firstBox = await steps.first().boundingBox();
+    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
+    expect(firstBox?.width ?? 0).toBeLessThan(390);
+
+    const initialScroll = await strip.evaluate((element) => element.scrollLeft);
+    await strip.evaluate((element) => element.scrollTo({ left: element.scrollWidth, behavior: "instant" as ScrollBehavior }));
+    await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
+  });
+
   test("mobile reduz densidade dos projetos e mantém CTAs principais em largura confortável", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");
