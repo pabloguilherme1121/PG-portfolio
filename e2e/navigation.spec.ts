@@ -1064,6 +1064,9 @@ test.describe("portfólio profissional", () => {
     const strip = projects.locator('[data-featured-project-strip="true"]');
     const pagination = projects.locator('[data-featured-pagination="true"]');
     const cards = strip.locator("[data-featured-project]");
+
+    await expect(strip).toHaveAttribute("aria-busy", "false");
+    await expect(cards.first()).toBeVisible();
     const cardCount = await cards.count();
 
     await expect(pagination).toBeVisible();
