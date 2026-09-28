@@ -1,6 +1,7 @@
 import { ArrowUpRight, Github } from "lucide-react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import PortfolioFeaturedProjectCard from "@/features/portfolio/components/PortfolioFeaturedProjectCard";
+import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHorizontalSnapNavigation";
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -24,6 +25,16 @@ export default function PortfolioProjectsOverview({
   featuredRepositories,
   openProjectDetails,
 }: PortfolioProjectsOverviewProps) {
+  const featuredCount = featuredCardsReady ? featuredRepositories.length : 0;
+  const {
+    activeIndex: activeFeaturedIndex,
+    containerRef: featuredStripRef,
+    scrollToIndex: scrollToFeaturedIndex,
+  } = useHorizontalSnapNavigation({
+    itemSelector: "[data-featured-project]",
+    itemCount: featuredCount,
+  });
+
   return (
     <>
       <div className="flex flex-col justify-between gap-5 border-b border-white/[0.1] pb-7 sm:gap-6 sm:pb-9 sm:flex-row sm:items-end">
@@ -73,14 +84,16 @@ export default function PortfolioProjectsOverview({
         </div>
         <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">
           <p data-featured-swipe-hint="true" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">
-            deslize para comparar projetos
+            deslize ou toque para comparar
           </p>
-          <span className="inline-flex items-center gap-1" aria-hidden="true">
-            <span className="h-1.5 w-5 rounded-full bg-[#67e8f9]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
-          </span>
+          {featuredCount > 0 && (
+            <span data-featured-active-label="true" className="shrink-0 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff]">
+              {activeFeaturedIndex + 1} / {featuredCount}
+            </span>
+          )}
         </div>
         <div
+          ref={featuredStripRef}
           data-featured-project-strip="true"
           aria-label="Projetos em destaque — deslize horizontalmente no celular"
           className="featured-project-showcase mt-3 bg-[#3b82f6]/15 sm:mt-6"
@@ -121,6 +134,27 @@ export default function PortfolioProjectsOverview({
                 </div>
               ))}
         </div>
+        {featuredCardsReady && featuredCount > 1 && (
+          <div
+            data-featured-pagination="true"
+            className="mobile-snap-pagination px-4 sm:hidden"
+            role="group"
+            aria-label="Navegar entre projetos em destaque"
+          >
+            {featuredRepositories.map((project, index) => (
+              <button
+                key={`featured-page-${project.id}`}
+                type="button"
+                aria-label={`Ir para projeto ${index + 1}: ${project.name}`}
+                aria-current={activeFeaturedIndex === index ? "true" : undefined}
+                onClick={() => scrollToFeaturedIndex(index)}
+                className="mobile-snap-page"
+              >
+                <span aria-hidden="true" />
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
     </>
