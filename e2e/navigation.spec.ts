@@ -1036,7 +1036,9 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toHaveCSS("overflow-x", "auto");
     await expect(strip).toHaveCSS("scroll-snap-type", /x/);
 
+    await expect(strip).toHaveAttribute("aria-busy", "false");
     const cards = strip.locator("[data-featured-project]");
+    await expect(cards.first()).toBeVisible();
     const cardCount = await cards.count();
     expect(cardCount).toBeGreaterThanOrEqual(1);
     const firstBox = await cards.first().boundingBox();
