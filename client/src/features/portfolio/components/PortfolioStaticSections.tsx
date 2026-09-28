@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
@@ -93,7 +93,7 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
     window.requestAnimationFrame(() => document.getElementById(`service-tab-${next.id}`)?.focus());
   }
 
-  function handleServiceTabKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+  function handleServiceTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
     if (event.key === "ArrowRight" || event.key === "ArrowDown") {
       event.preventDefault();
       focusServiceTab((index + 1) % serviceOffers.length);
