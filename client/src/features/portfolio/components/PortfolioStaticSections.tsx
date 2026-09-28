@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
@@ -83,6 +84,31 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
 }
 
 export function PortfolioServices({ markUrl }: { markUrl: string }) {
+  const [activeServiceId, setActiveServiceId] = useState(serviceOffers[0]?.id ?? "site");
+
+  function focusServiceTab(index: number) {
+    const next = serviceOffers[index];
+    if (!next) return;
+    setActiveServiceId(next.id);
+    window.requestAnimationFrame(() => document.getElementById(`service-tab-${next.id}`)?.focus());
+  }
+
+  function handleServiceTabKeyDown(event: React.KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      event.preventDefault();
+      focusServiceTab((index + 1) % serviceOffers.length);
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      event.preventDefault();
+      focusServiceTab((index - 1 + serviceOffers.length) % serviceOffers.length);
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      focusServiceTab(0);
+    } else if (event.key === "End") {
+      event.preventDefault();
+      focusServiceTab(serviceOffers.length - 1);
+    }
+  }
+
   function seedServiceBriefing(serviceId: string, briefingSeed: (typeof serviceOffers)[number]["briefingSeed"]) {
     trackPortfolioEvent("service_briefing_started", { serviceId });
     window.dispatchEvent(new CustomEvent("portfolio:briefing-seed", { detail: briefingSeed }));
@@ -104,9 +130,48 @@ export function PortfolioServices({ markUrl }: { markUrl: string }) {
               </div>
             </div>
 
-            <div className="mt-8 divide-y divide-white/[0.1] border-y border-white/[0.1]">
+            <div
+              data-service-selector="true"
+              role="tablist"
+              aria-label="Escolha um serviço para explorar"
+              className="mt-7 grid grid-cols-2 gap-2 sm:hidden"
+            >
+              {serviceOffers.map(({ id, number, title }, index) => {
+                const selected = activeServiceId === id;
+                return (
+                  <button
+                    key={id}
+                    id={`service-tab-${id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    aria-controls={`service-panel-${id}`}
+                    tabIndex={selected ? 0 : -1}
+                    data-service-selector-option={id}
+                    onClick={() => setActiveServiceId(id)}
+                    onKeyDown={(event) => handleServiceTabKeyDown(event, index)}
+                    className={`service-selector-button min-h-14 rounded-[14px] border px-3 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${selected ? "is-active" : ""}`}
+                  >
+                    <span className="block font-mono text-[8px] uppercase tracking-[0.11em] text-[#67e8f9]">{number}</span>
+                    <span className="mt-1 block font-mono text-[9px] font-semibold uppercase leading-4 tracking-[0.07em] text-[#d9fbff]">{title}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="service-offer-list mt-4 divide-y divide-white/[0.1] border-y border-white/[0.1] sm:mt-8">
               {serviceOffers.map(({ id, number, label, title, text, detail, delivery, duration, Icon, evidence, briefingSeed }, index) => (
-                <article key={number} data-service-offer="true" data-service-id={id} className={`archive-entry group relative grid gap-7 overflow-hidden border-l border-transparent py-9 transition-all duration-300 hover:border-[#67e8f9]/60 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}>
+                <article
+                  key={number}
+                  id={`service-panel-${id}`}
+                  role="tabpanel"
+                  aria-labelledby={`service-tab-${id}`}
+                  data-service-offer="true"
+                  data-service-panel="true"
+                  data-service-active={activeServiceId === id ? "true" : "false"}
+                  data-service-id={id}
+                  className={`service-offer-panel archive-entry group relative grid gap-7 overflow-hidden border-l border-transparent py-9 transition-all duration-300 hover:border-[#67e8f9]/60 hover:bg-[#0b1728] sm:py-11 lg:items-start ${index === 1 ? "lg:grid-cols-[0.5fr_1.1fr_0.8fr] lg:pl-[12%]" : "lg:grid-cols-[0.42fr_1.18fr_0.9fr]"}`}
+                >
                   <div className="flex items-start justify-between gap-4 lg:pr-8">
                     <div><span className="font-mono text-xl text-[#3b82f6]">{number}</span><p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[#607aa1] light-muted-ink">PG / SVC.{number}</p></div>
                     <span className="grid h-11 w-11 place-items-center border border-[#3b82f6]/25 bg-[#0c1728] text-[#71a6fb] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-[#3b82f6] group-hover:bg-[#3b82f6] group-hover:text-white"><Icon className="h-5 w-5" /></span>
