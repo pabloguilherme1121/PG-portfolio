@@ -71,7 +71,7 @@ test.describe("portfólio profissional", () => {
     await studio.getByRole("button", { name: /continuar.*requisitos/i }).click();
     await studio.getByRole("button", { name: /continuar.*revisão/i }).click();
     await form.locator('textarea[name="briefing"]').fill("Precisamos centralizar dados dispersos e facilitar a consulta.");
-    await page.reload();
+    await page.reload({ waitUntil: "networkidle" });
 
     const restoredForm = page.locator("#contato-briefing");
     await expect(restoredForm.locator('input[name="name"]')).toHaveValue("Visitante de teste");
@@ -887,6 +887,26 @@ test.describe("portfólio profissional", () => {
     await caseStudy.getByRole("button", { name: "Solução" }).click();
     await expect(caseStudy.getByRole("button", { name: "Solução" })).toHaveAttribute("aria-pressed", "true");
     await expect(caseStudy.locator('[data-observatorio-insight="true"]')).toContainText(/interface|indicadores/i);
+  });
+
+  test("Observatório mostra capturas reais adaptativas com troca acessível de formato", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/#observatorio");
+    const story = page.locator("#observatorio");
+    const desktop = story.getByRole("button", { name: "Desktop" });
+    const mobile = story.getByRole("button", { name: "Mobile" });
+    const capture = story.locator('[data-observatorio-capture="true"]');
+
+    await expect(mobile).toHaveAttribute("aria-pressed", "true");
+    await expect(capture).toHaveAttribute("src", /observatorio-dashboard-mobile\.png$/);
+    await capture.scrollIntoViewIfNeeded();
+    await expect(capture).toHaveJSProperty("naturalWidth", 351);
+    await expect(story.getByText(/captura da interface publicada/i)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await desktop.focus();
+    await page.keyboard.press("Enter");
+    await expect(capture).toHaveAttribute("src", /observatorio-dashboard-desktop\.png$/);
+    await expect(capture).toHaveJSProperty("naturalWidth", 1376);
   });
 
   test("nova leitura mobile preserva largura e ações entre 320 e 430px, landscape e zoom", async ({ page }) => {
