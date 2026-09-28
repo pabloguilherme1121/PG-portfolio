@@ -7,6 +7,7 @@ export const conversionEventNames = [
   "briefing_whatsapp_prepared",
   "project_opened",
   "share_project",
+  "share_portfolio",
   "download_project",
   "diagnostic_option_selected",
   "diagnostic_stage_selected",
@@ -33,7 +34,7 @@ export const conversionEventNames = [
 
 export type ConversionEventName = (typeof conversionEventNames)[number];
 type ConversionProperties = Partial<{
-  source: "hero" | "contact" | "availability" | "floating" | "footer";
+  source: "hero" | "contact" | "availability" | "floating" | "footer" | "mobile_menu";
   projectId: string;
   surface: "details" | "lightbox";
   channel: "copy_link" | "whatsapp" | "linkedin" | "email" | "native";
