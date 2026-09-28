@@ -285,10 +285,12 @@ export function PortfolioContact({
       // Nada a fazer: o reset visual ainda funciona.
     }
     const resetDraft = { ...briefingDefaultValues };
-    setBriefingDraft(resetDraft);
+    flushSync(() => {
+      setBriefingDraft(resetDraft);
+      setBriefingStep(0);
+      setBriefingRevision((value) => value + 1);
+    });
     notifyBriefingProgress(resetDraft);
-    setBriefingStep(0);
-    setBriefingRevision((value) => value + 1);
     setFormSent(false);
     toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
   }

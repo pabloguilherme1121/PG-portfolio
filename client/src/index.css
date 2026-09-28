@@ -342,8 +342,8 @@ button:not(:disabled), [role="button"]:not([aria-disabled="true"]), a[href] { cu
 }
 
 @keyframes archive-reveal {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(8px); }
+  to { transform: translateY(0); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1430,6 +1430,57 @@ html.theme-transitioning .arquivo-page * {
 @media (prefers-reduced-motion: reduce) {
   [data-mobile-dock-primary="true"] {
     transform: none;
+  }
+}
+
+@media (max-width: 639px) {
+  [data-mobile-dock="true"][data-mobile-dock-compact="true"] {
+    padding-block: 0.25rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-mobile-dock="true"][data-mobile-dock-compact="true"] [data-mobile-dock-primary="true"] {
+    min-height: 44px !important;
+    transform: none;
+    box-shadow: none;
+  }
+
+  [data-mobile-dock="true"][data-mobile-dock-compact="true"] [data-mobile-dock-secondary="true"],
+  [data-mobile-dock="true"][data-mobile-dock-compact="true"] [data-mobile-whatsapp-action="true"] {
+    min-height: 44px;
+  }
+
+  [data-mobile-hero-proof-rail="true"],
+  [data-attention-hook="proof-deck"],
+  [data-mobile-dock="true"],
+  .hero-portrait-card {
+    backdrop-filter: none;
+  }
+
+  #inicio .blueprint-grid,
+  [data-attention-hook="proof-deck"] .blueprint-grid {
+    opacity: 0.08;
+  }
+
+  [data-reduced-data="true"] .reveal,
+  [data-reduced-data="true"] .featured-project-card,
+  [data-reduced-data="true"] .experience-route-card {
+    animation: none;
+    transition: none;
+  }
+
+  #pg-lab .archive-chapter,
+  #contato .archive-chapter {
+    content-visibility: auto;
+    contain-intrinsic-size: 680px;
+  }
+
+  [data-tic-tac-toe="true"] [data-arcade-stats="true"] {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  [data-tic-tac-toe="true"] [data-arcade-stats="true"] > div {
+    padding-inline: 0.25rem;
   }
 }
 

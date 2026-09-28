@@ -86,7 +86,7 @@ export default function PortfolioProofDeck() {
           </div>
         </div>
 
-        <div key={active.id} className="relative bg-[#08182a] p-4 sm:p-5 motion-safe:animate-[fadeIn_220ms_ease-out]">
+        <div key={active.id} className="relative bg-[#08182a] p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <span className="grid h-11 w-11 shrink-0 place-items-center border border-[#67e8f9]/30 bg-[#0b2746] text-[#a5f3fc]">
               <ActiveIcon className="h-5 w-5" aria-hidden="true" />

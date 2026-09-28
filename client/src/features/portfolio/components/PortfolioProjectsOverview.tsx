@@ -2,6 +2,13 @@ import { ArrowUpRight, Github } from "lucide-react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import PortfolioFeaturedProjectCard from "@/features/portfolio/components/PortfolioFeaturedProjectCard";
 import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHorizontalSnapNavigation";
+import { useState } from "react";
+
+const observatorioInsights = [
+  { label: "Problema", text: "Dados e indicadores dispersos dificultam encontrar contexto e comparar informações." },
+  { label: "Solução", text: "Uma interface responsiva organiza indicadores, filtros e visualizações em uma jornada de consulta clara." },
+  { label: "Prova", text: "O produto publicado pode ser usado no navegador; o código-fonte permite examinar a implementação." },
+] as const;
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -25,6 +32,7 @@ export default function PortfolioProjectsOverview({
   featuredRepositories,
   openProjectDetails,
 }: PortfolioProjectsOverviewProps) {
+  const [activeInsight, setActiveInsight] = useState<(typeof observatorioInsights)[number]["label"]>("Problema");
   const featuredCount = featuredCardsReady ? featuredRepositories.length : 0;
   const {
     activeIndex: activeFeaturedIndex,
@@ -54,6 +62,18 @@ export default function PortfolioProjectsOverview({
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
           <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Um produto publicado que mostra como organizo informação complexa em uma experiência compreensível e navegável. O Observatório reúne estrutura de informação, interface responsiva, indicadores, dashboard e publicação web em uma entrega que pode ser aberta e avaliada.</p>
+          <div className="mt-5" aria-label="Leitura guiada do case Observatório">
+            <div className="grid grid-cols-3 gap-2" role="group" aria-label="Etapas do case">
+              {observatorioInsights.map(({ label }) => (
+                <button key={label} type="button" aria-pressed={activeInsight === label} onClick={() => setActiveInsight(label)} className="min-h-11 min-w-0 border border-[#67e8f9]/30 px-2 font-mono text-[10px] font-semibold uppercase text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p data-observatorio-insight="true" role="status" className="mt-3 min-h-16 border-l-2 border-[#67e8f9] bg-[#071326] px-3 py-3 font-body text-sm leading-6 text-[#d8eaff]">
+              {observatorioInsights.find(({ label }) => label === activeInsight)?.text}
+            </p>
+          </div>
           <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]">
             <span className="border border-white/10 px-2 py-1">React</span>
             <span className="border border-white/10 px-2 py-1">TypeScript</span>
