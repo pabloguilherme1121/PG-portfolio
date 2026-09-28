@@ -864,6 +864,7 @@ test.describe("portfólio profissional", () => {
   test("mobile esconde o dock enquanto o menu está aberto", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
+    await page.locator("#diagnostico").scrollIntoViewIfNeeded();
 
     const dock = page.locator('[data-mobile-contact-bar="true"]');
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
@@ -890,6 +891,22 @@ test.describe("portfólio profissional", () => {
     await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
     await page.locator('#contato-briefing input[name="name"]').focus();
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
+  });
+
+  test("dock oculto pelo CTA do hero não recebe foco até voltar a aparecer", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto("/");
+
+    const dock = page.locator('[data-mobile-dock="true"]');
+    await page.locator('[data-hero-cta="true"]').scrollIntoViewIfNeeded();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
+    await expect(dock).toHaveAttribute("aria-hidden", "true");
+    await expect(dock).toHaveAttribute("inert", "");
+
+    await page.locator("#diagnostico").scrollIntoViewIfNeeded();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
+    await expect(dock).not.toHaveAttribute("aria-hidden", "true");
+    await expect(dock).not.toHaveAttribute("inert", "");
   });
 
   test("cards de projeto oferecem prévia local com prova e fechamento por teclado", async ({ page }) => {
