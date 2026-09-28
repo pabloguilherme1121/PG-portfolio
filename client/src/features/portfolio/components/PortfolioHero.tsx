@@ -76,13 +76,13 @@ export default function PortfolioHero({
               Produto digital · React + TypeScript · dashboards · publicação web
             </p>
 
-            <div data-mobile-hero-proof-rail="true" className="grid grid-cols-3 gap-px overflow-hidden rounded-[14px] border border-white/[0.08] bg-white/[0.08] sm:hidden">
+            <div data-mobile-hero-proof-rail="true" role="list" aria-label="Provas rápidas do portfólio" className="grid grid-cols-3 gap-px overflow-hidden rounded-[14px] border border-white/[0.08] bg-white/[0.08] sm:hidden">
               {[
                 ["stack", "React + TypeScript"],
                 ["dados", "Interfaces & dados"],
                 ["entrega", "Deploy testado"],
               ].map(([label, value]) => (
-                <div key={label} data-mobile-hero-proof="true" className="min-w-0 bg-[#071326]/92 px-2.5 py-3">
+                <div key={label} data-mobile-hero-proof="true" role="listitem" className="min-w-0 bg-[#071326]/92 px-2.5 py-3">
                   <span className="block font-mono text-[7px] font-semibold uppercase tracking-[0.11em] text-[#67e8f9]">{label}</span>
                   <span className="mt-1 block text-balance font-body text-[11px] leading-4 text-[#dcecf8]">{value}</span>
                 </div>
