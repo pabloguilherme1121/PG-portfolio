@@ -680,14 +680,45 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
+    const sections = sectionIds
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+    let frameId: number | null = null;
+
+    const updateScrollState = () => {
+      frameId = null;
       const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress = scrollableHeight > 0
+        ? Math.min(100, Math.max(0, (window.scrollY / scrollableHeight) * 100))
+        : 0;
+      const readingLine = window.scrollY + window.innerHeight * 0.22;
+      let nextSection = "inicio";
+
+      for (const section of sections) {
+        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+        if (sectionTop <= readingLine + 1) nextSection = section.id;
+        else break;
+      }
+
       setShowBackToTop(window.scrollY > 640);
-      setScrollProgress(scrollableHeight > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollableHeight) * 100)) : 0);
+      setScrollProgress(nextProgress);
+      setActiveSection(nextSection);
     };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    const scheduleScrollUpdate = () => {
+      if (frameId !== null) return;
+      frameId = window.requestAnimationFrame(updateScrollState);
+    };
+
+    updateScrollState();
+    window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
+    window.addEventListener("resize", scheduleScrollUpdate);
+    return () => {
+      window.removeEventListener("scroll", scheduleScrollUpdate);
+      window.removeEventListener("resize", scheduleScrollUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
+    };
   }, []);
 
   useEffect(() => {
@@ -698,19 +729,6 @@ export default function Home() {
     };
     mediaQuery.addEventListener("change", handleViewportChange);
     return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
-
-  useEffect(() => {
-    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
-    const sections = sectionIds.map((id) => document.getElementById(id)).filter((section): section is HTMLElement => Boolean(section));
-    const observer = new IntersectionObserver((entries) => {
-      const visibleEntry = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => Math.abs(a.boundingClientRect.top - window.innerHeight * 0.22) - Math.abs(b.boundingClientRect.top - window.innerHeight * 0.22))[0];
-      if (visibleEntry?.target.id) setActiveSection(visibleEntry.target.id);
-    }, { rootMargin: "-18% 0px -68% 0px", threshold: 0 });
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
