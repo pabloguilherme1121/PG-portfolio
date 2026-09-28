@@ -1054,6 +1054,35 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
 
+  test("mobile torna a paginação dos projetos destacadas clicável e sincronizada", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const projects = page.locator("#projetos");
+    await projects.scrollIntoViewIfNeeded();
+
+    const strip = projects.locator('[data-featured-project-strip="true"]');
+    const pagination = projects.locator('[data-featured-pagination="true"]');
+    const cards = strip.locator("[data-featured-project]");
+
+    await expect(strip).toHaveAttribute("aria-busy", "false");
+    await expect(cards.first()).toBeVisible();
+    const cardCount = await cards.count();
+
+    await expect(pagination).toBeVisible();
+    await expect(pagination.locator("button")).toHaveCount(cardCount);
+    await expect(projects.locator('[data-featured-active-label="true"]')).toHaveText(`1 / ${cardCount}`);
+
+    if (cardCount > 1) {
+      const second = pagination.locator("button").nth(1);
+      const initialScroll = await strip.evaluate((element) => element.scrollLeft);
+      await second.click();
+      await expect(second).toHaveAttribute("aria-current", "true");
+      await expect(projects.locator('[data-featured-active-label="true"]')).toHaveText(`2 / ${cardCount}`);
+      await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
+    }
+  });
+
   test("mobile apresenta projetos destacados em showcase horizontal por swipe", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -1065,6 +1094,7 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toBeVisible();
     await expect(strip).toHaveCSS("overflow-x", "auto");
     await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+    await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
 
     await expect(strip).toHaveAttribute("aria-busy", "false");
     const cards = strip.locator("[data-featured-project]");
@@ -1111,6 +1141,29 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
 
+  test("mobile torna a paginação do processo clicável e sincronizada", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const process = page.locator("#processo");
+    await process.scrollIntoViewIfNeeded();
+
+    const strip = process.locator('[data-process-strip="true"]');
+    const pagination = process.locator('[data-process-pagination="true"]');
+    const buttons = pagination.locator("button");
+
+    await expect(pagination).toBeVisible();
+    await expect(buttons).toHaveCount(3);
+    await expect(buttons.first()).toHaveAttribute("aria-current", "step");
+    await expect(process.locator('[data-process-active-label="true"]')).toHaveText("1 / 3");
+
+    const initialScroll = await strip.evaluate((element) => element.scrollLeft);
+    await buttons.nth(2).click();
+    await expect(buttons.nth(2)).toHaveAttribute("aria-current", "step");
+    await expect(process.locator('[data-process-active-label="true"]')).toHaveText("3 / 3");
+    await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
+  });
+
   test("mobile transforma o processo em linha do tempo horizontal por swipe", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -1122,6 +1175,7 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toBeVisible();
     await expect(strip).toHaveCSS("overflow-x", "auto");
     await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+    await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
 
     const steps = strip.locator('[data-process-step="true"]');
     await expect(steps).toHaveCount(3);

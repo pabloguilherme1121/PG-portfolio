@@ -1596,6 +1596,7 @@ html.theme-transitioning .arquivo-page * {
     scroll-padding-inline: 1rem;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+    touch-action: pan-x pan-y;
     background:
       linear-gradient(90deg, rgba(56, 189, 248, 0.08), transparent 12%, transparent 88%, rgba(56, 189, 248, 0.08));
     -webkit-overflow-scrolling: touch;
@@ -1668,6 +1669,77 @@ html.theme-transitioning .arquivo-page * {
 }
 
 
+/* Mobile snap navigation v13 — paginação real para carrosséis, com alvos de toque confortáveis. */
+.mobile-snap-pagination {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 639px) {
+  .mobile-snap-pagination {
+    display: flex;
+  }
+}
+
+.mobile-snap-page {
+  display: grid;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  place-items: center;
+  border-radius: 999px;
+  touch-action: manipulation;
+  transition: transform 160ms ease, background-color 160ms ease;
+}
+
+.mobile-snap-page > span {
+  display: block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: width 180ms cubic-bezier(0.23, 1, 0.32, 1), background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.mobile-snap-page[aria-current] > span {
+  width: 1.65rem;
+  background: #67e8f9;
+  box-shadow: 0 0 16px rgba(103, 232, 249, 0.42);
+}
+
+.mobile-snap-page:active {
+  transform: scale(0.92);
+  background: rgba(103, 232, 249, 0.08);
+}
+
+.mobile-snap-page:focus-visible {
+  outline: 2px solid #a5f3fc;
+  outline-offset: 1px;
+}
+
+.arquivo-page[data-theme="light"] .mobile-snap-page > span {
+  background: rgba(20, 79, 126, 0.22);
+}
+
+.arquivo-page[data-theme="light"] .mobile-snap-page[aria-current] > span {
+  background: #0e7490;
+  box-shadow: 0 0 12px rgba(14, 116, 144, 0.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-snap-page,
+  .mobile-snap-page > span {
+    transition: none;
+  }
+
+  .mobile-snap-page:active {
+    transform: none;
+  }
+}
+
+
 /* Process timeline v11 — mobile swipe sem runtime adicional. */
 .process-step-strip {
   display: block;
@@ -1691,7 +1763,7 @@ html.theme-transitioning .arquivo-page * {
     scroll-padding-inline: 1.25rem;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
-    touch-action: pan-x;
+    touch-action: pan-x pan-y;
     border-block-color: transparent;
     background:
       linear-gradient(90deg, rgba(56, 189, 248, 0.07), transparent 11%, transparent 89%, rgba(56, 189, 248, 0.07));
