@@ -852,6 +852,60 @@ test.describe("portfólio profissional", () => {
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
   });
 
+  test("dock mobile reduz detalhes ao descer e restaura ao subir, sem cobrir o teclado", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const dock = page.locator('[data-mobile-dock="true"]');
+    const expandedHeight = (await dock.boundingBox())?.height ?? 0;
+    await page.evaluate(() => window.scrollTo(0, 1200));
+    await expect(dock).toHaveAttribute("data-mobile-dock-compact", "true");
+    expect((await dock.boundingBox())?.height ?? 0).toBeLessThan(expandedHeight);
+    await page.evaluate(() => window.scrollTo(0, 450));
+    await expect(dock).toHaveAttribute("data-mobile-dock-compact", "false");
+    await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
+    await page.locator('#contato-briefing input[name="name"]').focus();
+    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
+  });
+
+  test("cards de projeto oferecem prévia local com prova e fechamento por teclado", async ({ page }) => {
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.goto("/#projetos");
+    const card = page.locator('[data-featured-project]').first();
+    const toggle = card.getByRole("button", { name: /prévia rápida/i });
+    await toggle.click();
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await expect(card.getByRole("region", { name: /prévia do projeto/i })).toBeVisible();
+    await toggle.press("Escape");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+  });
+
+  test("Observatório apresenta problema, solução e prova em uma leitura guiada", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 720 });
+    await page.goto("/#observatorio");
+    const caseStudy = page.locator("#observatorio");
+    await expect(caseStudy.getByRole("button", { name: "Problema" })).toHaveAttribute("aria-pressed", "true");
+    await caseStudy.getByRole("button", { name: "Solução" }).click();
+    await expect(caseStudy.getByRole("button", { name: "Solução" })).toHaveAttribute("aria-pressed", "true");
+    await expect(caseStudy.locator('[data-observatorio-insight="true"]')).toContainText(/interface|indicadores/i);
+  });
+
+  test("nova leitura mobile preserva largura e ações entre 320 e 430px, landscape e zoom", async ({ page }) => {
+    for (const width of [320, 360, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/#projetos");
+      await expect(page.locator("#observatorio")).toBeVisible();
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      const action = page.locator("#observatorio").getByRole("button", { name: "Solução" });
+      const box = await action.boundingBox();
+      expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    }
+    await page.setViewportSize({ width: 844, height: 390 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await page.setViewportSize({ width: 640, height: 844 });
+    await page.evaluate(() => { document.documentElement.style.zoom = "2"; });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  });
+
   test("mobile compartilha o portfólio pela API nativa sem poluir a navegação", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, "__portfolioShareCalls", { value: 0, writable: true });

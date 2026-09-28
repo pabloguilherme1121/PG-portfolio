@@ -216,6 +216,7 @@ export default function Home() {
   const [resumePreviewError, setResumePreviewError] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isMobileDockCompact, setIsMobileDockCompact] = useState(false);
   const [activeSection, setActiveSection] = useState("inicio");
   const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
@@ -686,6 +687,7 @@ export default function Home() {
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section));
     let frameId: number | null = null;
+    let previousScrollY = window.scrollY;
 
     const updateScrollState = () => {
       frameId = null;
@@ -703,6 +705,14 @@ export default function Home() {
       }
 
       setShowBackToTop(window.scrollY > 640);
+      if (window.innerWidth < 768) {
+        const delta = window.scrollY - previousScrollY;
+        if (window.scrollY < 240 || delta < -12) setIsMobileDockCompact(false);
+        else if (delta > 12) setIsMobileDockCompact(true);
+      } else {
+        setIsMobileDockCompact(false);
+      }
+      previousScrollY = window.scrollY;
       setScrollProgress(nextProgress);
       setActiveSection(nextSection);
     };
@@ -1329,7 +1339,7 @@ export default function Home() {
   };
 
   return (
-    <div data-theme={theme} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
+    <div data-theme={theme} data-reduced-data={avoidSpeculativePreload ? "true" : "false"} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <a href="#conteudo-principal" className="skip-link">pular para o conteúdo</a>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/94 backdrop-blur-md md:bg-[#07111f]/90 md:backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
@@ -1486,7 +1496,7 @@ export default function Home() {
       <main id="conteudo-principal" className="relative" style={{ fontSize: `${fontScale}rem` }} tabIndex={-1}>
         <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
         <PortfolioHero
-          heroAvailable={heroAvailable}
+          heroAvailable={heroAvailable && !avoidSpeculativePreload}
           markUrl={markUrl}
           portraitUrl={portraitUrl}
           portraitResponsive={portraitResponsive}
@@ -1668,6 +1678,7 @@ export default function Home() {
         data-mobile-contact-bar="true"
         data-mobile-dock="true"
         data-mobile-dock-hidden={shouldHideContactFloat ? "true" : "false"}
+        data-mobile-dock-compact={isMobileDockCompact ? "true" : "false"}
         className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}>
         <span data-mobile-dock-progress="true" aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-0 block h-px overflow-hidden rounded-full bg-white/10 sm:hidden">
           <span className="block h-full origin-left bg-[#67e8f9] transition-transform duration-150 motion-reduce:transition-none" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
@@ -1684,7 +1695,7 @@ export default function Home() {
             <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
             {mobilePrimaryAction.label}
           </span>
-          <span data-mobile-journey-hint="true" className="mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px]">
+          <span data-mobile-journey-hint="true" className={`mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px] ${isMobileDockCompact ? "hidden" : ""}`}>
             {mobileJourneyHint}
           </span>
         </a>

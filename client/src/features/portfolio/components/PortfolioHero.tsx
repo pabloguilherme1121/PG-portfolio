@@ -55,7 +55,7 @@ export default function PortfolioHero({
           <h1 className="reveal delay-1 mt-7 max-w-4xl font-display text-[clamp(2.35rem,11vw,3.15rem)] font-semibold leading-[0.9] tracking-[-0.06em] sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-6 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 backdrop-blur-sm lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-4 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
@@ -68,11 +68,11 @@ export default function PortfolioHero({
             </figcaption>
           </figure>
 
-          <div className="reveal delay-2 mt-7 flex max-w-xl flex-col gap-5 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
+          <div className="reveal delay-2 mt-5 flex max-w-xl flex-col gap-4 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-8 text-[#bed0ea] sm:text-lg">
               Transformo problemas em produtos digitais claros e publicados. Estratégia, interface, código, teste e deploy em uma única execução.
             </p>
-            <p className="max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff]">
+            <p className="hidden max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff] sm:block">
               Produto digital · React + TypeScript · dashboards · publicação web
             </p>
 

@@ -1,5 +1,5 @@
 import { ArrowUpRight, Github, Play } from "lucide-react";
-import type { PointerEvent } from "react";
+import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -13,6 +13,14 @@ export default function PortfolioFeaturedProjectCard({
   onOpenDetails,
 }: PortfolioFeaturedProjectCardProps) {
   const EvidenceIcon = project.evidence.type === "code" ? Github : Play;
+  const [previewOpen, setPreviewOpen] = useState(false);
+
+  function handlePreviewKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
+    if (event.key === "Escape") {
+      setPreviewOpen(false);
+      event.stopPropagation();
+    }
+  }
 
   function updatePointerFeedback(event: PointerEvent<HTMLElement>) {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -70,6 +78,26 @@ export default function PortfolioFeaturedProjectCard({
       </h4>
 
       <p className="mt-3 font-body text-sm leading-6 text-[#9fb9cf]">{project.description}</p>
+
+      <button
+        type="button"
+        aria-expanded={previewOpen}
+        aria-controls={`featured-preview-${project.id}`}
+        onClick={() => setPreviewOpen((open) => !open)}
+        onKeyDown={handlePreviewKeyDown}
+        className="mt-4 inline-flex min-h-11 items-center self-start border-b border-[#67e8f9]/50 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#bdf7ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+      >
+        {previewOpen ? "fechar prévia rápida" : "prévia rápida"}
+      </button>
+      {previewOpen && (
+        <div id={`featured-preview-${project.id}`} role="region" aria-label={`Prévia do projeto ${project.name}`} className="mt-2 border-l-2 border-[#67e8f9] bg-[#0b2746]/60 p-3">
+          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[#67e8f9]">o que esta entrega comprova</p>
+          <p className="mt-2 font-body text-sm leading-6 text-[#d8eaff]">{project.result}</p>
+          <a href={project.evidence.href} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-[10px] font-semibold uppercase text-[#a5f3fc] underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            examinar prova <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+          </a>
+        </div>
+      )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         {project.technologies.slice(0, 4).map((technology) => (
