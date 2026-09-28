@@ -79,25 +79,6 @@ export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewp
                 ))}
               </div>
             </div>
-            <div
-              data-process-pagination="true"
-              className="mobile-snap-pagination sm:hidden"
-              role="group"
-              aria-label="Navegar entre etapas do processo"
-            >
-              {processSteps.map((step, index) => (
-                <button
-                  key={`process-page-${step.number}`}
-                  type="button"
-                  aria-label={`Ir para etapa ${index + 1}: ${step.title}`}
-                  aria-current={activeProcessIndex === index ? "step" : undefined}
-                  onClick={() => scrollToProcessIndex(index)}
-                  className="mobile-snap-page"
-                >
-                  <span aria-hidden="true" />
-                </button>
-              ))}
-            </div>
           </div>
         </section>
   );
@@ -278,6 +259,25 @@ export function PortfolioProcess() {
                     <p className="mt-3 max-w-xl font-body text-sm leading-7 text-[#b9d8e8]">{step.text}</p>
                   </div>
                 </article>
+              ))}
+            </div>
+            <div
+              data-process-pagination="true"
+              className="mobile-snap-pagination sm:hidden"
+              role="group"
+              aria-label="Navegar entre etapas do processo"
+            >
+              {processSteps.map((step, index) => (
+                <button
+                  key={`process-page-${step.number}`}
+                  type="button"
+                  aria-label={`Ir para etapa ${index + 1}: ${step.title}`}
+                  aria-current={activeProcessIndex === index ? "step" : undefined}
+                  onClick={() => scrollToProcessIndex(index)}
+                  className="mobile-snap-page"
+                >
+                  <span aria-hidden="true" />
+                </button>
               ))}
             </div>
           </div>
