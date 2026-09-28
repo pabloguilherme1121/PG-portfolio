@@ -134,7 +134,7 @@ export default function PortfolioProjectsOverview({
                 </div>
               ))}
         </div>
-        {featuredCardsReady && featuredCount > 1 && (
+        {featuredCardsReady && featuredCount > 0 && (
           <div
             data-featured-pagination="true"
             className="mobile-snap-pagination px-4 sm:hidden"
