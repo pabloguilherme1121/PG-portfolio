@@ -60,7 +60,7 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import { getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileDockModel, isMobileExperienceRoute, normalizeScrollProgress, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
@@ -325,9 +325,10 @@ export default function Home() {
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
-  const mobilePrimaryAction = getMobilePrimaryAction(mobileExperienceRoute, hasMobileBriefingDraft);
-  const mobileJourneyHint = getMobileJourneyHint(mobileExperienceRoute, hasMobileBriefingDraft);
-  const mobileSecondaryShortcut = getMobileSecondaryShortcut(mobileExperienceRoute);
+  const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
+  const mobilePrimaryAction = mobileDock.primary;
+  const mobileJourneyHint = mobileDock.hint;
+  const mobileSecondaryShortcut = mobileDock.secondary;
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
@@ -689,9 +690,9 @@ export default function Home() {
     const updateScrollState = () => {
       frameId = null;
       const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const nextProgress = scrollableHeight > 0
-        ? Math.min(100, Math.max(0, (window.scrollY / scrollableHeight) * 100))
-        : 0;
+      const nextProgress = normalizeScrollProgress(
+        scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0,
+      );
       const readingLine = window.scrollY + window.innerHeight * 0.22;
       let nextSection = "inicio";
 
@@ -1667,13 +1668,16 @@ export default function Home() {
         data-mobile-contact-bar="true"
         data-mobile-dock="true"
         data-mobile-dock-hidden={shouldHideContactFloat ? "true" : "false"}
-        className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] transition-opacity duration-200 sm:bottom-5 sm:left-auto sm:right-5 ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "opacity-100"} grid grid-cols-[minmax(0,1fr)_3.5rem] items-stretch gap-2 border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md`}>
+        className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}>
+        <span data-mobile-dock-progress="true" aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-0 block h-px overflow-hidden rounded-full bg-white/10 sm:hidden">
+          <span className="block h-full origin-left bg-[#67e8f9] transition-transform duration-150 motion-reduce:transition-none" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
+        </span>
         <a
           data-mobile-primary-action="true"
           data-mobile-dock-primary="true"
           href={mobilePrimaryAction.href}
           onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
-          className="inline-flex min-h-14 min-w-0 flex-1 flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:px-3 sm:hidden"
+          className="inline-flex min-h-14 min-w-0 flex-1 touch-manipulation flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-[background-color,transform] hover:bg-[#a5f3fc] active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none min-[360px]:px-3 sm:hidden"
           aria-label={mobilePrimaryAction.ariaLabel}
         >
           <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em]">
@@ -1682,6 +1686,24 @@ export default function Home() {
           </span>
           <span data-mobile-journey-hint="true" className="mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px]">
             {mobileJourneyHint}
+          </span>
+        </a>
+        <a
+          data-mobile-dock-secondary="true"
+          data-mobile-dock-secondary-route={mobileExperienceRoute}
+          href={mobileSecondaryShortcut.href}
+          onClick={(event) => {
+            if (mobileExperienceRoute !== "explorer") return;
+            event.preventDefault();
+            openPgArcade();
+          }}
+          aria-label={`Abrir ${mobileSecondaryShortcut.label}`}
+          title={mobileSecondaryShortcut.label}
+          className="mobile-context-action inline-flex min-h-14 min-w-0 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-[10px] border border-white/10 bg-[#071326] px-1 text-center text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"
+        >
+          <MobileSecondaryIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
+          <span className="max-w-full truncate font-mono text-[7px] font-semibold uppercase tracking-[0.03em] min-[390px]:text-[8px]">
+            {mobileSecondaryShortcut.label === "PG Arcade" ? "arcade" : mobileSecondaryShortcut.label}
           </span>
         </a>
         <a data-mobile-whatsapp-action="true" href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp mobile-whatsapp-action group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">

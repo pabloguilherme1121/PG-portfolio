@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getMobileContextAction, getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileContextAction, getMobileDockModel, getMobileJourneyHint, getMobilePrimaryAction, getMobileSecondaryShortcut, hasMeaningfulBriefingDraft, normalizeScrollProgress } from "@/features/portfolio/utils/mobileJourney";
 
 describe("mobileJourney", () => {
   it("mapeia cada intenção para um atalho móvel direto", () => {
@@ -32,5 +32,27 @@ describe("mobileJourney", () => {
     expect(getMobileSecondaryShortcut("client")).toEqual({ href: "#servicos", label: "serviços" });
     expect(getMobileSecondaryShortcut("recruiter")).toEqual({ href: "#curriculo-web", label: "currículo" });
     expect(getMobileSecondaryShortcut("explorer")).toEqual({ href: "#pg-lab", label: "PG Arcade" });
+  });
+  it("compõe um dock contextual sem perder a prioridade do briefing salvo", () => {
+    expect(getMobileDockModel("client", false)).toEqual({
+      primary: { href: "#diagnostico", label: "começar", ariaLabel: "Começar diagnóstico do projeto" },
+      secondary: { href: "#servicos", label: "serviços" },
+      hint: "1. diagnóstico · 2. briefing · 3. contato",
+    });
+
+    expect(getMobileDockModel("explorer", false).secondary).toEqual({ href: "#pg-lab", label: "PG Arcade" });
+    expect(getMobileDockModel("recruiter", true).primary).toEqual({
+      href: "#contato-briefing",
+      label: "retomar",
+      ariaLabel: "Retomar briefing salvo",
+    });
+  });
+
+  it("reduz atualizações de scroll para passos inteiros e mantém o intervalo de 0 a 100", () => {
+    expect(normalizeScrollProgress(-12)).toBe(0);
+    expect(normalizeScrollProgress(0.49)).toBe(0);
+    expect(normalizeScrollProgress(42.51)).toBe(43);
+    expect(normalizeScrollProgress(100.9)).toBe(100);
+    expect(normalizeScrollProgress(Number.NaN)).toBe(0);
   });
 });
