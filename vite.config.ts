@@ -100,7 +100,7 @@ function staticRuntimeGuardPlugin(): Plugin {
       if (offenders.size > 0) {
         this.error(
           "Runtime de API detectado no build estático:\n" +
-          [...offenders].sort().map((moduleId) => `- ${moduleId}`).join("\n"),
+          Array.from(offenders).sort().map((moduleId) => `- ${moduleId}`).join("\n"),
         );
       }
     },
