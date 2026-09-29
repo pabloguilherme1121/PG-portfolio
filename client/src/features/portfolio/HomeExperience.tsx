@@ -52,6 +52,7 @@ import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
+import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
@@ -1340,7 +1341,7 @@ export default function Home() {
   };
 
   return (
-    <div data-theme={theme} data-reduced-data={avoidSpeculativePreload ? "true" : "false"} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
+    <div data-portfolio-shell-version="2" data-theme={theme} data-reduced-data={avoidSpeculativePreload ? "true" : "false"} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <a href="#conteudo-principal" className="skip-link">pular para o conteúdo</a>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/94 backdrop-blur-md md:bg-[#07111f]/90 md:backdrop-blur-xl">
         <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
@@ -1503,6 +1504,8 @@ export default function Home() {
           portraitResponsive={portraitResponsive}
           heroCtaRef={heroCtaRef}
         />
+
+        <PortfolioTrustBar />
 
         <PortfolioExperienceHub />
 
