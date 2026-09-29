@@ -53,6 +53,24 @@ test.describe("reconstrução profissional do portfólio", () => {
   });
 
 
+
+  test("competências, serviços e processo carregam apenas quando se aproximam da viewport", async ({ page }) => {
+    await page.goto("/");
+
+    const deferred = page.locator('[data-static-sections-placeholder="true"]');
+    await expect(deferred).toHaveCount(1);
+    await expect(page.locator("#trilha")).toHaveCount(0);
+    await expect(page.locator("#servicos")).toHaveCount(0);
+    await expect(page.locator("#processo")).toHaveCount(0);
+
+    await deferred.scrollIntoViewIfNeeded();
+
+    await expect(page.locator("#trilha")).toBeVisible();
+    await expect(page.locator("#servicos")).toBeVisible();
+    await expect(page.locator("#processo")).toBeVisible();
+    await expect(deferred).toHaveCount(0);
+  });
+
   test("vitrine completa de projetos carrega apenas quando se aproxima da seção", async ({ page }) => {
     await page.goto("/");
 
