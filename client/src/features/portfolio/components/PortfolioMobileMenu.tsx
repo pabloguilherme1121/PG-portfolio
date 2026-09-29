@@ -1,5 +1,6 @@
 import { ArrowUpRight, Braces, ClipboardCheck, Download, Eye, FileText, Layers2, Settings2, Share2 } from "lucide-react";
 import type { MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import type { MouseEvent } from "react";
 
 type MobilePrimaryAction = {
   href: string;
@@ -23,14 +24,13 @@ type PortfolioMobileMenuProps = {
   portfolioShareStatus: PortfolioShareStatus;
   showInstallAction: boolean;
   resumeAvailable: boolean;
-  resumeUrl: string;
   onClose: () => void;
   onOpenArcade: () => void;
   onOpenAppearance: () => void;
   onSharePortfolio: () => void;
   onInstallPortfolio: () => void;
   onPreloadResume: () => void;
-  onOpenResume: (event: React.MouseEvent<HTMLButtonElement>) => void;
+  onOpenResume: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
 const sectionLinks = [
