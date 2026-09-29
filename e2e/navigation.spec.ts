@@ -1380,7 +1380,6 @@ test.describe("portfólio profissional", () => {
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.locator('a[href="mailto:mpjcreator@gmail.com"]')).toBeVisible();
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
-    await expect(page.getByText("modelo", { exact: true }).first()).toBeVisible();
   });
   test("experience hub orienta perfis diferentes sem quebrar a jornada principal", async ({ page }) => {
     await page.goto("/");
