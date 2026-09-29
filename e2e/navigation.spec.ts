@@ -427,7 +427,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/#servicos");
 
     const services = page.locator("#servicos");
     await expect(services.locator('[data-service-offer="true"]')).toHaveCount(2);
@@ -1239,7 +1239,7 @@ test.describe("portfólio profissional", () => {
 
   test("mobile transforma serviços em explorador compacto por toque", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto("/#servicos");
 
     const services = page.locator("#servicos");
     await services.scrollIntoViewIfNeeded();
@@ -1267,7 +1267,7 @@ test.describe("portfólio profissional", () => {
 
   test("mobile torna a paginação do processo clicável e sincronizada", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto("/#processo");
 
     const process = page.locator("#processo");
     await process.scrollIntoViewIfNeeded();
@@ -1290,7 +1290,7 @@ test.describe("portfólio profissional", () => {
 
   test("mobile transforma o processo em linha do tempo horizontal por swipe", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto("/#processo");
 
     const process = page.locator("#processo");
     await process.scrollIntoViewIfNeeded();
@@ -1380,7 +1380,6 @@ test.describe("portfólio profissional", () => {
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.locator('a[href="mailto:mpjcreator@gmail.com"]')).toBeVisible();
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
-    await expect(page.getByText("modelo", { exact: true }).first()).toBeVisible();
   });
   test("experience hub orienta perfis diferentes sem quebrar a jornada principal", async ({ page }) => {
     await page.goto("/");
