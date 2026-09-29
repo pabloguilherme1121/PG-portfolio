@@ -22,6 +22,13 @@ const stylesheetFiles = files.filter((file) => file.endsWith(".css"));
 
 const violations = [];
 
+if (process.env.VITE_STATIC_DEPLOY === "true") {
+  const staticRuntimeChunks = javascriptFiles.filter((file) => file.startsWith("vendor-data-"));
+  for (const file of staticRuntimeChunks) {
+    violations.push(`${file}: runtime de API não deve ser enviado no build estático`);
+  }
+}
+
 function formatKb(bytes) {
   return `${(bytes / 1024).toFixed(2)} kB`;
 }
