@@ -5,7 +5,6 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import App from "./App";
-import { registerPortfolioPwa } from "./pwa";
 import { startLogin } from "./const";
 
 const queryClient = new QueryClient();
@@ -70,4 +69,3 @@ createRoot(document.getElementById("root")!).render(
   </trpc.Provider>,
 );
 
-registerPortfolioPwa();
