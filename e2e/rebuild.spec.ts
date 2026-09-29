@@ -52,6 +52,20 @@ test.describe("reconstrução profissional do portfólio", () => {
     expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
   });
 
+
+  test("vitrine completa de projetos carrega apenas quando se aproxima da seção", async ({ page }) => {
+    await page.goto("/");
+
+    const projects = page.locator("#projetos");
+    await expect(projects.locator('[data-projects-overview-placeholder="true"]')).toHaveCount(1);
+    await expect(page.locator('[data-featured-project-strip="true"]')).toHaveCount(0);
+
+    await projects.scrollIntoViewIfNeeded();
+
+    await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
+    await expect(projects.locator('[data-projects-overview-placeholder="true"]')).toHaveCount(0);
+  });
+
   test("reconstrução mantém a primeira dobra mobile legível e sem overflow horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
