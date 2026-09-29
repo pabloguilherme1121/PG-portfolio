@@ -229,7 +229,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           "vendor-react": ["react", "react-dom", "react-dom/client"],
-          "vendor-data": ["@tanstack/react-query", "@trpc/client", "@trpc/react-query", "@trpc/server"],
+          ...(process.env.VITE_STATIC_DEPLOY === "true"
+            ? {}
+            : { "vendor-data": ["@tanstack/react-query", "@trpc/client", "@trpc/react-query", "@trpc/server"] }),
           "vendor-ui": ["lucide-react", "sonner", "wouter"],
           "vendor-primitives": ["@radix-ui/react-dialog", "@radix-ui/react-tooltip"],
           "vendor-utils": ["tailwind-merge", "clsx", "class-variance-authority"],
