@@ -169,11 +169,21 @@ export default defineConfig({
     __PORTFOLIO_HERO_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/pablo-hero-archive_fbc55c04.png"))),
   },
   resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-    },
+    alias: [
+      {
+        find: "@/lib/trpc",
+        replacement: path.resolve(
+          import.meta.dirname,
+          "client",
+          "src",
+          "lib",
+          process.env.VITE_STATIC_DEPLOY === "true" ? "trpc.static.ts" : "trpc.ts",
+        ),
+      },
+      { find: "@", replacement: path.resolve(import.meta.dirname, "client", "src") },
+      { find: "@shared", replacement: path.resolve(import.meta.dirname, "shared") },
+      { find: "@assets", replacement: path.resolve(import.meta.dirname, "attached_assets") },
+    ],
   },
   envDir: path.resolve(import.meta.dirname),
   root: path.resolve(import.meta.dirname, "client"),
