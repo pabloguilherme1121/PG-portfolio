@@ -525,6 +525,26 @@ test.describe("portfólio profissional", () => {
     );
   });
 
+  test("detalhes completos do projeto carregam apenas quando o visitante abre o modal", async ({ page }) => {
+    await page.goto("/#projetos");
+
+    const beforeResources = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map((entry) => entry.name),
+    );
+    expect(beforeResources.some((url) => url.includes("PortfolioProjectDetailsDialog"))).toBeFalsy();
+
+    const featured = page.locator('[data-featured-project="TEC.09"]');
+    await expect(featured).toBeVisible();
+    await featured.getByRole("button", { name: /ver detalhes.*trajeto/i }).click();
+
+    await expect(page.locator('[data-project-details-dialog="true"]')).toBeVisible();
+    await expect.poll(async () =>
+      page.evaluate(() =>
+        performance.getEntriesByType("resource").some((entry) => entry.name.includes("PortfolioProjectDetailsDialog")),
+      ),
+    ).toBeTruthy();
+  });
+
   test("projeto destacado responde à posição do toque para feedback visual contextual", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
