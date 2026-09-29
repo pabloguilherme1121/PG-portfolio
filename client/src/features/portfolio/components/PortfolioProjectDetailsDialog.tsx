@@ -19,8 +19,8 @@ type PortfolioProjectDetailsDialogProps = {
   projectIndex: number;
   projectCount: number;
   onOpenChange: (open: boolean) => void;
-  onTouchStart: (event: TouchEvent<HTMLElement>) => void;
-  onTouchEnd: (event: TouchEvent<HTMLElement>) => void;
+  onTouchStart: (event: TouchEvent<HTMLDivElement>) => void;
+  onTouchEnd: (event: TouchEvent<HTMLDivElement>) => void;
   onToggleFavorite: (event: MouseEvent<HTMLElement>) => void;
   onShare: () => void;
   onCopyLink: () => void;
