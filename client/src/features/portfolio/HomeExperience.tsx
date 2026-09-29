@@ -53,7 +53,6 @@ import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
-import PortfolioProjectsOverview from "@/features/portfolio/components/PortfolioProjectsOverview";
 import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -86,6 +85,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioProjectsOverview = lazy(() => import("@/features/portfolio/components/PortfolioProjectsOverview"));
 const PortfolioCaseStudies = lazy(() => import("@/features/portfolio/components/PortfolioCaseStudies"));
 const PortfolioContact = lazy(() =>
   import("@/features/portfolio/components/PortfolioContact").then((module) => ({
@@ -193,6 +193,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
   const [fontScale, setFontScale] = useState<number>(() => {
@@ -1443,16 +1444,30 @@ export default function Home() {
 
         <PortfolioProcess />
 
-        <section id="projetos" className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
+        <section id="projetos" ref={projectsSectionRef} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
-            <PortfolioProjectsOverview
-              markUrl={markUrl}
-              portraitUrl={portraitUrl}
-              portraitResponsive={portraitResponsive}
-              featuredCardsReady={featuredCardsReady}
-              featuredRepositories={featuredRepositories}
-              openProjectDetails={openProjectDetails}
-            />
+            {shouldRenderProjects ? (
+              <Suspense
+                fallback={
+                  <div data-projects-overview-placeholder="true" role="status" aria-live="polite" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/55 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:min-h-[32rem]">
+                    carregando vitrine de projetos…
+                  </div>
+                }
+              >
+                <PortfolioProjectsOverview
+                  markUrl={markUrl}
+                  portraitUrl={portraitUrl}
+                  portraitResponsive={portraitResponsive}
+                  featuredCardsReady={featuredCardsReady}
+                  featuredRepositories={featuredRepositories}
+                  openProjectDetails={openProjectDetails}
+                />
+              </Suspense>
+            ) : (
+              <div data-projects-overview-placeholder="true" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/35 p-5 sm:min-h-[32rem]" aria-label="Vitrine de projetos">
+                <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">vitrine de projetos será carregada ao aproximar</p>
+              </div>
+            )}
             <div className="mt-10 flex flex-col gap-4 border-y border-white/[0.1] py-6 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">quer ver mais ou discutir um projeto?</p>
