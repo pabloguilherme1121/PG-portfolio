@@ -64,7 +64,6 @@ import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
-import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -177,15 +176,6 @@ function getRepositoryCategories(repository: Repository) {
 
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
-  const {
-    activeSection,
-    heroCtaRef,
-    isDesktopViewport,
-    isHeroCtaVisible,
-    isMobileDockCompact,
-    scrollProgress,
-    showBackToTop,
-  } = usePortfolioShellState();
   const {
     activeSection,
     heroCtaRef,
