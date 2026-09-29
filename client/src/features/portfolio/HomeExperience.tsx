@@ -199,7 +199,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PwaInstallPromptEvent | null>(null);
+  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PortfolioInstallPromptEvent | null>(null);
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
