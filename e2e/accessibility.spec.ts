@@ -52,6 +52,8 @@ test.describe("acessibilidade pública", () => {
       .filter(({ width, height }) => width < 24 || height < 24));
     expect(undersizedControls).toEqual([]);
 
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect(page.locator("[data-featured-project]").first()).toBeVisible();
     await page.locator("[data-featured-project]").first().getByRole("button", { name: /ver detalhes/i }).click();
     const dialog = page.locator('[data-project-details-dialog="true"]');
     await expect(dialog).toBeVisible();
