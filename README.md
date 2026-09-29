@@ -77,7 +77,7 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 | Publicação | GitHub Actions, GitHub Pages |
 | Qualidade | Typecheck, testes de navegador, auditoria de assets e validação de rotas |
 
-## Qualidade e CI
+## Qualidade, performance e CI
 
 O workflow de publicação só entrega o build depois das verificações de qualidade.
 
@@ -86,9 +86,12 @@ pnpm check
 pnpm test
 pnpm test:e2e
 pnpm build
+pnpm audit:bundle
 ```
 
-A pipeline também verifica o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages.
+A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **240 kB**.
+
+A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages.
 
 ## Desenvolvimento local
 
