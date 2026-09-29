@@ -9,20 +9,21 @@ import { lazy, Suspense, useEffect } from "react";
 import Home from "./pages/Home";
 import { installMissingMediaFallback } from "@/features/portfolio/utils/installMissingMediaFallback";
 import { getPublicRoutePolicy } from "./appRoutePolicy";
-const AvailabilityManager = lazy(() => import("./pages/AvailabilityManager"));
-const FavoritesManagement = lazy(() => import("./pages/FavoritesManagement"));
+const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
+const AvailabilityManager = isStaticDeploy ? null : lazy(() => import("./pages/AvailabilityManager"));
+const FavoritesManagement = isStaticDeploy ? null : lazy(() => import("./pages/FavoritesManagement"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 
-const routePolicy = getPublicRoutePolicy(import.meta.env.VITE_STATIC_DEPLOY === "true");
+const routePolicy = getPublicRoutePolicy(isStaticDeploy);
 
 function AppRoutes() {
   return (
     <Suspense fallback={<div className="grid min-h-screen place-items-center bg-[#030b1e] px-6 font-mono text-xs uppercase tracking-[0.14em] text-[#a5f3fc]">carregando agenda…</div>}>
       <Switch>
         <Route path="/" component={Home} />
-        {routePolicy.agenda && <Route path="/agenda" component={AvailabilityManager} />}
-        {routePolicy.favorites && <Route path="/favoritos" component={FavoritesManagement} />}
-        {routePolicy.curation && <Route path="/curadoria" component={FavoritesManagement} />}
+        {routePolicy.agenda && AvailabilityManager && <Route path="/agenda" component={AvailabilityManager} />}
+        {routePolicy.favorites && FavoritesManagement && <Route path="/favoritos" component={FavoritesManagement} />}
+        {routePolicy.curation && FavoritesManagement && <Route path="/curadoria" component={FavoritesManagement} />}
         {routePolicy.privacy && <Route path="/privacidade" component={Privacy} />}
         <Route path="/404" component={NotFound} />
         <Route component={NotFound} />

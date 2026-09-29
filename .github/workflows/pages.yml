@@ -46,6 +46,8 @@ jobs:
           VITE_STATIC_DEPLOY: "true"
         run: pnpm exec vite build
       - name: Enforce bundle budget
+        env:
+          VITE_STATIC_DEPLOY: "true"
         run: pnpm audit:bundle
       - name: Prepare Pages artifact
         run: node scripts/prepare-github-pages.mjs

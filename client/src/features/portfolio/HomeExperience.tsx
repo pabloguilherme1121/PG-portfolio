@@ -62,6 +62,7 @@ import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
+import { clearPendingPortfolioInstallPrompt, getPendingPortfolioInstallPrompt, type PortfolioInstallPromptEvent } from "@/pwaInstallPromptBridge";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -110,11 +111,6 @@ const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
 type SearchSuggestion = {
   value: string;
   source: "projeto" | "tecnologia" | "descrição";
-};
-
-type PwaInstallPromptEvent = Event & {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
 type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
@@ -203,7 +199,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PwaInstallPromptEvent | null>(null);
+  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PortfolioInstallPromptEvent | null>(null);
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
@@ -357,13 +353,19 @@ export default function Home() {
   }, [avoidSpeculativePreload, deferredContactReady]);
 
   useEffect(() => {
+    const pendingPrompt = getPendingPortfolioInstallPrompt();
+    if (pendingPrompt) setPwaInstallPrompt(pendingPrompt);
+
     const handleBeforeInstallPrompt = (event: Event) => {
-      const promptEvent = event as PwaInstallPromptEvent;
+      const promptEvent = event as PortfolioInstallPromptEvent;
       if (typeof promptEvent.prompt !== "function") return;
       event.preventDefault();
       setPwaInstallPrompt(promptEvent);
     };
-    const handleAppInstalled = () => setPwaInstallPrompt(null);
+    const handleAppInstalled = () => {
+      clearPendingPortfolioInstallPrompt();
+      setPwaInstallPrompt(null);
+    };
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
     window.addEventListener("appinstalled", handleAppInstalled);
@@ -693,6 +695,7 @@ export default function Home() {
       await promptEvent.prompt();
       await promptEvent.userChoice;
     } finally {
+      clearPendingPortfolioInstallPrompt();
       setPwaInstallPrompt(null);
       setMenuOpen(false);
     }

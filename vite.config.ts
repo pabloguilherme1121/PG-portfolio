@@ -74,6 +74,39 @@ function writeToLogFile(source: LogSource, entries: unknown[]) {
  * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
  * - Auto-trimmed when exceeding 1MB (keeps newest entries)
  */
+function staticRuntimeGuardPlugin(): Plugin {
+  return {
+    name: "portfolio-static-runtime-guard",
+    generateBundle(_options, bundle) {
+      if (process.env.VITE_STATIC_DEPLOY !== "true") return;
+
+      const forbiddenFragments = [
+        "/@trpc/",
+        "/@tanstack/react-query/",
+        "/superjson/",
+      ];
+      const offenders = new Set<string>();
+
+      for (const output of Object.values(bundle)) {
+        if (output.type !== "chunk") continue;
+        for (const moduleId of Object.keys(output.modules)) {
+          const normalized = moduleId.replaceAll("\\", "/");
+          if (forbiddenFragments.some((fragment) => normalized.includes(fragment))) {
+            offenders.add(normalized);
+          }
+        }
+      }
+
+      if (offenders.size > 0) {
+        this.error(
+          "Runtime de API detectado no build estático:\n" +
+          Array.from(offenders).sort().map((moduleId) => `- ${moduleId}`).join("\n"),
+        );
+      }
+    },
+  };
+}
+
 function vitePluginManusDebugCollector(): Plugin {
   return {
     name: "manus-debug-collector",
@@ -153,6 +186,7 @@ function vitePluginManusDebugCollector(): Plugin {
 const plugins = [
   react(),
   tailwindcss(),
+  staticRuntimeGuardPlugin(),
   // The Manus inspector and browser log collector are development tools.
   // Excluding them from Pages avoids injecting a large inline runtime into index.html.
   ...(process.env.VITE_STATIC_DEPLOY === "true"
@@ -169,11 +203,21 @@ export default defineConfig({
     __PORTFOLIO_HERO_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/pablo-hero-archive_fbc55c04.png"))),
   },
   resolve: {
-    alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
-    },
+    alias: [
+      {
+        find: "@/lib/trpc",
+        replacement: path.resolve(
+          import.meta.dirname,
+          "client",
+          "src",
+          "lib",
+          process.env.VITE_STATIC_DEPLOY === "true" ? "trpc.static.ts" : "trpc.ts",
+        ),
+      },
+      { find: "@", replacement: path.resolve(import.meta.dirname, "client", "src") },
+      { find: "@shared", replacement: path.resolve(import.meta.dirname, "shared") },
+      { find: "@assets", replacement: path.resolve(import.meta.dirname, "attached_assets") },
+    ],
   },
   envDir: path.resolve(import.meta.dirname),
   root: path.resolve(import.meta.dirname, "client"),
@@ -185,7 +229,9 @@ export default defineConfig({
       output: {
         manualChunks: {
           "vendor-react": ["react", "react-dom", "react-dom/client"],
-          "vendor-data": ["@tanstack/react-query", "@trpc/client", "@trpc/react-query", "@trpc/server"],
+          ...(process.env.VITE_STATIC_DEPLOY === "true"
+            ? {}
+            : { "vendor-data": ["@tanstack/react-query", "@trpc/client", "@trpc/react-query", "@trpc/server"] }),
           "vendor-ui": ["lucide-react", "sonner", "wouter"],
           "vendor-primitives": ["@radix-ui/react-dialog", "@radix-ui/react-tooltip"],
           "vendor-utils": ["tailwind-merge", "clsx", "class-variance-authority"],
