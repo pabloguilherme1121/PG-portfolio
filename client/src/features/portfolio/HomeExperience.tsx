@@ -53,7 +53,6 @@ import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
-import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features/portfolio/components/PortfolioStaticSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
@@ -85,6 +84,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioDeferredStaticSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredStaticSections"));
 const PortfolioProjectsOverview = lazy(() => import("@/features/portfolio/components/PortfolioProjectsOverview"));
 const PortfolioCaseStudies = lazy(() => import("@/features/portfolio/components/PortfolioCaseStudies"));
 const PortfolioContact = lazy(() =>
@@ -193,6 +193,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
   const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
@@ -217,6 +218,9 @@ export default function Home() {
   );
   const [caseStudiesHashRequested, setCaseStudiesHashRequested] = useState(() =>
     typeof window !== "undefined" && window.location.hash === "#estudos-de-caso",
+  );
+  const [staticSectionsHashRequested, setStaticSectionsHashRequested] = useState(() =>
+    typeof window !== "undefined" && ["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash),
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -320,6 +324,7 @@ export default function Home() {
   const mobileSecondaryShortcut = mobileDock.secondary;
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+  const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
   const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || deferredContactReady;
@@ -396,6 +401,7 @@ export default function Home() {
     const syncDeferredHashes = () => {
       setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
       setCaseStudiesHashRequested(window.location.hash === "#estudos-de-caso");
+      setStaticSectionsHashRequested(["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash));
     };
     window.addEventListener("hashchange", syncDeferredHashes);
     return () => window.removeEventListener("hashchange", syncDeferredHashes);
@@ -1439,11 +1445,32 @@ export default function Home() {
           )}
         </div>
 
-        <PortfolioSkills isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
-
-        <PortfolioServices markUrl={markUrl} />
-
-        <PortfolioProcess />
+        <div
+          ref={staticSectionsRef}
+          data-static-sections-anchor="true"
+          aria-busy={!shouldRenderStaticSections}
+          className="min-h-px"
+        >
+          {shouldRenderStaticSections ? (
+            <Suspense
+              fallback={
+                <section data-static-sections-placeholder="true" className="archive-chapter min-h-[1200px] border-t border-white/[0.07] bg-[#070a10] px-5 py-16 sm:min-h-[1500px] sm:px-8 sm:py-24" aria-label="Carregando competências, serviços e processo">
+                  <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">
+                    carregando competências, serviços e processo…
+                  </div>
+                </section>
+              }
+            >
+              <PortfolioDeferredStaticSections isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
+            </Suspense>
+          ) : (
+            <section data-static-sections-placeholder="true" className="archive-chapter min-h-[1200px] border-t border-white/[0.07] bg-[#070a10] px-5 py-16 sm:min-h-[1500px] sm:px-8 sm:py-24" aria-label="Competências, serviços e processo">
+              <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+                competências, serviços e processo serão carregados ao aproximar
+              </div>
+            </section>
+          )}
+        </div>
 
         <section id="projetos" ref={projectsSectionRef} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
