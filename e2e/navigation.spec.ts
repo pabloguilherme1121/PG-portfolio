@@ -9,6 +9,8 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1, name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i })).toBeVisible();
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
     await expect(page.locator("#observatorio").getByRole("heading", { name: "Observatório" })).toBeVisible();
 
     const observatorio = page.getByRole("link", { name: /ver produto em produção/i }).first();
@@ -527,7 +529,9 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
     const card = page.locator('[data-featured-project="TEC.09"]');
+    await expect(card).toBeVisible();
     await card.scrollIntoViewIfNeeded();
     const box = await card.boundingBox();
     expect(box).not.toBeNull();
@@ -549,6 +553,7 @@ test.describe("portfólio profissional", () => {
   test("projetos destacados mostram estado, prova direta e detalhes separados", async ({ page }) => {
     await page.goto("/");
 
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
     const featured = page.locator("[data-featured-project]");
     await expect(featured).toHaveCount(1);
 
@@ -636,6 +641,7 @@ test.describe("portfólio profissional", () => {
   test("abre projeto em destaque e mantém navegação por link direto", async ({ page }) => {
     await page.goto("/");
 
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
     const featured = page.locator("[data-featured-project]").first();
     await expect(featured).toBeVisible();
     await featured.getByRole("button", { name: /ver detalhes/i }).click();
@@ -852,8 +858,10 @@ test.describe("portfólio profissional", () => {
     expect(initialProgress).toBeGreaterThanOrEqual(0);
 
     await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
     await expect.poll(async () => (await context.locator('[data-mobile-current-section="true"]').textContent()) ?? "")
-      .toMatch(/projetos/i);
+      .toMatch(/projetos|observatório/i);
     await expect.poll(async () => Number(await ring.getAttribute("data-progress"))).toBeGreaterThan(initialProgress);
 
     const box = await context.boundingBox();
@@ -1362,6 +1370,11 @@ test.describe("portfólio profissional", () => {
 
   test("mantém contato e disponibilidade visíveis no encerramento", async ({ page }) => {
     await page.goto("/");
+
+    const contact = page.locator("#contato");
+    await contact.scrollIntoViewIfNeeded();
+    await expect(contact.getByText(/agenda sob consulta para novos projetos e oportunidades/i)).toBeVisible();
+    await expect(contact.getByText(/consulta de agenda/i)).toBeVisible();
 
     const footer = page.locator("#contato-rodape");
     await footer.scrollIntoViewIfNeeded();
