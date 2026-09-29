@@ -1368,6 +1368,28 @@ test.describe("portfólio profissional", () => {
     expect(await sitemap.text()).toContain("<loc>");
   });
 
+  test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {
+    await page.goto("/");
+
+    const trigger = page.getByRole("button", { name: /configurações de aparência/i });
+    await expect(trigger).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Aparência" })).toHaveCount(0);
+
+    const beforeResources = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map((entry) => entry.name),
+    );
+    expect(beforeResources.some((url) => url.includes("PortfolioAppearancePanel"))).toBeFalsy();
+
+    await trigger.click();
+
+    await expect(page.getByRole("dialog", { name: "Aparência" })).toBeVisible();
+    await expect.poll(async () =>
+      page.evaluate(() =>
+        performance.getEntriesByType("resource").some((entry) => entry.name.includes("PortfolioAppearancePanel")),
+      ),
+    ).toBeTruthy();
+  });
+
   test("mantém contato e disponibilidade visíveis no encerramento", async ({ page }) => {
     await page.goto("/");
 
