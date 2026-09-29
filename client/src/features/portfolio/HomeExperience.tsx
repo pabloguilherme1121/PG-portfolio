@@ -1304,9 +1304,9 @@ export default function Home() {
                 <div className="min-w-0">
                   <p className="truncate font-display text-lg tracking-[-0.035em] text-white">Pablo Guilherme</p>
                   <p className="mt-0.5 font-body text-xs text-[#a9bfd8]">Desenvolvimento de produtos digitais</p>
-                  <p className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#b8ffd0]">
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#34d399]" aria-hidden="true" />
-                    disponível para novos projetos
+                  <p className="mt-1.5 inline-flex items-center gap-1.5 font-mono text-[8px] uppercase tracking-[0.08em] text-amber-100">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-300" aria-hidden="true" />
+                    agenda sob consulta
                   </p>
                 </div>
               </div>
