@@ -1063,6 +1063,26 @@ test.describe("portfólio profissional", () => {
     await expect(installAction).toHaveCount(0);
   });
 
+  test("menu mobile é carregado apenas quando o visitante abre a navegação", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const beforeResources = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map((entry) => entry.name),
+    );
+    expect(beforeResources.some((url) => url.includes("PortfolioMobileMenu"))).toBeFalsy();
+    await expect(page.locator("#mobile-navigation")).toHaveCount(0);
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    await expect(page.locator("#mobile-navigation")).toBeVisible();
+    await expect.poll(async () =>
+      page.evaluate(() =>
+        performance.getEntriesByType("resource").some((entry) => entry.name.includes("PortfolioMobileMenu")),
+      ),
+    ).toBeTruthy();
+  });
+
   test("mobile prioriza navegação curta e CTA de projeto ao alcance do polegar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
