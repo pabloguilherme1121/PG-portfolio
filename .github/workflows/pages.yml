@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Enable Corepack
         run: corepack enable
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: pnpm
@@ -45,13 +45,15 @@ jobs:
           VITE_DEPLOY_TARGET: github-pages
           VITE_STATIC_DEPLOY: "true"
         run: pnpm exec vite build
+      - name: Enforce bundle budget
+        run: pnpm audit:bundle
       - name: Prepare Pages artifact
         run: node scripts/prepare-github-pages.mjs
       - name: Validate public routes
         run: node scripts/validate-pages-bundle.mjs
       - name: Share validated build
         if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pages-build
           path: dist/public
@@ -71,18 +73,18 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Download validated build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pages-build
           path: dist/public
       - name: Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
         with:
           enablement: true
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: dist/public
       - name: Deploy
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
