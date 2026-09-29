@@ -24,6 +24,34 @@ test.describe("reconstrução profissional do portfólio", () => {
     );
   });
 
+  test("provas verificáveis viram uma faixa horizontal compacta no mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
+    const firstProof = rail.locator('[data-portfolio-proof="true"]').first();
+
+    await expect(rail).toBeVisible();
+    const metrics = await rail.evaluate((element) => {
+      const style = getComputedStyle(element);
+      return {
+        display: style.display,
+        overflowX: style.overflowX,
+        scrollSnapType: style.scrollSnapType,
+        scrollWidth: element.scrollWidth,
+        clientWidth: element.clientWidth,
+      };
+    });
+    const firstBox = await firstProof.boundingBox();
+
+    expect(metrics.display).toBe("flex");
+    expect(["auto", "scroll"]).toContain(metrics.overflowX);
+    expect(metrics.scrollSnapType).toContain("x");
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
+  });
+
   test("reconstrução mantém a primeira dobra mobile legível e sem overflow horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
