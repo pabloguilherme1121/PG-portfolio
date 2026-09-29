@@ -791,7 +791,7 @@ test.describe("portfólio profissional", () => {
     await expect(profile).toBeVisible();
     await expect(profile).toContainText(/Pablo Guilherme/i);
     await expect(profile).toContainText(/produtos digitais/i);
-    await expect(profile).toContainText(/disponível/i);
+    await expect(profile).toContainText(/agenda.*consulta|sob consulta/i);
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     const dock = page.locator('[data-mobile-contact-bar="true"]');
