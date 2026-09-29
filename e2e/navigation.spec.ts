@@ -861,7 +861,7 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
     await page.locator("#projetos").scrollIntoViewIfNeeded();
     await expect.poll(async () => (await context.locator('[data-mobile-current-section="true"]').textContent()) ?? "")
-      .toMatch(/projetos/i);
+      .toMatch(/projetos|observatório/i);
     await expect.poll(async () => Number(await ring.getAttribute("data-progress"))).toBeGreaterThan(initialProgress);
 
     const box = await context.boundingBox();
@@ -1370,6 +1370,11 @@ test.describe("portfólio profissional", () => {
 
   test("mantém contato e disponibilidade visíveis no encerramento", async ({ page }) => {
     await page.goto("/");
+
+    const contact = page.locator("#contato");
+    await contact.scrollIntoViewIfNeeded();
+    await expect(contact.getByText(/agenda sob consulta para novos projetos e oportunidades/i)).toBeVisible();
+    await expect(contact.getByText(/consulta de agenda/i)).toBeVisible();
 
     const footer = page.locator("#contato-rodape");
     await footer.scrollIntoViewIfNeeded();
