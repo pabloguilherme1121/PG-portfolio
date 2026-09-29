@@ -60,9 +60,10 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import { getMobileDockModel, isMobileExperienceRoute, normalizeScrollProgress, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
+import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -175,6 +176,15 @@ function getRepositoryCategories(repository: Repository) {
 
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
+  const {
+    activeSection,
+    heroCtaRef,
+    isDesktopViewport,
+    isHeroCtaVisible,
+    isMobileDockCompact,
+    scrollProgress,
+    showBackToTop,
+  } = usePortfolioShellState();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [avoidSpeculativePreload, setAvoidSpeculativePreload] = useState(() =>
     typeof navigator === "undefined" ? false : shouldAvoidSpeculativePreload(getNavigatorConnection(navigator)),
@@ -197,11 +207,6 @@ export default function Home() {
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
   const [resumePreviewProgress, setResumePreviewProgress] = useState(0);
   const [resumePreviewError, setResumePreviewError] = useState(false);
-  const [showBackToTop, setShowBackToTop] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [isMobileDockCompact, setIsMobileDockCompact] = useState(false);
-  const [activeSection, setActiveSection] = useState("inicio");
-  const [isDesktopViewport, setIsDesktopViewport] = useState(() => typeof window === "undefined" ? true : window.matchMedia("(min-width: 768px)").matches);
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [deferredContactReady, setDeferredContactReady] = useState(false);
@@ -281,7 +286,6 @@ export default function Home() {
   const [showProjectSwipeHint, setShowProjectSwipeHint] = useState(false);
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
-  const [isHeroCtaVisible, setIsHeroCtaVisible] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 1023px)").matches);
   const [mobileExperienceRoute, setMobileExperienceRoute] = useState<MobileExperienceRoute>(() =>
     readStoredExperienceRoute(typeof window === "undefined" ? null : window.sessionStorage),
   );
@@ -304,7 +308,6 @@ export default function Home() {
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
   const projectDetailsSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
-  const heroCtaRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -395,41 +398,6 @@ export default function Home() {
     window.addEventListener("hashchange", syncDeferredHashes);
     return () => window.removeEventListener("hashchange", syncDeferredHashes);
   }, []);
-
-  useEffect(() => {
-    const target = heroCtaRef.current;
-    if (!target || typeof window === "undefined") return;
-
-    const mobileQuery = window.matchMedia("(max-width: 1023px)");
-    let animationFrame: number | null = null;
-
-    const syncVisibility = () => {
-      animationFrame = null;
-      if (!mobileQuery.matches) {
-        setIsHeroCtaVisible(false);
-        return;
-      }
-      const rect = target.getBoundingClientRect();
-      setIsHeroCtaVisible(rect.top < window.innerHeight && rect.bottom > 0);
-    };
-
-    const scheduleSync = () => {
-      if (animationFrame !== null) return;
-      animationFrame = window.requestAnimationFrame(syncVisibility);
-    };
-
-    scheduleSync();
-    window.addEventListener("scroll", scheduleSync, { passive: true });
-    window.addEventListener("resize", scheduleSync);
-    mobileQuery.addEventListener("change", scheduleSync);
-    return () => {
-      if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
-      window.removeEventListener("scroll", scheduleSync);
-      window.removeEventListener("resize", scheduleSync);
-      mobileQuery.removeEventListener("change", scheduleSync);
-    };
-  }, []);
-
 
   useEffect(() => {
     const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 120 : 420;
@@ -666,65 +634,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const sectionIds = ["inicio", ...navigationItems.map(([, , id]) => id), "contato"];
-    const sections = sectionIds
-      .map((id) => document.getElementById(id))
-      .filter((section): section is HTMLElement => Boolean(section));
-    let frameId: number | null = null;
-    let previousScrollY = window.scrollY;
-
-    const updateScrollState = () => {
-      frameId = null;
-      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const nextProgress = normalizeScrollProgress(
-        scrollableHeight > 0 ? (window.scrollY / scrollableHeight) * 100 : 0,
-      );
-      const readingLine = window.scrollY + window.innerHeight * 0.22;
-      let nextSection = "inicio";
-
-      for (const section of sections) {
-        const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-        if (sectionTop <= readingLine + 1) nextSection = section.id;
-        else break;
-      }
-
-      setShowBackToTop(window.scrollY > 640);
-      if (window.innerWidth < 768) {
-        const delta = window.scrollY - previousScrollY;
-        if (window.scrollY < 240 || delta < -12) setIsMobileDockCompact(false);
-        else if (delta > 12) setIsMobileDockCompact(true);
-      } else {
-        setIsMobileDockCompact(false);
-      }
-      previousScrollY = window.scrollY;
-      setScrollProgress(nextProgress);
-      setActiveSection(nextSection);
-    };
-
-    const scheduleScrollUpdate = () => {
-      if (frameId !== null) return;
-      frameId = window.requestAnimationFrame(updateScrollState);
-    };
-
-    updateScrollState();
-    window.addEventListener("scroll", scheduleScrollUpdate, { passive: true });
-    window.addEventListener("resize", scheduleScrollUpdate);
-    return () => {
-      window.removeEventListener("scroll", scheduleScrollUpdate);
-      window.removeEventListener("resize", scheduleScrollUpdate);
-      if (frameId !== null) window.cancelAnimationFrame(frameId);
-    };
-  }, []);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-    const handleViewportChange = () => {
-      setIsDesktopViewport(mediaQuery.matches);
-      if (mediaQuery.matches) setMenuOpen(false);
-    };
-    mediaQuery.addEventListener("change", handleViewportChange);
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
+    if (isDesktopViewport) setMenuOpen(false);
+  }, [isDesktopViewport]);
 
   useEffect(() => {
     if (!menuOpen) return;
