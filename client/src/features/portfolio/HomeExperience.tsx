@@ -1,4 +1,3 @@
-import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 /**
  * Design: Arquivo Luminoso — editorial técnico em azul celeste vibrante e azul profundo.
  * A página transforma a trajetória de Pablo em capítulos assimétricos, com
@@ -65,6 +64,17 @@ import { getMobileDockModel, isMobileExperienceRoute, normalizeScrollProgress, r
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import {
+  portfolioMarkUrl as markUrl,
+  portfolioMobileSectionLabels as mobileSectionLabels,
+  portfolioNavigationItems as navigationItems,
+  portfolioPortraitResponsive as portraitResponsive,
+  portfolioPortraitUrl as portraitUrl,
+  portfolioResumeUrl as resumeUrl,
+  portfolioTelegramUrl as telegramUrl,
+  portfolioWhatsAppNumber as whatsAppNumber,
+  portfolioWhatsAppUrl as whatsAppUrl,
+} from "@/features/portfolio/portfolioConfig";
+import {
   categoryFilters,
   predefinedOrderProfiles,
   repositories,
@@ -90,22 +100,11 @@ const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
 const loadPortfolioTicTacToe = () => import("@/features/portfolio/components/PortfolioTicTacToe");
 const PortfolioTicTacToe = lazy(loadPortfolioTicTacToe);
 
-const portfolioMediaPath = (file: string) => `${import.meta.env.BASE_URL}portfolio-media/${file}`;
-const markUrl = `${import.meta.env.BASE_URL}favicon.svg`;
-const portraitUrl = portfolioMediaPath("pablo-profile-2026.webp");
-const portraitResponsive = {
-  avif: portfolioMediaPath("pablo-profile-2026.avif"),
-  webp: portfolioMediaPath("pablo-profile-2026.webp"),
-};
-const resumeUrl = publicMediaPath("/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf");
-const whatsAppNumber = "5561992903029";
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
 declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
 const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
 const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
-const whatsAppUrl = `https://wa.me/${whatsAppNumber}?text=Olá%2C%20Pablo%21%20Vim%20pelo%20portfólio%20e%20gostaria%20de%20solicitar%20um%20orçamento.`;
-const telegramUrl = "https://t.me/mpjmarketing";
 
 type SearchSuggestion = {
   value: string;
@@ -173,23 +172,6 @@ function getRepositoryCategories(repository: Repository) {
   if (repository.technologies.includes("Interface")) categories.add("Interface");
   return categories;
 }
-const navigationItems = [
-  ["sobre", "#sobre", "sobre"],
-  ["competências", "#trilha", "trilha"],
-  ["serviços", "#servicos", "servicos"],
-  ["projetos", "#projetos", "projetos"],
-  ["observatório", "#observatorio", "observatorio"],
-] as const;
-
-const mobileSectionLabels: Record<string, string> = {
-  inicio: "início",
-  sobre: "sobre",
-  trilha: "competências",
-  servicos: "serviços",
-  projetos: "projetos",
-  observatorio: "observatório",
-  contato: "contato",
-};
 
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
