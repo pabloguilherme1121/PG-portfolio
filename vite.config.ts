@@ -74,6 +74,39 @@ function writeToLogFile(source: LogSource, entries: unknown[]) {
  * - Files: browserConsole.log, networkRequests.log, sessionReplay.log
  * - Auto-trimmed when exceeding 1MB (keeps newest entries)
  */
+function staticRuntimeGuardPlugin(): Plugin {
+  return {
+    name: "portfolio-static-runtime-guard",
+    generateBundle(_options, bundle) {
+      if (process.env.VITE_STATIC_DEPLOY !== "true") return;
+
+      const forbiddenFragments = [
+        "/@trpc/",
+        "/@tanstack/react-query/",
+        "/superjson/",
+      ];
+      const offenders = new Set<string>();
+
+      for (const output of Object.values(bundle)) {
+        if (output.type !== "chunk") continue;
+        for (const moduleId of Object.keys(output.modules)) {
+          const normalized = moduleId.replaceAll("\\", "/");
+          if (forbiddenFragments.some((fragment) => normalized.includes(fragment))) {
+            offenders.add(normalized);
+          }
+        }
+      }
+
+      if (offenders.size > 0) {
+        this.error(
+          "Runtime de API detectado no build estático:\n" +
+          [...offenders].sort().map((moduleId) => `- ${moduleId}`).join("\n"),
+        );
+      }
+    },
+  };
+}
+
 function vitePluginManusDebugCollector(): Plugin {
   return {
     name: "manus-debug-collector",
@@ -153,6 +186,7 @@ function vitePluginManusDebugCollector(): Plugin {
 const plugins = [
   react(),
   tailwindcss(),
+  staticRuntimeGuardPlugin(),
   // The Manus inspector and browser log collector are development tools.
   // Excluding them from Pages avoids injecting a large inline runtime into index.html.
   ...(process.env.VITE_STATIC_DEPLOY === "true"
