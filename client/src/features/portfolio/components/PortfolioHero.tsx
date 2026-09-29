@@ -50,7 +50,7 @@ export default function PortfolioHero({
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
-            Pablo Guilherme · produtos digitais do problema à publicação
+            Pablo Guilherme · produto digital, interface e desenvolvimento web
           </div>
           <h1 className="reveal delay-1 mt-5 max-w-4xl font-display text-[clamp(2.05rem,9.7vw,3.15rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
@@ -70,17 +70,17 @@ export default function PortfolioHero({
 
           <div className="reveal delay-2 mt-5 flex max-w-xl flex-col gap-4 sm:mt-9 sm:gap-6 sm:ml-[16.8%]">
             <p className="text-balance font-body text-base leading-7 text-[#bed0ea] sm:text-lg sm:leading-8">
-              Planejo, desenho e desenvolvo produtos digitais claros — do problema à publicação.
+              Do briefing ao deploy, organizo produto, interface, código e validação para transformar uma necessidade em algo utilizável e demonstrável.
             </p>
             <p className="hidden max-w-xl border-l-2 border-[#38bdf8] pl-3 font-mono text-[10px] uppercase leading-5 tracking-[0.1em] text-[#d8eaff] sm:block">
-              Produto digital · React + TypeScript · dashboards · publicação web
+              React + TypeScript · Playwright/Vitest · CI/CD · PWA · publicação web
             </p>
 
             <div data-mobile-hero-proof-rail="true" role="list" aria-label="Provas rápidas do portfólio" className="grid grid-cols-3 gap-px overflow-hidden rounded-[14px] border border-white/[0.08] bg-white/[0.08] sm:hidden">
               {[
-                ["stack", "React + TypeScript"],
-                ["dados", "Interfaces & dados"],
-                ["entrega", "Deploy testado"],
+                ["produção", "Observatório publicado"],
+                ["full-stack", "Trajeto em evolução"],
+                ["qualidade", "Playwright + CI"],
               ].map(([label, value]) => (
                 <div key={label} data-mobile-hero-proof="true" role="listitem" className="min-w-0 bg-[#071326]/92 px-2.5 py-3">
                   <span className="block font-mono text-[7px] font-semibold uppercase tracking-[0.11em] text-[#67e8f9]">{label}</span>
@@ -97,8 +97,8 @@ export default function PortfolioHero({
               >
                 começar diagnóstico <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
-              <a href="#observatorio" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white sm:w-auto sm:border-transparent">
-                ver projeto em produção <ArrowDownRight className="h-3.5 w-3.5" />
+              <a href="#projetos" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white sm:w-auto sm:border-transparent">
+                ver projetos selecionados <ArrowDownRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
@@ -109,11 +109,11 @@ export default function PortfolioHero({
 
         <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
           <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
-            PORTFÓLIO: projetos selecionados
+            PROVAS: PRODUTO PUBLICADO · CÓDIGO PÚBLICO · TESTES
             <br />
             FOCO: PRODUTOS DIGITAIS · INTERFACES · DADOS
             <br />
-            ATENDIMENTO: ÁGUAS LINDAS · PLANALTINA · ENTORNO
+            ENTREGA: RESPONSIVO · ACESSÍVEL · PUBLICÁVEL
           </p>
           <a
             href="#perfil-profissional"
