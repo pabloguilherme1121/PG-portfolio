@@ -14,8 +14,8 @@ type PortfolioProjectDetailsDialogProps = {
   isFavorite: boolean;
   shareStatus: ProjectShareStatus;
   copyStatus: ProjectShareStatus;
-  previousProject?: Repository;
-  nextProject?: Repository;
+  previousProject?: Repository | null;
+  nextProject?: Repository | null;
   projectIndex: number;
   projectCount: number;
   onOpenChange: (open: boolean) => void;
