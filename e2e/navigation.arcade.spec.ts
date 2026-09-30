@@ -135,4 +135,36 @@ test.describe("portfólio profissional", () => {
     await expect(game.locator('[data-game-status="true"]')).toContainText(/sua vez.*O/i);
   });
 
+  test("PG Arcade alterna entre dominó e damas com bot, dificuldades e 1x1 local", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    await expect(arcade.getByRole("tab")).toHaveCount(3);
+
+    await arcade.getByRole("tab", { name: /dominó/i }).click();
+    const domino = arcade.locator('[data-domino-game="true"]');
+    await expect(domino).toBeVisible();
+    await expect(domino.getByRole("button", { name: /contra bot/i })).toHaveAttribute("aria-pressed", "true");
+    await domino.getByRole("button", { name: /difícil/i }).click();
+    await expect(domino.getByRole("button", { name: /difícil/i })).toHaveAttribute("aria-pressed", "true");
+    await domino.getByRole("button", { name: /1 × 1 local/i }).click();
+    await expect(domino.locator('[data-domino-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+    await expect(domino.locator('[data-domino-tile="true"]')).toHaveCount(5);
+
+    await arcade.getByRole("tab", { name: /damas/i }).click();
+    const checkers = arcade.locator('[data-checkers-game="true"]');
+    await expect(checkers).toBeVisible();
+    await expect(checkers.locator('[data-checkers-cell="true"]')).toHaveCount(64);
+    await checkers.getByRole("button", { name: /difícil/i }).click();
+    await expect(checkers.getByRole("button", { name: /difícil/i })).toHaveAttribute("aria-pressed", "true");
+    await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
+    await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+
+    await checkers.getByRole("gridcell", { name: /Peça azul/i }).first().click();
+    await expect(checkers.locator('[data-legal-destination="true"]')).not.toHaveCount(0);
+    await checkers.locator('[data-legal-destination="true"]').first().click();
+    await expect(checkers.locator('[data-checkers-status="true"]')).toContainText(/jogador 2|vermelho/i);
+  });
+
 });

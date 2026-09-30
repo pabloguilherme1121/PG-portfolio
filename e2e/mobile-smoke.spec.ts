@@ -26,3 +26,27 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
   await expect(diagnostic).toBeVisible();
   await expect(diagnostic).toHaveAttribute("href", "#diagnostico");
 });
+
+
+test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
+  await page.goto("/");
+  const toggle = page.getByRole("button", { name: /jogar no pg arcade/i });
+  await toggle.tap();
+  await expect(toggle).toHaveAttribute("aria-expanded", "true");
+
+  const arcade = page.locator('[data-arcade-hub="true"]');
+  await expect(arcade).toBeVisible();
+  await expect(arcade.getByRole("tab")).toHaveCount(3);
+
+  await arcade.getByRole("tab", { name: /dominó/i }).click();
+  const domino = arcade.locator('[data-domino-game="true"]');
+  await expect(domino).toBeVisible();
+  await domino.getByRole("button", { name: /1 × 1 local/i }).click();
+  await expect(domino.locator('[data-domino-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+
+  await arcade.getByRole("tab", { name: /damas/i }).click();
+  const checkers = arcade.locator('[data-checkers-game="true"]');
+  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible();
+  await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
+  await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+});
