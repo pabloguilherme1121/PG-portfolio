@@ -1,5 +1,5 @@
 export type CheckersPlayer = "blue" | "red";
-export type CheckersDifficulty = "easy" | "normal" | "hard";
+export type CheckersDifficulty = "easy" | "normal" | "hard" | "master";
 export type CheckersVariant = "quick" | "classic";
 export type CheckersPiece = { player: CheckersPlayer; king: boolean };
 export type CheckersBoard = Array<CheckersPiece | null>;
@@ -8,6 +8,7 @@ export type CheckersMove = { from: number; to: number; capture?: number };
 const BOARD_SIZE = 8;
 const indexOf = (row: number, col: number) => row * BOARD_SIZE + col;
 const inBounds = (row: number, col: number) => row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
+const opponentOf = (player: CheckersPlayer): CheckersPlayer => player === "blue" ? "red" : "blue";
 
 export function getCheckersCoordinates(index: number) {
   return { row: Math.floor(index / BOARD_SIZE), col: index % BOARD_SIZE };
@@ -106,18 +107,47 @@ export function getCheckersWinner(board: CheckersBoard, playerToMove: CheckersPl
   const redCount = board.filter((piece) => piece?.player === "red").length;
   if (!blueCount) return "red";
   if (!redCount) return "blue";
-  if (!getCheckersLegalMoves(board, playerToMove).length) return playerToMove === "blue" ? "red" : "blue";
+  if (!getCheckersLegalMoves(board, playerToMove).length) return opponentOf(playerToMove);
   return null;
 }
 
 function evaluateBoard(board: CheckersBoard, player: CheckersPlayer) {
-  const opponent = player === "blue" ? "red" : "blue";
+  const opponent = opponentOf(player);
   const scoreFor = (target: CheckersPlayer) =>
-    board.reduce((score, piece) => {
+    board.reduce((score, piece, index) => {
       if (piece?.player !== target) return score;
-      return score + (piece.king ? 5 : 3);
+      const { row } = getCheckersCoordinates(index);
+      const advancement = piece.king
+        ? 0
+        : target === "red"
+          ? row * 0.08
+          : (BOARD_SIZE - 1 - row) * 0.08;
+      return score + (piece.king ? 5 : 3) + advancement;
     }, 0);
-  return scoreFor(player) - scoreFor(opponent) + getCheckersLegalMoves(board, player).length * 0.2;
+
+  const mobility =
+    getCheckersLegalMoves(board, player).length -
+    getCheckersLegalMoves(board, opponent).length;
+
+  return scoreFor(player) - scoreFor(opponent) + mobility * 0.18;
+}
+
+function minimax(
+  board: CheckersBoard,
+  currentPlayer: CheckersPlayer,
+  rootPlayer: CheckersPlayer,
+  depth: number,
+): number {
+  const winner = getCheckersWinner(board, currentPlayer);
+  if (winner) return winner === rootPlayer ? 1000 + depth : -1000 - depth;
+  if (depth <= 0) return evaluateBoard(board, rootPlayer);
+
+  const moves = getCheckersLegalMoves(board, currentPlayer);
+  const scores = moves.map((move) =>
+    minimax(applyCheckersMove(board, move), opponentOf(currentPlayer), rootPlayer, depth - 1),
+  );
+
+  return currentPlayer === rootPlayer ? Math.max(...scores) : Math.min(...scores);
 }
 
 export function chooseCheckersBotMove(
@@ -125,8 +155,16 @@ export function chooseCheckersBotMove(
   player: CheckersPlayer,
   difficulty: CheckersDifficulty,
   random: () => number = Math.random,
+  forcedFrom?: number,
 ): CheckersMove | null {
-  const moves = getCheckersLegalMoves(board, player);
+  const forcedMoves =
+    forcedFrom === undefined
+      ? null
+      : getCheckersMovesFrom(board, forcedFrom, true).filter(
+          (move) => board[move.from]?.player === player,
+        );
+  const moves = forcedMoves && forcedMoves.length ? forcedMoves : getCheckersLegalMoves(board, player);
+
   if (!moves.length) return null;
   if (difficulty === "easy") return moves[Math.floor(random() * moves.length)] ?? moves[0];
 
@@ -135,8 +173,21 @@ export function chooseCheckersBotMove(
     const destination = next[move.to];
     const captureBonus = move.capture !== undefined ? 8 : 0;
     const promotionBonus = destination?.king && !board[move.from]?.king ? 6 : 0;
-    const strategic = difficulty === "hard" ? evaluateBoard(next, player) * 2 : 0;
-    return { move, score: captureBonus + promotionBonus + strategic };
+    const positional = evaluateBoard(next, player);
+
+    if (difficulty === "normal") {
+      return { move, score: captureBonus + promotionBonus };
+    }
+
+    if (difficulty === "hard") {
+      return { move, score: captureBonus + promotionBonus + positional * 2 };
+    }
+
+    const lookAhead = minimax(next, opponentOf(player), player, 2);
+    return {
+      move,
+      score: captureBonus * 1.5 + promotionBonus * 1.5 + positional * 2 + lookAhead,
+    };
   });
 
   return scored.sort((a, b) => b.score - a.score)[0].move;
