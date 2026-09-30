@@ -4,12 +4,13 @@ import path from "node:path";
 
 const root = path.resolve("dist/public");
 const read = (file) => readFile(path.join(root, file), "utf8");
-const [home, privacy, fallback, manifestSource, serviceWorker] = await Promise.all([
+const [home, privacy, fallback, manifestSource, legacyServiceWorker, runtimeServiceWorker] = await Promise.all([
   read("index.html"),
   read("privacidade/index.html"),
   read("404.html"),
   read("manifest.webmanifest"),
   read("sw.js"),
+  read("sw-runtime-v8.js"),
 ]);
 const manifest = JSON.parse(manifestSource);
 
@@ -31,19 +32,23 @@ assert.equal(manifest.scope, "./");
 assert.ok(manifest.icons?.some((icon) => icon.sizes === "192x192"));
 assert.ok(manifest.icons?.some((icon) => icon.sizes === "512x512"));
 assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose.includes("maskable")));
-assert.ok(serviceWorker.includes('self.addEventListener("install"'));
-assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
-assert.ok(serviceWorker.includes('const CACHE_NAME = "pg-portfolio-pwa-v6"'), "Unexpected PWA cache version");
-assert.ok(serviceWorker.includes("self.skipWaiting()"), "The current worker must replace legacy cache workers");
-assert.ok(serviceWorker.includes('request.destination === "script" || request.destination === "style"'), "Executable assets must be network-only");
-assert.ok(serviceWorker.includes('fetch(request, { cache: "no-store" })'), "Navigation and executable assets must bypass stale HTTP cache");
-assert.ok(serviceWorker.includes("event.waitUntil(network.then"), "Cached media must revalidate in the background");
+assert.ok(legacyServiceWorker.includes('const TAKEOVER_VERSION = "v8"'), "Legacy worker takeover version is stale");
+assert.ok(legacyServiceWorker.includes("client.navigate"), "Legacy worker must actively refresh stale controlled pages");
+assert.ok(legacyServiceWorker.includes("includeUncontrolled: true"), "Legacy worker must recover installed/mobile clients");
+assert.ok(legacyServiceWorker.includes('fetch(request, { cache: "no-store" })'), "Legacy worker must bypass stale executable caches");
+assert.ok(runtimeServiceWorker.includes('const RUNTIME_VERSION = "v8"'), "Unexpected runtime service worker version");
+assert.ok(runtimeServiceWorker.includes('self.addEventListener("install"'));
+assert.ok(runtimeServiceWorker.includes('self.addEventListener("fetch"'));
+assert.ok(runtimeServiceWorker.includes("self.skipWaiting()"), "The current worker must replace legacy cache workers");
+assert.ok(runtimeServiceWorker.includes('request.destination === "script"'), "Executable assets must stay network-only");
+assert.ok(runtimeServiceWorker.includes('fetch(request, { cache: "no-store" })'), "Navigation and executable assets must bypass stale HTTP cache");
+assert.ok(!runtimeServiceWorker.includes("cache.put"), "Runtime worker must not persist application assets");
 assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).includes("<svg"));
 const builtScripts = (await readdir(path.join(root, "assets"))).filter((file) => file.endsWith(".js"));
 const builtScriptSources = await Promise.all(builtScripts.map((file) => readFile(path.join(root, "assets", file), "utf8")));
-assert.ok(builtScriptSources.some((source) => source.includes("sw.js") && source.includes("serviceWorker")), "The production bundle does not register the PWA service worker");
+assert.ok(builtScriptSources.some((source) => source.includes("sw-runtime-v8.js") && source.includes("serviceWorker")), "The production bundle does not register the v8 PWA service worker");
 assert.ok(builtScriptSources.some((source) => source.includes("vite:preloadError")), "The production bundle does not recover from stale lazy chunks");
-assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v6")), "The production bundle does not migrate legacy PWA runtime state");
+assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v8")), "The production bundle does not migrate legacy PWA runtime state");
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));
 assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));
