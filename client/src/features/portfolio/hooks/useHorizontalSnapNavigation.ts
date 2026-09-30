@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { subscribeToMediaQuery } from "@/lib/mediaQuery";
 
 type HorizontalSnapNavigationOptions = {
   itemSelector: string;
@@ -59,12 +60,12 @@ export function useHorizontalSnapNavigation({
     scheduleSync();
     container.addEventListener("scroll", scheduleSync, { passive: true });
     window.addEventListener("resize", scheduleSync);
-    viewport.addEventListener("change", scheduleSync);
+    const unsubscribeViewport = subscribeToMediaQuery(viewport, scheduleSync);
 
     return () => {
       container.removeEventListener("scroll", scheduleSync);
       window.removeEventListener("resize", scheduleSync);
-      viewport.removeEventListener("change", scheduleSync);
+      unsubscribeViewport();
       if (frameId !== null) window.cancelAnimationFrame(frameId);
     };
   }, [mediaQuery, syncActiveIndex]);
