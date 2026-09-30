@@ -50,6 +50,11 @@ export function ThemeProvider({
     const root = document.documentElement;
     root.classList.toggle("dark", theme === "dark");
     root.dataset.themePreference = preference;
+    root.style.colorScheme = theme;
+    document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute(
+      "content",
+      theme === "dark" ? "#030b1e" : "#f4f8fc",
+    );
     if (switchable) {
       window.localStorage.setItem("theme-preference", preference);
       window.localStorage.setItem("theme", theme);
