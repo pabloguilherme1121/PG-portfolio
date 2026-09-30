@@ -54,6 +54,19 @@ test.describe("reconstrução profissional do portfólio", () => {
 
 
 
+  test("Experience Hub carrega apenas quando se aproxima da viewport", async ({ page }) => {
+    await page.goto("/");
+
+    const placeholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await expect(placeholder).toHaveCount(1);
+    await expect(page.locator('[data-experience-hub="true"]')).toHaveCount(0);
+
+    await placeholder.scrollIntoViewIfNeeded();
+
+    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
+    await expect(placeholder).toHaveCount(0);
+  });
+
   test("Project Lens carrega apenas quando o diagnóstico se aproxima da viewport", async ({ page }) => {
     await page.goto("/");
 
