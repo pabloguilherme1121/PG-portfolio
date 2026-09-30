@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { portfolioNavigationItems } from "@/features/portfolio/portfolioConfig";
 import { normalizeScrollProgress } from "@/features/portfolio/utils/mobileJourney";
+import { subscribeToMediaQuery } from "@/lib/mediaQuery";
 
 export function usePortfolioShellState() {
   const heroCtaRef = useRef<HTMLDivElement>(null);
@@ -40,13 +41,13 @@ export function usePortfolioShellState() {
     scheduleSync();
     window.addEventListener("scroll", scheduleSync, { passive: true });
     window.addEventListener("resize", scheduleSync);
-    mobileQuery.addEventListener("change", scheduleSync);
+    const unsubscribeMobileQuery = subscribeToMediaQuery(mobileQuery, scheduleSync);
 
     return () => {
       if (animationFrame !== null) window.cancelAnimationFrame(animationFrame);
       window.removeEventListener("scroll", scheduleSync);
       window.removeEventListener("resize", scheduleSync);
-      mobileQuery.removeEventListener("change", scheduleSync);
+      unsubscribeMobileQuery();
     };
   }, []);
 
@@ -123,8 +124,7 @@ export function usePortfolioShellState() {
     const mediaQuery = window.matchMedia("(min-width: 768px)");
     const handleViewportChange = () => setIsDesktopViewport(mediaQuery.matches);
     handleViewportChange();
-    mediaQuery.addEventListener("change", handleViewportChange);
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
+    return subscribeToMediaQuery(mediaQuery, handleViewportChange);
   }, []);
 
   return {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
+import { subscribeToMediaQuery } from "@/lib/mediaQuery";
 
 type Theme = "light" | "dark";
 export type ThemePreference = Theme | "system";
@@ -44,8 +45,7 @@ export function ThemeProvider({
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleSystemThemeChange = () => setSystemTheme(mediaQuery.matches ? "dark" : "light");
     handleSystemThemeChange();
-    mediaQuery.addEventListener("change", handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener("change", handleSystemThemeChange);
+    return subscribeToMediaQuery(mediaQuery, handleSystemThemeChange);
   }, []);
 
   useEffect(() => {

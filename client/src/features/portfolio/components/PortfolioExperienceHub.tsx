@@ -3,6 +3,7 @@ import type { KeyboardEvent, PointerEvent } from "react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { experienceRouteStorageKey, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { getSafeStorage, writeStorage } from "@/lib/safeStorage";
 
 const experienceRoutes = [
   {
@@ -49,17 +50,13 @@ const experienceRoutes = [
 type ExperienceRouteId = (typeof experienceRoutes)[number]["id"];
 
 export default function PortfolioExperienceHub() {
-  const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>(() => readStoredExperienceRoute(typeof window === "undefined" ? null : window.sessionStorage) as ExperienceRouteId);
+  const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>(() => readStoredExperienceRoute(getSafeStorage("session")) as ExperienceRouteId);
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
   const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
 
   function selectRoute(routeId: ExperienceRouteId) {
     setActiveRoute(routeId);
-    try {
-      window.sessionStorage.setItem(experienceRouteStorageKey, routeId);
-    } catch {
-      // A rota continua válida durante a renderização atual mesmo sem storage.
-    }
+    writeStorage(getSafeStorage("session"), experienceRouteStorageKey, routeId);
     window.dispatchEvent(new CustomEvent<{ routeId: MobileExperienceRoute }>("portfolio:experience-route", { detail: { routeId } }));
     trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
 

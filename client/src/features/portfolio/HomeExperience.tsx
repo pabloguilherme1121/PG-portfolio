@@ -210,7 +210,7 @@ export default function Home() {
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
   const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
-  const shouldRenderFooter = shouldLoadFooter || (typeof window !== "undefined" && window.location.hash === "#contato-rodape");
+  const shouldRenderFooter = shouldLoadFooter || shouldLoadContact || (typeof window !== "undefined" && window.location.hash === "#contato-rodape");
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
