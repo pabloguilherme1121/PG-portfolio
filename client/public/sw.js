@@ -1,4 +1,4 @@
-const CACHE_NAME = "pg-portfolio-pwa-v3";
+const CACHE_NAME = "pg-portfolio-pwa-v4";
 const SCOPE_URL = new URL(self.registration.scope);
 const APP_SHELL_URL = new URL("./", SCOPE_URL).href;
 const CORE_ASSETS = [
@@ -47,7 +47,10 @@ async function cacheAppShell() {
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(cacheAppShell().then(() => self.skipWaiting()));
+  // Do not skip the waiting phase: an already-open portfolio can still reference
+  // lazy chunks from the previous deployment. Activating over that page would
+  // risk deleting the exact cache entries that keep that session functional.
+  event.waitUntil(cacheAppShell());
 });
 
 self.addEventListener("activate", (event) => {

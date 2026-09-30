@@ -1,6 +1,7 @@
 import { AlertTriangle, Home, RotateCcw } from "lucide-react";
 import { Component, ReactNode } from "react";
 import { Button } from "./ui/button";
+import { recoverFromRuntimeError } from "@/runtimeRecovery";
 
 interface Props {
   children: ReactNode;
@@ -21,12 +22,12 @@ class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  handleReload = () => {
-    window.location.reload();
+  handleReload = async () => {
+    await recoverFromRuntimeError(this.state.error, import.meta.env.BASE_URL);
   };
 
   handleHome = () => {
-    window.location.assign("/");
+    window.location.assign(import.meta.env.BASE_URL);
   };
 
   render() {
