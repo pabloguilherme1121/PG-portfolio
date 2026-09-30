@@ -10,7 +10,8 @@ import {
   toDateKey,
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
-import { briefingDraftStorageKey, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
+import { briefingSteps, type BriefingSeed } from "@/features/portfolio/utils/briefingFlow";
+import { useBriefingFlow } from "@/features/portfolio/hooks/useBriefingFlow";
 import { portfolioWhatsAppNumber } from "@/features/portfolio/portfolioConfig";
 import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
 import {
@@ -31,70 +32,10 @@ import {
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type BlockedDate = { dateKey: string };
-
-type BriefingDraft = Record<string, string>;
-
-const briefingDefaultValues: BriefingDraft = {
-  location: "Remoto / online",
-  deadline: "",
-  budget: "Preciso de orientação",
-};
-
-const briefingFieldNames = [
-  "name",
-  "email",
-  "service",
-  "projectType",
-  "objective",
-  "audience",
-  "stage",
-  "location",
-  "date",
-  "delivery",
-  "deadline",
-  "budget",
-  "contentStatus",
-  "visualIdentity",
-  "pagesScreens",
-  "features",
-  "integrations",
-  "qualityPriority",
-  "postLaunch",
-  "success",
-  "references",
-  "constraints",
-  "briefing",
-] as const;
-const briefingReadinessFields = ["name", "email", "service", "projectType", "objective", "audience", "contentStatus", "qualityPriority", "success", "briefing"] as const;
-const briefingSteps = [
-  { id: "contact", label: "Contato", description: "Quem é você e como retorno." },
-  { id: "direction", label: "Direção", description: "Problema, público e objetivo." },
-  { id: "scope", label: "Escopo", description: "Formato, prazo e investimento." },
-  { id: "requirements", label: "Requisitos", description: "Conteúdo, funcionalidades, integrações e qualidade." },
-  { id: "review", label: "Revisão", description: "Critérios de sucesso, referências e contexto final." },
-] as const;
-
-function readBriefingDraft(): BriefingDraft {
-  const defaults: BriefingDraft = { ...briefingDefaultValues };
-  if (typeof window === "undefined") return defaults;
-  try {
-    const parsed = JSON.parse(window.localStorage.getItem(briefingDraftStorageKey) || "{}");
-    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return defaults;
-    const stored = Object.fromEntries(
-      Object.entries(parsed).filter(([, value]) => typeof value === "string"),
-    ) as BriefingDraft;
-    return { ...defaults, ...stored };
-  } catch {
-    return defaults;
-  }
-}
-
-type BriefingSeed = Partial<Pick<BriefingDraft, "service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing">>;
 
 type PortfolioContactProps = {
   whatsAppUrl: string;
@@ -149,11 +90,18 @@ export function PortfolioContact({
   const [isAvailabilityRedirecting, setIsAvailabilityRedirecting] = useState(false);
   const [isClearingAvailabilitySelection, setIsClearingAvailabilitySelection] = useState(false);
   const availabilityClearTimerRef = useRef<number | null>(null);
-  const briefingStartedRef = useRef(false);
-  const briefingFormRef = useRef<HTMLFormElement>(null);
-  const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
-  const [briefingRevision, setBriefingRevision] = useState(0);
-  const [briefingStep, setBriefingStep] = useState(0);
+  const {
+    briefingDraft,
+    briefingFormRef,
+    briefingProgress,
+    briefingRevision,
+    briefingStatus,
+    briefingStep,
+    captureBriefingDraft,
+    clearBriefingDraft,
+    moveBriefingStep,
+    trackBriefingStarted,
+  } = useBriefingFlow({ initialBriefingSeed, setFormSent });
 
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -172,26 +120,9 @@ export function PortfolioContact({
     availabilityTime,
     isBlockedDatesError,
   );
-  const briefingCompletedFields = briefingReadinessFields.filter((field) => briefingDraft[field]?.trim()).length;
-  const briefingProgress = Math.round((briefingCompletedFields / briefingReadinessFields.length) * 100);
-  const briefingStatus = briefingProgress >= 88 ? "pronto para análise" : briefingProgress >= 55 ? "bom contexto" : "em construção";
-
   useEffect(() => () => {
     if (availabilityClearTimerRef.current) window.clearTimeout(availabilityClearTimerRef.current);
   }, []);
-
-  useLayoutEffect(() => {
-    const form = briefingFormRef.current;
-    if (!form) return;
-    for (const fieldName of briefingFieldNames) {
-      const field = form.elements.namedItem(fieldName);
-      const value = briefingDraft[fieldName] ?? "";
-      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
-        field.value = value;
-      }
-    }
-  }, [briefingDraft, briefingRevision]);
-
 
   useEffect(() => {
     if (isBlockedDatesError || (availabilityDate && blockedDateKeys.has(toDateKey(availabilityDate)))) {
@@ -227,116 +158,6 @@ export function PortfolioContact({
     setIsClearingAvailabilitySelection(true);
     availabilityClearTimerRef.current = window.setTimeout(clear, 180);
   }
-
-  function trackBriefingStarted() {
-    if (briefingStartedRef.current) return;
-    briefingStartedRef.current = true;
-    trackPortfolioEvent("briefing_started");
-  }
-
-  function notifyBriefingProgress(nextDraft: BriefingDraft) {
-    window.dispatchEvent(
-      new CustomEvent<{ hasDraft: boolean }>("portfolio:briefing-progress", {
-        detail: { hasDraft: hasMeaningfulBriefingDraft(nextDraft) },
-      }),
-    );
-  }
-
-  function captureBriefingDraft(form: HTMLFormElement) {
-    const data = new FormData(form);
-    const nextDraft = Object.fromEntries(briefingFieldNames.map((field) => [field, String(data.get(field) || "")])) as BriefingDraft;
-    setBriefingDraft(nextDraft);
-    try {
-      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
-    } catch {
-      // O formulário continua utilizável mesmo quando o armazenamento local está indisponível.
-    }
-    notifyBriefingProgress(nextDraft);
-  }
-
-  function validateBriefingStep(stepIndex: number) {
-    const form = briefingFormRef.current;
-    if (!form) return false;
-    const section = form.querySelector<HTMLElement>(`[data-briefing-step="${briefingSteps[stepIndex]?.id}"]`);
-    if (!section) return true;
-    const fields = Array.from(section.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, textarea, select"));
-    const invalidField = fields.find((field) => !field.checkValidity());
-    if (invalidField) {
-      invalidField.reportValidity();
-      invalidField.focus();
-      return false;
-    }
-    return true;
-  }
-
-  function moveBriefingStep(nextStep: number) {
-    const target = Math.min(briefingSteps.length - 1, Math.max(0, nextStep));
-    if (target > briefingStep && !validateBriefingStep(briefingStep)) return;
-    setBriefingStep(target);
-    trackPortfolioEvent("briefing_step_changed", { briefingStep: briefingSteps[target].id });
-    window.requestAnimationFrame(() => {
-      briefingFormRef.current?.querySelector<HTMLElement>(`[data-briefing-step="${briefingSteps[target].id}"]`)?.focus({ preventScroll: true });
-    });
-  }
-
-  function clearBriefingDraft() {
-    try {
-      window.localStorage.removeItem(briefingDraftStorageKey);
-    } catch {
-      // Nada a fazer: o reset visual ainda funciona.
-    }
-    const resetDraft = { ...briefingDefaultValues };
-    flushSync(() => {
-      setBriefingDraft(resetDraft);
-      setBriefingStep(0);
-      setBriefingRevision((value) => value + 1);
-    });
-    notifyBriefingProgress(resetDraft);
-    setFormSent(false);
-    toast("Briefing limpo", { description: "O rascunho local foi removido deste dispositivo." });
-  }
-
-  function applyBriefingSeed(detail: BriefingSeed, announce: boolean) {
-    const nextDraft = { ...readBriefingDraft(), ...briefingDraft, ...detail };
-    flushSync(() => {
-      setBriefingDraft(nextDraft);
-      setBriefingRevision((value) => value + 1);
-    });
-    try {
-      window.localStorage.setItem(briefingDraftStorageKey, JSON.stringify(nextDraft));
-    } catch {
-      // A direção ainda é aplicada quando o armazenamento local está indisponível.
-    }
-    notifyBriefingProgress(nextDraft);
-    if (announce) {
-      toast.success("Direção aplicada ao briefing", { description: "Você pode ajustar qualquer campo antes de enviar." });
-    }
-  }
-
-  useEffect(() => {
-    const applySeed = (event: Event) => {
-      const detail = (event as CustomEvent<BriefingSeed>).detail;
-      if (!detail) return;
-      applyBriefingSeed(detail, true);
-    };
-
-    window.addEventListener("portfolio:briefing-seed", applySeed);
-    return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
-  }, [briefingDraft]);
-
-  useEffect(() => {
-    if (!initialBriefingSeed) return;
-    applyBriefingSeed(initialBriefingSeed, false);
-  }, [initialBriefingSeed]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || window.location.hash !== "#contato-briefing") return;
-    const frame = window.requestAnimationFrame(() => {
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      briefingFormRef.current?.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
 
   return (
     <section id={embedded ? undefined : "contato"} className="archive-chapter relative overflow-hidden bg-[#070a10]">
