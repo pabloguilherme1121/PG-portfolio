@@ -9,7 +9,7 @@ test("menu mobile abre, recebe foco e expõe atalhos principais", async ({ page 
 
   await menuToggle.click();
 
-  const navigation = page.getByRole("navigation", { name: "Navegação móvel" });
+  const navigation = page.getByRole("dialog", { name: "Menu de navegação móvel" });
   await expect(navigation).toBeVisible();
   await expect(menuToggle).toHaveAttribute("aria-expanded", "true");
   await expect(navigation.locator('[data-mobile-menu-primary="true"]')).toBeVisible();
