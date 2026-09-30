@@ -208,11 +208,3 @@ export const repositories: Repository[] = [
 
 ];
 
-export const technologyFilters = ["Todos", "Web", "React", "TypeScript"];
-export const categoryFilters = ["Todos", "Produto digital"];
-export const tagFilters = ["Todos", "Web"] as const;
-export const sortOptions = [
-  { value: "manual", label: "ordem manual" },
-  { value: "relevance", label: "relevância editorial" },
-  { value: "added", label: "ordem de adição" },
-] as const;
