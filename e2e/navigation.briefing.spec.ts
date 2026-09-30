@@ -135,6 +135,12 @@ test.describe("portfólio profissional", () => {
     const form = page.locator("#contato-briefing");
     await form.scrollIntoViewIfNeeded();
 
+    await expect.poll(async () =>
+      page.evaluate(() =>
+        performance.getEntriesByType("resource").some((entry) => entry.name.includes("BriefingProfessionalLayer")),
+      ),
+    ).toBeFalsy();
+
     await form.locator('input[name="name"]').fill("Cliente profissional");
     await form.locator('input[name="email"]').fill("cliente@example.com");
     await form.getByRole("button", { name: /continuar.*direção/i }).click();
@@ -146,6 +152,12 @@ test.describe("portfólio profissional", () => {
     await form.getByRole("button", { name: /continuar.*escopo/i }).click();
 
     await form.getByRole("button", { name: /continuar.*requisitos/i }).click();
+
+    await expect.poll(async () =>
+      page.evaluate(() =>
+        performance.getEntriesByType("resource").some((entry) => entry.name.includes("BriefingProfessionalLayer")),
+      ),
+    ).toBeTruthy();
     await expect(form.locator('[data-briefing-step="requirements"]')).toBeVisible();
 
     await expect(form.locator('select[name="contentStatus"]')).toBeVisible();
