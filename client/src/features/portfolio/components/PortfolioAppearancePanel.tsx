@@ -26,6 +26,7 @@ type PortfolioAppearancePanelProps = {
   deleteActiveOrderProfile: () => void;
   createOrderProfile: () => void;
   renameActiveOrderProfile: () => void;
+  manualOrderStatus: string;
   onClose: () => void;
 };
 
@@ -50,6 +51,7 @@ export default function PortfolioAppearancePanel({
   deleteActiveOrderProfile,
   createOrderProfile,
   renameActiveOrderProfile,
+  manualOrderStatus,
   onClose,
 }: PortfolioAppearancePanelProps) {
   return (
@@ -58,7 +60,8 @@ export default function PortfolioAppearancePanel({
       role="dialog"
       aria-modal="false"
       aria-labelledby="appearance-title"
-      className="appearance-panel fixed right-4 top-[88px] z-[60] w-[min(92vw,340px)] border border-[#67e8f9]/30 bg-[#071326] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.42)] sm:right-8 lg:right-12"
+      aria-describedby="appearance-description"
+      className="appearance-panel fixed right-4 top-[88px] z-[60] max-h-[calc(100dvh-7rem)] w-[min(92vw,340px)] overflow-y-auto overscroll-contain border border-[#67e8f9]/30 bg-[#071326] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.42)] sm:right-8 lg:right-12"
     >
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -75,7 +78,7 @@ export default function PortfolioAppearancePanel({
         </button>
       </div>
 
-      <p className="mt-3 font-body text-xs leading-5 text-[#9fb2ce]">Escolha como o arquivo deve aparecer neste dispositivo.</p>
+      <p id="appearance-description" className="mt-3 font-body text-xs leading-5 text-[#9fb2ce]">Escolha como o arquivo deve aparecer neste dispositivo.</p>
 
       <div className="mt-5 grid gap-2" role="group" aria-label="Preferência de tema">
         {([
@@ -209,6 +212,15 @@ export default function PortfolioAppearancePanel({
             <p className="border border-dashed border-white/10 px-3 py-3 font-mono text-[9px] uppercase tracking-[0.1em] text-[#7189ae]">nenhum perfil salvo</p>
           )}
         </div>
+
+        {manualOrderStatus && (
+          <p
+            data-manual-order-feedback="true"
+            className="mt-3 border border-[#67e8f9]/20 bg-[#0b2746]/70 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.09em] text-[#d9fbff]"
+          >
+            {manualOrderStatus}
+          </p>
+        )}
 
         <div className="mt-3 flex gap-2">
           <input value={profileNameDraft} onChange={event => setProfileNameDraft(event.target.value)} placeholder="ex.: tecnologia" aria-label="Nome do perfil de ordenação" className="min-w-0 flex-1 border border-white/10 bg-transparent px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#d9fbff] outline-none placeholder:text-[#7189ae] focus:border-[#67e8f9] focus:ring-2 focus:ring-[#a5f3fc]" />

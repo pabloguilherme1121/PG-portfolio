@@ -1442,6 +1442,28 @@ test.describe("portfólio profissional", () => {
     await expect(profiles.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
   });
 
+  test("ações de perfis de ordem exibem feedback visível e acessível", async ({ page }) => {
+    await page.goto("/");
+
+    await page.getByRole("button", { name: /configurações de aparência/i }).click();
+
+    const appearance = page.getByRole("dialog", { name: "Aparência" });
+    await expect(appearance).toBeVisible();
+
+    const duplicateProfile = appearance.getByRole("button", { name: /duplicar perfil tecnologia/i });
+    await duplicateProfile.scrollIntoViewIfNeeded();
+    await duplicateProfile.click();
+
+    await expect(appearance.locator('[data-manual-order-feedback="true"]')).toContainText(
+      /perfil tecnologia duplicado como tecnologia — cópia/i,
+    );
+    const liveStatus = page.locator('[data-manual-order-live="true"]');
+    await expect(liveStatus).toHaveAttribute("role", "status");
+    await expect(liveStatus).toContainText(
+      /perfil tecnologia duplicado como tecnologia — cópia/i,
+    );
+  });
+
   test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {
     await page.goto("/");
 
