@@ -1621,4 +1621,26 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.style.colorScheme)).toBe("dark");
   });
 
+
+  test("portfólio continua funcional quando o armazenamento do navegador é bloqueado", async ({ page }) => {
+    await page.addInitScript(() => {
+      const blocked = () => {
+        throw new DOMException("Storage blocked by browser policy", "SecurityError");
+      };
+      Object.defineProperty(Storage.prototype, "getItem", { configurable: true, value: blocked });
+      Object.defineProperty(Storage.prototype, "setItem", { configurable: true, value: blocked });
+      Object.defineProperty(Storage.prototype, "removeItem", { configurable: true, value: blocked });
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await expect(
+      page.getByRole("heading", {
+        level: 1,
+        name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i,
+      }),
+    ).toBeVisible();
+    await expect(page.locator('[data-mobile-menu-toggle="true"]')).toBeVisible();
+  });
+
 });
