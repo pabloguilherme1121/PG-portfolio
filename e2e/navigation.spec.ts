@@ -253,7 +253,13 @@ test.describe("portfólio profissional", () => {
     expect(await sitemap.text()).toContain("<loc>");
   });
 
-  test("painel de aparência não expõe controles de projeto sem efeito e não persiste preferências órfãs", async ({ page }) => {
+  test("painel de aparência não expõe controles de projeto sem efeito e remove preferências órfãs", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-gallery-view", "list");
+      window.localStorage.setItem("pablo-portfolio-manual-order", JSON.stringify(["TEC.09"]));
+      window.localStorage.setItem("pablo-portfolio-order-profiles", JSON.stringify([{ id: "legado", name: "Legado", order: ["TEC.09"] }]));
+      window.localStorage.setItem("pablo-portfolio-active-order-profile", "legado");
+    });
     await page.goto("/");
 
     await page.getByRole("button", { name: /configurações de aparência/i }).click();
