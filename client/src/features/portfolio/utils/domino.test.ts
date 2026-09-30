@@ -35,6 +35,16 @@ describe("domino", () => {
     expect(move?.index).toBe(0);
   });
 
+  it("master bot keeps a legal move and values future hand support", () => {
+    const hand = [[6, 6], [6, 1], [1, 4], [2, 3]] as const;
+    const chain = [[4, 6]] as const;
+    const move = chooseDominoBotMove([...hand], [...chain], "master", () => 0);
+
+    expect(move).not.toBeNull();
+    expect(move?.index).toBeLessThan(hand.length);
+    expect(["left", "right"]).toContain(move?.side);
+  });
+
   it("sums pips for blocked-round scoring", () => {
     expect(getDominoPipTotal([[6, 6], [3, 2], [0, 1]])).toBe(18);
   });

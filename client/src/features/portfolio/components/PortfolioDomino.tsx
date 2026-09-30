@@ -1,4 +1,4 @@
-import { Bot, RotateCcw, Sparkles, Swords, UsersRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Bot, RotateCcw, Sparkles, Swords, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   chooseDominoBotMove,
@@ -8,18 +8,29 @@ import {
   hasPlayableDominoTile,
   placeDominoTile,
   type DominoDifficulty,
+  type DominoSide,
   type DominoTile,
 } from "@/features/portfolio/utils/domino";
 
 type GameMode = "bot" | "local";
 type DominoVariant = "quick" | "classic";
+type DominoRules = "draw" | "block";
+type MatchTarget = 1 | 2 | 3;
 type Turn = "player" | "opponent";
 type Winner = Turn | "draw" | null;
+type PendingMove = { owner: Turn; index: number; sides: DominoSide[] } | null;
 
 const difficultyLabel: Record<DominoDifficulty, string> = {
   easy: "fácil",
   normal: "normal",
   hard: "difícil",
+  master: "mestre",
+};
+
+const targetLabel: Record<MatchTarget, string> = {
+  1: "única",
+  2: "MD3",
+  3: "MD5",
 };
 
 function TileFace({ tile }: { tile: DominoTile }) {
@@ -33,21 +44,31 @@ function TileFace({ tile }: { tile: DominoTile }) {
 export default function PortfolioDomino() {
   const [mode, setMode] = useState<GameMode>("bot");
   const [variant, setVariant] = useState<DominoVariant>("quick");
+  const [rules, setRules] = useState<DominoRules>("draw");
   const [difficulty, setDifficulty] = useState<DominoDifficulty>("normal");
+  const [matchTarget, setMatchTarget] = useState<MatchTarget>(2);
   const [playerHand, setPlayerHand] = useState<DominoTile[]>([]);
   const [opponentHand, setOpponentHand] = useState<DominoTile[]>([]);
   const [boneyard, setBoneyard] = useState<DominoTile[]>([]);
   const [chain, setChain] = useState<DominoTile[]>([]);
   const [turn, setTurn] = useState<Turn>("player");
   const [winner, setWinner] = useState<Winner>(null);
+  const [matchWinner, setMatchWinner] = useState<Turn | null>(null);
   const [passes, setPasses] = useState(0);
   const [round, setRound] = useState(1);
   const [score, setScore] = useState({ player: 0, opponent: 0, draws: 0 });
+  const [handoffPending, setHandoffPending] = useState(false);
+  const [pendingMove, setPendingMove] = useState<PendingMove>(null);
 
   const handSize = variant === "quick" ? 5 : 7;
   const currentHand = turn === "player" ? playerHand : opponentHand;
   const canPlay = hasPlayableDominoTile(currentHand, chain);
-  const canDraw = !winner && !canPlay && boneyard.length > 0;
+  const canDraw = !winner && !handoffPending && rules === "draw" && !canPlay && boneyard.length > 0;
+  const canPass =
+    !winner &&
+    !handoffPending &&
+    !canPlay &&
+    (rules === "block" || boneyard.length === 0);
 
   const restartRound = (resetScore = false) => {
     const dealt = dealDominoRound(handSize);
@@ -58,26 +79,43 @@ export default function PortfolioDomino() {
     setTurn("player");
     setWinner(null);
     setPasses(0);
+    setHandoffPending(false);
+    setPendingMove(null);
     if (resetScore) {
       setRound(1);
       setScore({ player: 0, opponent: 0, draws: 0 });
+      setMatchWinner(null);
     }
   };
 
   useEffect(() => {
     restartRound(true);
-    // The selected variant is the only input that changes the deal size.
+    // Variant alone controls the number of tiles in the opening hand.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [variant]);
 
   const finishRound = (nextWinner: Winner) => {
-    if (!nextWinner) return;
+    if (!nextWinner || winner) return;
     setWinner(nextWinner);
-    setScore((current) => ({
-      player: current.player + (nextWinner === "player" ? 1 : 0),
-      opponent: current.opponent + (nextWinner === "opponent" ? 1 : 0),
-      draws: current.draws + (nextWinner === "draw" ? 1 : 0),
-    }));
+    setPendingMove(null);
+    setHandoffPending(false);
+
+    setScore((currentScore) => {
+      const nextScore = {
+        player: currentScore.player + (nextWinner === "player" ? 1 : 0),
+        opponent: currentScore.opponent + (nextWinner === "opponent" ? 1 : 0),
+        draws: currentScore.draws + (nextWinner === "draw" ? 1 : 0),
+      };
+
+      if (
+        nextWinner !== "draw" &&
+        nextScore[nextWinner] >= matchTarget
+      ) {
+        setMatchWinner(nextWinner);
+      }
+
+      return nextScore;
+    });
   };
 
   const resolveBlockedRound = (nextPlayerHand: DominoTile[], nextOpponentHand: DominoTile[]) => {
@@ -86,19 +124,19 @@ export default function PortfolioDomino() {
     finishRound(playerPips === opponentPips ? "draw" : playerPips < opponentPips ? "player" : "opponent");
   };
 
-  const playTile = (owner: Turn, index: number) => {
+  const commitTile = (owner: Turn, index: number, side: DominoSide) => {
     if (winner || owner !== turn) return;
     const hand = owner === "player" ? playerHand : opponentHand;
     const tile = hand[index];
-    if (!tile) return;
-    const sides = getPlayableDominoSides(tile, chain);
-    if (!sides.length) return;
+    if (!tile || !getPlayableDominoSides(tile, chain).includes(side)) return;
 
-    const preferredSide = sides.includes("right") ? "right" : sides[0];
-    const nextChain = placeDominoTile(chain, tile, preferredSide);
+    const nextChain = placeDominoTile(chain, tile, side);
     const nextHand = hand.filter((_, handIndex) => handIndex !== index);
+    const nextTurn: Turn = owner === "player" ? "opponent" : "player";
+
     setChain(nextChain);
     setPasses(0);
+    setPendingMove(null);
 
     if (owner === "player") setPlayerHand(nextHand);
     else setOpponentHand(nextHand);
@@ -107,7 +145,26 @@ export default function PortfolioDomino() {
       finishRound(owner);
       return;
     }
-    setTurn(owner === "player" ? "opponent" : "player");
+
+    setTurn(nextTurn);
+    if (mode === "local") setHandoffPending(true);
+  };
+
+  const playTile = (owner: Turn, index: number) => {
+    if (winner || owner !== turn || handoffPending) return;
+    const hand = owner === "player" ? playerHand : opponentHand;
+    const tile = hand[index];
+    if (!tile) return;
+
+    const sides = getPlayableDominoSides(tile, chain);
+    if (!sides.length) return;
+
+    if (chain.length > 0 && sides.length > 1) {
+      setPendingMove({ owner, index, sides });
+      return;
+    }
+
+    commitTile(owner, index, sides.includes("right") ? "right" : sides[0]);
   };
 
   const drawTile = () => {
@@ -119,13 +176,17 @@ export default function PortfolioDomino() {
   };
 
   const passTurn = () => {
-    if (winner || canPlay || boneyard.length) return;
+    if (!canPass) return;
     if (passes >= 1) {
       resolveBlockedRound(playerHand, opponentHand);
       return;
     }
+
+    const nextTurn: Turn = turn === "player" ? "opponent" : "player";
     setPasses((value) => value + 1);
-    setTurn((current) => current === "player" ? "opponent" : "player");
+    setTurn(nextTurn);
+    setPendingMove(null);
+    if (mode === "local") setHandoffPending(true);
   };
 
   useEffect(() => {
@@ -136,9 +197,11 @@ export default function PortfolioDomino() {
       let nextYard = [...boneyard];
       let move = chooseDominoBotMove(nextHand, chain, difficulty);
 
-      while (!move && nextYard.length) {
-        nextHand.push(nextYard.shift()!);
-        move = chooseDominoBotMove(nextHand, chain, difficulty);
+      if (rules === "draw") {
+        while (!move && nextYard.length) {
+          nextHand.push(nextYard.shift()!);
+          move = chooseDominoBotMove(nextHand, chain, difficulty);
+        }
       }
 
       setBoneyard(nextYard);
@@ -159,20 +222,24 @@ export default function PortfolioDomino() {
       setOpponentHand(nextHand);
       setChain(nextChain);
       setPasses(0);
+
       if (!nextHand.length) finishRound("opponent");
       else setTurn("player");
-    }, 360);
+    }, difficulty === "master" ? 520 : 360);
 
     return () => window.clearTimeout(timer);
-  }, [boneyard, chain, difficulty, mode, opponentHand, passes, playerHand, turn, winner]);
+  }, [boneyard, chain, difficulty, mode, opponentHand, passes, playerHand, rules, turn, winner]);
 
   const status = useMemo(() => {
+    if (matchWinner === "player") return mode === "bot" ? "Série encerrada: você venceu." : "Série encerrada: jogador 1 venceu.";
+    if (matchWinner === "opponent") return mode === "bot" ? "Série encerrada: PG Bot venceu." : "Série encerrada: jogador 2 venceu.";
     if (winner === "draw") return "Rodada bloqueada: empate por pontos.";
     if (winner === "player") return mode === "bot" ? "Você venceu a rodada." : "Jogador 1 venceu a rodada.";
     if (winner === "opponent") return mode === "bot" ? "PG Bot venceu a rodada." : "Jogador 2 venceu a rodada.";
+    if (handoffPending && mode === "local") return turn === "player" ? "Passe o aparelho ao jogador 1." : "Passe o aparelho ao jogador 2.";
     if (mode === "bot" && turn === "opponent") return "PG Bot está calculando a jogada.";
     return turn === "player" ? (mode === "bot" ? "Sua vez." : "Vez do jogador 1.") : "Vez do jogador 2.";
-  }, [mode, turn, winner]);
+  }, [handoffPending, matchWinner, mode, turn, winner]);
 
   const optionClass = (active: boolean) =>
     `inline-flex min-h-11 items-center justify-center rounded-[10px] border px-3 font-mono text-[8px] font-semibold uppercase tracking-[0.08em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${active ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 text-[#91adbf] hover:border-[#67e8f9]/60 hover:text-white"}`;
@@ -183,7 +250,7 @@ export default function PortfolioDomino() {
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Arcade · dominó</p>
           <h2 id="domino-title" className="mt-3 font-display text-[clamp(2.3rem,10vw,4.2rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">Dominó.<br />Leitura de mesa.</h2>
-          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">Jogue rápido ou clássico, contra o PG Bot em três dificuldades ou em 1 × 1 local no mesmo aparelho.</p>
+          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">Partida rápida ou clássica, regras de compra ou bloqueio, quatro níveis do PG Bot, séries MD3/MD5 e 1 × 1 local com troca de mão protegida.</p>
 
           <div className="mt-6 space-y-4">
             <div>
@@ -202,16 +269,33 @@ export default function PortfolioDomino() {
               </div>
             </div>
 
+            <div>
+              <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">regra</p>
+              <div className="grid grid-cols-2 gap-2">
+                <button data-domino-rules="draw" type="button" aria-pressed={rules === "draw"} onClick={() => { setRules("draw"); restartRound(true); }} className={optionClass(rules === "draw")}>comprar até jogar</button>
+                <button data-domino-rules="block" type="button" aria-pressed={rules === "block"} onClick={() => { setRules("block"); restartRound(true); }} className={optionClass(rules === "block")}>bloqueio sem compra</button>
+              </div>
+            </div>
+
             {mode === "bot" && (
               <div>
                 <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">dificuldade</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["easy", "normal", "hard"] as const).map((value) => (
+                <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
+                  {(["easy", "normal", "hard", "master"] as const).map((value) => (
                     <button key={value} type="button" aria-pressed={difficulty === value} onClick={() => { setDifficulty(value); restartRound(true); }} className={optionClass(difficulty === value)}>{difficultyLabel[value]}</button>
                   ))}
                 </div>
               </div>
             )}
+
+            <div>
+              <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">série</p>
+              <div className="grid grid-cols-3 gap-2">
+                {([1, 2, 3] as MatchTarget[]).map((target) => (
+                  <button key={target} data-domino-series={targetLabel[target]} type="button" aria-pressed={matchTarget === target} onClick={() => { setMatchTarget(target); restartRound(true); }} className={optionClass(matchTarget === target)}>{targetLabel[target]}</button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div data-domino-score="true" className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-[12px] bg-white/10">
@@ -224,7 +308,7 @@ export default function PortfolioDomino() {
         <div className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p data-domino-status="true" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.09em] text-[#d9fbff]">{status}</p>
-            <p className="font-mono text-[8px] uppercase tracking-[0.08em] text-[#7191a8]">rodada {round} · monte {boneyard.length}</p>
+            <p className="font-mono text-[8px] uppercase tracking-[0.08em] text-[#7191a8]">rodada {round} · meta {matchTarget} vitória{matchTarget > 1 ? "s" : ""} · monte {boneyard.length}</p>
           </div>
 
           <div data-domino-chain="true" aria-label="Mesa de dominó" className="mt-4 flex min-h-24 items-center gap-2 overflow-x-auto rounded-[12px] border border-white/10 bg-[#04101b] p-3">
@@ -236,36 +320,57 @@ export default function PortfolioDomino() {
               <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">{turn === "player" ? (mode === "bot" ? "sua mão" : "mão do jogador 1") : (mode === "bot" ? "mão do PG Bot" : "mão do jogador 2")}</p>
               <span className="font-mono text-[8px] text-[#7191a8]">{currentHand.length} pedras</span>
             </div>
-            <div data-domino-hand="true" className="flex flex-wrap gap-2">
-              {currentHand.map((tile, index) => {
-                const playable = !winner && getPlayableDominoSides(tile, chain).length > 0;
-                const hidden = mode === "bot" && turn === "opponent";
-                return (
-                  <button
-                    key={`${tile.join("-")}-${index}`}
-                    type="button"
-                    data-domino-tile="true"
-                    disabled={!playable || hidden}
-                    aria-label={hidden ? "Pedra oculta do PG Bot" : `Pedra ${tile[0]} por ${tile[1]}`}
-                    onClick={() => playTile(turn, index)}
-                    className="rounded-[10px] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-                  >
-                    {hidden ? <span className="grid h-12 min-w-14 place-items-center rounded-[9px] border border-white/10 bg-[#0b2236] font-mono text-xs text-[#628097]">PG</span> : <TileFace tile={tile} />}
-                  </button>
-                );
-              })}
-            </div>
+
+            {handoffPending && mode === "local" ? (
+              <div data-domino-handoff="true" className="rounded-[12px] border border-[#67e8f9]/25 bg-[#071326] p-5 text-center">
+                <p className="font-body text-sm text-[#a8c4d7]">A mão fica oculta durante a troca para não revelar as pedras ao adversário.</p>
+                <button type="button" onClick={() => setHandoffPending(false)} className="mt-4 min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">
+                  {turn === "player" ? "jogador 1 · revelar mão" : "jogador 2 · revelar mão"}
+                </button>
+              </div>
+            ) : (
+              <div data-domino-hand="true" className="flex flex-wrap gap-2">
+                {currentHand.map((tile, index) => {
+                  const playable = !winner && getPlayableDominoSides(tile, chain).length > 0;
+                  const hidden = mode === "bot" && turn === "opponent";
+                  return (
+                    <button
+                      key={`${tile.join("-")}-${index}`}
+                      type="button"
+                      data-domino-tile="true"
+                      disabled={!playable || hidden}
+                      aria-label={hidden ? "Pedra oculta do PG Bot" : `Pedra ${tile[0]} por ${tile[1]}`}
+                      onClick={() => playTile(turn, index)}
+                      className="rounded-[10px] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                    >
+                      {hidden ? <span className="grid h-12 min-w-14 place-items-center rounded-[9px] border border-white/10 bg-[#0b2236] font-mono text-xs text-[#628097]">PG</span> : <TileFace tile={tile} />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {!winner && !canPlay && (
+          {pendingMove && !winner && (
+            <div data-domino-side-picker="true" className="mt-4 rounded-[12px] border border-[#67e8f9]/20 bg-[#061421] p-3">
+              <p className="font-mono text-[8px] uppercase tracking-[0.1em] text-[#9fc6d8]">essa pedra encaixa dos dois lados · escolha</p>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button type="button" onClick={() => commitTile(pendingMove.owner, pendingMove.index, "left")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/15 text-sm text-white"><ArrowLeft className="h-4 w-4" />esquerda</button>
+                <button type="button" onClick={() => commitTile(pendingMove.owner, pendingMove.index, "right")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/15 text-sm text-white">direita<ArrowRight className="h-4 w-4" /></button>
+              </div>
+            </div>
+          )}
+
+          {!winner && !handoffPending && !pendingMove && !canPlay && (
             <div className="mt-5 flex flex-wrap gap-2">
-              {canDraw ? <button type="button" onClick={drawTile} className="min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">comprar pedra</button> : mode === "local" || turn === "player" ? <button type="button" onClick={passTurn} className="min-h-11 rounded-[10px] border border-white/15 px-4 font-mono text-[9px] uppercase tracking-[0.08em] text-white">passar vez</button> : null}
+              {canDraw ? <button type="button" onClick={drawTile} className="min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">comprar pedra</button> : canPass && (mode === "local" || turn === "player") ? <button type="button" onClick={passTurn} className="min-h-11 rounded-[10px] border border-white/15 px-4 font-mono text-[9px] uppercase tracking-[0.08em] text-white">passar vez</button> : null}
             </div>
           )}
 
           <div className="mt-6 flex flex-wrap gap-2 border-t border-white/10 pt-4">
             <button type="button" onClick={() => restartRound(false)} className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-white/15 px-4 font-mono text-[9px] uppercase tracking-[0.08em] text-white"><RotateCcw className="h-4 w-4" />reiniciar rodada</button>
-            {winner && <button type="button" onClick={() => { setRound((value) => value + 1); restartRound(false); }} className="min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">próxima rodada</button>}
+            {winner && !matchWinner && <button type="button" onClick={() => { setRound((value) => value + 1); restartRound(false); }} className="min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">próxima rodada</button>}
+            {matchWinner && <button type="button" onClick={() => restartRound(true)} className="min-h-11 rounded-[10px] bg-[#38bdf8] px-4 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] text-[#02111f]">nova série</button>}
           </div>
         </div>
       </div>
