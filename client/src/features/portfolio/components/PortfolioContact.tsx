@@ -106,6 +106,21 @@ export function PortfolioContact({
     trackBriefingStarted,
   } = useBriefingFlow({ initialBriefingSeed, setFormSent });
 
+  const hasProfessionalBriefingDraft = [
+    "contentStatus",
+    "visualIdentity",
+    "pagesScreens",
+    "features",
+    "integrations",
+    "qualityPriority",
+    "postLaunch",
+    "success",
+    "references",
+    "constraints",
+    "briefing",
+  ].some((field) => briefingDraft[field]?.trim());
+  const shouldLoadProfessionalLayer = briefingStep >= 3 || hasProfessionalBriefingDraft;
+
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
   const leadingDays = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth(), 1).getDay();
@@ -431,7 +446,7 @@ export function PortfolioContact({
                 </label>
               </fieldset>
 
-              {briefingStep >= 3 && (
+              {shouldLoadProfessionalLayer && (
                 <Suspense
                   fallback={
                     <div
