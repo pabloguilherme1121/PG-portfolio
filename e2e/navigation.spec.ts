@@ -1643,4 +1643,16 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-mobile-menu-toggle="true"]')).toBeVisible();
   });
 
+
+  test("novo visitante começa com tamanho de texto padrão em 100%", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.removeItem("pablo-portfolio-font-scale");
+    });
+    await page.goto("/");
+
+    const main = page.locator("#conteudo-principal");
+    await expect(main).toBeVisible();
+    await expect.poll(() => main.evaluate((element) => (element as HTMLElement).style.fontSize)).toBe("1rem");
+  });
+
 });
