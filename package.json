@@ -102,7 +102,7 @@
     "typescript": "5.9.3",
     "vite": "^7.3.5",
     "vite-plugin-manus-runtime": "0.0.59",
-    "vitest": "^3.2.6"
+    "vitest": "^4.1.11"
   },
   "packageManager": "pnpm@10.34.5",
   "pnpm": {
@@ -116,12 +116,17 @@
       "vite>rollup": "4.59.0",
       "vite>picomatch": "4.0.4",
       "@babel/helper-compilation-targets>browserslist": "4.28.7",
-      "mermaid>lodash-es": "4.18.0",
+      "mermaid>lodash-es": "4.17.23",
       "axios>form-data": "4.0.6",
       "express>path-to-regexp": "0.1.13",
       "vitest>picomatch": "4.0.4",
-      "lodash-es": "4.18.0",
-      "autoprefixer>browserslist": "4.28.7"
+      "lodash-es": "4.17.23",
+      "autoprefixer>browserslist": "4.28.7",
+      "lodash": "4.17.21",
+      "qs": "6.16.0",
+      "express>body-parser": "1.20.6",
+      "@esbuild-kit/core-utils>esbuild": "0.25.10",
+      "@babel/core": "7.29.6"
     }
   }
 }
