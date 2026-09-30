@@ -60,6 +60,7 @@ export default function PortfolioAppearancePanel({
       role="dialog"
       aria-modal="false"
       aria-labelledby="appearance-title"
+      aria-describedby="appearance-description"
       className="appearance-panel fixed right-4 top-[88px] z-[60] max-h-[calc(100dvh-7rem)] w-[min(92vw,340px)] overflow-y-auto overscroll-contain border border-[#67e8f9]/30 bg-[#071326] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.42)] sm:right-8 lg:right-12"
     >
       <div className="flex items-start justify-between gap-4">
@@ -77,7 +78,7 @@ export default function PortfolioAppearancePanel({
         </button>
       </div>
 
-      <p className="mt-3 font-body text-xs leading-5 text-[#9fb2ce]">Escolha como o arquivo deve aparecer neste dispositivo.</p>
+      <p id="appearance-description" className="mt-3 font-body text-xs leading-5 text-[#9fb2ce]">Escolha como o arquivo deve aparecer neste dispositivo.</p>
 
       <div className="mt-5 grid gap-2" role="group" aria-label="Preferência de tema">
         {([
