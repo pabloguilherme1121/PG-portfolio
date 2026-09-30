@@ -1,50 +1,53 @@
-const CACHE_NAME = "pg-portfolio-pwa-v6";
+const TAKEOVER_VERSION = "v8";
 const CACHE_PREFIX = "pg-portfolio-pwa-";
 const SCOPE_URL = new URL(self.registration.scope);
-const OFFLINE_HTML =
-  '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline — Pablo Guilherme</title><body style="font-family:system-ui;background:#030b1e;color:#eef5ff;padding:2rem"><h1>Você está offline.</h1><p>Abra novamente o portfólio quando a conexão voltar.</p></body></html>';
-const CORE_ASSETS = [
-  new URL("manifest.webmanifest", SCOPE_URL).href,
-  new URL("favicon.svg", SCOPE_URL).href,
-  new URL("pwa-icon-maskable.svg", SCOPE_URL).href,
-];
+const TAKEOVER_PARAM = "pg_sw_takeover";
 
-const isPrivatePath = (pathname) =>
-  /\/(api|oauth|login)(\/|$)/.test(pathname) ||
-  /\/(favoritos|curadoria)(\/|$)/.test(
-    pathname.replace(SCOPE_URL.pathname.replace(/\/$/, ""), ""),
-  );
+async function clearLegacyCaches() {
+  try {
+    const keys = await caches.keys();
+    await Promise.all(
+      keys
+        .filter((key) => key.startsWith(CACHE_PREFIX))
+        .map((key) => caches.delete(key)),
+    );
+  } catch {
+    // A cleanup failure must not prevent the worker from taking control.
+  }
+}
 
-async function cacheCoreAssets() {
-  const cache = await caches.open(CACHE_NAME);
+async function refreshControlledClients() {
+  const windowClients = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+
   await Promise.all(
-    CORE_ASSETS.map(async (url) => {
+    windowClients.map(async (client) => {
       try {
-        const response = await fetch(url, { cache: "no-store" });
-        if (response.ok) await cache.put(url, response);
+        const url = new URL(client.url);
+        if (url.origin !== SCOPE_URL.origin || !url.pathname.startsWith(SCOPE_URL.pathname)) return;
+        if (url.searchParams.get(TAKEOVER_PARAM) === TAKEOVER_VERSION) return;
+        url.searchParams.set(TAKEOVER_PARAM, TAKEOVER_VERSION);
+        await client.navigate(url.toString());
       } catch {
-        // Core metadata is helpful but never allowed to break installation.
+        // Some embedded/closing clients cannot be navigated. Ignore and continue.
       }
     }),
   );
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(cacheCoreAssets().then(() => self.skipWaiting()));
+  event.waitUntil(self.skipWaiting());
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(
-          keys
-            .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
-            .map((key) => caches.delete(key)),
-        ),
-      )
-      .then(() => self.clients.claim()),
+    (async () => {
+      await clearLegacyCaches();
+      await self.clients.claim();
+      await refreshControlledClients();
+    })(),
   );
 });
 
@@ -53,39 +56,13 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);
-  if (url.origin !== SCOPE_URL.origin || isPrivatePath(url.pathname)) return;
+  if (url.origin !== SCOPE_URL.origin) return;
 
-  if (request.mode === "navigate") {
-    event.respondWith(
-      fetch(request, { cache: "no-store" }).catch(
-        () =>
-          new Response(OFFLINE_HTML, {
-            status: 503,
-            headers: { "Content-Type": "text/html; charset=utf-8" },
-          }),
-      ),
-    );
-    return;
-  }
-
-  if (request.destination === "script" || request.destination === "style") {
+  if (
+    request.mode === "navigate" ||
+    request.destination === "script" ||
+    request.destination === "style"
+  ) {
     event.respondWith(fetch(request, { cache: "no-store" }));
-    return;
   }
-
-  const shouldCache = request.destination === "image" || request.destination === "font";
-  if (!shouldCache) return;
-
-  const network = fetch(request).then(async (response) => {
-    if (response.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.put(request, response.clone());
-    }
-    return response;
-  });
-
-  event.waitUntil(network.then(() => undefined, () => undefined));
-  event.respondWith(
-    caches.match(request).then((cached) => cached || network).catch(() => caches.match(request)),
-  );
 });
