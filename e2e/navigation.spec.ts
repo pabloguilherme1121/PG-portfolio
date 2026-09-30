@@ -1416,6 +1416,20 @@ test.describe("portfólio profissional", () => {
     expect(await sitemap.text()).toContain("<loc>");
   });
 
+  test("mantém perfis base quando o armazenamento de ordem está corrompido", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-order-profiles", "{invalido");
+    });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: /configurações de aparência/i }).click();
+
+    const appearance = page.getByRole("dialog", { name: "Aparência" });
+    await expect(appearance).toBeVisible();
+    await expect(appearance.getByRole("group", { name: "Perfis de ordenação" }).getByRole("button", { name: /tecnologia/i })).toBeVisible();
+    await expect(appearance.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
+  });
+
   test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {
     await page.goto("/");
 
