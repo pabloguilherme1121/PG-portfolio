@@ -43,6 +43,13 @@ import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWha
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
 import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
+import {
+  buildProjectSearchSuggestions,
+  getRepositoryCategories,
+  normalizeSearchText,
+  selectVisibleRepositories,
+  type SearchSuggestion,
+} from "@/features/portfolio/utils/projectCatalog";
 import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
@@ -100,24 +107,7 @@ declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
 const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
 const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
 
-type SearchSuggestion = {
-  value: string;
-  source: "projeto" | "tecnologia" | "descrição";
-};
-
 type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
-
-const descriptionStopWords = new Set([
-  "a", "ao", "as", "com", "da", "de", "do", "dos", "e", "em", "na", "nas", "no", "nos", "o", "os", "ou", "para", "por", "que", "uma", "um",
-]);
-
-function normalizeSearchText(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase("pt-BR")
-    .trim();
-}
 
 function renderSuggestionMatch(value: string, query: string, isActive: boolean) {
   const normalizedQuery = normalizeSearchText(query);
@@ -154,12 +144,6 @@ function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback
 function getPortfolioUrlSearch() {
   if (typeof window === "undefined") return "";
   return new URLSearchParams(window.location.search).get("q") ?? "";
-}
-
-function getRepositoryCategories(repository: Repository) {
-  const categories = new Set<string>(["Produto digital"]);
-  if (repository.technologies.includes("Interface")) categories.add("Interface");
-  return categories;
 }
 
 export default function Home() {
@@ -470,7 +454,6 @@ export default function Home() {
   const favoriteExportTimerRef = useRef<number | null>(null);
   const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
-  const sharedProjectIdSet = useMemo(() => new Set(sharedProjectIds ?? []), [sharedProjectIds]);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
@@ -478,51 +461,48 @@ export default function Home() {
   } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability && !isStaticDeploy });
 
   const normalizedProjectSearch = normalizeSearchText(projectSearch);
-  const normalizedSavedProjectSearch = normalizeSearchText(savedProjectSearch);
-  const activeProjectSearch = favoritesOnly ? normalizedSavedProjectSearch : normalizedProjectSearch;
-  const activeProjectSortMode = favoritesOnly ? savedProjectSortMode : sortMode;
   const hasActiveSavedProjectControls = Boolean(savedProjectSearch.trim()) || savedProjectSortMode !== "relevance";
-  const projectSearchSuggestions = useMemo<SearchSuggestion[]>(() => {
-    const candidates = new Map<string, SearchSuggestion>();
-    const addCandidate = (value: string, source: SearchSuggestion["source"]) => {
-      const normalizedValue = normalizeSearchText(value);
-      if (!normalizedValue || candidates.has(normalizedValue)) return;
-      candidates.set(normalizedValue, { value, source });
-    };
-
-    repositories
-      .filter((repository) => (activeTechnology === "Todos" || repository.technologies.includes(activeTechnology)) && (activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory)))
-      .forEach((repository) => {
-      addCandidate(repository.name, "projeto");
-      repository.technologies.forEach((technology) => addCandidate(technology, "tecnologia"));
-      repository.description
-        .split(/[^A-Za-zÀ-ÿ0-9]+/)
-        .filter((word) => word.length >= 4 && !descriptionStopWords.has(normalizeSearchText(word)))
-        .forEach((word) => addCandidate(word, "descrição"));
-    });
-
-    return Array.from(candidates.values());
-  }, [activeTechnology, activeCategory]);
+  const projectSearchSuggestions = useMemo<SearchSuggestion[]>(
+    () =>
+      buildProjectSearchSuggestions(repositories, {
+        activeTechnology,
+        activeCategory,
+        activeTag,
+      }),
+    [activeTechnology, activeCategory, activeTag],
+  );
   const visibleSearchSuggestions = normalizedProjectSearch.length >= 2
     ? projectSearchSuggestions
       .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
       .slice(0, 6)
     : [];
-  const orderedRepositories = useMemo(() => {
-    const orderIndex = new Map(manualProjectOrder.map((id, index) => [id, index]));
-    return [...repositories].sort((first, second) => (orderIndex.get(first.id) ?? Number.MAX_SAFE_INTEGER) - (orderIndex.get(second.id) ?? Number.MAX_SAFE_INTEGER));
-  }, [manualProjectOrder]);
-  const visibleRepositories = orderedRepositories
-    .filter((repository) => {
-      const matchesTechnology = activeTechnology === "Todos" || repository.technologies.includes(activeTechnology);
-      const matchesCategory = activeCategory === "Todos" || getRepositoryCategories(repository).has(activeCategory);
-      const matchesTag = activeTag === "Todos" || repository.technologies.includes(activeTag) || getRepositoryCategories(repository).has(activeTag);
-      const searchableProjectText = normalizeSearchText([repository.name, repository.description, ...repository.technologies, ...Array.from(getRepositoryCategories(repository))].join(" "));
-      const matchesSearch = !activeProjectSearch || searchableProjectText.includes(activeProjectSearch);
-      const matchesFavorites = !favoritesOnly || (sharedProjectIds ? sharedProjectIdSet.has(repository.id) : favoriteProjectIdSet.has(repository.id));
-      return matchesTechnology && matchesCategory && matchesTag && matchesSearch && matchesFavorites;
-    })
-    .sort((first, second) => activeProjectSortMode === "manual" ? 0 : activeProjectSortMode === "added" ? second.addedOrder - first.addedOrder : second.relevance - first.relevance);
+  const visibleRepositories = useMemo(
+    () =>
+      selectVisibleRepositories(repositories, {
+        activeTechnology,
+        activeCategory,
+        activeTag,
+        search: favoritesOnly ? savedProjectSearch : projectSearch,
+        sortMode: favoritesOnly ? savedProjectSortMode : sortMode,
+        favoritesOnly,
+        favoriteProjectIds,
+        sharedProjectIds,
+        manualProjectOrder,
+      }),
+    [
+      activeTechnology,
+      activeCategory,
+      activeTag,
+      favoritesOnly,
+      favoriteProjectIds,
+      manualProjectOrder,
+      projectSearch,
+      savedProjectSearch,
+      savedProjectSortMode,
+      sharedProjectIds,
+      sortMode,
+    ],
+  );
   const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
   const selectedProjectIndex = selectedProject ? visibleRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
   const previousSelectedProject = selectedProjectIndex > 0 ? visibleRepositories[selectedProjectIndex - 1] : null;
