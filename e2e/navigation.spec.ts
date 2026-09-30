@@ -1135,7 +1135,8 @@ test.describe("portfólio profissional", () => {
   test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
 
     const quickBar = page.locator('[data-mobile-contact-bar="true"]');
     const primaryAction = page.locator('[data-mobile-primary-action="true"]');
@@ -1158,7 +1159,8 @@ test.describe("portfólio profissional", () => {
     await expect(secondaryAction).toHaveAttribute("href", "#curriculo-web");
 
     await page.reload();
-    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
     await expect(hub.getByRole("tab", { name: /quero avaliar seu perfil/i })).toHaveAttribute("aria-selected", "true");
     await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
 
@@ -1209,8 +1211,9 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
     const hub = page.locator('[data-experience-hub="true"]');
-    await hub.scrollIntoViewIfNeeded();
+    await expect(hub).toBeVisible();
     await hub.getByRole("tab", { name: /quero explorar/i }).click();
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
@@ -1444,15 +1447,19 @@ test.describe("portfólio profissional", () => {
     await expect(contact.getByText(/consulta de agenda/i)).toBeVisible();
 
     const footerPlaceholder = page.locator('[data-footer-placeholder="true"]');
+    await expect(footerPlaceholder).toBeVisible();
     await footerPlaceholder.scrollIntoViewIfNeeded();
 
     const footer = page.locator("#contato-rodape");
-    await expect(footer).toBeVisible();
+    await expect(footer).toBeVisible({ timeout: 10000 });
     await expect(footer.locator('a[href="mailto:mpjcreator@gmail.com"]')).toBeVisible();
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
   });
   test("experience hub orienta perfis diferentes sem quebrar a jornada principal", async ({ page }) => {
     await page.goto("/");
+
+    const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await hubPlaceholder.scrollIntoViewIfNeeded();
 
     const hub = page.locator('[data-experience-hub="true"]');
     await expect(hub).toBeVisible();
@@ -1476,7 +1483,11 @@ test.describe("portfólio profissional", () => {
   test("experience hub oferece navegação premium por teclado e progresso de rota", async ({ page }) => {
     await page.goto("/");
 
+    const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await hubPlaceholder.scrollIntoViewIfNeeded();
+
     const hub = page.locator('[data-experience-hub="true"]');
+    await expect(hub).toBeVisible();
     const routes = hub.getByRole("tab");
     await expect(routes).toHaveCount(3);
 
@@ -1507,8 +1518,11 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");
 
+    const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await hubPlaceholder.scrollIntoViewIfNeeded();
+
     const hub = page.locator('[data-experience-hub="true"]');
-    await hub.scrollIntoViewIfNeeded();
+    await expect(hub).toBeVisible();
     const strip = hub.locator('[data-experience-route-strip="true"]');
     const third = hub.locator('[data-experience-route="true"]').nth(2);
 
@@ -1531,8 +1545,11 @@ test.describe("portfólio profissional", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
 
+      const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+      await hubPlaceholder.scrollIntoViewIfNeeded();
+
       const hub = page.locator('[data-experience-hub="true"]');
-      await hub.scrollIntoViewIfNeeded();
+      await expect(hub).toBeVisible();
 
       const routeStrip = hub.locator('[data-experience-route-strip="true"]');
       await expect(routeStrip).toBeVisible();

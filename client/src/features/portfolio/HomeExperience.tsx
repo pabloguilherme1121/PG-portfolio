@@ -37,7 +37,6 @@ import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
-import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -71,6 +70,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const PortfolioExperienceHub = lazy(() => import("@/features/portfolio/components/PortfolioExperienceHub"));
 const ProjectDiagnostic = lazy(() => import("@/features/portfolio/components/ProjectDiagnostic"));
 const PortfolioDeferredProfileSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredProfileSections"));
 const PortfolioDeferredStaticSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredStaticSections"));
@@ -181,6 +181,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [experienceHubRef, shouldLoadExperienceHub] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "120px");
   const [diagnosticSectionRef, shouldLoadDiagnostic] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "180px");
   const [profileSectionsRef, shouldLoadProfileSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "280px");
   const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
@@ -1382,7 +1383,27 @@ export default function Home() {
 
         <PortfolioTrustBar />
 
-        <PortfolioExperienceHub />
+        <div ref={experienceHubRef} data-experience-hub-anchor="true" aria-busy={!shouldLoadExperienceHub} className="min-h-px">
+          {shouldLoadExperienceHub ? (
+            <Suspense
+              fallback={
+                <section data-experience-hub-placeholder="true" role="status" aria-live="polite" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12">
+                  <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc]">
+                    carregando rotas do portfólio…
+                  </div>
+                </section>
+              }
+            >
+              <PortfolioExperienceHub />
+            </Suspense>
+          ) : (
+            <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12" aria-label="Rotas do portfólio">
+              <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+                rotas do portfólio serão carregadas ao aproximar
+              </div>
+            </section>
+          )}
+        </div>
 
         <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
           {shouldRenderDiagnostic ? (
