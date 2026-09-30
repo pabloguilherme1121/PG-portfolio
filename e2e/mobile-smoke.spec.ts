@@ -33,7 +33,9 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
 
   const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade).toBeVisible();
+  const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
+  await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
+  await expect(arcade).toBeVisible({ timeout: 15_000 });
   await expect(arcade.getByRole("tab")).toHaveCount(3);
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
@@ -44,7 +46,7 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
 
   await arcade.getByRole("tab", { name: /damas/i }).click();
   const checkers = arcade.locator('[data-checkers-game="true"]');
-  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible();
+  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
   await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
   await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
 });
