@@ -1276,11 +1276,13 @@ export default function Home() {
               deleteActiveOrderProfile={deleteActiveOrderProfile}
               createOrderProfile={createOrderProfile}
               renameActiveOrderProfile={renameActiveOrderProfile}
+              manualOrderStatus={manualOrderStatus}
               onClose={() => setAppearanceOpen(false)}
             />
           </Suspense>
         )}
       </header>
+      <p data-manual-order-live="true" role="status" aria-live="polite" className="sr-only">{manualOrderStatus}</p>
       <div className="scroll-progress-track pointer-events-none fixed inset-x-0 top-[75px] z-40 h-0.5 bg-[#67e8f9]/10" aria-hidden="true"><span className="scroll-progress-bar block h-full origin-left bg-[#67e8f9] shadow-[0_0_12px_rgba(103,232,249,0.8)]" style={{ transform: `scaleX(${scrollProgress / 100})` }} /></div>
 
       <main id="conteudo-principal" className="relative" style={{ fontSize: `${fontScale}rem` }} tabIndex={-1}>
