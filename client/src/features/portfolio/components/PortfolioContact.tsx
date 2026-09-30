@@ -13,7 +13,6 @@ import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalyti
 import { briefingSteps, type BriefingSeed } from "@/features/portfolio/utils/briefingFlow";
 import { useBriefingFlow } from "@/features/portfolio/hooks/useBriefingFlow";
 import { portfolioWhatsAppNumber } from "@/features/portfolio/portfolioConfig";
-import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -32,8 +31,12 @@ import {
   X,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+
+const BriefingProfessionalLayer = lazy(
+  () => import("@/features/portfolio/components/BriefingProfessionalLayer"),
+);
 
 type BlockedDate = { dateKey: string };
 
@@ -102,6 +105,21 @@ export function PortfolioContact({
     moveBriefingStep,
     trackBriefingStarted,
   } = useBriefingFlow({ initialBriefingSeed, setFormSent });
+
+  const hasProfessionalBriefingDraft = [
+    "contentStatus",
+    "visualIdentity",
+    "pagesScreens",
+    "features",
+    "integrations",
+    "qualityPriority",
+    "postLaunch",
+    "success",
+    "references",
+    "constraints",
+    "briefing",
+  ].some((field) => briefingDraft[field]?.trim());
+  const shouldLoadProfessionalLayer = briefingStep >= 3 || hasProfessionalBriefingDraft;
 
   const blockedDateKeys = useMemo(() => new Set(blockedDates.map((blockedDate) => blockedDate.dateKey)), [blockedDates]);
   const daysInMonth = new Date(calendarMonth.getFullYear(), calendarMonth.getMonth() + 1, 0).getDate();
@@ -428,11 +446,26 @@ export function PortfolioContact({
                 </label>
               </fieldset>
 
-              <BriefingProfessionalLayer
-                draft={briefingDraft}
-                requirementsHidden={briefingStep !== 3}
-                reviewHidden={briefingStep !== 4}
-              />
+              {shouldLoadProfessionalLayer && (
+                <Suspense
+                  fallback={
+                    <div
+                      data-briefing-professional-loading="true"
+                      role="status"
+                      aria-live="polite"
+                      className="border border-white/[0.1] bg-[#080f1a]/60 p-6 font-mono text-[9px] uppercase tracking-[0.12em] text-[#9bb9ca]"
+                    >
+                      carregando requisitos do briefing…
+                    </div>
+                  }
+                >
+                  <BriefingProfessionalLayer
+                    draft={briefingDraft}
+                    requirementsHidden={briefingStep !== 3}
+                    reviewHidden={briefingStep !== 4}
+                  />
+                </Suspense>
+              )}
             
               <div className="grid gap-3 border border-white/10 bg-[#07111f]/85 p-3.5 sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:p-4">
                 <button
