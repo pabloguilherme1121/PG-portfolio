@@ -3,7 +3,6 @@
  * Sora cria impacto nos títulos; DM Sans mantém a narrativa direta e fluida.
  */
 @import "tailwindcss";
-@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
