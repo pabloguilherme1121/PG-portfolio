@@ -157,13 +157,12 @@ export function chooseCheckersBotMove(
   random: () => number = Math.random,
   forcedFrom?: number,
 ): CheckersMove | null {
-  const forcedMoves =
+  const moves =
     forcedFrom === undefined
-      ? null
+      ? getCheckersLegalMoves(board, player)
       : getCheckersMovesFrom(board, forcedFrom, true).filter(
           (move) => board[move.from]?.player === player,
         );
-  const moves = forcedMoves && forcedMoves.length ? forcedMoves : getCheckersLegalMoves(board, player);
 
   if (!moves.length) return null;
   if (difficulty === "easy") return moves[Math.floor(random() * moves.length)] ?? moves[0];
