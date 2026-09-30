@@ -8,12 +8,12 @@ const staleBundlePatterns = [
   /importing a module script failed/i,
   /failed to load module script/i,
   /chunkloaderror/i,
-  /loading chunk [\\w-]+ failed/i,
+  /loading chunk [\w-]+ failed/i,
   /unable to preload css/i,
 ];
 
 function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return `${error.name}: ${error.message}`;
+  if (error instanceof Error) return error.name + ": " + error.message;
   if (typeof error === "string") return error;
   if (error && typeof error === "object" && "message" in error) {
     const message = (error as { message?: unknown }).message;
