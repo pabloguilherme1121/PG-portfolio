@@ -13,6 +13,27 @@ export default defineConfig({
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000",
     trace: "on-first-retry",
-    ...devices["Desktop Chrome"],
   },
+  projects: [
+    {
+      name: "desktop-chromium",
+      use: { ...devices["Desktop Chrome"] },
+      testIgnore: /mobile-smoke\.spec\.ts/,
+    },
+    {
+      name: "mobile-chromium",
+      use: { ...devices["Pixel 5"] },
+      testMatch: /mobile-smoke\.spec\.ts/,
+    },
+    {
+      name: "firefox-smoke",
+      use: { ...devices["Desktop Firefox"] },
+      testMatch: /browser-smoke\.spec\.ts/,
+    },
+    {
+      name: "webkit-smoke",
+      use: { ...devices["Desktop Safari"] },
+      testMatch: /browser-smoke\.spec\.ts/,
+    },
+  ],
 });

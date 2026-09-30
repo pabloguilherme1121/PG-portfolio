@@ -11,6 +11,7 @@ import {
 } from "@/lib/availability";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { briefingDraftStorageKey, hasMeaningfulBriefingDraft } from "@/features/portfolio/utils/mobileJourney";
+import { portfolioWhatsAppNumber } from "@/features/portfolio/portfolioConfig";
 import BriefingProfessionalLayer from "@/features/portfolio/components/BriefingProfessionalLayer";
 import {
   ArrowDown,
@@ -164,7 +165,7 @@ export function PortfolioContact({
   const selectedDateLabel = availabilityDate ? formatAvailabilityDate(availabilityDate) : "";
   const selectedDateKey = availabilityDate ? toDateKey(availabilityDate) : "";
   const availabilityWhatsAppUrl = availabilityDate && availabilityTime
-    ? buildAvailabilityWhatsAppUrl("5561992903029", availabilityDate, availabilityTime)
+    ? buildAvailabilityWhatsAppUrl(portfolioWhatsAppNumber, availabilityDate, availabilityTime)
     : "";
   const isAvailabilityConsultationReadyForUser = isAvailabilityConsultationReady(
     availabilityDate,

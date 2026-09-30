@@ -18,7 +18,7 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Produto full-stack em evolução:** o Trajeto expõe arquitetura de produto, frontend, API, persistência, testes, CI e segurança em código público.
 - **Engenharia verificável:** React, TypeScript, Vite, testes unitários, Playwright e auditoria de assets fazem parte do fluxo.
 - **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
-- **Briefing Studio:** fluxo progressivo em quatro etapas, com autosave local, validação e resumo do contexto.
+- **Briefing Studio:** fluxo progressivo em cinco etapas, com autosave local, validação e resumo do contexto.
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
 - **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
@@ -82,16 +82,17 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 O workflow de publicação só entrega o build depois das verificações de qualidade.
 
 ```bash
+pnpm audit --audit-level=high
 pnpm check
 pnpm test
 pnpm test:e2e
-pnpm build
+pnpm build:static
 pnpm audit:bundle
 ```
 
-A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **240 kB**.
+A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **220 kB**.
 
-A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages.
+A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages. Os fluxos críticos passam pela suíte principal em Chromium, smoke mobile em Pixel 5 e smoke de compatibilidade em Firefox e WebKit. Dependabot acompanha atualizações de npm e GitHub Actions semanalmente.
 
 ## Desenvolvimento local
 
@@ -106,7 +107,7 @@ pnpm dev
 Para reproduzir a publicação estática:
 
 ```bash
-VITE_DEPLOY_TARGET=github-pages VITE_STATIC_DEPLOY=true pnpm exec vite build
+pnpm build:static
 node scripts/prepare-github-pages.mjs
 ```
 
@@ -118,7 +119,7 @@ Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mant�
 | --- | --- |
 | `client/` | Experiência pública, componentes e mídia |
 | `client/src/features/portfolio/` | Hero, Proof Deck, Project Lens, cases, briefing e analytics |
-| `server/` e `shared/` | API e contratos da versão com servidor |
+| `server/` e `shared/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |
 | `docs/archive/` | Histórico técnico e pesquisas preservadas |

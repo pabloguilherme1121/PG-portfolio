@@ -30,21 +30,20 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
       - name: Check public media inventory
         run: pnpm audit:assets --strict-if-present
       - name: Typecheck
         run: pnpm check
       - name: Unit tests
         run: pnpm test
-      - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Browser tests
         run: pnpm test:e2e
       - name: Build static portfolio
-        env:
-          VITE_DEPLOY_TARGET: github-pages
-          VITE_STATIC_DEPLOY: "true"
-        run: pnpm exec vite build
+        run: pnpm build:static
       - name: Enforce bundle budget
         env:
           VITE_STATIC_DEPLOY: "true"
