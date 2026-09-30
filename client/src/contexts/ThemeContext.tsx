@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
 
 type Theme = "light" | "dark";
 export type ThemePreference = Theme | "system";
@@ -31,7 +32,8 @@ export function ThemeProvider({
 }: ThemeProviderProps) {
   const [preference, setPreference] = useState<ThemePreference>(() => {
     if (typeof window === "undefined" || !switchable) return defaultTheme;
-    const stored = window.localStorage.getItem("theme-preference") || window.localStorage.getItem("theme");
+    const storage = getSafeStorage("local");
+    const stored = readStorage(storage, "theme-preference") || readStorage(storage, "theme");
     return stored === "light" || stored === "dark" || stored === "system" ? stored : defaultTheme;
   });
   const [systemTheme, setSystemTheme] = useState<Theme>(getSystemTheme);
@@ -56,8 +58,9 @@ export function ThemeProvider({
       theme === "dark" ? "#030b1e" : "#f4f8fc",
     );
     if (switchable) {
-      window.localStorage.setItem("theme-preference", preference);
-      window.localStorage.setItem("theme", theme);
+      const storage = getSafeStorage("local");
+      writeStorage(storage, "theme-preference", preference);
+      writeStorage(storage, "theme", theme);
     }
   }, [preference, theme, switchable]);
 
