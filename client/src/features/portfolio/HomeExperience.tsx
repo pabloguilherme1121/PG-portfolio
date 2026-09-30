@@ -7,25 +7,15 @@ import {
   ArrowDown,
   ArrowUp,
   ArrowUpRight,
-  CalendarDays,
   ClipboardCheck,
-  ChevronUp,
-  GripVertical,
   Braces,
   Download,
   FileText,
-  FolderGit2,
-  Copy,
-  Eye,
-  Github,
   Instagram,
   Layers2,
-  Loader2,
   Menu,
   MessageCircle,
-  Search,
   Send,
-  Share2,
   Moon,
   Sun,
   Settings2,
@@ -33,7 +23,7 @@ import {
 } from "lucide-react";
 import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
+import { normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
@@ -165,7 +155,6 @@ export default function Home() {
     repositoryIds: repositories.map((repository) => repository.id),
     predefinedProfiles: predefinedOrderProfiles,
   });
-  const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [manualOrderStatus, setManualOrderStatus] = useState("");
   const [profileNameDraft, setProfileNameDraft] = useState("");
   const [previewOrderProfileId, setPreviewOrderProfileId] = useState<string | null>(null);
@@ -694,32 +683,6 @@ export default function Home() {
     setActiveOrderProfileId(null);
     setProfileNameDraft("");
     setManualOrderStatus(deletedProfile ? `Perfil ${deletedProfile.name} excluído.` : "Perfil excluído.");
-  }
-
-  function moveProject(projectId: string, direction: -1 | 1) {
-    setManualProjectOrder((currentOrder) => {
-      return moveProjectInOrder(currentOrder, projectId, direction);
-    });
-    const movedRepository = repositories.find((repository) => repository.id === projectId);
-    setManualOrderStatus(movedRepository ? `${movedRepository.name} movido ${direction < 0 ? "para cima" : "para baixo"}.` : "Ordem manual atualizada.");
-  }
-
-  function startProjectDrag(projectId: string) {
-    setDraggedProjectId(projectId);
-  }
-
-  function dropProject(projectId: string) {
-    if (!draggedProjectId || draggedProjectId === projectId) {
-      setDraggedProjectId(null);
-      return;
-    }
-    setManualProjectOrder((currentOrder) => {
-      return dropProjectInOrder(currentOrder, draggedProjectId, projectId);
-    });
-    setDraggedProjectId(null);
-    const movedRepository = repositories.find((repository) => repository.id === draggedProjectId);
-    const targetRepository = repositories.find((repository) => repository.id === projectId);
-    setManualOrderStatus(movedRepository && targetRepository ? `${movedRepository.name} movido antes de ${targetRepository.name}.` : "Ordem manual atualizada.");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
