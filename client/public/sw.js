@@ -1,4 +1,4 @@
-const CACHE_NAME = "pg-portfolio-pwa-v5";
+const CACHE_NAME = "pg-portfolio-pwa-v6";
 const CACHE_PREFIX = "pg-portfolio-pwa-";
 const SCOPE_URL = new URL(self.registration.scope);
 const OFFLINE_HTML =
