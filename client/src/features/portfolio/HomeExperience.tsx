@@ -21,7 +21,7 @@ import {
   Settings2,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
@@ -31,7 +31,6 @@ import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
-import { buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
@@ -40,6 +39,7 @@ import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioS
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import { usePortfolioOrderPersistence } from "@/features/portfolio/hooks/usePortfolioOrderPersistence";
+import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -55,7 +55,6 @@ import {
   predefinedOrderProfiles,
   repositories,
   type ManualOrderProfile,
-  type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 const PortfolioExperienceHub = lazy(() => import("@/features/portfolio/components/PortfolioExperienceHub"));
@@ -177,10 +176,6 @@ export default function Home() {
   const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [portfolioShareStatus, setPortfolioShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
-  const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [projectDetailsLoading, setProjectDetailsLoading] = useState(false);
-  const [showProjectSwipeHint, setShowProjectSwipeHint] = useState(false);
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [mobileExperienceRoute, setMobileExperienceRoute] = useState<MobileExperienceRoute>(() =>
@@ -189,9 +184,25 @@ export default function Home() {
   const [hasMobileBriefingDraft, setHasMobileBriefingDraft] = useState(() =>
     readStoredBriefingProgress(getSafeStorage("local")),
   );
-  const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
-  const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
-  const projectDetailsSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
+  const {
+    selectedProject,
+    projectDetailsLoading,
+    projectDetailsTransition,
+    showProjectSwipeHint,
+    projectShareStatus,
+    projectCopyStatus,
+    previousSelectedProject,
+    nextSelectedProject,
+    selectedProjectIndex,
+    projectCount,
+    openProjectDetails,
+    closeProjectDetails,
+    navigateSelectedProject,
+    handleProjectDetailsTouchStart,
+    handleProjectDetailsTouchEnd,
+    shareSelectedProject,
+    copySelectedProjectLink,
+  } = useProjectDetailsController({ repositories, manualProjectOrder });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -269,14 +280,6 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const sharedProjectId = new URLSearchParams(window.location.search).get("projeto");
-    if (!sharedProjectId || selectedProject || !repositories.length) return;
-    const sharedProject = repositories.find((repository) => repository.id === sharedProjectId);
-    if (sharedProject) openProjectDetails(sharedProject);
-  }, [repositories, selectedProject]);
-
-
-  useEffect(() => {
     if (!resumePreviewOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -322,17 +325,6 @@ export default function Home() {
     refetch: refetchBlockedDates,
   } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability && !isStaticDeploy });
 
-  const projectNavigationRepositories = useMemo(() => {
-    const orderIndex = new Map(manualProjectOrder.map((id, index) => [id, index]));
-    return [...repositories].sort(
-      (first, second) =>
-        (orderIndex.get(first.id) ?? Number.MAX_SAFE_INTEGER) -
-        (orderIndex.get(second.id) ?? Number.MAX_SAFE_INTEGER),
-    );
-  }, [manualProjectOrder]);
-  const selectedProjectIndex = selectedProject ? projectNavigationRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
-  const previousSelectedProject = selectedProjectIndex > 0 ? projectNavigationRepositories[selectedProjectIndex - 1] : null;
-  const nextSelectedProject = selectedProjectIndex >= 0 && selectedProjectIndex < projectNavigationRepositories.length - 1 ? projectNavigationRepositories[selectedProjectIndex + 1] : null;
   const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 4), []);
 
 
@@ -472,78 +464,6 @@ export default function Home() {
     await copyTextWithFeedback("mpjcreator@gmail.com", setEmailCopyStatus);
   }
 
-  function openProjectDetails(project: Repository) {
-    trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
-    setProjectDetailsLoading(true);
-    if (window.innerWidth < 768 && !readStorage(getSafeStorage("local"), "pablo-portfolio-project-swipe-hint-seen")) {
-      setShowProjectSwipeHint(true);
-      writeStorage(getSafeStorage("local"), "pablo-portfolio-project-swipe-hint-seen", "true");
-      window.setTimeout(() => setShowProjectSwipeHint(false), 2800);
-    }
-    setSelectedProject(project);
-  }
-  function navigateSelectedProject(direction: "next" | "previous") {
-    const target = direction === "next" ? nextSelectedProject : previousSelectedProject;
-    if (!target) return;
-    setShowProjectSwipeHint(false);
-    setProjectDetailsLoading(true);
-    setProjectDetailsTransition(direction);
-    setSelectedProject(target);
-    window.setTimeout(() => setProjectDetailsTransition(null), 260);
-  }
-  function handleProjectDetailsTouchStart(event: TouchEvent<HTMLDivElement>) {
-    const target = event.target as HTMLElement | null;
-    if (target?.closest("button, a, input, summary")) {
-      projectDetailsSwipeStartRef.current = null;
-      return;
-    }
-    if (event.touches.length === 1) projectDetailsSwipeStartRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY };
-  }
-  function handleProjectDetailsTouchEnd(event: TouchEvent<HTMLDivElement>) {
-    const start = projectDetailsSwipeStartRef.current;
-    projectDetailsSwipeStartRef.current = null;
-    if (!start || event.changedTouches.length !== 1) return;
-    const touch = event.changedTouches[0];
-    const deltaX = touch.clientX - start.x;
-    const deltaY = touch.clientY - start.y;
-    if (Math.abs(deltaX) < 48 || Math.abs(deltaX) <= Math.abs(deltaY)) return;
-    if (deltaX < 0 && nextSelectedProject) navigateSelectedProject("next");
-    if (deltaX > 0 && previousSelectedProject) navigateSelectedProject("previous");
-  }
-  useEffect(() => {
-    if (!selectedProject) {
-      setProjectDetailsLoading(false);
-        return;
-    }
-    const timer = window.setTimeout(() => setProjectDetailsLoading(false), 420);
-    return () => window.clearTimeout(timer);
-  }, [selectedProject]);
-  useEffect(() => {
-    const visualViewport = window.visualViewport;
-    if (!visualViewport) return;
-    const updateKeyboardState = () => setIsMobileKeyboardOpen(window.innerWidth < 768 && visualViewport.height < window.innerHeight * 0.78);
-    updateKeyboardState();
-    visualViewport.addEventListener("resize", updateKeyboardState, { passive: true });
-    return () => visualViewport.removeEventListener("resize", updateKeyboardState);
-  }, []);
-
-  useEffect(() => {
-    if (!selectedProject) return;
-    const handleProjectDetailsKeyDown = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target?.matches("input, textarea, select, [contenteditable='true']")) return;
-      if (event.key === "ArrowRight" && nextSelectedProject) {
-        event.preventDefault();
-        navigateSelectedProject("next");
-      } else if (event.key === "ArrowLeft" && previousSelectedProject) {
-        event.preventDefault();
-        navigateSelectedProject("previous");
-      }
-    };
-    window.addEventListener("keydown", handleProjectDetailsKeyDown);
-    return () => window.removeEventListener("keydown", handleProjectDetailsKeyDown);
-  }, [selectedProject, nextSelectedProject, previousSelectedProject]);
-
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -555,35 +475,6 @@ export default function Home() {
     } else {
       toast.success("Projeto salvo", { description: `${projectName} está disponível em projetos salvos.` });
     }
-  }
-
-  function getSelectedProjectUrl() {
-    if (!selectedProject) return "";
-    return buildProjectShareUrl(window.location.href, selectedProject.id);
-  }
-  async function shareSelectedProject() {
-    const projectUrl = getSelectedProjectUrl();
-    if (!projectUrl) return;
-    try {
-      await navigator.clipboard.writeText(projectUrl);
-      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
-      setProjectShareStatus("copied");
-    } catch {
-      setProjectShareStatus("error");
-    }
-    window.setTimeout(() => setProjectShareStatus("idle"), 2400);
-  }
-  async function copySelectedProjectLink() {
-    const projectUrl = getSelectedProjectUrl();
-    if (!projectUrl) return;
-    try {
-      await navigator.clipboard.writeText(projectUrl);
-      if (selectedProject) trackPortfolioEvent("share_project", { projectId: selectedProject.id, channel: "copy_link" });
-      setProjectCopyStatus("copied");
-    } catch {
-      setProjectCopyStatus("error");
-    }
-    window.setTimeout(() => setProjectCopyStatus("idle"), 2400);
   }
 
   async function sharePortfolio() {
@@ -1295,8 +1186,8 @@ export default function Home() {
             previousProject={previousSelectedProject}
             nextProject={nextSelectedProject}
             projectIndex={selectedProjectIndex}
-            projectCount={projectNavigationRepositories.length}
-            onOpenChange={(open) => { if (!open) setSelectedProject(null); }}
+            projectCount={projectCount}
+            onOpenChange={(open) => { if (!open) closeProjectDetails(); }}
             onTouchStart={handleProjectDetailsTouchStart}
             onTouchEnd={handleProjectDetailsTouchEnd}
             onToggleFavorite={(event) => toggleFavorite(selectedProject.id, event)}
