@@ -26,7 +26,7 @@ type PortfolioMobileMenuProps = {
   resumeAvailable: boolean;
   onClose: () => void;
   onOpenArcade: () => void;
-  onOpenAppearance: () => void;
+  onOpenAppearance: (trigger?: HTMLElement | null) => void;
   onSharePortfolio: () => void;
   onInstallPortfolio: () => void;
   onPreloadResume: () => void;
@@ -146,8 +146,8 @@ export default function PortfolioMobileMenu({
         <button
           type="button"
           data-mobile-appearance-action="true"
-          onClick={() => {
-            onOpenAppearance();
+          onClick={(event) => {
+            onOpenAppearance(event.currentTarget);
             onClose();
           }}
           className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
