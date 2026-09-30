@@ -50,3 +50,19 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
   await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
 });
+
+
+test("runtime mobile usa resgate v10 sem service worker persistente", async ({ page }) => {
+  await page.goto("/");
+
+  const rescue = await page.evaluate(() => {
+    const runtime = (window as Window & {
+      __pgRuntimeRescue?: { version?: string; mode?: string };
+    }).__pgRuntimeRescue;
+    return { version: runtime?.version, mode: runtime?.mode };
+  });
+
+  expect(rescue).toEqual({ version: "v10", mode: "network-only" });
+  await expect(page.getByText("ERRO 500", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("Tentar novamente", { exact: true })).toHaveCount(0);
+});

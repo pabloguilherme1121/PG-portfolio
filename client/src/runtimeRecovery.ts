@@ -1,12 +1,13 @@
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 
 const PWA_CACHE_PREFIX = "pg-portfolio-pwa-";
-export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v9";
-const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v9";
+export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v10-retired";
+const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v10";
 const RUNTIME_MIGRATION_KEY = "pg-portfolio-runtime-migration";
 const RUNTIME_MIGRATION_PARAM = "pg_runtime";
 const RUNTIME_RECOVERY_PARAM = "pg_recover";
 const LEGACY_SW_TAKEOVER_PARAM = "pg_sw_takeover";
+const RETIRED_SW_PARAM = "pg_sw_retired";
 const RECOVERY_MARKER_KEY = "pg-portfolio-runtime-recovery-at";
 const RECOVERY_COOLDOWN_MS = 45_000;
 
@@ -144,11 +145,13 @@ export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean>
   const migrationFromUrl = migrationUrl.searchParams.get(RUNTIME_MIGRATION_PARAM);
   const recoveryFromUrl = migrationUrl.searchParams.get(RUNTIME_RECOVERY_PARAM);
   const legacyTakeoverFromUrl = migrationUrl.searchParams.get(LEGACY_SW_TAKEOVER_PARAM);
+  const retiredWorkerFromUrl = migrationUrl.searchParams.get(RETIRED_SW_PARAM);
   const local = getSafeStorage("local");
 
-  if (recoveryFromUrl || legacyTakeoverFromUrl) {
+  if (recoveryFromUrl || legacyTakeoverFromUrl || retiredWorkerFromUrl) {
     migrationUrl.searchParams.delete(RUNTIME_RECOVERY_PARAM);
     migrationUrl.searchParams.delete(LEGACY_SW_TAKEOVER_PARAM);
+    migrationUrl.searchParams.delete(RETIRED_SW_PARAM);
     window.history.replaceState(window.history.state, "", migrationUrl.toString());
   }
 
@@ -161,7 +164,7 @@ export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean>
 
   const storedRevision = readStorage(local, RUNTIME_MIGRATION_KEY);
   const cacheNames = await getPortfolioCacheNames();
-  const hasLegacyCache = cacheNames.some((name) => name !== CURRENT_PWA_CACHE) || cacheNames.length > 0;
+  const hasLegacyCache = cacheNames.length > 0;
   const hasController = "serviceWorker" in navigator && Boolean(navigator.serviceWorker.controller);
   const needsMigration = hasLegacyCache || (storedRevision !== RUNTIME_MIGRATION_REVISION && hasController);
 
