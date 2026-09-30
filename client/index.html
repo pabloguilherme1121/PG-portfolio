@@ -60,6 +60,135 @@
         document.querySelector('#robots-meta')?.setAttribute("content", "noindex, nofollow");
       }
     </script>
+    <script>
+      (() => {
+        const rescueVersion = "v9";
+        const baseUrl = "%BASE_URL%";
+        const rescueParam = "pg_boot_rescue";
+        const staleRuntimePattern = /(failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to load module script|chunkloaderror|loading chunk .+ failed|unable to preload css)/i;
+        let rescueStarted = false;
+
+        const currentUrl = new URL(window.location.href);
+        const previousRescue = currentUrl.searchParams.get(rescueParam);
+        if (previousRescue) {
+          currentUrl.searchParams.delete(rescueParam);
+          window.history.replaceState(window.history.state, "", currentUrl.toString());
+        }
+
+        const scopeUrl = new URL(baseUrl, window.location.href).href;
+        const runtimeUrl = new URL(baseUrl + "sw.js?runtime=" + rescueVersion, window.location.href).href;
+
+        const getMessage = (value) => {
+          if (typeof value === "string") return value;
+          if (value && typeof value === "object" && "message" in value) return String(value.message || "");
+          return "";
+        };
+
+        const clearPortfolioCaches = async () => {
+          if (!("caches" in window)) return;
+          try {
+            const keys = await caches.keys();
+            await Promise.all(
+              keys
+                .filter((key) => key.startsWith("pg-portfolio-pwa-"))
+                .map((key) => caches.delete(key)),
+            );
+          } catch {
+            // Recovery must continue even when Cache Storage is unavailable.
+          }
+        };
+
+        const waitForControllerChange = () =>
+          new Promise((resolve) => {
+            let settled = false;
+            const finish = () => {
+              if (settled) return;
+              settled = true;
+              resolve(undefined);
+            };
+            navigator.serviceWorker.addEventListener("controllerchange", finish, { once: true });
+            window.setTimeout(finish, 1200);
+          });
+
+        const installCurrentRuntime = async () => {
+          if (!("serviceWorker" in navigator)) return null;
+          const registration = await navigator.serviceWorker.register(runtimeUrl, {
+            scope: baseUrl,
+            updateViaCache: "none",
+          });
+          await registration.update();
+          return registration;
+        };
+
+        const rescueRuntime = async (reason) => {
+          if (
+            rescueStarted ||
+            previousRescue?.startsWith(rescueVersion) ||
+            navigator.onLine === false
+          ) return;
+
+          rescueStarted = true;
+          try {
+            await clearPortfolioCaches();
+            const registration = await installCurrentRuntime();
+            registration?.active?.postMessage({ type: "PG_FORCE_RUNTIME_REFRESH" });
+            await waitForControllerChange();
+          } catch {
+            // A hard navigation below is still useful if worker APIs fail.
+          }
+
+          const nextUrl = new URL(window.location.href);
+          nextUrl.searchParams.set(rescueParam, rescueVersion + "-" + reason);
+          window.location.replace(nextUrl.toString());
+        };
+
+        if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+          void installCurrentRuntime().catch(() => undefined);
+        }
+
+        window.addEventListener(
+          "error",
+          (event) => {
+            if (staleRuntimePattern.test(getMessage(event.error) || event.message || "")) {
+              void rescueRuntime("window-error");
+            }
+          },
+          true,
+        );
+
+        window.addEventListener("unhandledrejection", (event) => {
+          if (staleRuntimePattern.test(getMessage(event.reason))) {
+            void rescueRuntime("promise-rejection");
+          }
+        });
+
+        window.addEventListener("DOMContentLoaded", () => {
+          const root = document.getElementById("root");
+          if (!root || typeof MutationObserver === "undefined") return;
+
+          const inspectLegacyBoundary = () => {
+            const text = root.textContent || "";
+            if (
+              text.includes("Algo saiu do percurso.") &&
+              (text.includes("Tentar novamente") || text.includes("ERRO 500"))
+            ) {
+              void rescueRuntime("legacy-boundary");
+            }
+          };
+
+          const observer = new MutationObserver(inspectLegacyBoundary);
+          observer.observe(root, { childList: true, subtree: true, characterData: true });
+          inspectLegacyBoundary();
+          window.setTimeout(() => observer.disconnect(), 15_000);
+        });
+
+        window.__pgRuntimeRescue = {
+          version: rescueVersion,
+          scope: scopeUrl,
+          rescue: rescueRuntime,
+        };
+      })();
+    </script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",

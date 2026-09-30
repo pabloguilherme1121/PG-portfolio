@@ -29,7 +29,7 @@ describe("runtimeRecovery", () => {
     );
 
     expect(freshUrl.searchParams.get("projeto")).toBe("observatorio");
-    expect(freshUrl.searchParams.get("pg_recover")).toContain("runtime-hardening-v8-render-error-");
+    expect(freshUrl.searchParams.get("pg_recover")).toContain("runtime-hardening-v9-render-error-");
     expect(freshUrl.hash).toBe("#projetos");
   });
 });

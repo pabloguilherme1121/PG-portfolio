@@ -1,8 +1,8 @@
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 
 const PWA_CACHE_PREFIX = "pg-portfolio-pwa-";
-export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v8";
-const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v8";
+export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v9";
+const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v9";
 const RUNTIME_MIGRATION_KEY = "pg-portfolio-runtime-migration";
 const RUNTIME_MIGRATION_PARAM = "pg_runtime";
 const RUNTIME_RECOVERY_PARAM = "pg_recover";
