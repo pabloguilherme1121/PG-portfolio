@@ -364,4 +364,16 @@ test.describe("portfólio profissional", () => {
     ).toBeTruthy();
   });
 
+  test("menu mobile expõe semântica modal coerente para leitores de tela", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    const dialog = page.getByRole("dialog", { name: /menu de navegação móvel/i });
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAttribute("aria-modal", "true");
+    await expect(dialog.getByRole("navigation", { name: /links principais/i })).toBeVisible();
+  });
+
 });
