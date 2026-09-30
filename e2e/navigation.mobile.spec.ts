@@ -544,7 +544,7 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
 
-  test("mobile torna a paginação dos projetos destacadas clicável e sincronizada", async ({ page }) => {
+  test("showcase com um único projeto não exibe controles de comparação redundantes", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
@@ -552,25 +552,15 @@ test.describe("portfólio profissional", () => {
     await projects.scrollIntoViewIfNeeded();
 
     const strip = projects.locator('[data-featured-project-strip="true"]');
-    const pagination = projects.locator('[data-featured-pagination="true"]');
     const cards = strip.locator("[data-featured-project]");
 
     await expect(strip).toHaveAttribute("aria-busy", "false");
+    await expect(cards).toHaveCount(1);
     await expect(cards.first()).toBeVisible();
-    const cardCount = await cards.count();
-
-    await expect(pagination).toBeVisible();
-    await expect(pagination.locator("button")).toHaveCount(cardCount);
-    await expect(projects.locator('[data-featured-active-label="true"]')).toHaveText(`1 / ${cardCount}`);
-
-    if (cardCount > 1) {
-      const second = pagination.locator("button").nth(1);
-      const initialScroll = await strip.evaluate((element) => element.scrollLeft);
-      await second.click();
-      await expect(second).toHaveAttribute("aria-current", "true");
-      await expect(projects.locator('[data-featured-active-label="true"]')).toHaveText(`2 / ${cardCount}`);
-      await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
-    }
+    await expect(projects.locator('[data-featured-pagination="true"]')).toHaveCount(0);
+    await expect(projects.locator('[data-featured-active-label="true"]')).toHaveCount(0);
+    await expect(projects.locator('[data-featured-swipe-hint="true"]')).toContainText(/toque para ver detalhes/i);
+    await expect(strip).toHaveAttribute("aria-label", /projeto em destaque/i);
   });
 
   test("mobile apresenta projetos destacados em showcase horizontal por swipe", async ({ page }) => {

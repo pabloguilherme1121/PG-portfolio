@@ -33,6 +33,7 @@ assert.ok(manifest.icons?.some((icon) => icon.sizes === "512x512"));
 assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose.includes("maskable")));
 assert.ok(serviceWorker.includes('self.addEventListener("install"'));
 assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
+assert.ok(serviceWorker.includes("event.waitUntil(network.then"), "Cached assets must revalidate in the background");
 assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).includes("<svg"));
 const builtScripts = (await readdir(path.join(root, "assets"))).filter((file) => file.endsWith(".js"));
 const builtScriptSources = await Promise.all(builtScripts.map((file) => readFile(path.join(root, "assets", file), "utf8")));
