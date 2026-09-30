@@ -49,4 +49,27 @@ describe("checkers", () => {
     expect(move?.capture).toBe(26);
     expect(getCheckersMovesFrom(board, 17).some((candidate) => candidate.capture === 26)).toBe(true);
   });
+
+  it("keeps a bot multi-capture on the same piece", () => {
+    const board: CheckersBoard = Array.from({ length: 64 }, () => null);
+    board[17] = { player: "red", king: false };
+    board[26] = { player: "blue", king: false };
+    board[44] = { player: "blue", king: false };
+
+    const first = chooseCheckersBotMove(board, "red", "master", () => 0);
+    expect(first).toEqual({ from: 17, to: 35, capture: 26 });
+
+    const afterFirst = applyCheckersMove(board, first!);
+    const continuation = chooseCheckersBotMove(afterFirst, "red", "master", () => 0, 35);
+    expect(continuation).toEqual({ from: 35, to: 53, capture: 44 });
+  });
+
+  it("does not switch to another piece during a forced continuation", () => {
+    const board: CheckersBoard = Array.from({ length: 64 }, () => null);
+    board[17] = { player: "red", king: false };
+    board[42] = { player: "red", king: false };
+    board[26] = { player: "blue", king: false };
+
+    expect(chooseCheckersBotMove(board, "red", "master", () => 0, 42)).toBeNull();
+  });
 });
