@@ -144,7 +144,7 @@ export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean>
   const cacheNames = await getPortfolioCacheNames();
   const hasLegacyCache = cacheNames.some((name) => name !== CURRENT_PWA_CACHE);
   const hasController = "serviceWorker" in navigator && Boolean(navigator.serviceWorker.controller);
-  const needsMigration = storedRevision !== RUNTIME_MIGRATION_REVISION && (hasLegacyCache || hasController);
+  const needsMigration = hasLegacyCache || (storedRevision !== RUNTIME_MIGRATION_REVISION && hasController);
 
   if (!needsMigration) {
     writeStorage(local, RUNTIME_MIGRATION_KEY, RUNTIME_MIGRATION_REVISION);
