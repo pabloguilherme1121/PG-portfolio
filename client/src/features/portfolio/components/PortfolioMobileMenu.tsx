@@ -57,7 +57,7 @@ export default function PortfolioMobileMenu({
   onPreloadResume,
   onOpenResume,
 }: PortfolioMobileMenuProps) {
-  const navigationRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<HTMLDivElement>(null);
   const SecondaryIcon =
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
