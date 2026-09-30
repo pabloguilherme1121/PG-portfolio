@@ -1135,7 +1135,8 @@ test.describe("portfólio profissional", () => {
   test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
 
     const quickBar = page.locator('[data-mobile-contact-bar="true"]');
     const primaryAction = page.locator('[data-mobile-primary-action="true"]');
@@ -1158,7 +1159,8 @@ test.describe("portfólio profissional", () => {
     await expect(secondaryAction).toHaveAttribute("href", "#curriculo-web");
 
     await page.reload();
-    await page.locator('[data-experience-hub="true"]').scrollIntoViewIfNeeded();
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
     await expect(hub.getByRole("tab", { name: /quero avaliar seu perfil/i })).toHaveAttribute("aria-selected", "true");
     await expect(primaryAction).toHaveAttribute("href", "#perfil-profissional");
 
@@ -1209,8 +1211,9 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
+    await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
     const hub = page.locator('[data-experience-hub="true"]');
-    await hub.scrollIntoViewIfNeeded();
+    await expect(hub).toBeVisible();
     await hub.getByRole("tab", { name: /quero explorar/i }).click();
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
