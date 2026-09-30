@@ -1601,4 +1601,24 @@ test.describe("portfólio profissional", () => {
     await expect(menuButton).toBeFocused();
   });
 
+
+  test("tema sincroniza a barra do navegador e controles nativos", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("theme-preference", "light");
+      window.localStorage.setItem("theme", "light");
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const themeColor = page.locator('meta[name="theme-color"]');
+    await expect(themeColor).toHaveAttribute("content", "#f4f8fc");
+    await expect.poll(() => page.evaluate(() => document.documentElement.style.colorScheme)).toBe("light");
+
+    const toggle = page.locator('[data-theme-toggle="true"]').filter({ visible: true }).first();
+    await toggle.click();
+
+    await expect(themeColor).toHaveAttribute("content", "#030b1e");
+    await expect.poll(() => page.evaluate(() => document.documentElement.style.colorScheme)).toBe("dark");
+  });
+
 });
