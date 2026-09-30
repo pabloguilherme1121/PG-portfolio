@@ -339,4 +339,29 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator('[data-mobile-menu-toggle="true"]')).toHaveAttribute("aria-expanded", "false");
   });
 
+  test("menu mobile mantém o foco dentro da navegação ao usar Tab", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const menuButton = page.locator('[data-mobile-menu-toggle="true"]');
+    await menuButton.click();
+
+    const menu = page.locator("#mobile-navigation");
+    await expect(menu).toBeVisible();
+
+    const focusables = menu.locator('a[href], button:not([disabled])');
+    await expect(focusables.first()).toBeFocused();
+
+    await page.keyboard.press("Shift+Tab");
+    await expect.poll(() =>
+      menu.evaluate((navigation) => navigation.contains(document.activeElement)),
+    ).toBeTruthy();
+
+    await focusables.last().focus();
+    await page.keyboard.press("Tab");
+    await expect.poll(() =>
+      menu.evaluate((navigation) => navigation.contains(document.activeElement)),
+    ).toBeTruthy();
+  });
+
 });
