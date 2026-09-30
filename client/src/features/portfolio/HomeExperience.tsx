@@ -35,6 +35,7 @@ import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, 
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
+import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
@@ -175,7 +176,9 @@ export default function Home() {
   const [footerSectionRef, shouldLoadFooter] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "260px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
-    const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
+    const storedValue = readStorage(getSafeStorage("local"), "pablo-portfolio-font-scale");
+    if (storedValue === null) return 1;
+    const stored = Number(storedValue);
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -211,7 +214,7 @@ export default function Home() {
   const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
     if (typeof window === "undefined") return repositories.map((repository) => repository.id);
     try {
-      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-manual-order") || "[]");
+      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-manual-order") || "[]");
       return normalizeManualOrder(stored, repositories.map((repository) => repository.id));
     } catch {
       return repositories.map((repository) => repository.id);
@@ -222,7 +225,7 @@ export default function Home() {
   const [manualOrderProfiles, setManualOrderProfiles] = useState<ManualOrderProfile[]>(() => {
     if (typeof window === "undefined") return [];
     try {
-      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
+      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-order-profiles") || "[]");
       const storedProfiles = Array.isArray(stored) ? stored.filter((profile): profile is ManualOrderProfile => Boolean(profile && typeof profile.id === "string" && typeof profile.name === "string" && Array.isArray(profile.order))) : [];
       const storedIds = new Set(storedProfiles.map((profile) => profile.id));
       return [...predefinedOrderProfiles.filter((profile) => !storedIds.has(profile.id)), ...storedProfiles];
@@ -230,7 +233,7 @@ export default function Home() {
       return [];
     }
   });
-  const [activeOrderProfileId, setActiveOrderProfileId] = useState<string | null>(() => typeof window === "undefined" ? null : window.localStorage.getItem("pablo-portfolio-active-order-profile"));
+  const [activeOrderProfileId, setActiveOrderProfileId] = useState<string | null>(() => typeof window === "undefined" ? null : readStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile"));
   const [profileNameDraft, setProfileNameDraft] = useState("");
   const [previewOrderProfileId, setPreviewOrderProfileId] = useState<string | null>(null);
   const [recentlyActivatedOrderProfileId, setRecentlyActivatedOrderProfileId] = useState<string | null>(null);
@@ -244,12 +247,12 @@ export default function Home() {
   const [isMobileGalleryRefinementOpen, setIsMobileGalleryRefinementOpen] = useState(false);
   const [galleryView, setGalleryView] = useState<"grid" | "list">(() => {
     if (typeof window === "undefined") return "grid";
-    return window.localStorage.getItem("pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
+    return readStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
   });
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
-      const stored = window.localStorage.getItem("pablo-portfolio-favorites");
+      const stored = readStorage(getSafeStorage("local"), "pablo-portfolio-favorites");
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
@@ -271,17 +274,17 @@ export default function Home() {
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
   const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
   const [mobileExperienceRoute, setMobileExperienceRoute] = useState<MobileExperienceRoute>(() =>
-    readStoredExperienceRoute(typeof window === "undefined" ? null : window.sessionStorage),
+    readStoredExperienceRoute(getSafeStorage("session")),
   );
   const [hasMobileBriefingDraft, setHasMobileBriefingDraft] = useState(() =>
-    readStoredBriefingProgress(typeof window === "undefined" ? null : window.localStorage),
+    readStoredBriefingProgress(getSafeStorage("local")),
   );
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
-      const stored = JSON.parse(window.localStorage.getItem("pablo-portfolio-recent-searches") || "[]");
+      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches") || "[]");
       return Array.isArray(stored) ? stored.filter((term): term is string => typeof term === "string" && term.trim().length >= 2).slice(0, 6) : [];
     } catch {
       return [];
@@ -545,7 +548,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(recentSearches));
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(recentSearches));
   }, [recentSearches]);
 
   useEffect(() => {
@@ -558,24 +561,24 @@ export default function Home() {
   }, [projectSearch]);
 
   useEffect(() => {
-    window.localStorage.setItem("pablo-portfolio-gallery-view", galleryView);
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view", galleryView);
   }, [galleryView]);
 
   useEffect(() => {
-    window.localStorage.setItem("pablo-portfolio-font-scale", String(fontScale));
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-font-scale", String(fontScale));
   }, [fontScale]);
 
   useEffect(() => {
-    window.localStorage.setItem("pablo-portfolio-manual-order", JSON.stringify(manualProjectOrder));
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-manual-order", JSON.stringify(manualProjectOrder));
   }, [manualProjectOrder]);
 
   useEffect(() => {
-    window.localStorage.setItem("pablo-portfolio-order-profiles", JSON.stringify(manualOrderProfiles));
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-order-profiles", JSON.stringify(manualOrderProfiles));
   }, [manualOrderProfiles]);
 
   useEffect(() => {
-    if (activeOrderProfileId) window.localStorage.setItem("pablo-portfolio-active-order-profile", activeOrderProfileId);
-    else window.localStorage.removeItem("pablo-portfolio-active-order-profile");
+    if (activeOrderProfileId) writeStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile", activeOrderProfileId);
+    else removeStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile");
   }, [activeOrderProfileId]);
 
   useEffect(() => {
@@ -606,11 +609,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
-    } catch {
-      // A preferência continua válida durante a sessão mesmo quando o armazenamento está indisponível.
-    }
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
   }, [favoriteProjectIds]);
 
 
@@ -743,9 +742,9 @@ export default function Home() {
   function openProjectDetails(project: Repository) {
     trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
     setProjectDetailsLoading(true);
-    if (window.innerWidth < 768 && !window.localStorage.getItem("pablo-portfolio-project-swipe-hint-seen")) {
+    if (window.innerWidth < 768 && !readStorage(getSafeStorage("local"), "pablo-portfolio-project-swipe-hint-seen")) {
       setShowProjectSwipeHint(true);
-      window.localStorage.setItem("pablo-portfolio-project-swipe-hint-seen", "true");
+      writeStorage(getSafeStorage("local"), "pablo-portfolio-project-swipe-hint-seen", "true");
       window.setTimeout(() => setShowProjectSwipeHint(false), 2800);
     }
     setSelectedProject(project);
@@ -830,12 +829,12 @@ export default function Home() {
   function removeRecentSearch(term: string) {
     const next = recentSearches.filter((item) => item.toLowerCase() !== term.toLowerCase());
     setRecentSearches(next);
-    window.localStorage.setItem("pablo-portfolio-recent-searches", JSON.stringify(next));
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(next));
   }
 
   function clearRecentSearches() {
     setRecentSearches([]);
-    window.localStorage.setItem("pablo-portfolio-recent-searches", "[]");
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", "[]");
   }
 
   function saveSharedFavorites() {
