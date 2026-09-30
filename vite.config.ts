@@ -199,7 +199,7 @@ export default defineConfig({
   base: process.env.VITE_DEPLOY_TARGET === "github-pages" ? "/PG-portfolio/" : "/",
   plugins,
   define: {
-    __PORTFOLIO_RESUME_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf"))),
+    __PORTFOLIO_RESUME_AVAILABLE__: JSON.stringify(process.env.E2E_FORCE_RESUME_AVAILABLE === "true" || fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf"))),
     __PORTFOLIO_HERO_AVAILABLE__: JSON.stringify(fs.existsSync(path.join(PROJECT_ROOT, "client/public/manus-storage/pablo-hero-archive_fbc55c04.png"))),
   },
   resolve: {
