@@ -1,6 +1,6 @@
 import { ArrowUpRight, Braces, ClipboardCheck, Download, Eye, FileText, Layers2, Settings2, Share2 } from "lucide-react";
 import type { MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
-import type { MouseEvent } from "react";
+import { useEffect, useRef, type MouseEvent } from "react";
 
 type MobilePrimaryAction = {
   href: string;
@@ -57,11 +57,25 @@ export default function PortfolioMobileMenu({
   onPreloadResume,
   onOpenResume,
 }: PortfolioMobileMenuProps) {
+  const navigationRef = useRef<HTMLElement>(null);
   const SecondaryIcon =
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => {
+      const navigation = navigationRef.current;
+      const focusTarget =
+        navigation?.querySelector<HTMLElement>('[aria-current="location"]') ??
+        navigation?.querySelector<HTMLElement>('a[href], button:not([disabled])');
+      focusTarget?.focus({ preventScroll: true });
+    });
+
+    return () => window.cancelAnimationFrame(frameId);
+  }, []);
+
   return (
     <nav
+      ref={navigationRef}
       id="mobile-navigation"
       className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_20px_48px_rgba(0,0,0,0.42)] backdrop-blur-md md:hidden"
       aria-label="Navegação móvel"

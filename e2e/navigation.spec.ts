@@ -1582,4 +1582,23 @@ test.describe("portfólio profissional", () => {
     }
   });
 
+
+  test("menu mobile move o foco para a seção atual e devolve ao botão ao fechar com Escape", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const menuButton = page.locator('[data-mobile-menu-toggle="true"]');
+    await menuButton.focus();
+    await page.keyboard.press("Enter");
+
+    const menu = page.locator("#mobile-navigation");
+    await expect(menu).toBeVisible();
+    await expect(menu.locator('[aria-current="location"]')).toBeFocused();
+
+    await page.keyboard.press("Escape");
+
+    await expect(menu).toHaveCount(0);
+    await expect(menuButton).toBeFocused();
+  });
+
 });

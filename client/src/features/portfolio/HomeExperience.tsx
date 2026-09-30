@@ -633,7 +633,10 @@ export default function Home() {
   useEffect(() => {
     if (!menuOpen) return;
     const handleMenuKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMenuOpen(false);
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setMenuOpen(false);
+      window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }));
     };
     document.addEventListener("keydown", handleMenuKeyDown);
     const previousOverflow = document.body.style.overflow;
