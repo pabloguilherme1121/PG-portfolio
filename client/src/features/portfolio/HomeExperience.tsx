@@ -55,7 +55,8 @@ import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
-import { clearPendingPortfolioInstallPrompt, getPendingPortfolioInstallPrompt, type PortfolioInstallPromptEvent } from "@/pwaInstallPromptBridge";
+import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
+import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -182,7 +183,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PortfolioInstallPromptEvent | null>(null);
+  const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
@@ -192,18 +193,12 @@ export default function Home() {
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [deferredContactReady, setDeferredContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
-  const [contactHashRequested, setContactHashRequested] = useState(() =>
-    typeof window !== "undefined" && (window.location.hash === "#contato" || window.location.hash === "#contato-briefing"),
-  );
-  const [caseStudiesHashRequested, setCaseStudiesHashRequested] = useState(() =>
-    typeof window !== "undefined" && window.location.hash === "#estudos-de-caso",
-  );
-  const [staticSectionsHashRequested, setStaticSectionsHashRequested] = useState(() =>
-    typeof window !== "undefined" && ["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash),
-  );
-  const [profileSectionsHashRequested, setProfileSectionsHashRequested] = useState(() =>
-    typeof window !== "undefined" && ["#sobre", "#perfil-profissional"].includes(window.location.hash),
-  );
+  const {
+    contact: contactHashRequested,
+    caseStudies: caseStudiesHashRequested,
+    staticSections: staticSectionsHashRequested,
+    profileSections: profileSectionsHashRequested,
+  } = usePortfolioDeferredHashRequests();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -342,29 +337,6 @@ export default function Home() {
   }, [avoidSpeculativePreload, deferredContactReady]);
 
   useEffect(() => {
-    const pendingPrompt = getPendingPortfolioInstallPrompt();
-    if (pendingPrompt) setPwaInstallPrompt(pendingPrompt);
-
-    const handleBeforeInstallPrompt = (event: Event) => {
-      const promptEvent = event as PortfolioInstallPromptEvent;
-      if (typeof promptEvent.prompt !== "function") return;
-      event.preventDefault();
-      setPwaInstallPrompt(promptEvent);
-    };
-    const handleAppInstalled = () => {
-      clearPendingPortfolioInstallPrompt();
-      setPwaInstallPrompt(null);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleAppInstalled);
-    };
-  }, []);
-
-  useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
       const routeId = (event as CustomEvent<{ routeId?: unknown }>).detail?.routeId;
       if (isMobileExperienceRoute(routeId)) setMobileExperienceRoute(routeId);
@@ -386,17 +358,6 @@ export default function Home() {
       window.removeEventListener("portfolio:briefing-progress", handleBriefingProgress);
       window.removeEventListener("portfolio:briefing-seed", handleBriefingSeed);
     };
-  }, []);
-
-  useEffect(() => {
-    const syncDeferredHashes = () => {
-      setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
-      setCaseStudiesHashRequested(window.location.hash === "#estudos-de-caso");
-      setStaticSectionsHashRequested(["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash));
-      setProfileSectionsHashRequested(["#sobre", "#perfil-profissional"].includes(window.location.hash));
-    };
-    window.addEventListener("hashchange", syncDeferredHashes);
-    return () => window.removeEventListener("hashchange", syncDeferredHashes);
   }, []);
 
   useEffect(() => {
@@ -674,14 +635,10 @@ export default function Home() {
   }
 
   async function installPortfolioPwa() {
-    const promptEvent = pwaInstallPrompt;
-    if (!promptEvent) return;
+    if (!canInstallPortfolio) return;
     try {
-      await promptEvent.prompt();
-      await promptEvent.userChoice;
+      await installPortfolio();
     } finally {
-      clearPendingPortfolioInstallPrompt();
-      setPwaInstallPrompt(null);
       setMenuOpen(false);
     }
   }
@@ -1311,7 +1268,7 @@ export default function Home() {
               mobileSecondaryShortcut={mobileSecondaryShortcut}
               mobileExperienceRoute={mobileExperienceRoute}
               portfolioShareStatus={portfolioShareStatus}
-              showInstallAction={Boolean(pwaInstallPrompt)}
+              showInstallAction={canInstallPortfolio}
               resumeAvailable={resumeAvailable}
               onClose={closeMenu}
               onOpenArcade={openPgArcade}
