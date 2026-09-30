@@ -34,6 +34,8 @@ jobs:
         run: pnpm audit --audit-level=high
       - name: Dependency audit report
         run: pnpm audit --json || true
+      - name: Stop after dependency diagnostic
+        run: exit 1
       - name: Check public media inventory
         run: pnpm audit:assets --strict-if-present
       - name: Typecheck
