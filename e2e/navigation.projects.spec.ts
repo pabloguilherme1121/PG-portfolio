@@ -101,4 +101,25 @@ test.describe("portfólio profissional", () => {
     await expect(capture).toHaveJSProperty("naturalWidth", 1376);
   });
 
+  test("favoritos ignoram armazenamento legado em formato inválido sem quebrar o modal", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify("TEC.09"));
+    });
+
+    await page.goto("/?projeto=TEC.09#projetos");
+
+    const dialog = page.locator('[data-project-details-dialog="true"]');
+    const favorite = dialog.locator('[data-project-modal-favorite="true"]');
+
+    await expect(dialog).toBeVisible({ timeout: 30000 });
+    await expect(favorite).toHaveAttribute("aria-pressed", "false");
+
+    await favorite.click();
+
+    await expect(favorite).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(() =>
+      page.evaluate(() => window.localStorage.getItem("pablo-portfolio-favorites")),
+    ).toBe(JSON.stringify(["TEC.09"]));
+  });
+
 });
