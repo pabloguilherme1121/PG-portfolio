@@ -1450,7 +1450,9 @@ test.describe("portfólio profissional", () => {
     const appearance = page.getByRole("dialog", { name: "Aparência" });
     await expect(appearance).toBeVisible();
 
-    await appearance.getByRole("button", { name: /duplicar perfil tecnologia/i }).click();
+    const duplicateProfile = appearance.getByRole("button", { name: /duplicar perfil tecnologia/i });
+    await duplicateProfile.scrollIntoViewIfNeeded();
+    await duplicateProfile.click();
 
     await expect(appearance.locator('[data-manual-order-feedback="true"]')).toContainText(
       /perfil tecnologia duplicado como tecnologia — cópia/i,
