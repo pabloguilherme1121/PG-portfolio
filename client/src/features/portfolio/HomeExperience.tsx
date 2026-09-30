@@ -56,6 +56,7 @@ import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/feature
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
+import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -192,18 +193,12 @@ export default function Home() {
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [deferredContactReady, setDeferredContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
-  const [contactHashRequested, setContactHashRequested] = useState(() =>
-    typeof window !== "undefined" && (window.location.hash === "#contato" || window.location.hash === "#contato-briefing"),
-  );
-  const [caseStudiesHashRequested, setCaseStudiesHashRequested] = useState(() =>
-    typeof window !== "undefined" && window.location.hash === "#estudos-de-caso",
-  );
-  const [staticSectionsHashRequested, setStaticSectionsHashRequested] = useState(() =>
-    typeof window !== "undefined" && ["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash),
-  );
-  const [profileSectionsHashRequested, setProfileSectionsHashRequested] = useState(() =>
-    typeof window !== "undefined" && ["#sobre", "#perfil-profissional"].includes(window.location.hash),
-  );
+  const {
+    contact: contactHashRequested,
+    caseStudies: caseStudiesHashRequested,
+    staticSections: staticSectionsHashRequested,
+    profileSections: profileSectionsHashRequested,
+  } = usePortfolioDeferredHashRequests();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -363,17 +358,6 @@ export default function Home() {
       window.removeEventListener("portfolio:briefing-progress", handleBriefingProgress);
       window.removeEventListener("portfolio:briefing-seed", handleBriefingSeed);
     };
-  }, []);
-
-  useEffect(() => {
-    const syncDeferredHashes = () => {
-      setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
-      setCaseStudiesHashRequested(window.location.hash === "#estudos-de-caso");
-      setStaticSectionsHashRequested(["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash));
-      setProfileSectionsHashRequested(["#sobre", "#perfil-profissional"].includes(window.location.hash));
-    };
-    window.addEventListener("hashchange", syncDeferredHashes);
-    return () => window.removeEventListener("hashchange", syncDeferredHashes);
   }, []);
 
   useEffect(() => {
