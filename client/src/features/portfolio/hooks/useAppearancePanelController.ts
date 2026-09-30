@@ -42,10 +42,6 @@ export function useAppearancePanelController({
   useEffect(() => {
     if (!open) return;
 
-    const frame = window.requestAnimationFrame(() => {
-      closeRef.current?.focus({ preventScroll: true });
-    });
-
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       event.preventDefault();
@@ -54,7 +50,6 @@ export function useAppearancePanelController({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.cancelAnimationFrame(frame);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [closePanel, open]);
