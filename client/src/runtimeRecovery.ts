@@ -1,4 +1,10 @@
+import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
+
 const PWA_CACHE_PREFIX = "pg-portfolio-pwa-";
+export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v5";
+const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v5";
+const RUNTIME_MIGRATION_KEY = "pg-portfolio-runtime-migration";
+const RUNTIME_MIGRATION_PARAM = "pg_runtime";
 const RECOVERY_MARKER_KEY = "pg-portfolio-runtime-recovery-at";
 const RECOVERY_COOLDOWN_MS = 45_000;
 
@@ -27,20 +33,72 @@ export function isStaleBundleError(error: unknown): boolean {
   return staleBundlePatterns.some((pattern) => pattern.test(message));
 }
 
-function reserveAutomaticRecovery(now = Date.now()): boolean {
+function sanitizeJsonArray(storage: Storage | null, key: string) {
+  const raw = readStorage(storage, key);
+  if (!raw) return;
   try {
-    const previous = Number(window.sessionStorage.getItem(RECOVERY_MARKER_KEY) ?? 0);
-    if (Number.isFinite(previous) && previous > 0 && now - previous < RECOVERY_COOLDOWN_MS) {
-      return false;
-    }
-    window.sessionStorage.setItem(RECOVERY_MARKER_KEY, String(now));
-    return true;
+    const value = JSON.parse(raw);
+    const normalized = Array.isArray(value)
+      ? Array.from(new Set(value.filter((item): item is string => typeof item === "string")))
+      : [];
+    writeStorage(storage, key, JSON.stringify(normalized));
   } catch {
-    return true;
+    writeStorage(storage, key, "[]");
   }
 }
 
-async function resetPortfolioRuntime(baseUrl: string) {
+function sanitizeJsonRecord(storage: Storage | null, key: string) {
+  const raw = readStorage(storage, key);
+  if (!raw) return;
+  try {
+    const value = JSON.parse(raw);
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      removeStorage(storage, key);
+    }
+  } catch {
+    removeStorage(storage, key);
+  }
+}
+
+export function sanitizePortfolioStorage() {
+  const local = getSafeStorage("local");
+  const session = getSafeStorage("session");
+
+  sanitizeJsonArray(local, "pablo-portfolio-favorites");
+  sanitizeJsonRecord(local, "pablo-portfolio-briefing-draft");
+  sanitizeJsonRecord(local, "pablo-pg-arcade-stats");
+
+  const fontScaleRaw = readStorage(local, "pablo-portfolio-font-scale");
+  if (fontScaleRaw !== null) {
+    const fontScale = Number(fontScaleRaw);
+    if (!Number.isFinite(fontScale) || fontScale < 0.92 || fontScale > 1.16) {
+      removeStorage(local, "pablo-portfolio-font-scale");
+    }
+  }
+
+  for (const key of ["theme-preference", "theme"]) {
+    const value = readStorage(local, key);
+    if (value && value !== "light" && value !== "dark" && value !== "system") {
+      removeStorage(local, key);
+    }
+  }
+
+  const route = readStorage(session, "pablo-portfolio-experience-route");
+  if (route && route !== "client" && route !== "recruiter" && route !== "explorer") {
+    removeStorage(session, "pablo-portfolio-experience-route");
+  }
+}
+
+async function getPortfolioCacheNames() {
+  if (typeof caches === "undefined") return [] as string[];
+  try {
+    return (await caches.keys()).filter((name) => name.startsWith(PWA_CACHE_PREFIX));
+  } catch {
+    return [] as string[];
+  }
+}
+
+export async function resetPortfolioRuntime(baseUrl: string) {
   const expectedScope = new URL(baseUrl, window.location.href).href;
 
   if ("serviceWorker" in navigator) {
@@ -56,21 +114,67 @@ async function resetPortfolioRuntime(baseUrl: string) {
     }
   }
 
-  if (typeof caches !== "undefined") {
+  const cacheNames = await getPortfolioCacheNames();
+  if (cacheNames.length > 0) {
     try {
-      const cacheNames = await caches.keys();
-      await Promise.all(
-        cacheNames
-          .filter((cacheName) => cacheName.startsWith(PWA_CACHE_PREFIX))
-          .map((cacheName) => caches.delete(cacheName)),
-      );
+      await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
     } catch (error) {
       console.warn("[PWA] Cache cleanup failed during runtime recovery", error);
     }
   }
 }
 
+export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  sanitizePortfolioStorage();
+
+  const migrationUrl = new URL(window.location.href);
+  const migrationFromUrl = migrationUrl.searchParams.get(RUNTIME_MIGRATION_PARAM);
+  const local = getSafeStorage("local");
+
+  if (migrationFromUrl === RUNTIME_MIGRATION_REVISION) {
+    migrationUrl.searchParams.delete(RUNTIME_MIGRATION_PARAM);
+    window.history.replaceState(window.history.state, "", migrationUrl.toString());
+    writeStorage(local, RUNTIME_MIGRATION_KEY, RUNTIME_MIGRATION_REVISION);
+    return false;
+  }
+
+  const storedRevision = readStorage(local, RUNTIME_MIGRATION_KEY);
+  const cacheNames = await getPortfolioCacheNames();
+  const hasLegacyCache = cacheNames.some((name) => name !== CURRENT_PWA_CACHE);
+  const hasController = "serviceWorker" in navigator && Boolean(navigator.serviceWorker.controller);
+  const needsMigration = storedRevision !== RUNTIME_MIGRATION_REVISION && (hasLegacyCache || hasController);
+
+  if (!needsMigration) {
+    writeStorage(local, RUNTIME_MIGRATION_KEY, RUNTIME_MIGRATION_REVISION);
+    return false;
+  }
+
+  writeStorage(local, RUNTIME_MIGRATION_KEY, RUNTIME_MIGRATION_REVISION);
+  await resetPortfolioRuntime(baseUrl);
+
+  if (hasController) {
+    migrationUrl.searchParams.set(RUNTIME_MIGRATION_PARAM, RUNTIME_MIGRATION_REVISION);
+    window.location.replace(migrationUrl.toString());
+    return true;
+  }
+
+  return false;
+}
+
+function reserveAutomaticRecovery(now = Date.now()): boolean {
+  const session = getSafeStorage("session");
+  const previous = Number(readStorage(session, RECOVERY_MARKER_KEY) ?? 0);
+  if (Number.isFinite(previous) && previous > 0 && now - previous < RECOVERY_COOLDOWN_MS) {
+    return false;
+  }
+  writeStorage(session, RECOVERY_MARKER_KEY, String(now));
+  return true;
+}
+
 async function reloadWithFreshRuntime(baseUrl: string) {
+  sanitizePortfolioStorage();
   if (navigator.onLine !== false) {
     await resetPortfolioRuntime(baseUrl);
   }
@@ -90,9 +194,8 @@ export function installVitePreloadRecovery(baseUrl: string): () => void {
   return () => window.removeEventListener("vite:preloadError", handlePreloadError);
 }
 
-export async function recoverFromRuntimeError(error: unknown, baseUrl: string): Promise<void> {
-  if (isStaleBundleError(error) && navigator.onLine !== false) {
-    await resetPortfolioRuntime(baseUrl);
-  }
+export async function recoverFromRuntimeError(_error: unknown, baseUrl: string): Promise<void> {
+  sanitizePortfolioStorage();
+  await resetPortfolioRuntime(baseUrl);
   window.location.reload();
 }
