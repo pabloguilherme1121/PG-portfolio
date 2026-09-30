@@ -1426,8 +1426,20 @@ test.describe("portfólio profissional", () => {
 
     const appearance = page.getByRole("dialog", { name: "Aparência" });
     await expect(appearance).toBeVisible();
-    await expect(appearance.getByRole("group", { name: "Perfis de ordenação" }).getByRole("button", { name: /^tecnologia base$/i })).toBeVisible();
-    await expect(appearance.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
+    await expect.poll(() =>
+      page.evaluate(() => {
+        try {
+          const profiles = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
+          return Array.isArray(profiles) && profiles.some((profile) => profile?.id === "preset-tecnologia");
+        } catch {
+          return false;
+        }
+      }),
+    ).toBeTruthy();
+
+    const profiles = appearance.getByRole("group", { name: "Perfis de ordenação" });
+    await expect(profiles.getByText("Tecnologia", { exact: true })).toBeVisible();
+    await expect(profiles.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
   });
 
   test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {
