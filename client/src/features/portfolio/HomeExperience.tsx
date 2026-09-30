@@ -148,6 +148,7 @@ export default function Home() {
   });
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
+  const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const {
     contact: contactHashRequested,
@@ -211,7 +212,7 @@ export default function Home() {
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
-  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed);
+  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || backgroundContactReady;
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -221,6 +222,24 @@ export default function Home() {
     connection.addEventListener("change", syncNetworkPreference);
     return () => connection.removeEventListener?.("change", syncNetworkPreference);
   }, []);
+
+  useEffect(() => {
+    if (avoidSpeculativePreload || backgroundContactReady) return;
+
+    let timer: number | null = null;
+    const scheduleBackgroundContact = () => {
+      if (timer !== null) return;
+      timer = window.setTimeout(() => setBackgroundContactReady(true), 3600);
+    };
+
+    if (document.readyState === "complete") scheduleBackgroundContact();
+    else window.addEventListener("load", scheduleBackgroundContact, { once: true });
+
+    return () => {
+      window.removeEventListener("load", scheduleBackgroundContact);
+      if (timer !== null) window.clearTimeout(timer);
+    };
+  }, [avoidSpeculativePreload, backgroundContactReady]);
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
