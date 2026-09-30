@@ -406,7 +406,6 @@ export default function Home() {
   }, [menuOpen]);
 
   useEffect(() => () => {
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
   }, []);
 
