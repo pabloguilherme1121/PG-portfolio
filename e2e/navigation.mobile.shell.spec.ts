@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openContactBriefing, useDataSavingConnection } from "./helpers/contact";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 
@@ -48,6 +49,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("dock mobile reduz detalhes ao descer e restaura ao subir, sem cobrir o teclado", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const dock = page.locator('[data-mobile-dock="true"]');
@@ -57,7 +59,7 @@ test.describe("portfólio profissional", () => {
     expect((await dock.boundingBox())?.height ?? 0).toBeLessThan(expandedHeight);
     await page.evaluate(() => window.scrollTo(0, 450));
     await expect(dock).toHaveAttribute("data-mobile-dock-compact", "false");
-    await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
+    await openContactBriefing(page);
     await page.locator('#contato-briefing input[name="name"]').focus();
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
   });
@@ -210,6 +212,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("mobile adapta atalhos à rota e retoma briefing automaticamente", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.locator('[data-experience-hub-placeholder="true"]').scrollIntoViewIfNeeded();
@@ -247,7 +250,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/projetos.*cases.*código/i);
     await expect(secondaryAction).toHaveAttribute("href", "#pg-lab");
 
-    await page.locator("#contato-briefing").scrollIntoViewIfNeeded();
+    await openContactBriefing(page);
     await page.locator('#contato-briefing input[name="name"]').fill("Visitante mobile");
     await page.locator("#contato").getByRole("heading", { name: /solução clara/i }).click();
 

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openContactBriefing, useDataSavingConnection } from "./helpers/contact";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 
@@ -211,6 +212,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("emite eventos de conversão sem incluir dados pessoais", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.addInitScript(() => {
       const events: unknown[] = [];
       window.addEventListener("portfolio:analytics", (event) => events.push((event as CustomEvent).detail));
@@ -227,7 +229,8 @@ test.describe("portfólio profissional", () => {
     await page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i }).click();
     await expect.poll(emittedEventNames).toContain("quote_cta");
 
-    await page.locator("#contato-briefing input").first().focus();
+    const form = await openContactBriefing(page);
+    await form.locator("input").first().focus();
     await expect.poll(emittedEventNames).toContain("briefing_started");
 
     const propertyKeys = await page.evaluate(() =>
