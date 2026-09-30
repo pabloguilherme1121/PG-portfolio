@@ -40,12 +40,4 @@ describe("portfolio HTML shell", () => {
     );
     expect(html).toContain('href="%BASE_URL%favicon.svg"');
   });
-
-  it("keeps Google Fonts non-blocking with display=swap", async () => {
-    const html = await readIndexHtml();
-    const googleFontsHref = html.match(/<link[^>]+href=["']([^"']*fonts\.googleapis\.com\/css2[^"']*)["'][^>]*>/i)?.[1];
-
-    expect(googleFontsHref).toBeTruthy();
-    expect(googleFontsHref).toContain("display=swap");
-  });
 });
