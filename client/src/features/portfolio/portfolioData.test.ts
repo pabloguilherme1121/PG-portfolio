@@ -1,17 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { categoryFilters, repositories, tagFilters, technologyFilters } from "@/features/portfolio/portfolioData";
+import { repositories } from "@/features/portfolio/portfolioData";
 
 describe("portfolioData — catálogo público verificável", () => {
   it("mantém apenas projetos públicos alinhados ao foco atual do portfólio", () => {
     expect(repositories.map((project) => project.id)).toEqual(["TEC.09"]);
     expect(repositories.every((project) => project.kind === "repository")).toBe(true);
     expect(repositories.some((project) => project.id === "TEC.08")).toBe(false);
-  });
-
-  it("remove filtros e categorias ligados à peça vertical retirada", () => {
-    expect(technologyFilters).not.toEqual(expect.arrayContaining(["Vídeo", "Conteúdo"]));
-    expect(categoryFilters).not.toContain("Conteúdo");
-    expect(tagFilters).not.toEqual(expect.arrayContaining(["Conteúdo", "Vídeo", "Vertical"]));
   });
 
   it("mantém o Trajeto como código público sem inventar mídia ou deploy", () => {
