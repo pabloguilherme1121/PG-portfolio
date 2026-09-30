@@ -176,7 +176,9 @@ export default function Home() {
   const [footerSectionRef, shouldLoadFooter] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "260px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
-    const stored = Number(readStorage(getSafeStorage("local"), "pablo-portfolio-font-scale"));
+    const storedValue = readStorage(getSafeStorage("local"), "pablo-portfolio-font-scale");
+    if (storedValue === null) return 1;
+    const stored = Number(storedValue);
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
@@ -607,11 +609,7 @@ export default function Home() {
 
 
   useEffect(() => {
-    try {
-      writeStorage(getSafeStorage("local"), "pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
-    } catch {
-      // A preferência continua válida durante a sessão mesmo quando o armazenamento está indisponível.
-    }
+    writeStorage(getSafeStorage("local"), "pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
   }, [favoriteProjectIds]);
 
 
