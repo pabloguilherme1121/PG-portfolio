@@ -322,4 +322,21 @@ test.describe("portfólio profissional", () => {
   });
 
 
+  test("abrir o PDF pelo menu mobile fecha a navegação antes de exibir o modal", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const menu = page.locator("#mobile-navigation");
+    await expect(menu).toBeVisible();
+
+    const resumeAction = menu.locator('[data-resume-header="true"]');
+    await expect(resumeAction).toBeVisible();
+    await resumeAction.click();
+
+    await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
+    await expect(menu).toHaveCount(0);
+    await expect(page.locator('[data-mobile-menu-toggle="true"]')).toHaveAttribute("aria-expanded", "false");
+  });
+
 });
