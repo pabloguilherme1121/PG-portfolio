@@ -1,8 +1,9 @@
-const CACHE_NAME = "pg-portfolio-pwa-v4";
+const CACHE_NAME = "pg-portfolio-pwa-v5";
+const CACHE_PREFIX = "pg-portfolio-pwa-";
 const SCOPE_URL = new URL(self.registration.scope);
-const APP_SHELL_URL = new URL("./", SCOPE_URL).href;
+const OFFLINE_HTML =
+  '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline — Pablo Guilherme</title><body style="font-family:system-ui;background:#030b1e;color:#eef5ff;padding:2rem"><h1>Você está offline.</h1><p>Abra novamente o portfólio quando a conexão voltar.</p></body></html>';
 const CORE_ASSETS = [
-  APP_SHELL_URL,
   new URL("manifest.webmanifest", SCOPE_URL).href,
   new URL("favicon.svg", SCOPE_URL).href,
   new URL("pwa-icon-maskable.svg", SCOPE_URL).href,
@@ -14,43 +15,22 @@ const isPrivatePath = (pathname) =>
     pathname.replace(SCOPE_URL.pathname.replace(/\/$/, ""), ""),
   );
 
-async function cacheAppShell() {
+async function cacheCoreAssets() {
   const cache = await caches.open(CACHE_NAME);
-  await cache.addAll(CORE_ASSETS);
-
-  try {
-    const response = await fetch(APP_SHELL_URL, { cache: "no-cache" });
-    if (!response.ok) return;
-    const html = await response.clone().text();
-    await cache.put(APP_SHELL_URL, response);
-
-    const assetUrls = [...html.matchAll(/(?:src|href)="([^"]+)"/g)]
-      .map((match) => new URL(match[1], APP_SHELL_URL))
-      .filter((url) => url.origin === SCOPE_URL.origin)
-      .filter((url) => url.pathname.startsWith(SCOPE_URL.pathname))
-      .filter((url) => /\.(?:css|js|svg|png|webp|avif|woff2?)$/i.test(url.pathname))
-      .map((url) => url.href);
-
-    await Promise.all(
-      [...new Set(assetUrls)].map(async (url) => {
-        try {
-          const assetResponse = await fetch(url);
-          if (assetResponse.ok) await cache.put(url, assetResponse);
-        } catch {
-          // Optional runtime asset: keep installation resilient if one request fails.
-        }
-      }),
-    );
-  } catch {
-    // CORE_ASSETS already provides a minimal offline shell.
-  }
+  await Promise.all(
+    CORE_ASSETS.map(async (url) => {
+      try {
+        const response = await fetch(url, { cache: "no-store" });
+        if (response.ok) await cache.put(url, response);
+      } catch {
+        // Core metadata is helpful but never allowed to break installation.
+      }
+    }),
+  );
 }
 
 self.addEventListener("install", (event) => {
-  // Do not skip the waiting phase: an already-open portfolio can still reference
-  // lazy chunks from the previous deployment. Activating over that page would
-  // risk deleting the exact cache entries that keep that session functional.
-  event.waitUntil(cacheAppShell());
+  event.waitUntil(cacheCoreAssets().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -60,7 +40,7 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key.startsWith("pg-portfolio-pwa-") && key !== CACHE_NAME)
+            .filter((key) => key.startsWith(CACHE_PREFIX) && key !== CACHE_NAME)
             .map((key) => caches.delete(key)),
         ),
       )
@@ -77,41 +57,34 @@ self.addEventListener("fetch", (event) => {
 
   if (request.mode === "navigate") {
     event.respondWith(
-      fetch(request)
-        .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put(request, response.clone());
-          }
-          return response;
-        })
-        .catch(async () => {
-          return (
-            (await caches.match(request)) ||
-            (await caches.match(APP_SHELL_URL)) ||
-            new Response(
-              "<!doctype html><html lang=\"pt-BR\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Offline — Pablo Guilherme</title><body style=\"font-family:system-ui;background:#030b1e;color:#eef5ff;padding:2rem\"><h1>Você está offline.</h1><p>Abra novamente o portfólio quando a conexão voltar.</p></body></html>",
-              { headers: { "Content-Type": "text/html; charset=utf-8" } },
-            )
-          );
-        }),
+      fetch(request, { cache: "no-store" }).catch(
+        () =>
+          new Response(OFFLINE_HTML, {
+            status: 503,
+            headers: { "Content-Type": "text/html; charset=utf-8" },
+          }),
+      ),
     );
     return;
   }
 
-  const shouldRevalidate = ["script", "style", "image", "font"].includes(request.destination);
+  if (request.destination === "script" || request.destination === "style") {
+    event.respondWith(fetch(request, { cache: "no-store" }));
+    return;
+  }
+
+  const shouldCache = request.destination === "image" || request.destination === "font";
+  if (!shouldCache) return;
+
   const network = fetch(request).then(async (response) => {
-    if (response.ok && shouldRevalidate) {
+    if (response.ok) {
       const cache = await caches.open(CACHE_NAME);
       await cache.put(request, response.clone());
     }
     return response;
   });
 
-  if (shouldRevalidate) {
-    event.waitUntil(network.then(() => undefined, () => undefined));
-  }
-
+  event.waitUntil(network.then(() => undefined, () => undefined));
   event.respondWith(
     caches.match(request).then((cached) => cached || network).catch(() => caches.match(request)),
   );
