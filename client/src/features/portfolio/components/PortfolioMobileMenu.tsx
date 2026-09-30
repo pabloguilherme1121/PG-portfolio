@@ -62,15 +62,48 @@ export default function PortfolioMobileMenu({
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
   useEffect(() => {
+    const navigation = navigationRef.current;
+    if (!navigation) return;
+
+    const getFocusableElements = () =>
+      Array.from(
+        navigation.querySelectorAll<HTMLElement>('a[href], button:not([disabled])'),
+      ).filter((element) => element.offsetParent !== null);
+
     const frameId = window.requestAnimationFrame(() => {
-      const navigation = navigationRef.current;
       const focusTarget =
-        navigation?.querySelector<HTMLElement>('[aria-current="location"]') ??
-        navigation?.querySelector<HTMLElement>('a[href], button:not([disabled])');
+        navigation.querySelector<HTMLElement>('[aria-current="location"]') ??
+        getFocusableElements()[0];
       focusTarget?.focus({ preventScroll: true });
     });
 
-    return () => window.cancelAnimationFrame(frameId);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Tab") return;
+
+      const focusableElements = getFocusableElements();
+      if (!focusableElements.length) return;
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement;
+
+      if (event.shiftKey && (activeElement === first || !navigation.contains(activeElement))) {
+        event.preventDefault();
+        last.focus({ preventScroll: true });
+        return;
+      }
+
+      if (!event.shiftKey && (activeElement === last || !navigation.contains(activeElement))) {
+        event.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    };
+
+    navigation.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      navigation.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   return (
