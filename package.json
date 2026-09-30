@@ -116,15 +116,12 @@
       "vite>rollup": "4.59.0",
       "vite>picomatch": "4.0.4",
       "@babel/helper-compilation-targets>browserslist": "4.28.7",
-      "mermaid>lodash-es": "4.17.23",
+      "mermaid>lodash-es": "4.18.0",
       "axios>form-data": "4.0.6",
       "express>path-to-regexp": "0.1.13",
       "vitest>picomatch": "4.0.4",
-      "lodash-es": "4.17.23",
-      "autoprefixer>browserslist": "4.28.7",
-      "lodash": "4.17.21",
-      "qs": "6.16.0",
-      "@esbuild-kit/core-utils>esbuild": "0.25.10"
+      "lodash-es": "4.18.0",
+      "autoprefixer>browserslist": "4.28.7"
     }
   }
 }
