@@ -40,6 +40,11 @@
           : storedTheme;
         document.documentElement.classList.toggle("dark", resolvedTheme === "dark");
         document.documentElement.dataset.themePreference = storedTheme;
+        document.documentElement.style.colorScheme = resolvedTheme;
+        document.querySelector('meta[name="theme-color"]')?.setAttribute(
+          "content",
+          resolvedTheme === "dark" ? "#030b1e" : "#f4f8fc",
+        );
       } catch {
         document.documentElement.classList.add("dark");
       }
