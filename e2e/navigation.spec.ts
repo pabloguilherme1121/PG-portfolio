@@ -347,9 +347,11 @@ test.describe("portfólio profissional", () => {
         target.__portfolioPrintCalls += 1;
       };
     });
-    await page.goto("/");
+    await page.goto("/#perfil-profissional");
 
-    await page.locator('[data-professional-proof-id="resume"]').click();
+    const profile = page.locator('[data-professional-snapshot="true"]');
+    await expect(profile).toBeVisible();
+    await profile.locator('[data-professional-proof-id="resume"]').click();
 
     const resume = page.locator('[data-web-resume="true"]');
     await expect(resume).toBeVisible();

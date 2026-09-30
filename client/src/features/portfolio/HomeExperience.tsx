@@ -39,8 +39,6 @@ import { toast } from "sonner";
 import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
-import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
-import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
@@ -75,6 +73,7 @@ import {
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 const ProjectDiagnostic = lazy(() => import("@/features/portfolio/components/ProjectDiagnostic"));
+const PortfolioDeferredProfileSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredProfileSections"));
 const PortfolioDeferredStaticSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredStaticSections"));
 const PortfolioProjectsOverview = lazy(() => import("@/features/portfolio/components/PortfolioProjectsOverview"));
 const PortfolioAppearancePanel = lazy(() => import("@/features/portfolio/components/PortfolioAppearancePanel"));
@@ -183,6 +182,7 @@ export default function Home() {
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
   const [diagnosticSectionRef, shouldLoadDiagnostic] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "180px");
+  const [profileSectionsRef, shouldLoadProfileSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "280px");
   const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
   const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
@@ -211,6 +211,9 @@ export default function Home() {
   );
   const [staticSectionsHashRequested, setStaticSectionsHashRequested] = useState(() =>
     typeof window !== "undefined" && ["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash),
+  );
+  const [profileSectionsHashRequested, setProfileSectionsHashRequested] = useState(() =>
+    typeof window !== "undefined" && ["#sobre", "#perfil-profissional"].includes(window.location.hash),
   );
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -315,6 +318,7 @@ export default function Home() {
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
+  const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
@@ -399,6 +403,7 @@ export default function Home() {
       setContactHashRequested(window.location.hash === "#contato" || window.location.hash === "#contato-briefing");
       setCaseStudiesHashRequested(window.location.hash === "#estudos-de-caso");
       setStaticSectionsHashRequested(["#trilha", "#qualidade", "#servicos", "#processo"].includes(window.location.hash));
+      setProfileSectionsHashRequested(["#sobre", "#perfil-profissional"].includes(window.location.hash));
     };
     window.addEventListener("hashchange", syncDeferredHashes);
     return () => window.removeEventListener("hashchange", syncDeferredHashes);
@@ -1410,14 +1415,37 @@ export default function Home() {
           )}
         </div>
 
-        <PortfolioAbout
-          resumeAvailable={resumeAvailable}
-          resumeUrl={resumeUrl}
-          portraitUrl={portraitUrl}
-          portraitResponsive={portraitResponsive}
-        />
-
-        <PortfolioProfessionalSnapshot />
+        <div
+          ref={profileSectionsRef}
+          data-profile-sections-anchor="true"
+          aria-busy={!shouldRenderProfileSections}
+          className="min-h-px"
+        >
+          {shouldRenderProfileSections ? (
+            <Suspense
+              fallback={
+                <section data-profile-sections-placeholder="true" className="archive-chapter min-h-[1150px] border-t border-white/[0.07] bg-[#0a0f18] px-5 py-16 sm:min-h-[1350px] sm:px-8 sm:py-20" aria-label="Carregando Sobre e perfil profissional">
+                  <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc]">
+                    carregando Sobre e perfil profissional…
+                  </div>
+                </section>
+              }
+            >
+              <PortfolioDeferredProfileSections
+                resumeAvailable={resumeAvailable}
+                resumeUrl={resumeUrl}
+                portraitUrl={portraitUrl}
+                portraitResponsive={portraitResponsive}
+              />
+            </Suspense>
+          ) : (
+            <section data-profile-sections-placeholder="true" className="archive-chapter min-h-[1150px] border-t border-white/[0.07] bg-[#0a0f18] px-5 py-16 sm:min-h-[1350px] sm:px-8 sm:py-20" aria-label="Sobre e perfil profissional">
+              <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+                Sobre e perfil profissional serão carregados ao aproximar
+              </div>
+            </section>
+          )}
+        </div>
 
         <div
           id="curriculo-web"

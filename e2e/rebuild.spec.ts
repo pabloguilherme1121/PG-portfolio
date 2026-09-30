@@ -67,6 +67,21 @@ test.describe("reconstrução profissional do portfólio", () => {
     await expect(placeholder).toHaveCount(0);
   });
 
+  test("Sobre e perfil profissional carregam apenas quando se aproximam da viewport", async ({ page }) => {
+    await page.goto("/");
+
+    const placeholder = page.locator('[data-profile-sections-placeholder="true"]');
+    await expect(placeholder).toHaveCount(1);
+    await expect(page.locator("#sobre")).toHaveCount(0);
+    await expect(page.locator('[data-professional-snapshot="true"]')).toHaveCount(0);
+
+    await placeholder.scrollIntoViewIfNeeded();
+
+    await expect(page.locator("#sobre")).toBeVisible();
+    await expect(page.locator('[data-professional-snapshot="true"]')).toBeVisible();
+    await expect(placeholder).toHaveCount(0);
+  });
+
   test("competências, serviços e processo carregam apenas quando se aproximam da viewport", async ({ page }) => {
     await page.goto("/");
 
