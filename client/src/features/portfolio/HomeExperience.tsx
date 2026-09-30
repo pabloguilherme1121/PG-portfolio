@@ -41,6 +41,7 @@ import { useProjectDetailsController } from "@/features/portfolio/hooks/useProje
 import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
 import { useResumePreviewController } from "@/features/portfolio/hooks/useResumePreviewController";
 import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
+import { useFavoriteProjects } from "@/features/portfolio/hooks/useFavoriteProjects";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -165,15 +166,10 @@ export default function Home() {
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
   const [featuredCardsReady, setFeaturedCardsReady] = useState(false);
-  const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = readStorage(getSafeStorage("local"), "pablo-portfolio-favorites");
-      return stored ? JSON.parse(stored) : [];
-    } catch {
-      return [];
-    }
-  });
+  const {
+    favoriteProjectIdSet,
+    toggleFavoriteProject,
+  } = useFavoriteProjects();
   const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [portfolioShareStatus, setPortfolioShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
@@ -279,7 +275,6 @@ export default function Home() {
 
   const successMessageRef = useRef<HTMLDivElement>(null);
   const contextTransitionTimerRef = useRef<number | null>(null);
-  const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
   const {
     data: blockedDates = [],
     isError: isBlockedDatesError,
@@ -303,11 +298,6 @@ export default function Home() {
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-font-scale", String(fontScale));
   }, [fontScale]);
-
-  useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
-  }, [favoriteProjectIds]);
-
 
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
@@ -385,9 +375,8 @@ export default function Home() {
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
     event.preventDefault();
     event.stopPropagation();
-    const isAlreadySaved = favoriteProjectIdSet.has(projectId);
+    const isAlreadySaved = toggleFavoriteProject(projectId);
     const projectName = repositories.find((repository) => repository.id === projectId)?.name ?? "Projeto";
-    setFavoriteProjectIds((current) => current.includes(projectId) ? current.filter((id) => id !== projectId) : [...current, projectId]);
     if (isAlreadySaved) {
       toast("Projeto removido", { description: `${projectName} foi removido dos projetos salvos.` });
     } else {
