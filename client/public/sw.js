@@ -63,7 +63,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("message", (event) => {
-  if (event.data?.type !== "PG_RETIRE_RUNTIME") return;
+  if (!event.data || event.data.type !== "PG_RETIRE_RUNTIME") return;
   event.waitUntil(retirePortfolioWorker());
 });
 
