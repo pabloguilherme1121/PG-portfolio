@@ -187,11 +187,11 @@ const plugins = [
   react(),
   tailwindcss(),
   staticRuntimeGuardPlugin(),
-  // The Manus inspector and browser log collector are development tools.
-  // Excluding them from Pages avoids injecting a large inline runtime into index.html.
-  ...(process.env.VITE_STATIC_DEPLOY === "true"
-    ? []
-    : [jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()]),
+  // The Manus inspector and browser log collector are development-only tools.
+  // Production builds — static or server-backed — must stay free of inspection/runtime tooling.
+  ...(process.env.NODE_ENV === "development" && process.env.VITE_STATIC_DEPLOY !== "true"
+    ? [jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()]
+    : []),
 ];
 
 export default defineConfig({
