@@ -148,7 +148,6 @@ export default function Home() {
   });
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
-  const [deferredContactReady, setDeferredContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const {
     contact: contactHashRequested,
@@ -212,7 +211,7 @@ export default function Home() {
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
-  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || deferredContactReady;
+  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed);
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -222,24 +221,6 @@ export default function Home() {
     connection.addEventListener("change", syncNetworkPreference);
     return () => connection.removeEventListener?.("change", syncNetworkPreference);
   }, []);
-
-  useEffect(() => {
-    if (avoidSpeculativePreload || deferredContactReady) return;
-
-    let timer: number | null = null;
-    const scheduleDeferredContact = () => {
-      if (timer !== null) return;
-      timer = window.setTimeout(() => setDeferredContactReady(true), 2200);
-    };
-
-    if (document.readyState === "complete") scheduleDeferredContact();
-    else window.addEventListener("load", scheduleDeferredContact, { once: true });
-
-    return () => {
-      window.removeEventListener("load", scheduleDeferredContact);
-      if (timer !== null) window.clearTimeout(timer);
-    };
-  }, [avoidSpeculativePreload, deferredContactReady]);
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
