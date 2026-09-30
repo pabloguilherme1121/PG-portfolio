@@ -1,7 +1,7 @@
 import { AlertTriangle, Home, RotateCcw } from "lucide-react";
 import { Component, ReactNode, type ErrorInfo } from "react";
 import { Button } from "./ui/button";
-import { recoverFromRuntimeError } from "@/runtimeRecovery";
+import { attemptAutomaticRuntimeRecovery, recoverFromRuntimeError } from "@/runtimeRecovery";
 
 interface Props {
   children: ReactNode;
@@ -24,6 +24,11 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("[Portfolio] Unhandled render error", error, info.componentStack);
+    if (import.meta.env.PROD) {
+      void attemptAutomaticRuntimeRecovery(error, import.meta.env.BASE_URL).catch((recoveryError) => {
+        console.warn("[Portfolio] Automatic render recovery failed", recoveryError);
+      });
+    }
   }
 
   handleReload = async () => {

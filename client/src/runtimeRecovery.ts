@@ -1,10 +1,11 @@
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 
 const PWA_CACHE_PREFIX = "pg-portfolio-pwa-";
-export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v5";
-const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v5";
+export const CURRENT_PWA_CACHE = "pg-portfolio-pwa-v6";
+const RUNTIME_MIGRATION_REVISION = "runtime-hardening-v6";
 const RUNTIME_MIGRATION_KEY = "pg-portfolio-runtime-migration";
 const RUNTIME_MIGRATION_PARAM = "pg_runtime";
+const RUNTIME_RECOVERY_PARAM = "pg_recover";
 const RECOVERY_MARKER_KEY = "pg-portfolio-runtime-recovery-at";
 const RECOVERY_COOLDOWN_MS = 45_000;
 
@@ -31,6 +32,15 @@ function getErrorMessage(error: unknown): string {
 export function isStaleBundleError(error: unknown): boolean {
   const message = getErrorMessage(error);
   return staleBundlePatterns.some((pattern) => pattern.test(message));
+}
+
+export function buildFreshRuntimeUrl(currentHref: string, reason: string, now = Date.now()) {
+  const url = new URL(currentHref);
+  url.searchParams.set(
+    RUNTIME_RECOVERY_PARAM,
+    `${RUNTIME_MIGRATION_REVISION}-${reason}-${now.toString(36)}`,
+  );
+  return url.toString();
 }
 
 function sanitizeJsonArray(storage: Storage | null, key: string) {
@@ -131,7 +141,13 @@ export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean>
 
   const migrationUrl = new URL(window.location.href);
   const migrationFromUrl = migrationUrl.searchParams.get(RUNTIME_MIGRATION_PARAM);
+  const recoveryFromUrl = migrationUrl.searchParams.get(RUNTIME_RECOVERY_PARAM);
   const local = getSafeStorage("local");
+
+  if (recoveryFromUrl) {
+    migrationUrl.searchParams.delete(RUNTIME_RECOVERY_PARAM);
+    window.history.replaceState(window.history.state, "", migrationUrl.toString());
+  }
 
   if (migrationFromUrl === RUNTIME_MIGRATION_REVISION) {
     migrationUrl.searchParams.delete(RUNTIME_MIGRATION_PARAM);
@@ -173,12 +189,29 @@ function reserveAutomaticRecovery(now = Date.now()): boolean {
   return true;
 }
 
-async function reloadWithFreshRuntime(baseUrl: string) {
+async function navigateWithFreshRuntime(baseUrl: string, reason: string) {
   sanitizePortfolioStorage();
-  if (navigator.onLine !== false) {
-    await resetPortfolioRuntime(baseUrl);
+
+  if (navigator.onLine === false) {
+    window.location.reload();
+    return;
   }
-  window.location.reload();
+
+  await resetPortfolioRuntime(baseUrl);
+  window.location.replace(buildFreshRuntimeUrl(window.location.href, reason));
+}
+
+export async function attemptAutomaticRuntimeRecovery(
+  error: unknown,
+  baseUrl: string,
+): Promise<boolean> {
+  if (typeof window === "undefined" || navigator.onLine === false || !reserveAutomaticRecovery()) {
+    return false;
+  }
+
+  console.warn("[Portfolio] Recovering from runtime failure", getErrorMessage(error));
+  await navigateWithFreshRuntime(baseUrl, isStaleBundleError(error) ? "stale-bundle" : "render-error");
+  return true;
 }
 
 export function installVitePreloadRecovery(baseUrl: string): () => void {
@@ -187,7 +220,9 @@ export function installVitePreloadRecovery(baseUrl: string): () => void {
   const handlePreloadError = (event: Event) => {
     if (navigator.onLine === false || !reserveAutomaticRecovery()) return;
     event.preventDefault();
-    void reloadWithFreshRuntime(baseUrl);
+    void navigateWithFreshRuntime(baseUrl, "preload-error").catch((error) => {
+      console.warn("[Portfolio] Automatic preload recovery failed", error);
+    });
   };
 
   window.addEventListener("vite:preloadError", handlePreloadError);
@@ -195,7 +230,5 @@ export function installVitePreloadRecovery(baseUrl: string): () => void {
 }
 
 export async function recoverFromRuntimeError(_error: unknown, baseUrl: string): Promise<void> {
-  sanitizePortfolioStorage();
-  await resetPortfolioRuntime(baseUrl);
-  window.location.reload();
+  await navigateWithFreshRuntime(baseUrl, "manual");
 }

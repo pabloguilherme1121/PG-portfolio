@@ -33,7 +33,7 @@ assert.ok(manifest.icons?.some((icon) => icon.sizes === "512x512"));
 assert.ok(manifest.icons?.some((icon) => icon.sizes === "any" && icon.purpose.includes("maskable")));
 assert.ok(serviceWorker.includes('self.addEventListener("install"'));
 assert.ok(serviceWorker.includes('self.addEventListener("fetch"'));
-assert.ok(serviceWorker.includes('const CACHE_NAME = "pg-portfolio-pwa-v5"'), "Unexpected PWA cache version");
+assert.ok(serviceWorker.includes('const CACHE_NAME = "pg-portfolio-pwa-v6"'), "Unexpected PWA cache version");
 assert.ok(serviceWorker.includes("self.skipWaiting()"), "The current worker must replace legacy cache workers");
 assert.ok(serviceWorker.includes('request.destination === "script" || request.destination === "style"'), "Executable assets must be network-only");
 assert.ok(serviceWorker.includes('fetch(request, { cache: "no-store" })'), "Navigation and executable assets must bypass stale HTTP cache");
@@ -43,7 +43,7 @@ const builtScripts = (await readdir(path.join(root, "assets"))).filter((file) =>
 const builtScriptSources = await Promise.all(builtScripts.map((file) => readFile(path.join(root, "assets", file), "utf8")));
 assert.ok(builtScriptSources.some((source) => source.includes("sw.js") && source.includes("serviceWorker")), "The production bundle does not register the PWA service worker");
 assert.ok(builtScriptSources.some((source) => source.includes("vite:preloadError")), "The production bundle does not recover from stale lazy chunks");
-assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v5")), "The production bundle does not migrate legacy PWA runtime state");
+assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v6")), "The production bundle does not migrate legacy PWA runtime state");
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));
 assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));

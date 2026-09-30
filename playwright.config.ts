@@ -29,6 +29,11 @@ export default defineConfig({
       testMatch: /mobile-smoke\.spec\.ts/,
     },
     {
+      name: "mobile-webkit",
+      use: { ...devices["iPhone 13"] },
+      testMatch: /mobile-smoke\.spec\.ts/,
+    },
+    {
       name: "firefox-smoke",
       use: { ...devices["Desktop Firefox"] },
       testMatch: /browser-smoke\.spec\.ts/,
