@@ -21,7 +21,7 @@ import {
   Settings2,
   X,
 } from "lucide-react";
-import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { trpc } from "@/lib/trpc";
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
@@ -38,6 +38,7 @@ import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioS
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
+import { useResumePreviewController } from "@/features/portfolio/hooks/useResumePreviewController";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -118,12 +119,27 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [pgLabOpen, setPgLabOpen] = useState(false);
-  const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
-  const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
-  const [resumePreviewProgress, setResumePreviewProgress] = useState(0);
-  const [resumePreviewError, setResumePreviewError] = useState(false);
+  const {
+    open: resumePreviewOpen,
+    loading: resumePreviewLoading,
+    progress: resumePreviewProgress,
+    error: resumePreviewError,
+    closeRef: resumePreviewCloseRef,
+    preload: preloadResumePreview,
+    openPreview: openResumePreview,
+    close: closeResumePreview,
+    retry: retryResumePreview,
+    handleLoad: handleResumePreviewLoad,
+    handleError: handleResumePreviewError,
+  } = useResumePreviewController({
+    avoidSpeculativePreload,
+    loadPreview: loadPortfolioResumePreview,
+    menuButtonRef,
+    setMenuOpen,
+  });
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [deferredContactReady, setDeferredContactReady] = useState(false);
@@ -176,9 +192,6 @@ export default function Home() {
     shareSelectedProject,
     copySelectedProjectLink,
   } = useProjectDetailsController({ repositories });
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
-  const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
@@ -251,43 +264,6 @@ export default function Home() {
     const timer = window.setTimeout(() => setFeaturedCardsReady(true), delay);
     return () => window.clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (!resumePreviewOpen) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    window.setTimeout(() => resumePreviewCloseRef.current?.focus(), 0);
-    const handleResumePreviewKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        setResumePreviewOpen(false);
-        setMenuOpen(false);
-        window.setTimeout(() => {
-          const returnTarget = resumePreviewReturnFocusRef.current;
-          if (returnTarget?.isConnected && returnTarget.offsetParent !== null) returnTarget.focus();
-          else (Array.from(document.querySelectorAll<HTMLElement>('[data-resume-header="true"]')).find((element) => element.offsetParent !== null) ?? menuButtonRef.current)?.focus();
-        }, 0);
-      }
-    };
-    window.addEventListener("keydown", handleResumePreviewKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleResumePreviewKeyDown);
-    };
-  }, [resumePreviewOpen]);
-
-  useEffect(() => {
-    if (!resumePreviewOpen || !resumePreviewLoading) return;
-    const progressTimer = window.setInterval(() => {
-      setResumePreviewProgress((currentProgress) => Math.min(92, currentProgress + (currentProgress < 55 ? 5 : 2)));
-    }, 180);
-    const loadingFallbackTimer = window.setTimeout(() => setResumePreviewLoading(false), 4000);
-    return () => {
-      window.clearInterval(progressTimer);
-      window.clearTimeout(loadingFallbackTimer);
-    };
-  }, [resumePreviewOpen, resumePreviewLoading]);
-
 
   const successMessageRef = useRef<HTMLDivElement>(null);
   const contextTransitionTimerRef = useRef<number | null>(null);
@@ -374,11 +350,6 @@ export default function Home() {
       toast.error("Não foi possível enviar", { description: message });
     },
   });
-
-  function preloadResumePreview() {
-    if (avoidSpeculativePreload) return;
-    void loadPortfolioResumePreview();
-  }
 
   async function installPortfolioPwa() {
     if (!canInstallPortfolio) return;
@@ -539,26 +510,6 @@ export default function Home() {
       { onSuccess: () => form.reset() },
     );
   }
-
-  const openResumePreview = (event: MouseEvent<HTMLElement>) => {
-    event.preventDefault();
-    preloadResumePreview();
-    resumePreviewReturnFocusRef.current = event.currentTarget;
-    setResumePreviewError(false);
-    setResumePreviewProgress(8);
-    setResumePreviewLoading(true);
-    setResumePreviewOpen(true);
-  };
-
-  const closeResumePreview = () => {
-    setResumePreviewOpen(false);
-    setMenuOpen(false);
-    window.setTimeout(() => {
-      const returnTarget = resumePreviewReturnFocusRef.current;
-      if (returnTarget?.isConnected && returnTarget.offsetParent !== null) returnTarget.focus();
-      else (Array.from(document.querySelectorAll<HTMLElement>('[data-resume-header="true"]')).find((element) => element.offsetParent !== null) ?? menuButtonRef.current)?.focus();
-    }, 0);
-  };
 
   return (
     <div data-portfolio-shell-version="2" data-theme={theme} data-reduced-data={avoidSpeculativePreload ? "true" : "false"} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
@@ -1056,20 +1007,9 @@ export default function Home() {
             resumeUrl={resumeUrl}
             closeRef={resumePreviewCloseRef}
             onClose={closeResumePreview}
-            onRetry={() => {
-              setResumePreviewError(false);
-              setResumePreviewProgress(8);
-              setResumePreviewLoading(true);
-            }}
-            onLoad={() => {
-              setResumePreviewProgress(100);
-              setResumePreviewLoading(false);
-              setResumePreviewError(false);
-            }}
-            onError={() => {
-              setResumePreviewLoading(false);
-              setResumePreviewError(true);
-            }}
+            onRetry={retryResumePreview}
+            onLoad={handleResumePreviewLoad}
+            onError={handleResumePreviewError}
           />
         </Suspense>
       )}
