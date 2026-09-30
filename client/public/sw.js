@@ -96,19 +96,20 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      const network = fetch(request)
-        .then(async (response) => {
-          if (response.ok && ["script", "style", "image", "font"].includes(request.destination)) {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put(request, response.clone());
-          }
-          return response;
-        })
-        .catch(() => cached);
+  const shouldRevalidate = ["script", "style", "image", "font"].includes(request.destination);
+  const network = fetch(request).then(async (response) => {
+    if (response.ok && shouldRevalidate) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  });
 
-      return cached || network;
-    }),
+  if (shouldRevalidate) {
+    event.waitUntil(network.then(() => undefined, () => undefined));
+  }
+
+  event.respondWith(
+    caches.match(request).then((cached) => cached || network).catch(() => caches.match(request)),
   );
 });
