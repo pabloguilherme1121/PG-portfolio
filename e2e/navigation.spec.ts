@@ -1457,7 +1457,9 @@ test.describe("portfólio profissional", () => {
     await expect(appearance.locator('[data-manual-order-feedback="true"]')).toContainText(
       /perfil tecnologia duplicado como tecnologia — cópia/i,
     );
-    await expect(page.getByRole("status")).toContainText(
+    const liveStatus = page.locator('[data-manual-order-live="true"]');
+    await expect(liveStatus).toHaveAttribute("role", "status");
+    await expect(liveStatus).toContainText(
       /perfil tecnologia duplicado como tecnologia — cópia/i,
     );
   });
