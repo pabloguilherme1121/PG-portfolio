@@ -924,15 +924,15 @@ export default function Home() {
   function navigateSavedAgendaContext(target: "saved" | "agenda") {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
-    if (target === "saved") setFavoritesOnly(true);
     setContextTransitionTarget(target);
-    setContextNavigationStatus(target === "saved" ? "Projetos salvos em foco." : "Agenda de disponibilidade em foco.");
+    setContextNavigationStatus(target === "saved" ? "Seção de projetos em foco." : "Agenda de disponibilidade em foco.");
 
     window.requestAnimationFrame(() => {
       const targetElement = target === "saved"
-        ? document.querySelector<HTMLElement>("[data-saved-projects-controls='true']")
+        ? document.getElementById("projetos")
         : availabilitySectionRef.current;
       if (!targetElement) return;
+      if (target === "saved") window.history.pushState({}, "", "#projetos");
       targetElement.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
       targetElement.focus({ preventScroll: true });
       contextTransitionTimerRef.current = window.setTimeout(() => setContextTransitionTarget(null), reduceMotion ? 0 : 180);
@@ -1435,7 +1435,7 @@ export default function Home() {
           )}
         </div>
 
-        <section id="projetos" ref={projectsSectionRef} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
+        <section id="projetos" ref={projectsSectionRef} tabIndex={-1} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             {shouldRenderProjects ? (
               <Suspense
