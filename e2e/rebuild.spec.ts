@@ -112,6 +112,19 @@ test.describe("reconstrução profissional do portfólio", () => {
     await expect(projects.locator('[data-projects-overview-placeholder="true"]')).toHaveCount(0);
   });
 
+  test("rodapé carrega apenas quando se aproxima do fim da página", async ({ page }) => {
+    await page.goto("/");
+
+    const placeholder = page.locator('[data-footer-placeholder="true"]');
+    await expect(placeholder).toHaveCount(1);
+    await expect(page.locator("#contato-rodape")).toHaveCount(0);
+
+    await placeholder.scrollIntoViewIfNeeded();
+
+    await expect(page.locator("#contato-rodape")).toBeVisible();
+    await expect(placeholder).toHaveCount(0);
+  });
+
   test("reconstrução mantém a primeira dobra mobile legível e sem overflow horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");

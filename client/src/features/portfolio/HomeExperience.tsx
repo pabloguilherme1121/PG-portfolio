@@ -36,7 +36,6 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import PortfolioFooter from "@/features/portfolio/components/PortfolioFooter";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExperienceHub";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
@@ -79,6 +78,7 @@ const PortfolioProjectsOverview = lazy(() => import("@/features/portfolio/compon
 const PortfolioAppearancePanel = lazy(() => import("@/features/portfolio/components/PortfolioAppearancePanel"));
 const PortfolioProjectDetailsDialog = lazy(() => import("@/features/portfolio/components/PortfolioProjectDetailsDialog"));
 const PortfolioMobileMenu = lazy(() => import("@/features/portfolio/components/PortfolioMobileMenu"));
+const PortfolioFooter = lazy(() => import("@/features/portfolio/components/PortfolioFooter"));
 const PortfolioCaseStudies = lazy(() => import("@/features/portfolio/components/PortfolioCaseStudies"));
 const PortfolioContact = lazy(() =>
   import("@/features/portfolio/components/PortfolioContact").then((module) => ({
@@ -187,6 +187,7 @@ export default function Home() {
   const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
+  const [footerSectionRef, shouldLoadFooter] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "260px");
   const [fontScale, setFontScale] = useState<number>(() => {
     if (typeof window === "undefined") return 1;
     const stored = Number(window.localStorage.getItem("pablo-portfolio-font-scale"));
@@ -319,6 +320,7 @@ export default function Home() {
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
   const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
+  const shouldRenderFooter = shouldLoadFooter || (typeof window !== "undefined" && window.location.hash === "#contato-rodape");
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
@@ -1634,7 +1636,35 @@ export default function Home() {
         </section>
       </main>
 
-      <PortfolioFooter markUrl={markUrl} telegramUrl={telegramUrl} whatsAppUrl={whatsAppUrl} onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })} emailCopyStatus={emailCopyStatus} copyContactEmail={copyContactEmail} />
+      <div
+        ref={footerSectionRef}
+        data-footer-anchor="true"
+        aria-busy={!shouldRenderFooter}
+        className="min-h-px"
+      >
+        {shouldRenderFooter ? (
+          <Suspense
+            fallback={
+              <div data-footer-placeholder="true" role="status" aria-live="polite" className="min-h-[260px] border-t border-white/[0.07] bg-[#06080d] px-5 py-10 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fa8c8] sm:px-8 lg:px-12">
+                carregando contato final…
+              </div>
+            }
+          >
+            <PortfolioFooter
+              markUrl={markUrl}
+              telegramUrl={telegramUrl}
+              whatsAppUrl={whatsAppUrl}
+              onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })}
+              emailCopyStatus={emailCopyStatus}
+              copyContactEmail={copyContactEmail}
+            />
+          </Suspense>
+        ) : (
+          <div data-footer-placeholder="true" className="min-h-[260px] border-t border-white/[0.07] bg-[#06080d] px-5 py-10 sm:px-8 lg:px-12" aria-label="Contato final">
+            <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fa8c8]">contato final será carregado ao aproximar</p>
+          </div>
+        )}
+      </div>
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav
