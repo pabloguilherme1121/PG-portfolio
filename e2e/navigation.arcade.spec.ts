@@ -135,7 +135,7 @@ test.describe("portfólio profissional", () => {
     await expect(game.locator('[data-game-status="true"]')).toContainText(/sua vez.*O/i);
   });
 
-  test("PG Arcade alterna entre dominó e damas com bot, dificuldades e 1x1 local", async ({ page }) => {
+  test("PG Arcade alterna entre dominó e damas com modos, mestre, séries e 1x1 local", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
 
@@ -146,18 +146,32 @@ test.describe("portfólio profissional", () => {
     const domino = arcade.locator('[data-domino-game="true"]');
     await expect(domino).toBeVisible();
     await expect(domino.getByRole("button", { name: /contra bot/i })).toHaveAttribute("aria-pressed", "true");
-    await domino.getByRole("button", { name: /difícil/i }).click();
-    await expect(domino.getByRole("button", { name: /difícil/i })).toHaveAttribute("aria-pressed", "true");
+
+    await domino.getByRole("button", { name: /mestre/i }).click();
+    await expect(domino.getByRole("button", { name: /mestre/i })).toHaveAttribute("aria-pressed", "true");
+    await domino.getByRole("button", { name: /bloqueio sem compra/i }).click();
+    await expect(domino.locator('[data-domino-rules="block"]')).toHaveAttribute("aria-pressed", "true");
+    await domino.getByRole("button", { name: "MD5", exact: true }).click();
+    await expect(domino.locator('[data-domino-series="MD5"]')).toHaveAttribute("aria-pressed", "true");
+
     await domino.getByRole("button", { name: /1 × 1 local/i }).click();
     await expect(domino.locator('[data-domino-mode="local"]')).toHaveAttribute("aria-pressed", "true");
-    await expect(domino.locator('[data-domino-tile="true"]')).toHaveCount(5);
+    const dominoTiles = domino.locator('[data-domino-tile="true"]');
+    await expect(dominoTiles).toHaveCount(5);
+    await dominoTiles.first().click();
+    await expect(domino.locator('[data-domino-handoff="true"]')).toBeVisible();
+    await domino.getByRole("button", { name: /jogador 2.*revelar mão/i }).click();
+    await expect(domino.locator('[data-domino-handoff="true"]')).toHaveCount(0);
 
     await arcade.getByRole("tab", { name: /damas/i }).click();
     const checkers = arcade.locator('[data-checkers-game="true"]');
     await expect(checkers).toBeVisible();
     await expect(checkers.locator('[data-checkers-cell="true"]')).toHaveCount(64);
-    await checkers.getByRole("button", { name: /difícil/i }).click();
-    await expect(checkers.getByRole("button", { name: /difícil/i })).toHaveAttribute("aria-pressed", "true");
+
+    await checkers.getByRole("button", { name: /mestre/i }).click();
+    await expect(checkers.getByRole("button", { name: /mestre/i })).toHaveAttribute("aria-pressed", "true");
+    await checkers.getByRole("button", { name: "MD5", exact: true }).click();
+    await expect(checkers.locator('[data-checkers-series="MD5"]')).toHaveAttribute("aria-pressed", "true");
     await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
     await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
 
@@ -165,6 +179,26 @@ test.describe("portfólio profissional", () => {
     await expect(checkers.locator('[data-legal-destination="true"]')).not.toHaveCount(0);
     await checkers.locator('[data-legal-destination="true"]').first().click();
     await expect(checkers.locator('[data-checkers-status="true"]')).toContainText(/jogador 2|vermelho/i);
+  });
+
+  test("abas do PG Arcade suportam setas, Home e End pelo teclado", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    const tabs = arcade.getByRole("tab");
+    await tabs.first().focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(arcade.getByRole("tab", { name: /dominó/i })).toBeFocused();
+    await expect(arcade.getByRole("tab", { name: /dominó/i })).toHaveAttribute("aria-selected", "true");
+
+    await page.keyboard.press("End");
+    await expect(arcade.getByRole("tab", { name: /damas/i })).toBeFocused();
+    await expect(arcade.locator('[data-checkers-game="true"]')).toBeVisible();
+
+    await page.keyboard.press("Home");
+    await expect(arcade.getByRole("tab", { name: /jogo da velha/i })).toBeFocused();
+    await expect(arcade.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
 
 });
