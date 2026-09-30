@@ -18,7 +18,7 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Produto full-stack em evolução:** o Trajeto expõe arquitetura de produto, frontend, API, persistência, testes, CI e segurança em código público.
 - **Engenharia verificável:** React, TypeScript, Vite, testes unitários, Playwright e auditoria de assets fazem parte do fluxo.
 - **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
-- **Briefing Studio:** fluxo progressivo em quatro etapas, com autosave local, validação e resumo do contexto.
+- **Briefing Studio:** fluxo progressivo em cinco etapas, com autosave local, validação e resumo do contexto.
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
 - **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
@@ -89,7 +89,7 @@ pnpm build
 pnpm audit:bundle
 ```
 
-A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **240 kB**.
+A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **220 kB**.
 
 A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages.
 
