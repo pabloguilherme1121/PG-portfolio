@@ -37,6 +37,7 @@ export default function PortfolioProjectsOverview({
     typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches ? "mobile" : "desktop",
   );
   const featuredCount = featuredCardsReady ? featuredRepositories.length : 0;
+  const hasMultipleFeaturedProjects = featuredRepositories.length > 1;
   const {
     activeIndex: activeFeaturedIndex,
     containerRef: featuredStripRef,
@@ -153,9 +154,9 @@ export default function PortfolioProjectsOverview({
         </div>
         <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">
           <p data-featured-swipe-hint="true" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">
-            deslize ou toque para comparar
+            {hasMultipleFeaturedProjects ? "deslize ou toque para comparar" : "toque para ver detalhes"}
           </p>
-          {featuredCount > 0 && (
+          {featuredCardsReady && hasMultipleFeaturedProjects && (
             <span data-featured-active-label="true" className="shrink-0 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff]">
               {activeFeaturedIndex + 1} / {featuredCount}
             </span>
@@ -164,13 +165,15 @@ export default function PortfolioProjectsOverview({
         <div
           ref={featuredStripRef}
           data-featured-project-strip="true"
-          aria-label="Projetos em destaque — deslize horizontalmente no celular"
+          aria-label={hasMultipleFeaturedProjects ? "Projetos em destaque — deslize horizontalmente no celular" : "Projeto em destaque"}
           className="featured-project-showcase mt-3 bg-[#3b82f6]/15 sm:mt-6"
           aria-busy={!featuredCardsReady}
         >
           <div role="status" aria-live="polite" className="sr-only">
             {featuredCardsReady
-              ? `${featuredRepositories.length} projetos destacados com prova direta e detalhes disponíveis.`
+              ? featuredRepositories.length === 1
+                ? "1 projeto destacado com prova direta e detalhes disponíveis."
+                : `${featuredRepositories.length} projetos destacados com prova direta e detalhes disponíveis.`
               : "Carregando projetos destacados."}
           </div>
           {featuredCardsReady
@@ -181,7 +184,7 @@ export default function PortfolioProjectsOverview({
                   onOpenDetails={openProjectDetails}
                 />
               ))
-            : Array.from({ length: 2 }).map((_, index) => (
+            : Array.from({ length: Math.max(1, featuredRepositories.length) }).map((_, index) => (
                 <div
                   key={`featured-skeleton-${index}`}
                   aria-hidden="true"
@@ -203,7 +206,7 @@ export default function PortfolioProjectsOverview({
                 </div>
               ))}
         </div>
-        {featuredCardsReady && featuredCount > 0 && (
+        {featuredCardsReady && hasMultipleFeaturedProjects && (
           <div
             data-featured-pagination="true"
             className="mobile-snap-pagination px-4 sm:hidden"
