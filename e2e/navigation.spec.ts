@@ -1486,6 +1486,20 @@ test.describe("portfólio profissional", () => {
     ).toBeTruthy();
   });
 
+  test("agenda leva de volta à seção de projetos", async ({ page }) => {
+    await page.goto("/#contato");
+
+    const contact = page.locator("#contato");
+    await expect(contact).toBeVisible();
+
+    const projectsShortcut = contact.getByRole("button", { name: /ir para projetos/i });
+    await expect(projectsShortcut).toBeVisible();
+    await projectsShortcut.click();
+
+    await expect.poll(() => page.evaluate(() => window.location.hash)).toBe("#projetos");
+    await expect(page.locator("#projetos")).toBeInViewport();
+  });
+
   test("mantém contato e disponibilidade visíveis no encerramento", async ({ page }) => {
     await page.goto("/");
 
