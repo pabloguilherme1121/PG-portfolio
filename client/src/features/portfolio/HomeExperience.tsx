@@ -35,7 +35,7 @@ import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, 
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
-import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
+import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
@@ -267,15 +267,6 @@ export default function Home() {
   );
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches") || "[]");
-      return Array.isArray(stored) ? stored.filter((term): term is string => typeof term === "string" && term.trim().length >= 2).slice(0, 6) : [];
-    } catch {
-      return [];
-    }
-  });
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
@@ -500,17 +491,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(recentSearches));
-  }, [recentSearches]);
-
-  useEffect(() => {
-    const term = projectSearch.trim();
-    if (term.length < 2) return;
-    const timer = window.setTimeout(() => {
-      setRecentSearches((current) => [term, ...current.filter((item) => item.toLowerCase() !== term.toLowerCase())].slice(0, 6));
-    }, 650);
-    return () => window.clearTimeout(timer);
-  }, [projectSearch]);
+    removeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches");
+  }, []);
 
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view", galleryView);
@@ -756,17 +738,6 @@ export default function Home() {
     return () => window.removeEventListener("keydown", handleProjectDetailsKeyDown);
   }, [selectedProject, nextSelectedProject, previousSelectedProject]);
 
-  function removeRecentSearch(term: string) {
-    const next = recentSearches.filter((item) => item.toLowerCase() !== term.toLowerCase());
-    setRecentSearches(next);
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(next));
-  }
-
-  function clearRecentSearches() {
-    setRecentSearches([]);
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", "[]");
-  }
-
   function saveSharedFavorites() {
     if (!sharedProjectIds?.length) return;
     setFavoriteProjectIds((current) => Array.from(new Set([...current, ...sharedProjectIds])));
@@ -924,15 +895,15 @@ export default function Home() {
   function navigateSavedAgendaContext(target: "saved" | "agenda") {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
-    if (target === "saved") setFavoritesOnly(true);
     setContextTransitionTarget(target);
-    setContextNavigationStatus(target === "saved" ? "Projetos salvos em foco." : "Agenda de disponibilidade em foco.");
+    setContextNavigationStatus(target === "saved" ? "Seção de projetos em foco." : "Agenda de disponibilidade em foco.");
 
     window.requestAnimationFrame(() => {
       const targetElement = target === "saved"
-        ? document.querySelector<HTMLElement>("[data-saved-projects-controls='true']")
+        ? document.getElementById("projetos")
         : availabilitySectionRef.current;
       if (!targetElement) return;
+      if (target === "saved") window.history.pushState({}, "", "#projetos");
       targetElement.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
       targetElement.focus({ preventScroll: true });
       contextTransitionTimerRef.current = window.setTimeout(() => setContextTransitionTarget(null), reduceMotion ? 0 : 180);
@@ -1435,7 +1406,7 @@ export default function Home() {
           )}
         </div>
 
-        <section id="projetos" ref={projectsSectionRef} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
+        <section id="projetos" ref={projectsSectionRef} tabIndex={-1} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
           <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
             {shouldRenderProjects ? (
               <Suspense
