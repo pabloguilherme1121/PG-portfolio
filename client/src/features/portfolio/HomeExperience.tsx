@@ -76,8 +76,8 @@ const loadPortfolioResumePreview = () =>
     default: module.PortfolioResumePreview,
   }));
 const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
-const loadPortfolioTicTacToe = () => import("@/features/portfolio/components/PortfolioTicTacToe");
-const PortfolioTicTacToe = lazy(loadPortfolioTicTacToe);
+const loadPortfolioArcade = () => import("@/features/portfolio/components/PortfolioArcade");
+const PortfolioArcade = lazy(loadPortfolioArcade);
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
@@ -335,7 +335,7 @@ export default function Home() {
 
   function preloadPgArcade() {
     if (avoidSpeculativePreload) return;
-    void loadPortfolioTicTacToe();
+    void loadPortfolioArcade();
   }
 
   function openPgArcade() {
@@ -850,7 +850,7 @@ export default function Home() {
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · opcional</p>
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma prova técnica opcional de lógica, estado, persistência e acessibilidade. O jogo só é carregado quando você abre o Arcade.</p>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma área interativa com jogo da velha, dominó e damas. Há modos contra bot, dificuldades progressivas e 1 × 1 local; tudo só é carregado quando você abre o Arcade.</p>
             </div>
             <button
               type="button"
@@ -868,7 +868,7 @@ export default function Home() {
           <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
             {pgLabOpen && (
               <Suspense fallback={<div data-arcade-loading="true" role="status" aria-live="polite" className="mx-4 my-5 min-h-24 rounded-[14px] border border-[#67e8f9]/20 bg-[#06172f]/70 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc] min-[360px]:mx-5 sm:mx-0">carregando PG Arcade…</div>}>
-                <PortfolioTicTacToe />
+                <PortfolioArcade />
               </Suspense>
             )}
           </div>
