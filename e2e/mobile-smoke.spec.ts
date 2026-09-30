@@ -22,7 +22,7 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
   await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toBeVisible();
   await expect(page.locator('[data-mobile-hero-proof="true"]')).toHaveCount(3);
 
-  const diagnostic = page.getByRole("link", { name: /começar diagnóstico/i });
+  const diagnostic = page.locator('[data-hero-cta="true"]').getByRole("link", { name: /começar diagnóstico/i });
   await expect(diagnostic).toBeVisible();
   await expect(diagnostic).toHaveAttribute("href", "#diagnostico");
 });
