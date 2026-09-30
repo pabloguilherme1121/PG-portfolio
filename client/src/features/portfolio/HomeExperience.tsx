@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { FormEvent, lazy, MouseEvent, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
@@ -38,7 +37,6 @@ import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
-import { usePortfolioOrderPersistence } from "@/features/portfolio/hooks/usePortfolioOrderPersistence";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import {
   portfolioMarkUrl as markUrl,
@@ -51,11 +49,7 @@ import {
   portfolioWhatsAppNumber as whatsAppNumber,
   portfolioWhatsAppUrl as whatsAppUrl,
 } from "@/features/portfolio/portfolioConfig";
-import {
-  predefinedOrderProfiles,
-  repositories,
-  type ManualOrderProfile,
-} from "@/features/portfolio/portfolioData";
+import { repositories } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
 const PortfolioExperienceHub = lazy(() => import("@/features/portfolio/components/PortfolioExperienceHub"));
 const ProjectDiagnostic = lazy(() => import("@/features/portfolio/components/ProjectDiagnostic"));
@@ -142,28 +136,7 @@ export default function Home() {
   } = usePortfolioDeferredHashRequests();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
-  const {
-    manualProjectOrder,
-    setManualProjectOrder,
-    manualOrderProfiles,
-    setManualOrderProfiles,
-    activeOrderProfileId,
-    setActiveOrderProfileId,
-    activeOrderProfile,
-  } = usePortfolioOrderPersistence({
-    repositoryIds: repositories.map((repository) => repository.id),
-    predefinedProfiles: predefinedOrderProfiles,
-  });
-  const [manualOrderStatus, setManualOrderStatus] = useState("");
-  const [profileNameDraft, setProfileNameDraft] = useState("");
-  const [previewOrderProfileId, setPreviewOrderProfileId] = useState<string | null>(null);
-  const [recentlyActivatedOrderProfileId, setRecentlyActivatedOrderProfileId] = useState<string | null>(null);
-
   const [featuredCardsReady, setFeaturedCardsReady] = useState(false);
-  const [galleryView, setGalleryView] = useState<"grid" | "list">(() => {
-    if (typeof window === "undefined") return "grid";
-    return readStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
-  });
   const [favoriteProjectIds, setFavoriteProjectIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
@@ -202,7 +175,7 @@ export default function Home() {
     handleProjectDetailsTouchEnd,
     shareSelectedProject,
     copySelectedProjectLink,
-  } = useProjectDetailsController({ repositories, manualProjectOrder });
+  } = useProjectDetailsController({ repositories });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
@@ -330,23 +303,18 @@ export default function Home() {
 
   useEffect(() => {
     const storage = getSafeStorage("local");
-    removeStorage(storage, "pablo-portfolio-recent-searches");
+    [
+      "pablo-portfolio-recent-searches",
+      "pablo-portfolio-gallery-view",
+      "pablo-portfolio-manual-order",
+      "pablo-portfolio-order-profiles",
+      "pablo-portfolio-active-order-profile",
+    ].forEach((key) => removeStorage(storage, key));
   }, []);
-
-  useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view", galleryView);
-  }, [galleryView]);
 
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-font-scale", String(fontScale));
   }, [fontScale]);
-
-  useEffect(() => {
-    if (!recentlyActivatedOrderProfileId) return;
-    const timer = window.setTimeout(() => setRecentlyActivatedOrderProfileId(null), 1500);
-    return () => window.clearTimeout(timer);
-  }, [recentlyActivatedOrderProfileId]);
-
 
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-favorites", JSON.stringify(favoriteProjectIds));
@@ -526,56 +494,6 @@ export default function Home() {
     });
   }
 
-  function createOrderProfile() {
-    const name = profileNameDraft.trim();
-    if (!name) return;
-    const profile: ManualOrderProfile = { id: `profile-${Date.now()}`, name, order: manualProjectOrder };
-    setManualOrderProfiles((profiles) => [...profiles, profile]);
-    setActiveOrderProfileId(profile.id);
-    setRecentlyActivatedOrderProfileId(profile.id);
-    setProfileNameDraft("");
-    setManualOrderStatus(`Perfil ${name} salvo e ativado.`);
-  }
-
-  function selectOrderProfile(profile: ManualOrderProfile) {
-    setManualProjectOrder(normalizeManualOrder(profile.order, repositories.map((repository) => repository.id)));
-    setActiveOrderProfileId(profile.id);
-    setRecentlyActivatedOrderProfileId(profile.id);
-    setProfileNameDraft(profile.preset ? "" : profile.name);
-    setManualOrderStatus(`Perfil ${profile.name} ativado.`);
-  }
-
-  function toggleOrderProfilePreview(profileId: string) {
-    setPreviewOrderProfileId((currentId) => currentId === profileId ? null : profileId);
-  }
-
-  function duplicateOrderProfile(profile: ManualOrderProfile) {
-    const duplicatedProfile: ManualOrderProfile = { id: `profile-${Date.now()}`, name: `${profile.name} — cópia`, order: [...profile.order] };
-    setManualOrderProfiles((profiles) => [...profiles, duplicatedProfile]);
-    setActiveOrderProfileId(duplicatedProfile.id);
-    setRecentlyActivatedOrderProfileId(duplicatedProfile.id);
-    setProfileNameDraft(duplicatedProfile.name);
-    setManualProjectOrder(normalizeManualOrder(duplicatedProfile.order, repositories.map((repository) => repository.id)));
-    setManualOrderStatus(`Perfil ${profile.name} duplicado como ${duplicatedProfile.name}.`);
-  }
-
-  function renameActiveOrderProfile() {
-    const name = profileNameDraft.trim();
-    if (!activeOrderProfileId || activeOrderProfile?.preset || !name) return;
-    setManualOrderProfiles((profiles) => profiles.map((profile) => profile.id === activeOrderProfileId ? { ...profile, name } : profile));
-    setProfileNameDraft("");
-    setManualOrderStatus(`Perfil renomeado para ${name}.`);
-  }
-
-  function deleteActiveOrderProfile() {
-    if (!activeOrderProfileId || activeOrderProfile?.preset) return;
-    const deletedProfile = manualOrderProfiles.find((profile) => profile.id === activeOrderProfileId);
-    setManualOrderProfiles((profiles) => profiles.filter((profile) => profile.id !== activeOrderProfileId));
-    setActiveOrderProfileId(null);
-    setProfileNameDraft("");
-    setManualOrderStatus(deletedProfile ? `Perfil ${deletedProfile.name} excluído.` : "Perfil excluído.");
-  }
-
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -744,28 +662,11 @@ export default function Home() {
               setPreference={setPreference}
               fontScale={fontScale}
               setFontScale={setFontScale}
-              galleryView={galleryView}
-              setGalleryView={setGalleryView}
-              activeOrderProfileId={activeOrderProfileId}
-              activeOrderProfile={activeOrderProfile}
-              manualOrderProfiles={manualOrderProfiles}
-              recentlyActivatedOrderProfileId={recentlyActivatedOrderProfileId}
-              previewOrderProfileId={previewOrderProfileId}
-              profileNameDraft={profileNameDraft}
-              setProfileNameDraft={setProfileNameDraft}
-              selectOrderProfile={selectOrderProfile}
-              toggleOrderProfilePreview={toggleOrderProfilePreview}
-              duplicateOrderProfile={duplicateOrderProfile}
-              deleteActiveOrderProfile={deleteActiveOrderProfile}
-              createOrderProfile={createOrderProfile}
-              renameActiveOrderProfile={renameActiveOrderProfile}
-              manualOrderStatus={manualOrderStatus}
               onClose={() => setAppearanceOpen(false)}
             />
           </Suspense>
         )}
       </header>
-      <p data-manual-order-live="true" role="status" aria-live="polite" className="sr-only">{manualOrderStatus}</p>
       <div className="scroll-progress-track pointer-events-none fixed inset-x-0 top-[75px] z-40 h-0.5 bg-[#67e8f9]/10" aria-hidden="true"><span className="scroll-progress-bar block h-full origin-left bg-[#67e8f9] shadow-[0_0_12px_rgba(103,232,249,0.8)]" style={{ transform: `scaleX(${scrollProgress / 100})` }} /></div>
 
       <main id="conteudo-principal" className="relative" style={{ fontSize: `${fontScale}rem` }} tabIndex={-1}>

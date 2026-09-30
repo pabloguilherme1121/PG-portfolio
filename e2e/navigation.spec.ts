@@ -253,9 +253,12 @@ test.describe("portfólio profissional", () => {
     expect(await sitemap.text()).toContain("<loc>");
   });
 
-  test("mantém perfis base quando o armazenamento de ordem está corrompido", async ({ page }) => {
+  test("painel de aparência não expõe controles de projeto sem efeito e remove preferências órfãs", async ({ page }) => {
     await page.addInitScript(() => {
-      window.localStorage.setItem("pablo-portfolio-order-profiles", "{invalido");
+      window.localStorage.setItem("pablo-portfolio-gallery-view", "list");
+      window.localStorage.setItem("pablo-portfolio-manual-order", JSON.stringify(["TEC.09"]));
+      window.localStorage.setItem("pablo-portfolio-order-profiles", JSON.stringify([{ id: "legado", name: "Legado", order: ["TEC.09"] }]));
+      window.localStorage.setItem("pablo-portfolio-active-order-profile", "legado");
     });
     await page.goto("/");
 
@@ -263,42 +266,22 @@ test.describe("portfólio profissional", () => {
 
     const appearance = page.getByRole("dialog", { name: "Aparência" });
     await expect(appearance).toBeVisible();
+    await expect(appearance.getByRole("group", { name: /visualização dos projetos/i })).toHaveCount(0);
+    await expect(appearance.getByRole("group", { name: /perfis de ordenação/i })).toHaveCount(0);
+
     await expect.poll(() =>
-      page.evaluate(() => {
-        try {
-          const profiles = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
-          return Array.isArray(profiles) && profiles.some((profile) => profile?.id === "preset-tecnologia");
-        } catch {
-          return false;
-        }
-      }),
-    ).toBeTruthy();
-
-    const profiles = appearance.getByRole("group", { name: "Perfis de ordenação" });
-    await expect(profiles.getByText("Tecnologia", { exact: true })).toBeVisible();
-    await expect(profiles.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
-  });
-
-  test("ações de perfis de ordem exibem feedback visível e acessível", async ({ page }) => {
-    await page.goto("/");
-
-    await page.getByRole("button", { name: /configurações de aparência/i }).click();
-
-    const appearance = page.getByRole("dialog", { name: "Aparência" });
-    await expect(appearance).toBeVisible();
-
-    const duplicateProfile = appearance.getByRole("button", { name: /duplicar perfil tecnologia/i });
-    await duplicateProfile.scrollIntoViewIfNeeded();
-    await duplicateProfile.click();
-
-    await expect(appearance.locator('[data-manual-order-feedback="true"]')).toContainText(
-      /perfil tecnologia duplicado como tecnologia — cópia/i,
-    );
-    const liveStatus = page.locator('[data-manual-order-live="true"]');
-    await expect(liveStatus).toHaveAttribute("role", "status");
-    await expect(liveStatus).toContainText(
-      /perfil tecnologia duplicado como tecnologia — cópia/i,
-    );
+      page.evaluate(() => ({
+        galleryView: window.localStorage.getItem("pablo-portfolio-gallery-view"),
+        manualOrder: window.localStorage.getItem("pablo-portfolio-manual-order"),
+        orderProfiles: window.localStorage.getItem("pablo-portfolio-order-profiles"),
+        activeOrderProfile: window.localStorage.getItem("pablo-portfolio-active-order-profile"),
+      })),
+    ).toEqual({
+      galleryView: null,
+      manualOrder: null,
+      orderProfiles: null,
+      activeOrderProfile: null,
+    });
   });
 
   test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {

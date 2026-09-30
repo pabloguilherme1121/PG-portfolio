@@ -211,12 +211,6 @@ export const repositories: Repository[] = [
 export const technologyFilters = ["Todos", "Web", "React", "TypeScript"];
 export const categoryFilters = ["Todos", "Produto digital"];
 export const tagFilters = ["Todos", "Web"] as const;
-export type ManualOrderProfile = { id: string; name: string; order: string[]; preset?: boolean };
-
-export const predefinedOrderProfiles: ManualOrderProfile[] = [
-  { id: "preset-tecnologia", name: "Tecnologia", preset: true, order: ["TEC.09"] },
-];
-
 export const sortOptions = [
   { value: "manual", label: "ordem manual" },
   { value: "relevance", label: "relevância editorial" },

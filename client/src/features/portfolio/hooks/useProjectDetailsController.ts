@@ -9,12 +9,12 @@ type ProjectFeedbackStatus = "idle" | "copied" | "error";
 
 type UseProjectDetailsControllerOptions = {
   repositories: readonly Repository[];
-  manualProjectOrder: readonly string[];
+  manualProjectOrder?: readonly string[];
 };
 
 export function useProjectDetailsController({
   repositories,
-  manualProjectOrder,
+  manualProjectOrder = [],
 }: UseProjectDetailsControllerOptions) {
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [projectDetailsTransition, setProjectDetailsTransition] = useState<
