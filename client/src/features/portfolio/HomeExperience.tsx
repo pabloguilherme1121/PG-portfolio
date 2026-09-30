@@ -35,7 +35,7 @@ import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, 
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
-import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
+import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
@@ -267,15 +267,6 @@ export default function Home() {
   );
   const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
   const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
-  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches") || "[]");
-      return Array.isArray(stored) ? stored.filter((term): term is string => typeof term === "string" && term.trim().length >= 2).slice(0, 6) : [];
-    } catch {
-      return [];
-    }
-  });
   const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
   const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
@@ -500,17 +491,8 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(recentSearches));
-  }, [recentSearches]);
-
-  useEffect(() => {
-    const term = projectSearch.trim();
-    if (term.length < 2) return;
-    const timer = window.setTimeout(() => {
-      setRecentSearches((current) => [term, ...current.filter((item) => item.toLowerCase() !== term.toLowerCase())].slice(0, 6));
-    }, 650);
-    return () => window.clearTimeout(timer);
-  }, [projectSearch]);
+    removeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches");
+  }, []);
 
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view", galleryView);
@@ -755,17 +737,6 @@ export default function Home() {
     window.addEventListener("keydown", handleProjectDetailsKeyDown);
     return () => window.removeEventListener("keydown", handleProjectDetailsKeyDown);
   }, [selectedProject, nextSelectedProject, previousSelectedProject]);
-
-  function removeRecentSearch(term: string) {
-    const next = recentSearches.filter((item) => item.toLowerCase() !== term.toLowerCase());
-    setRecentSearches(next);
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", JSON.stringify(next));
-  }
-
-  function clearRecentSearches() {
-    setRecentSearches([]);
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches", "[]");
-  }
 
   function saveSharedFavorites() {
     if (!sharedProjectIds?.length) return;
