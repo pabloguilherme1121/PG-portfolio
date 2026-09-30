@@ -1,6 +1,6 @@
 export type DominoTile = readonly [number, number];
 export type DominoSide = "left" | "right";
-export type DominoDifficulty = "easy" | "normal" | "hard";
+export type DominoDifficulty = "easy" | "normal" | "hard" | "master";
 export type DominoMove = { index: number; side: DominoSide };
 
 export function createDominoSet(): DominoTile[] {
@@ -72,6 +72,28 @@ export function getLegalDominoMoves(hand: DominoTile[], chain: DominoTile[]): Do
   );
 }
 
+function countValueSupport(hand: DominoTile[], value: number) {
+  return hand.reduce(
+    (count, tile) => count + (tile[0] === value || tile[1] === value ? 1 : 0),
+    0,
+  );
+}
+
+function scoreMasterMove(hand: DominoTile[], chain: DominoTile[], move: DominoMove) {
+  const tile = hand[move.index];
+  const nextChain = placeDominoTile(chain, tile, move.side);
+  const remaining = hand.filter((_, index) => index !== move.index);
+  const ends = getDominoEnds(nextChain);
+  const pipScore = tile[0] + tile[1];
+  const doubleBonus = tile[0] === tile[1] ? 5 : 0;
+  const futureOptions = getLegalDominoMoves(remaining, nextChain).length;
+  const support = ends
+    ? countValueSupport(remaining, ends.left) + countValueSupport(remaining, ends.right)
+    : 0;
+
+  return pipScore * 2 + doubleBonus + futureOptions * 4 + support * 2;
+}
+
 export function chooseDominoBotMove(
   hand: DominoTile[],
   chain: DominoTile[],
@@ -86,12 +108,18 @@ export function chooseDominoBotMove(
     const tile = hand[move.index];
     const pipScore = tile[0] + tile[1];
     const doubleBonus = tile[0] === tile[1] ? 3 : 0;
+
     if (difficulty === "normal") return pipScore + doubleBonus;
 
     const nextChain = placeDominoTile(chain, tile, move.side);
     const remaining = hand.filter((_, index) => index !== move.index);
     const futureOptions = getLegalDominoMoves(remaining, nextChain).length;
-    return pipScore * 2 + doubleBonus * 2 + futureOptions * 3;
+
+    if (difficulty === "hard") {
+      return pipScore * 2 + doubleBonus * 2 + futureOptions * 3;
+    }
+
+    return scoreMasterMove(hand, chain, move);
   };
 
   return [...moves].sort((a, b) => scoreMove(b) - scoreMove(a))[0];
