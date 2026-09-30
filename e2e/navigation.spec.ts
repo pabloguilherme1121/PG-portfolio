@@ -1416,6 +1416,32 @@ test.describe("portfólio profissional", () => {
     expect(await sitemap.text()).toContain("<loc>");
   });
 
+  test("mantém perfis base quando o armazenamento de ordem está corrompido", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("pablo-portfolio-order-profiles", "{invalido");
+    });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: /configurações de aparência/i }).click();
+
+    const appearance = page.getByRole("dialog", { name: "Aparência" });
+    await expect(appearance).toBeVisible();
+    await expect.poll(() =>
+      page.evaluate(() => {
+        try {
+          const profiles = JSON.parse(window.localStorage.getItem("pablo-portfolio-order-profiles") || "[]");
+          return Array.isArray(profiles) && profiles.some((profile) => profile?.id === "preset-tecnologia");
+        } catch {
+          return false;
+        }
+      }),
+    ).toBeTruthy();
+
+    const profiles = appearance.getByRole("group", { name: "Perfis de ordenação" });
+    await expect(profiles.getByText("Tecnologia", { exact: true })).toBeVisible();
+    await expect(profiles.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
+  });
+
   test("painel de aparência é acessível e carregado apenas sob demanda", async ({ page }) => {
     await page.goto("/");
 

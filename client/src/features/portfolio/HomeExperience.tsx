@@ -35,7 +35,7 @@ import { FormEvent, lazy, MouseEvent, Suspense, TouchEvent, useEffect, useMemo, 
 import { useTheme } from "@/contexts/ThemeContext";
 import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "@/lib/manualOrder";
 import { trpc } from "@/lib/trpc";
-import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
+import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
@@ -57,6 +57,7 @@ import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
+import { usePortfolioOrderPersistence } from "@/features/portfolio/hooks/usePortfolioOrderPersistence";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -206,33 +207,23 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState(() => getPortfolioUrlFilter("category", categoryFilters, "Todos"));
   const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>(() => getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
   const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>(() => getPortfolioUrlFilter("sort", sortOptions.map((option) => option.value), "relevance") as (typeof sortOptions)[number]["value"]);
-  const [manualProjectOrder, setManualProjectOrder] = useState<string[]>(() => {
-    if (typeof window === "undefined") return repositories.map((repository) => repository.id);
-    try {
-      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-manual-order") || "[]");
-      return normalizeManualOrder(stored, repositories.map((repository) => repository.id));
-    } catch {
-      return repositories.map((repository) => repository.id);
-    }
+  const {
+    manualProjectOrder,
+    setManualProjectOrder,
+    manualOrderProfiles,
+    setManualOrderProfiles,
+    activeOrderProfileId,
+    setActiveOrderProfileId,
+    activeOrderProfile,
+  } = usePortfolioOrderPersistence({
+    repositoryIds: repositories.map((repository) => repository.id),
+    predefinedProfiles: predefinedOrderProfiles,
   });
   const [draggedProjectId, setDraggedProjectId] = useState<string | null>(null);
   const [manualOrderStatus, setManualOrderStatus] = useState("");
-  const [manualOrderProfiles, setManualOrderProfiles] = useState<ManualOrderProfile[]>(() => {
-    if (typeof window === "undefined") return [];
-    try {
-      const stored = JSON.parse(readStorage(getSafeStorage("local"), "pablo-portfolio-order-profiles") || "[]");
-      const storedProfiles = Array.isArray(stored) ? stored.filter((profile): profile is ManualOrderProfile => Boolean(profile && typeof profile.id === "string" && typeof profile.name === "string" && Array.isArray(profile.order))) : [];
-      const storedIds = new Set(storedProfiles.map((profile) => profile.id));
-      return [...predefinedOrderProfiles.filter((profile) => !storedIds.has(profile.id)), ...storedProfiles];
-    } catch {
-      return [];
-    }
-  });
-  const [activeOrderProfileId, setActiveOrderProfileId] = useState<string | null>(() => typeof window === "undefined" ? null : readStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile"));
   const [profileNameDraft, setProfileNameDraft] = useState("");
   const [previewOrderProfileId, setPreviewOrderProfileId] = useState<string | null>(null);
   const [recentlyActivatedOrderProfileId, setRecentlyActivatedOrderProfileId] = useState<string | null>(null);
-  const activeOrderProfile = manualOrderProfiles.find((profile) => profile.id === activeOrderProfileId);
 
   const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
   const [isGalleryLoading, setIsGalleryLoading] = useState(false);
@@ -528,24 +519,6 @@ export default function Home() {
   useEffect(() => {
     writeStorage(getSafeStorage("local"), "pablo-portfolio-font-scale", String(fontScale));
   }, [fontScale]);
-
-  useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-manual-order", JSON.stringify(manualProjectOrder));
-  }, [manualProjectOrder]);
-
-  useEffect(() => {
-    writeStorage(getSafeStorage("local"), "pablo-portfolio-order-profiles", JSON.stringify(manualOrderProfiles));
-  }, [manualOrderProfiles]);
-
-  useEffect(() => {
-    if (activeOrderProfileId) writeStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile", activeOrderProfileId);
-    else removeStorage(getSafeStorage("local"), "pablo-portfolio-active-order-profile");
-  }, [activeOrderProfileId]);
-
-  useEffect(() => {
-    if (!activeOrderProfileId) return;
-    setManualOrderProfiles((profiles) => profiles.map((profile) => profile.id === activeOrderProfileId && JSON.stringify(profile.order) !== JSON.stringify(manualProjectOrder) ? { ...profile, order: manualProjectOrder } : profile));
-  }, [activeOrderProfileId, manualProjectOrder]);
 
   useEffect(() => {
     if (!isProjectFilterTransitioning) setIsGalleryLoading(false);

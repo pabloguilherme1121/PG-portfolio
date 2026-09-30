@@ -1,3 +1,38 @@
+
+export type OrderProfileRecord = {
+  id: string;
+  name: string;
+  order: string[];
+  preset?: boolean;
+};
+
+export function resolveStoredOrderProfiles<T extends OrderProfileRecord>(
+  serializedProfiles: string | null | undefined,
+  predefinedProfiles: T[],
+): T[] {
+  let parsed: unknown;
+
+  try {
+    parsed = JSON.parse(serializedProfiles || "[]");
+  } catch {
+    return [...predefinedProfiles];
+  }
+
+  const storedProfiles = Array.isArray(parsed)
+    ? parsed.filter((profile): profile is T =>
+      Boolean(
+        profile
+        && typeof profile === "object"
+        && typeof (profile as OrderProfileRecord).id === "string"
+        && typeof (profile as OrderProfileRecord).name === "string"
+        && Array.isArray((profile as OrderProfileRecord).order),
+      ))
+    : [];
+
+  const storedIds = new Set(storedProfiles.map((profile) => profile.id));
+  return [...predefinedProfiles.filter((profile) => !storedIds.has(profile.id)), ...storedProfiles];
+}
+
 export function normalizeManualOrder(storedIds: unknown, validIds: string[]) {
   const validIdSet = new Set(validIds);
   const persistedIds = Array.isArray(storedIds)

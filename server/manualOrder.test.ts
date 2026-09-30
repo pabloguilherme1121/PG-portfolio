@@ -1,9 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder } from "../client/src/lib/manualOrder";
+import { dropProjectInOrder, moveProjectInOrder, normalizeManualOrder, resolveStoredOrderProfiles } from "../client/src/lib/manualOrder";
 
 describe("manual project order", () => {
   it("normalizes persisted IDs and appends new valid projects", () => {
     expect(normalizeManualOrder(["b", "missing", "b"], ["a", "b", "c"])).toEqual(["b", "a", "c"]);
+  });
+
+  it("preserves predefined profiles when persisted data is malformed", () => {
+    const predefined = [{ id: "preset-tecnologia", name: "Tecnologia", order: ["TEC.09"], preset: true }];
+
+    expect(resolveStoredOrderProfiles("{invalido", predefined)).toEqual(predefined);
   });
 
   it("moves a project one position with keyboard controls", () => {
