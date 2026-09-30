@@ -127,6 +127,10 @@
       "express>body-parser": "1.20.6",
       "@esbuild-kit/core-utils>esbuild": "0.25.10",
       "@babel/core": "7.29.6"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "esbuild"
+    ]
   }
 }
