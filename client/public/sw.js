@@ -1,9 +1,9 @@
-const TAKEOVER_VERSION = "v8";
+const RUNTIME_VERSION = "v9";
 const CACHE_PREFIX = "pg-portfolio-pwa-";
 const SCOPE_URL = new URL(self.registration.scope);
 const TAKEOVER_PARAM = "pg_sw_takeover";
 
-async function clearLegacyCaches() {
+async function clearPortfolioCaches() {
   try {
     const keys = await caches.keys();
     await Promise.all(
@@ -12,26 +12,26 @@ async function clearLegacyCaches() {
         .map((key) => caches.delete(key)),
     );
   } catch {
-    // A cleanup failure must not prevent the worker from taking control.
+    // Cache cleanup is best-effort; the runtime stays network-only.
   }
 }
 
-async function refreshControlledClients() {
-  const windowClients = await self.clients.matchAll({
+async function refreshPortfolioClients() {
+  const clients = await self.clients.matchAll({
     type: "window",
     includeUncontrolled: true,
   });
 
   await Promise.all(
-    windowClients.map(async (client) => {
+    clients.map(async (client) => {
       try {
         const url = new URL(client.url);
         if (url.origin !== SCOPE_URL.origin || !url.pathname.startsWith(SCOPE_URL.pathname)) return;
-        if (url.searchParams.get(TAKEOVER_PARAM) === TAKEOVER_VERSION) return;
-        url.searchParams.set(TAKEOVER_PARAM, TAKEOVER_VERSION);
+        if (url.searchParams.get(TAKEOVER_PARAM) === RUNTIME_VERSION) return;
+        url.searchParams.set(TAKEOVER_PARAM, RUNTIME_VERSION);
         await client.navigate(url.toString());
       } catch {
-        // Some embedded/closing clients cannot be navigated. Ignore and continue.
+        // Closing/background clients may reject navigation.
       }
     }),
   );
@@ -44,9 +44,19 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
-      await clearLegacyCaches();
+      await clearPortfolioCaches();
       await self.clients.claim();
-      await refreshControlledClients();
+      await refreshPortfolioClients();
+    })(),
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type !== "PG_FORCE_RUNTIME_REFRESH") return;
+  event.waitUntil(
+    (async () => {
+      await clearPortfolioCaches();
+      await refreshPortfolioClients();
     })(),
   );
 });
