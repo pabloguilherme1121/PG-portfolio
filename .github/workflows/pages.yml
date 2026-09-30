@@ -33,7 +33,7 @@ jobs:
       - name: Emit refreshed lockfile
         shell: bash
         run: |
-          base64 -w 50000 pnpm-lock.yaml | sed 's/^/LOCKCHUNK:/'
+          base64 -w 4000 pnpm-lock.yaml | sed 's/^/LOCKCHUNK:/'
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
       - name: Check public media inventory
