@@ -18,7 +18,7 @@ const routePolicy = getPublicRoutePolicy(isStaticDeploy);
 
 function AppRoutes() {
   return (
-    <Suspense fallback={<div className="grid min-h-screen place-items-center bg-[#030b1e] px-6 font-mono text-xs uppercase tracking-[0.14em] text-[#a5f3fc]">carregando agenda…</div>}>
+    <Suspense fallback={<div role="status" aria-live="polite" className="grid min-h-screen place-items-center bg-[#030b1e] px-6 font-mono text-xs uppercase tracking-[0.14em] text-[#a5f3fc]">carregando conteúdo…</div>}>
       <Switch>
         <Route path="/" component={Home} />
         {routePolicy.agenda && AvailabilityManager && <Route path="/agenda" component={AvailabilityManager} />}
