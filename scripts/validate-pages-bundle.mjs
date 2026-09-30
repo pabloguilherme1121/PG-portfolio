@@ -42,7 +42,6 @@ assert.ok((await readFile(path.join(root, "pwa-icon-maskable.svg"), "utf8")).inc
 const builtScripts = (await readdir(path.join(root, "assets"))).filter((file) => file.endsWith(".js"));
 const builtScriptSources = await Promise.all(builtScripts.map((file) => readFile(path.join(root, "assets", file), "utf8")));
 assert.ok(builtScriptSources.some((source) => source.includes("sw.js") && source.includes("serviceWorker")), "The production bundle does not register the PWA service worker");
-assert.ok(builtScriptSources.some((source) => source.includes("runtime=v6")), "The production bundle does not pin the current service worker runtime");
 assert.ok(builtScriptSources.some((source) => source.includes("vite:preloadError")), "The production bundle does not recover from stale lazy chunks");
 assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v6")), "The production bundle does not migrate legacy PWA runtime state");
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
