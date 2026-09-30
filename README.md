@@ -82,16 +82,17 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 O workflow de publicação só entrega o build depois das verificações de qualidade.
 
 ```bash
+pnpm audit --audit-level=high
 pnpm check
 pnpm test
 pnpm test:e2e
-pnpm build
+pnpm build:static
 pnpm audit:bundle
 ```
 
 A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **220 kB**.
 
-A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages.
+A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages. Os fluxos críticos passam pela suíte principal em Chromium, smoke mobile em Pixel 5 e smoke de compatibilidade em Firefox e WebKit. Dependabot acompanha atualizações de npm e GitHub Actions semanalmente.
 
 ## Desenvolvimento local
 
