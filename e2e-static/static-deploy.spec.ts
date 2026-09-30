@@ -40,6 +40,12 @@ test("bundle estático inicia pelo caminho do GitHub Pages sem boundary de erro"
 
 test("bundle estático resolve briefing por âncora direta", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "connection", {
+      configurable: true,
+      value: { saveData: true, effectiveType: "4g" },
+    });
+  });
 
   await page.goto("./#contato-briefing");
 
