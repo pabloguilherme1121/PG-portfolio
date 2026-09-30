@@ -1443,8 +1443,11 @@ test.describe("portfólio profissional", () => {
     await expect(contact.getByText(/agenda sob consulta para novos projetos e oportunidades/i)).toBeVisible();
     await expect(contact.getByText(/consulta de agenda/i)).toBeVisible();
 
+    const footerPlaceholder = page.locator('[data-footer-placeholder="true"]');
+    await footerPlaceholder.scrollIntoViewIfNeeded();
+
     const footer = page.locator("#contato-rodape");
-    await footer.scrollIntoViewIfNeeded();
+    await expect(footer).toBeVisible();
     await expect(footer.locator('a[href="mailto:mpjcreator@gmail.com"]')).toBeVisible();
     await expect(page.locator('[data-availability-status="true"]')).toContainText(/disponibilidade atual: sob consulta/i);
   });
