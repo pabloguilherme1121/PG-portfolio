@@ -55,7 +55,7 @@ import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
-import { clearPendingPortfolioInstallPrompt, getPendingPortfolioInstallPrompt, type PortfolioInstallPromptEvent } from "@/pwaInstallPromptBridge";
+import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -182,7 +182,7 @@ export default function Home() {
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pwaInstallPrompt, setPwaInstallPrompt] = useState<PortfolioInstallPromptEvent | null>(null);
+  const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const [resumePreviewOpen, setResumePreviewOpen] = useState(false);
   const [resumePreviewLoading, setResumePreviewLoading] = useState(false);
@@ -340,29 +340,6 @@ export default function Home() {
       if (timer !== null) window.clearTimeout(timer);
     };
   }, [avoidSpeculativePreload, deferredContactReady]);
-
-  useEffect(() => {
-    const pendingPrompt = getPendingPortfolioInstallPrompt();
-    if (pendingPrompt) setPwaInstallPrompt(pendingPrompt);
-
-    const handleBeforeInstallPrompt = (event: Event) => {
-      const promptEvent = event as PortfolioInstallPromptEvent;
-      if (typeof promptEvent.prompt !== "function") return;
-      event.preventDefault();
-      setPwaInstallPrompt(promptEvent);
-    };
-    const handleAppInstalled = () => {
-      clearPendingPortfolioInstallPrompt();
-      setPwaInstallPrompt(null);
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-    window.addEventListener("appinstalled", handleAppInstalled);
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-      window.removeEventListener("appinstalled", handleAppInstalled);
-    };
-  }, []);
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {
@@ -674,14 +651,10 @@ export default function Home() {
   }
 
   async function installPortfolioPwa() {
-    const promptEvent = pwaInstallPrompt;
-    if (!promptEvent) return;
+    if (!canInstallPortfolio) return;
     try {
-      await promptEvent.prompt();
-      await promptEvent.userChoice;
+      await installPortfolio();
     } finally {
-      clearPendingPortfolioInstallPrompt();
-      setPwaInstallPrompt(null);
       setMenuOpen(false);
     }
   }
@@ -1311,7 +1284,7 @@ export default function Home() {
               mobileSecondaryShortcut={mobileSecondaryShortcut}
               mobileExperienceRoute={mobileExperienceRoute}
               portfolioShareStatus={portfolioShareStatus}
-              showInstallAction={Boolean(pwaInstallPrompt)}
+              showInstallAction={canInstallPortfolio}
               resumeAvailable={resumeAvailable}
               onClose={closeMenu}
               onOpenArcade={openPgArcade}
