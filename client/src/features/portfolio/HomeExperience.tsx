@@ -148,7 +148,7 @@ export default function Home() {
   });
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
-  const [deferredContactReady, setDeferredContactReady] = useState(false);
+  const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const {
     contact: contactHashRequested,
@@ -212,7 +212,7 @@ export default function Home() {
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
-  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || deferredContactReady;
+  const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || backgroundContactReady;
 
   useEffect(() => {
     if (typeof navigator === "undefined") return;
@@ -224,22 +224,22 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (avoidSpeculativePreload || deferredContactReady) return;
+    if (avoidSpeculativePreload || backgroundContactReady) return;
 
     let timer: number | null = null;
-    const scheduleDeferredContact = () => {
+    const scheduleBackgroundContact = () => {
       if (timer !== null) return;
-      timer = window.setTimeout(() => setDeferredContactReady(true), 2200);
+      timer = window.setTimeout(() => setBackgroundContactReady(true), 3600);
     };
 
-    if (document.readyState === "complete") scheduleDeferredContact();
-    else window.addEventListener("load", scheduleDeferredContact, { once: true });
+    if (document.readyState === "complete") scheduleBackgroundContact();
+    else window.addEventListener("load", scheduleBackgroundContact, { once: true });
 
     return () => {
-      window.removeEventListener("load", scheduleDeferredContact);
+      window.removeEventListener("load", scheduleBackgroundContact);
       if (timer !== null) window.clearTimeout(timer);
     };
-  }, [avoidSpeculativePreload, deferredContactReady]);
+  }, [avoidSpeculativePreload, backgroundContactReady]);
 
   useEffect(() => {
     const handleExperienceRoute = (event: Event) => {

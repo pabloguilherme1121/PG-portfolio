@@ -224,6 +224,9 @@ test.describe("portfólio profissional", () => {
     expect(contactRequests).toEqual([]);
     await expect(page.locator("#contato")).toHaveCount(1);
 
+    await page.waitForTimeout(2600);
+    expect(contactRequests).toEqual([]);
+
     await page.goto("/#contato-briefing");
     await expect(page.locator('[data-briefing-form="true"]')).toBeVisible();
     await expect.poll(() => contactRequests.length).toBeGreaterThan(0);
