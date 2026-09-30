@@ -305,6 +305,26 @@ test.describe("portfólio profissional", () => {
       ),
     ).toBeTruthy();
   });
+  test("painel de aparência move o foco para dentro e devolve ao gatilho ao fechar", async ({ page }) => {
+    await page.goto("/");
+
+    const trigger = page.locator('[data-appearance-trigger="desktop"]');
+    await expect(trigger).toBeVisible();
+    await trigger.focus();
+    await trigger.click();
+
+    const appearance = page.getByRole("dialog", { name: "Aparência" });
+    const closeButton = appearance.getByRole("button", { name: /fechar configurações de aparência/i });
+
+    await expect(appearance).toBeVisible();
+    await expect(closeButton).toBeFocused();
+
+    await page.keyboard.press("Escape");
+
+    await expect(appearance).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
 
   test("remove histórico de busca órfão do armazenamento local", async ({ page }) => {
     await page.addInitScript(() => {

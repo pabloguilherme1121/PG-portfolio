@@ -38,6 +38,7 @@ import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioS
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
+import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
 import { useResumePreviewController } from "@/features/portfolio/hooks/useResumePreviewController";
 import {
   portfolioMarkUrl as markUrl,
@@ -95,7 +96,6 @@ export default function Home() {
     scrollProgress,
     showBackToTop,
   } = usePortfolioShellState();
-  const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [avoidSpeculativePreload, setAvoidSpeculativePreload] = useState(() =>
     typeof navigator === "undefined" ? false : shouldAvoidSpeculativePreload(getNavigatorConnection(navigator)),
   );
@@ -120,6 +120,12 @@ export default function Home() {
   });
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const {
+    open: appearanceOpen,
+    closeRef: appearanceCloseRef,
+    openPanel: openAppearancePanel,
+    closePanel: closeAppearancePanel,
+  } = useAppearancePanelController({ fallbackTriggerRef: menuButtonRef });
   const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [pgLabOpen, setPgLabOpen] = useState(false);
   const {
@@ -300,14 +306,6 @@ export default function Home() {
   useEffect(() => {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
-
-  useEffect(() => {
-    const handleAppearanceKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setAppearanceOpen(false);
-    };
-    window.addEventListener("keydown", handleAppearanceKeyDown);
-    return () => window.removeEventListener("keydown", handleAppearanceKeyDown);
-  }, []);
 
   useEffect(() => {
     if (isDesktopViewport) setMenuOpen(false);
@@ -534,7 +532,7 @@ export default function Home() {
             <button
               type="button"
               data-appearance-trigger="desktop"
-              onClick={() => setAppearanceOpen(true)}
+              onClick={(event) => openAppearancePanel(event.currentTarget)}
               aria-label="Configurações de aparência"
               title="Configurações de aparência"
               className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
@@ -597,7 +595,7 @@ export default function Home() {
               resumeAvailable={resumeAvailable}
               onClose={closeMenu}
               onOpenArcade={openPgArcade}
-              onOpenAppearance={() => setAppearanceOpen(true)}
+              onOpenAppearance={openAppearancePanel}
               onSharePortfolio={() => void sharePortfolio()}
               onInstallPortfolio={() => void installPortfolioPwa()}
               onPreloadResume={preloadResumePreview}
@@ -613,7 +611,8 @@ export default function Home() {
               setPreference={setPreference}
               fontScale={fontScale}
               setFontScale={setFontScale}
-              onClose={() => setAppearanceOpen(false)}
+              closeRef={appearanceCloseRef}
+              onClose={closeAppearancePanel}
             />
           </Suspense>
         )}

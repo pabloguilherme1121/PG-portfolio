@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun, X } from "lucide-react";
-import type { Dispatch, SetStateAction } from "react";
+import { useEffect, type Dispatch, type RefObject, type SetStateAction } from "react";
 import type { ThemePreference } from "@/contexts/ThemeContext";
 
 type PortfolioAppearancePanelProps = {
@@ -8,6 +8,7 @@ type PortfolioAppearancePanelProps = {
   setPreference: (preference: ThemePreference) => void;
   fontScale: number;
   setFontScale: Dispatch<SetStateAction<number>>;
+  closeRef: RefObject<HTMLButtonElement | null>;
   onClose: () => void;
 };
 
@@ -17,8 +18,16 @@ export default function PortfolioAppearancePanel({
   setPreference,
   fontScale,
   setFontScale,
+  closeRef,
   onClose,
 }: PortfolioAppearancePanelProps) {
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      closeRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [closeRef]);
+
   return (
     <div
       data-appearance-panel="true"
@@ -34,6 +43,7 @@ export default function PortfolioAppearancePanel({
           <h2 id="appearance-title" className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">Aparência</h2>
         </div>
         <button
+          ref={closeRef}
           type="button"
           onClick={onClose}
           aria-label="Fechar configurações de aparência"
