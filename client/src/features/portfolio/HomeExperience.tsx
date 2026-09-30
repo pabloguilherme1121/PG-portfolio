@@ -40,6 +40,7 @@ import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/use
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
 import { useResumePreviewController } from "@/features/portfolio/hooks/useResumePreviewController";
+import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
 import {
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
@@ -118,8 +119,13 @@ export default function Home() {
     const stored = Number(storedValue);
     return Number.isFinite(stored) ? Math.min(1.16, Math.max(0.92, stored)) : 1;
   });
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const {
+    open: menuOpen,
+    setOpen: setMenuOpen,
+    buttonRef: menuButtonRef,
+    close: closeMenu,
+    toggle: toggleMenu,
+  } = useMobileMenuController({ isDesktopViewport });
   const {
     open: appearanceOpen,
     closeRef: appearanceCloseRef,
@@ -307,27 +313,6 @@ export default function Home() {
     if (formSent) successMessageRef.current?.focus();
   }, [formSent]);
 
-  useEffect(() => {
-    if (isDesktopViewport) setMenuOpen(false);
-  }, [isDesktopViewport]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handleMenuKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      setMenuOpen(false);
-      window.requestAnimationFrame(() => menuButtonRef.current?.focus({ preventScroll: true }));
-    };
-    document.addEventListener("keydown", handleMenuKeyDown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", handleMenuKeyDown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [menuOpen]);
-
   useEffect(() => () => {
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
   }, []);
@@ -380,10 +365,6 @@ export default function Home() {
       return;
     }
     openPgArcade();
-  }
-
-  function closeMenu() {
-    setMenuOpen(false);
   }
 
   function scrollToTop() {
@@ -553,7 +534,7 @@ export default function Home() {
               type="button"
               data-mobile-menu-toggle="true"
               data-mobile-scroll-context="true"
-              onClick={() => setMenuOpen((open) => !open)}
+              onClick={toggleMenu}
               className="group flex h-12 min-w-[108px] max-w-[136px] items-center gap-2 rounded-[14px] border border-[#67e8f9]/20 bg-[#071827]/92 px-1.5 text-[#d8e6fa] shadow-[0_10px_26px_rgba(2,17,31,0.24)] transition-[border-color,background-color,box-shadow] hover:border-[#67e8f9]/55 hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[124px] min-[390px]:min-w-[136px]"
               aria-label={menuOpen ? "Fechar menu" : `Abrir menu · seção ${mobileSectionLabels[activeSection] ?? "portfólio"} · ${Math.round(scrollProgress)}% percorrido`}
               aria-expanded={menuOpen}
