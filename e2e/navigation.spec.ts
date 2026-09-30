@@ -530,6 +530,15 @@ test.describe("portfólio profissional", () => {
     );
   });
 
+  test("parâmetros antigos de busca não quebram o contexto do modal de projeto", async ({ page }) => {
+    await page.goto("/?projeto=TEC.09&q=consulta-antiga-sem-resultados#projetos");
+
+    const dialog = page.locator('[data-project-details-dialog="true"]');
+    await expect(dialog).toBeVisible({ timeout: 30000 });
+    await expect(dialog).toContainText(/Trajeto/i);
+    await expect(dialog).toContainText("01 / 01");
+  });
+
   test("detalhes completos do projeto carregam apenas quando o visitante abre o modal", async ({ page }) => {
     await page.goto("/#projetos");
 
