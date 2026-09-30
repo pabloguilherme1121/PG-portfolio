@@ -106,7 +106,7 @@ pnpm dev
 Para reproduzir a publicação estática:
 
 ```bash
-VITE_DEPLOY_TARGET=github-pages VITE_STATIC_DEPLOY=true pnpm exec vite build
+pnpm build:static
 node scripts/prepare-github-pages.mjs
 ```
 
@@ -118,7 +118,7 @@ Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mant�
 | --- | --- |
 | `client/` | Experiência pública, componentes e mídia |
 | `client/src/features/portfolio/` | Hero, Proof Deck, Project Lens, cases, briefing e analytics |
-| `server/` e `shared/` | API e contratos da versão com servidor |
+| `server/` e `shared/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |
 | `docs/archive/` | Histórico técnico e pesquisas preservadas |
