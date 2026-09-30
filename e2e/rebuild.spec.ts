@@ -54,6 +54,19 @@ test.describe("reconstrução profissional do portfólio", () => {
 
 
 
+  test("Project Lens carrega apenas quando o diagnóstico se aproxima da viewport", async ({ page }) => {
+    await page.goto("/");
+
+    const placeholder = page.locator('[data-project-diagnostic-placeholder="true"]');
+    await expect(placeholder).toHaveCount(1);
+    await expect(page.locator('[data-project-diagnostic="true"]')).toHaveCount(0);
+
+    await placeholder.scrollIntoViewIfNeeded();
+
+    await expect(page.locator('[data-project-diagnostic="true"]')).toBeVisible();
+    await expect(placeholder).toHaveCount(0);
+  });
+
   test("competências, serviços e processo carregam apenas quando se aproximam da viewport", async ({ page }) => {
     await page.goto("/");
 

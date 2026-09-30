@@ -40,6 +40,9 @@ test.describe("portfólio profissional", () => {
     await proofDeck.getByRole("button", { name: /qualidade/i }).click();
     await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
 
+    const diagnosticPlaceholder = page.locator('[data-project-diagnostic-placeholder="true"]');
+    await diagnosticPlaceholder.scrollIntoViewIfNeeded();
+
     const diagnostic = page.locator('[data-project-diagnostic="true"]');
     await expect(diagnostic).toBeVisible();
     await diagnostic.getByRole("button", { name: /organizar informação ou dados/i }).click();

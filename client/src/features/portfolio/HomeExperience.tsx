@@ -42,7 +42,6 @@ import PortfolioExperienceHub from "@/features/portfolio/components/PortfolioExp
 import PortfolioAbout from "@/features/portfolio/components/PortfolioAbout";
 import PortfolioProfessionalSnapshot from "@/features/portfolio/components/PortfolioProfessionalSnapshot";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
-import ProjectDiagnostic from "@/features/portfolio/components/ProjectDiagnostic";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
@@ -75,6 +74,7 @@ import {
   type Repository,
 } from "@/features/portfolio/portfolioData";
 const InstagramRepertoire = lazy(() => import("@/features/social/InstagramRepertoire"));
+const ProjectDiagnostic = lazy(() => import("@/features/portfolio/components/ProjectDiagnostic"));
 const PortfolioDeferredStaticSections = lazy(() => import("@/features/portfolio/components/PortfolioDeferredStaticSections"));
 const PortfolioProjectsOverview = lazy(() => import("@/features/portfolio/components/PortfolioProjectsOverview"));
 const PortfolioAppearancePanel = lazy(() => import("@/features/portfolio/components/PortfolioAppearancePanel"));
@@ -182,6 +182,7 @@ export default function Home() {
   const [socialSectionRef, shouldLoadSocial] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [availabilitySectionRef, shouldLoadAvailability] = useNearViewport<HTMLDivElement>(deferredRootMargin);
   const [webResumeSectionRef, shouldLoadWebResume] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "160px" : "480px");
+  const [diagnosticSectionRef, shouldLoadDiagnostic] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "180px");
   const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
   const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
@@ -313,6 +314,7 @@ export default function Home() {
   const mobileSecondaryShortcut = mobileDock.secondary;
   const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+  const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
   const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
@@ -1375,7 +1377,38 @@ export default function Home() {
 
         <PortfolioExperienceHub />
 
-        <ProjectDiagnostic />
+        <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
+          {shouldRenderDiagnostic ? (
+            <Suspense
+              fallback={
+                <section
+                  id="diagnostico"
+                  data-project-diagnostic-placeholder="true"
+                  role="status"
+                  aria-live="polite"
+                  className="archive-chapter min-h-[760px] border-y border-white/[0.08] bg-[#061226] px-5 py-16 sm:min-h-[900px] sm:px-8 sm:py-20"
+                >
+                  <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc]">
+                    carregando Project Lens…
+                  </div>
+                </section>
+              }
+            >
+              <ProjectDiagnostic />
+            </Suspense>
+          ) : (
+            <section
+              id="diagnostico"
+              data-project-diagnostic-placeholder="true"
+              className="archive-chapter min-h-[760px] border-y border-white/[0.08] bg-[#061226] px-5 py-16 sm:min-h-[900px] sm:px-8 sm:py-20"
+              aria-label="Project Lens"
+            >
+              <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+                Project Lens será carregado ao aproximar
+              </div>
+            </section>
+          )}
+        </div>
 
         <PortfolioAbout
           resumeAvailable={resumeAvailable}
