@@ -29,11 +29,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-      - name: Emit refreshed lockfile
-        shell: bash
-        run: |
-          base64 -w 4000 pnpm-lock.yaml | sed 's/^/LOCKCHUNK:/'
+        run: pnpm install --frozen-lockfile
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
       - name: Check public media inventory
@@ -47,10 +43,7 @@ jobs:
       - name: Browser tests
         run: pnpm test:e2e
       - name: Build static portfolio
-        env:
-          VITE_DEPLOY_TARGET: github-pages
-          VITE_STATIC_DEPLOY: "true"
-        run: pnpm exec vite build
+        run: pnpm build:static
       - name: Enforce bundle budget
         env:
           VITE_STATIC_DEPLOY: "true"
