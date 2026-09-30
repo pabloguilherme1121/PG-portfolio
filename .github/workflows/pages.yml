@@ -44,6 +44,8 @@ jobs:
         run: pnpm test:e2e
       - name: Build static portfolio
         run: pnpm build:static
+      - name: Browser smoke on static bundle
+        run: pnpm test:e2e:static
       - name: Enforce bundle budget
         env:
           VITE_STATIC_DEPLOY: "true"
