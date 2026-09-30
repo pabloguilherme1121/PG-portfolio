@@ -8,7 +8,7 @@ const assetsDir = path.join(root, "dist", "public", "assets");
 
 const budgets = {
   javascriptChunk: 225 * 1024,
-  stylesheet: 240 * 1024,
+  stylesheet: 220 * 1024,
 };
 
 if (!fs.existsSync(assetsDir)) {
