@@ -57,7 +57,7 @@ export default function PortfolioMobileMenu({
   onPreloadResume,
   onOpenResume,
 }: PortfolioMobileMenuProps) {
-  const navigationRef = useRef<HTMLElement>(null);
+  const navigationRef = useRef<HTMLDivElement>(null);
   const SecondaryIcon =
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
@@ -107,13 +107,16 @@ export default function PortfolioMobileMenu({
   }, []);
 
   return (
-    <nav
+    <div
       ref={navigationRef}
       id="mobile-navigation"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Menu de navegação móvel"
       className="max-h-[calc(100svh-76px)] overflow-y-auto overscroll-contain border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-4 shadow-[0_20px_48px_rgba(0,0,0,0.42)] backdrop-blur-md md:hidden"
-      aria-label="Navegação móvel"
     >
-      <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
+      <nav aria-label="Links principais">
+        <div className="mx-auto flex max-w-[1440px] flex-col gap-1 sm:px-3">
         <div data-mobile-menu-profile="true" className="mb-3 flex items-center gap-3 rounded-[16px] border border-[#67e8f9]/15 bg-[linear-gradient(135deg,rgba(10,39,70,0.92),rgba(7,19,38,0.92))] p-3 shadow-[0_12px_34px_rgba(0,0,0,0.22)]">
           <img src={portraitUrl} alt="" width="64" height="64" loading="lazy" decoding="async" className="h-14 w-14 shrink-0 rounded-full border border-[#67e8f9]/35 object-cover object-top" />
           <div className="min-w-0">
@@ -234,7 +237,8 @@ export default function PortfolioMobileMenu({
             visualizar portfólio PDF
           </button>
         )}
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </div>
   );
 }
