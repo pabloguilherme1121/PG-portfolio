@@ -1,4 +1,5 @@
-const PWA_RUNTIME_VERSION = "v6";
+const PWA_RUNTIME_VERSION = "v8";
+const PWA_RUNTIME_SCRIPT = "sw-runtime-v8.js";
 
 export function registerPortfolioPwa() {
   if (!import.meta.env.PROD || !("serviceWorker" in navigator)) return;
@@ -6,7 +7,7 @@ export function registerPortfolioPwa() {
   const register = () => {
     const baseUrl = import.meta.env.BASE_URL;
     void navigator.serviceWorker
-      .register(`${baseUrl}sw.js?runtime=${PWA_RUNTIME_VERSION}`, {
+      .register(`${baseUrl}${PWA_RUNTIME_SCRIPT}?runtime=${PWA_RUNTIME_VERSION}`, {
         scope: baseUrl,
         updateViaCache: "none",
       })
