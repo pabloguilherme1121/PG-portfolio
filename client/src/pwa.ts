@@ -10,10 +10,7 @@ export function registerPortfolioPwa() {
       scope: baseUrl,
       updateViaCache: "none",
     })
-    .then(async (registration) => {
-      await registration.update();
-      registration.active?.postMessage({ type: "PG_FORCE_RUNTIME_REFRESH" });
-    })
+    .then((registration) => registration.update())
     .catch((error) => {
       console.warn("[PWA] Service worker registration failed", error);
     });
