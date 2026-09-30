@@ -76,7 +76,18 @@ const loadPortfolioResumePreview = () =>
     default: module.PortfolioResumePreview,
   }));
 const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
-const loadPortfolioArcade = () => import("@/features/portfolio/components/PortfolioArcade");
+type PortfolioArcadeModule = typeof import("@/features/portfolio/components/PortfolioArcade");
+let portfolioArcadePromise: Promise<PortfolioArcadeModule> | null = null;
+
+const loadPortfolioArcade = () => {
+  if (!portfolioArcadePromise) {
+    portfolioArcadePromise = import("@/features/portfolio/components/PortfolioArcade").catch((error) => {
+      portfolioArcadePromise = null;
+      throw error;
+    });
+  }
+  return portfolioArcadePromise;
+};
 const PortfolioArcade = lazy(loadPortfolioArcade);
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
@@ -335,7 +346,7 @@ export default function Home() {
 
   function preloadPgArcade() {
     if (avoidSpeculativePreload) return;
-    void loadPortfolioArcade();
+    void loadPortfolioArcade().catch(() => undefined);
   }
 
   function openPgArcade() {
@@ -345,7 +356,11 @@ export default function Home() {
       const target = document.getElementById("pg-lab");
       if (!target) return;
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+      const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
+      target.scrollIntoView({
+        behavior: reduceMotion || isMobileViewport ? "auto" : "smooth",
+        block: "start",
+      });
     });
   }
 
