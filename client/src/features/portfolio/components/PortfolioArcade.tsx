@@ -1,10 +1,10 @@
-import { lazy, Suspense, useState } from "react";
+import { useState } from "react";
+import PortfolioTicTacToe from "@/features/portfolio/components/PortfolioTicTacToe";
+import PortfolioDomino from "@/features/portfolio/components/PortfolioDomino";
+import PortfolioCheckers from "@/features/portfolio/components/PortfolioCheckers";
 
 type ArcadeGame = "velha" | "domino" | "damas";
 
-const PortfolioTicTacToe = lazy(() => import("@/features/portfolio/components/PortfolioTicTacToe"));
-const PortfolioDomino = lazy(() => import("@/features/portfolio/components/PortfolioDomino"));
-const PortfolioCheckers = lazy(() => import("@/features/portfolio/components/PortfolioCheckers"));
 
 const games = [
   { id: "velha", label: "Jogo da velha", meta: "estratégia rápida" },
@@ -48,9 +48,7 @@ export default function PortfolioArcade() {
       </div>
 
       <div role="tabpanel" id={`arcade-panel-${game}`} aria-labelledby={`arcade-tab-${game}`} className="mt-5">
-        <Suspense fallback={<div role="status" aria-live="polite" className="mx-auto min-h-40 max-w-[1180px] px-4 py-8 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5f3fc] sm:px-8 lg:px-12">carregando jogo…</div>}>
-          {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : <PortfolioCheckers />}
-        </Suspense>
+        {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : <PortfolioCheckers />}
       </div>
     </div>
   );
