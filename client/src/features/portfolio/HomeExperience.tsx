@@ -303,7 +303,13 @@ export default function Home() {
 
   useEffect(() => {
     const storage = getSafeStorage("local");
-    removeStorage(storage, "pablo-portfolio-recent-searches");
+    [
+      "pablo-portfolio-recent-searches",
+      "pablo-portfolio-gallery-view",
+      "pablo-portfolio-manual-order",
+      "pablo-portfolio-order-profiles",
+      "pablo-portfolio-active-order-profile",
+    ].forEach((key) => removeStorage(storage, key));
   }, []);
 
   useEffect(() => {
