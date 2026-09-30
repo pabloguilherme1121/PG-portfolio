@@ -1,5 +1,5 @@
 import { Monitor, Moon, Sun, X } from "lucide-react";
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import { useEffect, type Dispatch, type RefObject, type SetStateAction } from "react";
 import type { ThemePreference } from "@/contexts/ThemeContext";
 
 type PortfolioAppearancePanelProps = {
@@ -21,6 +21,13 @@ export default function PortfolioAppearancePanel({
   closeRef,
   onClose,
 }: PortfolioAppearancePanelProps) {
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      closeRef.current?.focus({ preventScroll: true });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [closeRef]);
+
   return (
     <div
       data-appearance-panel="true"
