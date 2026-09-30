@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isStaleBundleError } from "./runtimeRecovery";
+import { buildFreshRuntimeUrl, isStaleBundleError } from "./runtimeRecovery";
 
 describe("runtimeRecovery", () => {
   it("recognizes stale dynamic-import failures produced after a deployment", () => {
@@ -17,5 +17,19 @@ describe("runtimeRecovery", () => {
 
   it("does not classify ordinary application exceptions as stale-bundle failures", () => {
     expect(isStaleBundleError(new Error("Cannot read properties of undefined (reading 'id')"))).toBe(false);
+  });
+
+  it("creates a cache-busting recovery URL without losing route state", () => {
+    const freshUrl = new URL(
+      buildFreshRuntimeUrl(
+        "https://example.com/PG-portfolio/?projeto=observatorio#projetos",
+        "render-error",
+        1_700_000_000_000,
+      ),
+    );
+
+    expect(freshUrl.searchParams.get("projeto")).toBe("observatorio");
+    expect(freshUrl.searchParams.get("pg_recover")).toContain("runtime-hardening-v6-render-error-");
+    expect(freshUrl.hash).toBe("#projetos");
   });
 });
