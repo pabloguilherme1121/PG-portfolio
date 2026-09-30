@@ -10,7 +10,8 @@ describe("runtimeRecovery", () => {
         ),
       ),
     ).toBe(true);
-    expect(isStaleBundleError(new Error("ChunkLoadError: Loading chunk PortfolioContact failed"))).toBe(true);\n    expect(isStaleBundleError(new Error("Loading chunk 842 failed"))).toBe(true);
+    expect(isStaleBundleError(new Error("ChunkLoadError: Loading chunk PortfolioContact failed"))).toBe(true);
+    expect(isStaleBundleError(new Error("Loading chunk 842 failed"))).toBe(true);
     expect(isStaleBundleError("Importing a module script failed")).toBe(true);
   });
 
