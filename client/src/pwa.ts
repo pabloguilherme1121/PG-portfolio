@@ -5,6 +5,7 @@ export function registerPortfolioPwa() {
     const baseUrl = import.meta.env.BASE_URL;
     void navigator.serviceWorker
       .register(`${baseUrl}sw.js`, { scope: baseUrl, updateViaCache: "none" })
+      .then((registration) => registration.update())
       .catch((error) => {
         console.warn("[PWA] Service worker registration failed", error);
       });
