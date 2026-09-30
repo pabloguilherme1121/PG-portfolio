@@ -41,16 +41,8 @@ import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
-import { exportFavoriteProjects, type FavoriteExportFormat } from "@/features/portfolio/utils/exportFavorites";
-import { buildFavoritesShareUrl, buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
+import { buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
-import {
-  buildProjectSearchSuggestions,
-  getRepositoryCategories,
-  normalizeSearchText,
-  selectVisibleRepositories,
-  type SearchSuggestion,
-} from "@/features/portfolio/utils/projectCatalog";
 import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
@@ -70,12 +62,8 @@ import {
   portfolioWhatsAppUrl as whatsAppUrl,
 } from "@/features/portfolio/portfolioConfig";
 import {
-  categoryFilters,
   predefinedOrderProfiles,
   repositories,
-  sortOptions,
-  tagFilters,
-  technologyFilters,
   type ManualOrderProfile,
   type Repository,
 } from "@/features/portfolio/portfolioData";
@@ -111,43 +99,6 @@ const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
 const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
 
 type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
-
-function renderSuggestionMatch(value: string, query: string, isActive: boolean) {
-  const normalizedQuery = normalizeSearchText(query);
-  if (!normalizedQuery) return value;
-
-  const characters = Array.from(value);
-  const normalizedCharacters = characters.map((character) => normalizeSearchText(character));
-  const normalizedValue = normalizedCharacters.join("");
-  const matchStart = normalizedValue.indexOf(normalizedQuery);
-  if (matchStart < 0) return value;
-
-  let characterStart = 0;
-  let characterEnd = characters.length;
-  let normalizedOffset = 0;
-  for (let index = 0; index < normalizedCharacters.length; index += 1) {
-    const nextOffset = normalizedOffset + normalizedCharacters[index].length;
-    if (normalizedOffset <= matchStart && matchStart < nextOffset) characterStart = index;
-    if (normalizedOffset < matchStart + normalizedQuery.length && matchStart + normalizedQuery.length <= nextOffset) {
-      characterEnd = index + 1;
-      break;
-    }
-    normalizedOffset = nextOffset;
-  }
-
-  return <>{characters.slice(0, characterStart).join("")}<strong data-suggestion-match="true" className={`font-bold ${isActive ? "text-[#02111f]" : "text-white"}`}>{characters.slice(characterStart, characterEnd).join("")}</strong>{characters.slice(characterEnd).join("")}</>;
-}
-
-function getPortfolioUrlFilter(key: string, allowed: readonly string[], fallback: string) {
-  if (typeof window === "undefined") return fallback;
-  const value = new URLSearchParams(window.location.search).get(key);
-  return value && allowed.includes(value) ? value : fallback;
-}
-
-function getPortfolioUrlSearch() {
-  if (typeof window === "undefined") return "";
-  return new URLSearchParams(window.location.search).get("q") ?? "";
-}
 
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
@@ -202,11 +153,6 @@ export default function Home() {
   } = usePortfolioDeferredHashRequests();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [searchShareStatus, setSearchShareStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [activeTechnology, setActiveTechnology] = useState(() => getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
-  const [activeCategory, setActiveCategory] = useState(() => getPortfolioUrlFilter("category", categoryFilters, "Todos"));
-  const [activeTag, setActiveTag] = useState<(typeof tagFilters)[number]>(() => getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
-  const [sortMode, setSortMode] = useState<(typeof sortOptions)[number]["value"]>(() => getPortfolioUrlFilter("sort", sortOptions.map((option) => option.value), "relevance") as (typeof sortOptions)[number]["value"]);
   const {
     manualProjectOrder,
     setManualProjectOrder,
@@ -225,12 +171,7 @@ export default function Home() {
   const [previewOrderProfileId, setPreviewOrderProfileId] = useState<string | null>(null);
   const [recentlyActivatedOrderProfileId, setRecentlyActivatedOrderProfileId] = useState<string | null>(null);
 
-  const [isProjectFilterTransitioning, setIsProjectFilterTransitioning] = useState(false);
-  const [isGalleryLoading, setIsGalleryLoading] = useState(false);
   const [featuredCardsReady, setFeaturedCardsReady] = useState(false);
-  const [visibleProjectLimit, setVisibleProjectLimit] = useState(4);
-  const [isCompactGallery, setIsCompactGallery] = useState(false);
-  const [isMobileGalleryRefinementOpen, setIsMobileGalleryRefinementOpen] = useState(false);
   const [galleryView, setGalleryView] = useState<"grid" | "list">(() => {
     if (typeof window === "undefined") return "grid";
     return readStorage(getSafeStorage("local"), "pablo-portfolio-gallery-view") === "list" ? "list" : "grid";
@@ -244,14 +185,8 @@ export default function Home() {
       return [];
     }
   });
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
-  const [savedProjectSearch, setSavedProjectSearch] = useState("");
-  const [savedProjectSortMode, setSavedProjectSortMode] = useState<(typeof sortOptions)[number]["value"]>("relevance");
-  const [savedProjectControlStatus, setSavedProjectControlStatus] = useState("");
   const [contextTransitionTarget, setContextTransitionTarget] = useState<"saved" | "agenda" | null>(null);
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
-  const [sharedProjectIds, setSharedProjectIds] = useState<string[] | null>(null);
-  const [shareStatus, setShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
   const [portfolioShareStatus, setPortfolioShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
   const [projectShareStatus, setProjectShareStatus] = useState<"idle" | "copied" | "error">("idle");
   const [projectCopyStatus, setProjectCopyStatus] = useState<"idle" | "copied" | "error">("idle");
@@ -265,17 +200,13 @@ export default function Home() {
   const [hasMobileBriefingDraft, setHasMobileBriefingDraft] = useState(() =>
     readStoredBriefingProgress(getSafeStorage("local")),
   );
-  const [favoriteExportStatus, setFavoriteExportStatus] = useState<"idle" | "csv" | "json" | "pdf-loading" | "pdf" | "error">("idle");
-  const [projectSearch, setProjectSearch] = useState(getPortfolioUrlSearch);
-  const [isProjectSearchFocused, setIsProjectSearchFocused] = useState(false);
-  const [activeSearchSuggestionIndex, setActiveSearchSuggestionIndex] = useState(-1);
   const [selectedProject, setSelectedProject] = useState<Repository | null>(null);
   const [projectDetailsTransition, setProjectDetailsTransition] = useState<"next" | "previous" | null>(null);
   const projectDetailsSwipeStartRef = useRef<{ x: number; y: number } | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const resumePreviewCloseRef = useRef<HTMLButtonElement>(null);
   const resumePreviewReturnFocusRef = useRef<HTMLElement | null>(null);
-  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isProjectSearchFocused || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
+  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
@@ -394,11 +325,7 @@ export default function Home() {
 
 
   const successMessageRef = useRef<HTMLDivElement>(null);
-  const projectFilterTimerRef = useRef<number | null>(null);
-  const galleryLoadingTimerRef = useRef<number | null>(null);
   const contextTransitionTimerRef = useRef<number | null>(null);
-  const favoriteExportTimerRef = useRef<number | null>(null);
-  const projectSearchInputRef = useRef<HTMLInputElement>(null);
   const favoriteProjectIdSet = useMemo(() => new Set(favoriteProjectIds), [favoriteProjectIds]);
   const {
     data: blockedDates = [],
@@ -406,92 +333,23 @@ export default function Home() {
     refetch: refetchBlockedDates,
   } = trpc.availability.listBlocked.useQuery(undefined, { enabled: shouldLoadAvailability && !isStaticDeploy });
 
-  const normalizedProjectSearch = normalizeSearchText(projectSearch);
-  const hasActiveSavedProjectControls = Boolean(savedProjectSearch.trim()) || savedProjectSortMode !== "relevance";
-  const projectSearchSuggestions = useMemo<SearchSuggestion[]>(
-    () =>
-      buildProjectSearchSuggestions(repositories, {
-        activeTechnology,
-        activeCategory,
-        activeTag,
-      }),
-    [activeTechnology, activeCategory, activeTag],
-  );
-  const visibleSearchSuggestions = normalizedProjectSearch.length >= 2
-    ? projectSearchSuggestions
-      .filter((suggestion) => normalizeSearchText(suggestion.value).includes(normalizedProjectSearch))
-      .slice(0, 6)
-    : [];
-  const visibleRepositories = useMemo(
-    () =>
-      selectVisibleRepositories(repositories, {
-        activeTechnology,
-        activeCategory,
-        activeTag,
-        search: favoritesOnly ? savedProjectSearch : projectSearch,
-        sortMode: favoritesOnly ? savedProjectSortMode : sortMode,
-        favoritesOnly,
-        favoriteProjectIds,
-        sharedProjectIds,
-        manualProjectOrder,
-      }),
-    [
-      activeTechnology,
-      activeCategory,
-      activeTag,
-      favoritesOnly,
-      favoriteProjectIds,
-      manualProjectOrder,
-      projectSearch,
-      savedProjectSearch,
-      savedProjectSortMode,
-      sharedProjectIds,
-      sortMode,
-    ],
-  );
-  const displayedRepositories = visibleRepositories.slice(0, visibleProjectLimit);
-  const selectedProjectIndex = selectedProject ? visibleRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
-  const previousSelectedProject = selectedProjectIndex > 0 ? visibleRepositories[selectedProjectIndex - 1] : null;
-  const nextSelectedProject = selectedProjectIndex >= 0 && selectedProjectIndex < visibleRepositories.length - 1 ? visibleRepositories[selectedProjectIndex + 1] : null;
+  const projectNavigationRepositories = useMemo(() => {
+    const orderIndex = new Map(manualProjectOrder.map((id, index) => [id, index]));
+    return [...repositories].sort(
+      (first, second) =>
+        (orderIndex.get(first.id) ?? Number.MAX_SAFE_INTEGER) -
+        (orderIndex.get(second.id) ?? Number.MAX_SAFE_INTEGER),
+    );
+  }, [manualProjectOrder]);
+  const selectedProjectIndex = selectedProject ? projectNavigationRepositories.findIndex((repository) => repository.id === selectedProject.id) : -1;
+  const previousSelectedProject = selectedProjectIndex > 0 ? projectNavigationRepositories[selectedProjectIndex - 1] : null;
+  const nextSelectedProject = selectedProjectIndex >= 0 && selectedProjectIndex < projectNavigationRepositories.length - 1 ? projectNavigationRepositories[selectedProjectIndex + 1] : null;
   const featuredRepositories = useMemo(() => repositories.filter((repository) => repository.featured || repository.relevance >= 80).sort((first, second) => second.relevance - first.relevance).slice(0, 4), []);
-  const hasMoreRepositories = visibleRepositories.length > visibleProjectLimit;
-  const projectPageSize = 4;
+
 
   useEffect(() => {
-    setVisibleProjectLimit(projectPageSize);
-  }, [activeTechnology, activeCategory, activeTag, sortMode, normalizedProjectSearch, savedProjectSearch, savedProjectSortMode, favoritesOnly, favoriteProjectIds, sharedProjectIds]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const setOrDelete = (key: string, value: string, fallback: string) => {
-      if (value && value !== fallback) params.set(key, value);
-      else params.delete(key);
-    };
-    setOrDelete("technology", activeTechnology, "Todos");
-    setOrDelete("category", activeCategory, "Todos");
-    setOrDelete("tag", activeTag, "Todos");
-    setOrDelete("sort", sortMode, "relevance");
-    if (projectSearch.trim()) params.set("q", projectSearch.trim());
-    else params.delete("q");
-    const query = params.toString();
-    const nextUrl = `${window.location.pathname}${query ? `?${query}` : ""}${window.location.hash}`;
-    window.history.replaceState({}, "", nextUrl);
-  }, [activeTechnology, activeCategory, activeTag, sortMode, projectSearch]);
-
-  useEffect(() => {
-    const readUrlState = () => {
-      setActiveTechnology(getPortfolioUrlFilter("technology", technologyFilters, "Todos"));
-      setActiveCategory(getPortfolioUrlFilter("category", categoryFilters, "Todos"));
-      setActiveTag(getPortfolioUrlFilter("tag", tagFilters, "Todos") as (typeof tagFilters)[number]);
-      setSortMode(getPortfolioUrlFilter("sort", sortOptions.map((option) => option.value), "relevance") as (typeof sortOptions)[number]["value"]);
-      setProjectSearch(getPortfolioUrlSearch());
-    };
-    window.addEventListener("popstate", readUrlState);
-    return () => window.removeEventListener("popstate", readUrlState);
-  }, []);
-
-  useEffect(() => {
-    removeStorage(getSafeStorage("local"), "pablo-portfolio-recent-searches");
+    const storage = getSafeStorage("local");
+    removeStorage(storage, "pablo-portfolio-recent-searches");
   }, []);
 
   useEffect(() => {
@@ -503,25 +361,10 @@ export default function Home() {
   }, [fontScale]);
 
   useEffect(() => {
-    if (!isProjectFilterTransitioning) setIsGalleryLoading(false);
-  }, [isProjectFilterTransitioning]);
-
-  useEffect(() => {
     if (!recentlyActivatedOrderProfileId) return;
     const timer = window.setTimeout(() => setRecentlyActivatedOrderProfileId(null), 1500);
     return () => window.clearTimeout(timer);
   }, [recentlyActivatedOrderProfileId]);
-
-  useEffect(() => {
-    const sharedFavorites = new URLSearchParams(window.location.search).get("favorites");
-    if (!sharedFavorites) return;
-    const validProjectIds = new Set(repositories.map((repository) => repository.id));
-    const importedIds = sharedFavorites.split(",").map((id) => id.trim()).filter((id) => validProjectIds.has(id));
-    if (!importedIds.length) return;
-    setSharedProjectIds(importedIds);
-    setFavoritesOnly(true);
-    window.history.replaceState({}, document.title, `${window.location.pathname}${window.location.hash}`);
-  }, []);
 
 
   useEffect(() => {
@@ -563,7 +406,6 @@ export default function Home() {
   }, [menuOpen]);
 
   useEffect(() => () => {
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
   }, []);
 
@@ -641,16 +483,6 @@ export default function Home() {
     await copyTextWithFeedback("mpjcreator@gmail.com", setEmailCopyStatus);
   }
 
-  async function copyCurrentSearchLink() {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setSearchShareStatus("copied");
-    } catch {
-      setSearchShareStatus("error");
-    }
-    window.setTimeout(() => setSearchShareStatus("idle"), 2200);
-  }
-
   function openProjectDetails(project: Repository) {
     trackPortfolioEvent("project_opened", { projectId: project.id, surface: "details" });
     setProjectDetailsLoading(true);
@@ -706,21 +538,6 @@ export default function Home() {
     return () => visualViewport.removeEventListener("resize", updateKeyboardState);
   }, []);
 
-  function clearAllProjectFilters() {
-    setActiveTechnology("Todos");
-    setActiveCategory("Todos");
-    setActiveTag("Todos");
-    setProjectSearch("");
-    setSortMode("relevance");
-    setFavoritesOnly(false);
-    setActiveSearchSuggestionIndex(-1);
-    setIsProjectSearchFocused(false);
-    const params = new URLSearchParams(window.location.search);
-    ["technology", "category", "tag", "sort", "q"].forEach((key) => params.delete(key));
-    const nextQuery = params.toString();
-    window.history.replaceState({}, "", `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ""}${window.location.hash}`);
-  }
-
   useEffect(() => {
     if (!selectedProject) return;
     const handleProjectDetailsKeyDown = (event: KeyboardEvent) => {
@@ -737,18 +554,6 @@ export default function Home() {
     window.addEventListener("keydown", handleProjectDetailsKeyDown);
     return () => window.removeEventListener("keydown", handleProjectDetailsKeyDown);
   }, [selectedProject, nextSelectedProject, previousSelectedProject]);
-
-  function saveSharedFavorites() {
-    if (!sharedProjectIds?.length) return;
-    setFavoriteProjectIds((current) => Array.from(new Set([...current, ...sharedProjectIds])));
-    setSharedProjectIds(null);
-    setFavoritesOnly(true);
-  }
-
-  function dismissSharedFavorites() {
-    setSharedProjectIds(null);
-    setFavoritesOnly(false);
-  }
 
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
     event.preventDefault();
@@ -792,34 +597,6 @@ export default function Home() {
     window.setTimeout(() => setProjectCopyStatus("idle"), 2400);
   }
 
-  async function shareFavorites() {
-    if (!favoriteProjectIds.length) return;
-    const shareUrl = buildFavoritesShareUrl(window.location.href, favoriteProjectIds);
-    if (typeof navigator.share === "function") {
-      try {
-        await navigator.share({
-          title: "Projetos salvos — Pablo Guilherme",
-          text: "Confira esta seleção de projetos do portfólio de Pablo Guilherme.",
-          url: shareUrl,
-        });
-        trackPortfolioEvent("share_project", { channel: "native" });
-        setShareStatus("shared");
-        window.setTimeout(() => setShareStatus("idle"), 2600);
-        return;
-      } catch (error) {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      trackPortfolioEvent("share_project", { channel: "copy_link" });
-      setShareStatus("copied");
-    } catch {
-      setShareStatus("error");
-    }
-    window.setTimeout(() => setShareStatus("idle"), 2600);
-  }
-
   async function sharePortfolio() {
     const canonicalUrl =
       document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.href ||
@@ -851,47 +628,6 @@ export default function Home() {
     window.setTimeout(() => setPortfolioShareStatus("idle"), 2600);
   }
 
-  async function exportFavorites(format: FavoriteExportFormat) {
-    const favoriteProjects = repositories.filter((repository) => favoriteProjectIdSet.has(repository.id));
-    if (!favoriteProjects.length) return;
-    if (favoriteExportTimerRef.current) window.clearTimeout(favoriteExportTimerRef.current);
-    setFavoriteExportStatus(format === "pdf" ? "pdf-loading" : format);
-    if (format === "pdf") {
-      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
-    }
-    try {
-      await exportFavoriteProjects(format, favoriteProjects, getRepositoryCategories);
-    } catch {
-      setFavoriteExportStatus("error");
-      favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
-      return;
-    }
-    if (format === "pdf") setFavoriteExportStatus("pdf");
-    favoriteExportTimerRef.current = window.setTimeout(() => setFavoriteExportStatus("idle"), 4000);
-  }
-
-  function selectCategory(category: string) {
-    if (category === activeCategory) return;
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
-    setActiveCategory(category);
-    setIsProjectFilterTransitioning(true);
-    projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
-
-  function selectSort(mode: (typeof sortOptions)[number]["value"]) {
-    if (mode === sortMode) return;
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
-    setSortMode(mode);
-    setIsProjectFilterTransitioning(true);
-    projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
-
-  function clearSavedProjectControls() {
-    setSavedProjectSearch("");
-    setSavedProjectSortMode("relevance");
-    setSavedProjectControlStatus("Busca e ordenação dos projetos salvos foram limpas.");
-  }
-
   function navigateSavedAgendaContext(target: "saved" | "agenda") {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (contextTransitionTimerRef.current) window.clearTimeout(contextTransitionTimerRef.current);
@@ -910,21 +646,6 @@ export default function Home() {
     });
   }
 
-  function selectTag(tag: (typeof tagFilters)[number]) {
-    if (tag === activeTag) return;
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
-    setActiveTag(tag);
-    setIsProjectFilterTransitioning(true);
-    projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
-  function selectTechnology(technology: string) {
-    if (technology === activeTechnology) return;
-    if (projectFilterTimerRef.current) window.clearTimeout(projectFilterTimerRef.current);
-    setActiveTechnology(technology);
-    setIsProjectFilterTransitioning(true);
-    projectFilterTimerRef.current = window.setTimeout(() => { setIsProjectFilterTransitioning(false); setIsGalleryLoading(false); }, 170);
-  }
-
   function createOrderProfile() {
     const name = profileNameDraft.trim();
     if (!name) return;
@@ -941,7 +662,6 @@ export default function Home() {
     setActiveOrderProfileId(profile.id);
     setRecentlyActivatedOrderProfileId(profile.id);
     setProfileNameDraft(profile.preset ? "" : profile.name);
-    setSortMode("manual");
     setManualOrderStatus(`Perfil ${profile.name} ativado.`);
   }
 
@@ -956,7 +676,6 @@ export default function Home() {
     setRecentlyActivatedOrderProfileId(duplicatedProfile.id);
     setProfileNameDraft(duplicatedProfile.name);
     setManualProjectOrder(normalizeManualOrder(duplicatedProfile.order, repositories.map((repository) => repository.id)));
-    setSortMode("manual");
     setManualOrderStatus(`Perfil ${profile.name} duplicado como ${duplicatedProfile.name}.`);
   }
 
@@ -981,14 +700,12 @@ export default function Home() {
     setManualProjectOrder((currentOrder) => {
       return moveProjectInOrder(currentOrder, projectId, direction);
     });
-    if (sortMode !== "manual") setSortMode("manual");
     const movedRepository = repositories.find((repository) => repository.id === projectId);
     setManualOrderStatus(movedRepository ? `${movedRepository.name} movido ${direction < 0 ? "para cima" : "para baixo"}.` : "Ordem manual atualizada.");
   }
 
   function startProjectDrag(projectId: string) {
     setDraggedProjectId(projectId);
-    if (sortMode !== "manual") setSortMode("manual");
   }
 
   function dropProject(projectId: string) {
@@ -1003,65 +720,6 @@ export default function Home() {
     const movedRepository = repositories.find((repository) => repository.id === draggedProjectId);
     const targetRepository = repositories.find((repository) => repository.id === projectId);
     setManualOrderStatus(movedRepository && targetRepository ? `${movedRepository.name} movido antes de ${targetRepository.name}.` : "Ordem manual atualizada.");
-  }
-
-  function loadMoreProjects() {
-    if (!hasMoreRepositories || isGalleryLoading) return;
-    setIsGalleryLoading(true);
-    if (galleryLoadingTimerRef.current) window.clearTimeout(galleryLoadingTimerRef.current);
-    galleryLoadingTimerRef.current = window.setTimeout(() => {
-      setVisibleProjectLimit((current) => Math.min(current + projectPageSize, visibleRepositories.length));
-      setIsGalleryLoading(false);
-    }, 220);
-  }
-
-  function applyProjectSearchSuggestion(suggestion: SearchSuggestion) {
-    setProjectSearch(suggestion.value);
-    setActiveSearchSuggestionIndex(-1);
-    setIsProjectSearchFocused(false);
-    window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
-  }
-
-  function clearProjectSearch() {
-    setProjectSearch("");
-    setActiveSearchSuggestionIndex(-1);
-    setIsProjectSearchFocused(false);
-    window.requestAnimationFrame(() => projectSearchInputRef.current?.focus());
-  }
-
-  function handleProjectSearchKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Escape") {
-      if (projectSearch) {
-        event.preventDefault();
-        clearProjectSearch();
-      } else {
-        setActiveSearchSuggestionIndex(-1);
-        setIsProjectSearchFocused(false);
-      }
-      return;
-    }
-    if (!visibleSearchSuggestions.length) return;
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      setActiveSearchSuggestionIndex((current) => (current + 1) % visibleSearchSuggestions.length);
-    }
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      setActiveSearchSuggestionIndex((current) => current <= 0 ? visibleSearchSuggestions.length - 1 : current - 1);
-    }
-    if (event.key === "Enter" && activeSearchSuggestionIndex >= 0) {
-      event.preventDefault();
-      applyProjectSearchSuggestion(visibleSearchSuggestions[activeSearchSuggestionIndex]);
-    }
-  }
-
-  function shareRepositoryToWhatsApp(repository: Repository, event: React.MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-    const projectUrl = buildProjectShareUrl(window.location.href, repository.id);
-    trackPortfolioEvent("share_project", { channel: "whatsapp", projectId: repository.id });
-    const shareMessage = `Quero te mostrar ${repository.name} do portfólio de Pablo Guilherme. Veja os detalhes: ${projectUrl}`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(shareMessage)}`, "_blank", "noopener,noreferrer");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -1674,7 +1332,7 @@ export default function Home() {
             previousProject={previousSelectedProject}
             nextProject={nextSelectedProject}
             projectIndex={selectedProjectIndex}
-            projectCount={visibleRepositories.length}
+            projectCount={projectNavigationRepositories.length}
             onOpenChange={(open) => { if (!open) setSelectedProject(null); }}
             onTouchStart={handleProjectDetailsTouchStart}
             onTouchEnd={handleProjectDetailsTouchEnd}
