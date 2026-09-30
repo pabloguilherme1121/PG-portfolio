@@ -1426,7 +1426,7 @@ test.describe("portfólio profissional", () => {
 
     const appearance = page.getByRole("dialog", { name: "Aparência" });
     await expect(appearance).toBeVisible();
-    await expect(appearance.getByRole("group", { name: "Perfis de ordenação" }).getByRole("button", { name: /tecnologia/i })).toBeVisible();
+    await expect(appearance.getByRole("group", { name: "Perfis de ordenação" }).getByRole("button", { name: /^tecnologia base$/i })).toBeVisible();
     await expect(appearance.getByText(/nenhum perfil salvo/i)).toHaveCount(0);
   });
 
