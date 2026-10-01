@@ -54,7 +54,7 @@ export function getCheckersMovesFrom(board: CheckersBoard, from: number, capture
       const nextIndex = indexOf(nextRow, nextCol);
       const occupant = board[nextIndex];
 
-      if (!occupant && !captureOnly && directionsFor(piece).includes(rowDirection as never)) steps.push({ from, to: nextIndex });
+      if (!occupant && !captureOnly && directionsFor(piece).some((direction) => direction === rowDirection)) steps.push({ from, to: nextIndex });
 
       if (occupant && occupant.player !== piece.player) {
         const jumpRow = row + rowDirection * 2;
