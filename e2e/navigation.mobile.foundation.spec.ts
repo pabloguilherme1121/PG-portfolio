@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openContactBriefing, useDataSavingConnection } from "./helpers/contact";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 
@@ -51,14 +52,14 @@ test.describe("portfólio profissional", () => {
   });
 
   test("mantém briefing e PG Arcade confortáveis entre 320 e 430px", async ({ page }) => {
+    await useDataSavingConnection(page);
     for (const width of [320, 360, 390, 430]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
 
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 
-      const form = page.locator("#contato-briefing");
-      await form.scrollIntoViewIfNeeded();
+      const form = await openContactBriefing(page);
       await expect(form.locator('[data-briefing-studio="true"]')).toBeVisible();
       const briefingOverflow = await form.evaluate((element) =>
         Array.from(element.querySelectorAll<HTMLElement>("*"))

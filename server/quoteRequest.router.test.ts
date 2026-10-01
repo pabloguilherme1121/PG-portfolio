@@ -62,12 +62,21 @@ describe("quoteRequest.create", () => {
   });
 
   it("mantém o envio salvo quando a notificação falha", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
     mocks.notifyOwner.mockRejectedValueOnce(new Error("notification unavailable"));
 
-    const result = await createPublicCaller("203.0.113.14").quoteRequest.create({ ...validRequest, website: "" });
+    try {
+      const result = await createPublicCaller("203.0.113.14").quoteRequest.create({ ...validRequest, website: "" });
 
-    expect(result).toEqual({ success: true, requestId: 42, ownerNotified: false });
-    expect(mocks.createQuoteRequest).toHaveBeenCalledTimes(1);
+      expect(result).toEqual({ success: true, requestId: 42, ownerNotified: false });
+      expect(mocks.createQuoteRequest).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        "[QuoteRequest] Pedido salvo, mas a notificação não foi entregue:",
+        expect.any(Error),
+      );
+    } finally {
+      warn.mockRestore();
+    }
   });
 
   it("filtra honeypot antes de persistir ou notificar", async () => {

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openContactBriefing, useDataSavingConnection } from "./helpers/contact";
 
 const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 
@@ -89,11 +90,11 @@ test.describe("portfólio profissional", () => {
 
 
   test("briefing mantém apenas o fluxo estável e editável", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.goto("/");
 
+    const form = await openContactBriefing(page);
     await expect(page.locator('[data-briefing-quick-start="true"]')).toHaveCount(0);
-
-    const form = page.locator('[data-briefing-form="true"]');
     await expect(form).toBeVisible();
     await expect(form.locator('input[name="name"]')).toBeEditable();
     await expect(form.locator('input[name="email"]')).toBeEditable();
@@ -102,10 +103,10 @@ test.describe("portfólio profissional", () => {
   });
 
   test("briefing studio conduz o visitante por etapas sem perder contexto", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.goto("/");
 
-    const form = page.locator("#contato-briefing");
-    await form.scrollIntoViewIfNeeded();
+    const form = await openContactBriefing(page);
 
     const studio = form.locator('[data-briefing-studio="true"]');
     await expect(studio).toBeVisible();
@@ -130,10 +131,10 @@ test.describe("portfólio profissional", () => {
   });
 
   test("briefing profissional coleta requisitos, conteúdo, integrações e qualidade antes da revisão", async ({ page }) => {
+    await useDataSavingConnection(page);
     await page.goto("/");
 
-    const form = page.locator("#contato-briefing");
-    await form.scrollIntoViewIfNeeded();
+    const form = await openContactBriefing(page);
 
     await expect.poll(async () =>
       page.evaluate(() =>
@@ -230,6 +231,15 @@ test.describe("portfólio profissional", () => {
     await page.goto("/#contato-briefing");
     await expect(page.locator('[data-briefing-form="true"]')).toBeVisible();
     await expect.poll(() => contactRequests.length).toBeGreaterThan(0);
+  });
+
+  test("abre briefing por âncora direta com economia de dados", async ({ page }) => {
+    await useDataSavingConnection(page);
+    await page.goto("/#contato-briefing");
+
+    const form = page.locator('[data-briefing-form="true"]');
+    await expect(form).toBeVisible();
+    await expect(form.locator('input[name="name"]')).toBeEditable();
   });
 
   test("serviços conectam oferta a prova e briefing pré-preenchido", async ({ page }) => {
