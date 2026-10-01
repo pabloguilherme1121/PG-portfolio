@@ -12,8 +12,6 @@ export const conversionEventNames = [
   "diagnostic_option_selected",
   "diagnostic_stage_selected",
   "diagnostic_completed",
-  "proof_deck_selected",
-  "proof_deck_cta",
   "case_study_evidence_opened",
   "service_briefing_started",
   "service_evidence_opened",
@@ -41,7 +39,6 @@ type ConversionProperties = Partial<{
   format: "original" | "webp" | "avif";
   diagnosticPath: "presence" | "data" | "launch";
   diagnosticStage: "idea" | "evolve" | "ready";
-  proofId: "produto" | "qualidade" | "briefing";
   briefingStep: "contact" | "direction" | "scope" | "requirements" | "review";
   caseId: string;
   evidenceType: "live" | "code" | "media";
