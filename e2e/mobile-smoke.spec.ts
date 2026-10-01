@@ -16,11 +16,12 @@ test("menu mobile abre, recebe foco e expõe atalhos principais", async ({ page 
   await expect(navigation.locator('[data-mobile-shortcuts="true"]')).toBeVisible();
 });
 
-test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async ({ page }) => {
+test("hero mobile mantém CTA principal sem duplicar a camada de provas", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toBeVisible();
-  await expect(page.locator('[data-mobile-hero-proof="true"]')).toHaveCount(3);
+  await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
+  await expect(page.locator('[data-portfolio-trust-bar="true"] [data-portfolio-proof="true"]')).toHaveCount(3);
 
   const diagnostic = page.locator('[data-hero-cta="true"]').getByRole("link", { name: /começar diagnóstico/i });
   await expect(diagnostic).toBeVisible();
