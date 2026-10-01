@@ -9,17 +9,11 @@ import {
   ArrowUpRight,
   ClipboardCheck,
   Braces,
-  Download,
   FileText,
   Instagram,
   Layers2,
-  Menu,
   MessageCircle,
   Send,
-  Moon,
-  Sun,
-  Settings2,
-  X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -46,8 +40,6 @@ import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMen
 import { useFavoriteProjects } from "@/features/portfolio/hooks/useFavoriteProjects";
 import {
   portfolioMarkUrl as markUrl,
-  portfolioMobileSectionLabels as mobileSectionLabels,
-  portfolioNavigationItems as navigationItems,
   portfolioPortraitResponsive as portraitResponsive,
   portfolioPortraitUrl as portraitUrl,
   portfolioResumeUrl as resumeUrl,
