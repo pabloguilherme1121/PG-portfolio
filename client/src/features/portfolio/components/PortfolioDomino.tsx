@@ -11,7 +11,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   chooseDominoBotMove,
   dealDominoRound,
-  getDominoPipTotal,
+  getDominoPipTotal,\n  getDominoRoundPoints,\n  sortDominoHand,
   getPlayableDominoSides,
   hasPlayableDominoTile,
   placeDominoTile,
@@ -91,7 +91,7 @@ export default function PortfolioDomino() {
   const [matchWinner, setMatchWinner] = useState<Turn | null>(null);
   const [passes, setPasses] = useState(0);
   const [round, setRound] = useState(1);
-  const [score, setScore] = useState({ player: 0, opponent: 0, draws: 0 });
+  const [score, setScore] = useState({ player: 0, opponent: 0, draws: 0 });\n  const [points, setPoints] = useState({ player: 0, opponent: 0 });\n  const [lastMove, setLastMove] = useState("Escolha uma pedra para abrir a mesa.");
   const [handoffPending, setHandoffPending] = useState(false);
   const [pendingMove, setPendingMove] = useState<PendingMove>(null);
 
@@ -123,7 +123,7 @@ export default function PortfolioDomino() {
     setPendingMove(null);
     if (resetScore) {
       setRound(1);
-      setScore({ player: 0, opponent: 0, draws: 0 });
+      setScore({ player: 0, opponent: 0, draws: 0 });\n      setPoints({ player: 0, opponent: 0 });\n      setLastMove("Escolha uma pedra para abrir a mesa.");
       setMatchWinner(null);
     }
   };
@@ -229,7 +229,7 @@ export default function PortfolioDomino() {
     }
 
     const nextTurn: Turn = turn === "player" ? "opponent" : "player";
-    setPasses(value => value + 1);
+    setLastMove(`${turn === "player" ? (mode === "bot" ? "Você" : "Jogador 1") : (mode === "bot" ? "PG Bot" : "Jogador 2")} passou a vez.`);\n    setPasses(value => value + 1);
     setTurn(nextTurn);
     setPendingMove(null);
     if (mode === "local") setHandoffPending(true);
@@ -270,7 +270,7 @@ export default function PortfolioDomino() {
         setChain(nextChain);
         setPasses(0);
 
-        if (!nextHand.length) finishRound("opponent");
+        if (!nextHand.length) {\n          setPoints(current => ({ ...current, opponent: current.opponent + getDominoRoundPoints(playerHand) }));\n          finishRound("opponent");\n        }
         else setTurn("player");
       },
       difficulty === "master" ? 520 : 360
@@ -567,11 +567,11 @@ export default function PortfolioDomino() {
           <div
             data-domino-chain="true"
             aria-label="Mesa de dominó"
-            className="mt-4 flex min-h-24 items-center gap-2 overflow-x-auto rounded-[12px] border border-white/10 bg-[#04101b] p-3"
+            className="mt-3 flex min-h-32 snap-x items-center gap-2 overflow-x-auto rounded-[16px] border border-white/10 bg-[radial-gradient(circle_at_center,_#0b2940,_#04101b_68%)] p-4 shadow-inner"
           >
             {chain.length ? (
               chain.map((tile, index) => (
-                <TileFace key={`${tile.join("-")}-${index}`} tile={tile} />
+                <span className="snap-center" key={`${tile.join("-")}-${index}`}><TileFace tile={tile} /></span>
               ))
             ) : (
               <p className="mx-auto font-body text-xs uppercase tracking-[0.1em] text-[#628097]">
@@ -617,7 +617,7 @@ export default function PortfolioDomino() {
               </div>
             ) : (
               <div data-domino-hand="true" className="flex flex-wrap gap-2">
-                {currentHand.map((tile, index) => {
+                {sortDominoHand(currentHand, chain).map((tile) => {\n                  const index = currentHand.indexOf(tile);
                   const playable =
                     !winner && getPlayableDominoSides(tile, chain).length > 0;
                   const hidden = mode === "bot" && turn === "opponent";
@@ -633,7 +633,7 @@ export default function PortfolioDomino() {
                           : `Pedra ${tile[0]} por ${tile[1]}`
                       }
                       onClick={() => playTile(turn, index)}
-                      className="min-h-12 rounded-[10px] disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                      className={`min-h-12 rounded-[10px] transition ${playable && !hidden ? "scale-[1.02] ring-1 ring-cyan-300/50 hover:-translate-y-1" : ""} disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]`}
                     >
                       {hidden ? (
                         <span className="grid h-12 min-w-14 place-items-center rounded-[9px] border border-white/10 bg-[#0b2236] font-mono text-xs text-[#628097]">
