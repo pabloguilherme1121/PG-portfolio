@@ -274,6 +274,29 @@ test.describe("portfólio profissional", () => {
 
 
 
+  test("experience hub mantém conteúdo textual dentro do viewport após rolar a rota mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await hubPlaceholder.scrollIntoViewIfNeeded();
+    const hub = page.locator('[data-experience-hub="true"]');
+    await expect(hub).toBeVisible();
+
+    await hub.getByRole("tab", { name: /quero explorar/i }).click();
+    await expect(hub.locator('[data-experience-panel="explorer"]')).toBeVisible();
+
+    const clipped = await hub.evaluate((root) =>
+      Array.from(root.querySelectorAll<HTMLElement>("h2, h3, p, [data-experience-progress='true']"))
+        .filter((node) => node.offsetParent !== null)
+        .filter((node) => {
+          const rect = node.getBoundingClientRect();
+          return rect.left < -1 || rect.right > window.innerWidth + 1;
+        })
+        .map((node) => ({ text: node.textContent?.trim().slice(0, 80), left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right })),
+    );
+    expect(clipped).toEqual([]);
+  });
+
   test("experience hub não desloca a página horizontalmente ao escolher Quero explorar", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
