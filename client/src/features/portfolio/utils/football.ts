@@ -1,4 +1,16 @@
 export type FootballMode = "penalty" | "free-kick";
+export type FootballDifficulty = "easy" | "normal" | "hard" | "master";
+
+export function chooseFootballKeeperPosition(
+  difficulty: FootballDifficulty,
+  aim: number,
+  random: () => number = Math.random,
+) {
+  const randomPosition = 15 + random() * 70;
+  const anticipation = { easy: 0.08, normal: 0.28, hard: 0.52, master: 0.72 }[difficulty];
+  return Math.max(10, Math.min(90, randomPosition * (1 - anticipation) + aim * anticipation));
+}
+
 export function resolveFootballShot(
   mode: FootballMode,
   aim: number,
