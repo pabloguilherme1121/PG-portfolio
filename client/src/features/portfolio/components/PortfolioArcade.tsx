@@ -126,9 +126,9 @@ export default function PortfolioArcade() {
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.14),transparent_62%)]" />
       <div className="mx-auto max-w-[1180px] px-4 pt-4 sm:px-8 lg:px-12">
         <div className="overflow-hidden rounded-[22px] border border-[#67e8f9]/20 bg-[linear-gradient(145deg,rgba(8,32,59,0.96),rgba(4,18,37,0.92))] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-5">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="inline-flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
+          <div className="flex min-w-0 flex-wrap items-end justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="inline-flex max-w-full flex-wrap items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
                 <Gamepad2 className="h-4 w-4" aria-hidden="true" />
                 PG Arcade · escolher jogo
               </p>
@@ -137,14 +137,14 @@ export default function PortfolioArcade() {
                 pênaltis e faltas.
               </p>
             </div>
-            <div className="flex flex-wrap justify-end gap-2">
-              <span className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.09em] text-[#8fa8c7]">
+            <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-2 sm:justify-end">
+              <span className="max-w-full rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#8fa8c7] [overflow-wrap:anywhere]">
                 sem cadastro · progresso local
               </span>
               <span
                 data-arcade-session-summary="true"
                 aria-live="polite"
-                className="rounded-full border border-[#67e8f9]/20 bg-[#08203b] px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.09em] text-[#a5f3fc]"
+                className="max-w-full rounded-full border border-[#67e8f9]/20 bg-[#08203b] px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#a5f3fc] [overflow-wrap:anywhere]"
               >
                 {totalSelections > 0
                   ? `último: ${selectedGameLabel} · ${totalSelections} seleções`
@@ -181,7 +181,7 @@ export default function PortfolioArcade() {
                   mostVisitedGame === item.id ? "true" : undefined
                 }
                 onClick={() => selectGame(item.id)}
-                className={`group relative min-h-[82px] overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
+                className={`group relative min-h-[82px] min-w-0 max-w-full overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
               >
                 <span className="flex items-center justify-between gap-2">
                   <span className={`grid h-8 w-8 place-items-center rounded-[10px] border ${isActive ? "border-[#67e8f9]/40 bg-[#67e8f9]/10 text-[#a5f3fc]" : "border-white/10 bg-white/[0.03] text-[#7894ae] group-hover:text-[#a5f3fc]"}`}>
@@ -193,8 +193,8 @@ export default function PortfolioArcade() {
                     </span>
                   ) : null}
                 </span>
-                <span className="mt-2 block font-mono text-xs font-semibold">{item.label}</span>
-                <span className="mt-0.5 hidden font-body text-[11px] leading-4 text-[#9fb7d1] min-[390px]:block">
+                <span className="mt-2 block max-w-full font-mono text-xs font-semibold leading-4 [overflow-wrap:anywhere]">{item.label}</span>
+                <span className="mt-0.5 hidden max-w-full font-body text-[11px] leading-4 text-[#9fb7d1] [overflow-wrap:anywhere] min-[390px]:block">
                   {item.meta}
 
                 </span>
@@ -205,7 +205,7 @@ export default function PortfolioArcade() {
 
           <div
             data-arcade-exploration="true"
-            className="mt-3 flex flex-col gap-3 rounded-[15px] border border-white/8 bg-black/15 p-3.5 sm:flex-row sm:items-center sm:justify-between"
+            className="mt-3 min-w-0 max-w-full flex-col gap-3 rounded-[15px] flex border border-white/8 bg-black/15 p-3.5 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.09em] text-[#9fb7d1]">
@@ -229,7 +229,7 @@ export default function PortfolioArcade() {
                 />
               </div>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 min-[420px]:flex-row">
+            <div className="flex min-w-0 max-w-full shrink-0 flex-col gap-2 min-[420px]:flex-row">
               {totalSelections > 0 || session.explored.length > 1 ? (
                 <button
                   type="button"
