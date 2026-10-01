@@ -42,6 +42,13 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Browser tests
         run: pnpm test:e2e
+      - name: Preserve browser failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-failure-diagnostics
+          path: test-results
+          if-no-files-found: ignore
       - name: Build static portfolio
         run: pnpm build:static
       - name: Browser smoke on static bundle
