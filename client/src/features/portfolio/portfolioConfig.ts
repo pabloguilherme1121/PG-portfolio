@@ -16,10 +16,8 @@ export const portfolioTelegramUrl = "https://t.me/mpjmarketing";
 
 export const portfolioNavigationItems = [
   ["sobre", "#sobre", "sobre"],
-  ["competências", "#trilha", "trilha"],
   ["serviços", "#servicos", "servicos"],
   ["projetos", "#projetos", "projetos"],
-  ["observatório", "#observatorio", "observatorio"],
 ] as const;
 
 export const portfolioMobileSectionLabels: Record<string, string> = {
