@@ -62,7 +62,21 @@ export function placeDominoTile(chain: DominoTile[], tile: DominoTile, side: Dom
   return chain;
 }
 
-export function getDominoRoundPoints(loserHand: DominoTile[]) {\n  return getDominoPipTotal(loserHand);\n}\n\nexport function sortDominoHand(hand: DominoTile[], chain: DominoTile[]) {\n  return [...hand].sort((a, b) => {\n    const playableDelta = Number(getPlayableDominoSides(b, chain).length > 0) - Number(getPlayableDominoSides(a, chain).length > 0);\n    if (playableDelta) return playableDelta;\n    const doubleDelta = Number(b[0] === b[1]) - Number(a[0] === a[1]);\n    if (doubleDelta) return doubleDelta;\n    return b[0] + b[1] - (a[0] + a[1]);\n  });\n}\n\nexport function getDominoPipTotal(hand: DominoTile[]) {
+export function getDominoRoundPoints(loserHand: DominoTile[]) {
+  return getDominoPipTotal(loserHand);
+}
+
+export function sortDominoHand(hand: DominoTile[], chain: DominoTile[]) {
+  return [...hand].sort((a, b) => {
+    const playableDelta = Number(getPlayableDominoSides(b, chain).length > 0) - Number(getPlayableDominoSides(a, chain).length > 0);
+    if (playableDelta) return playableDelta;
+    const doubleDelta = Number(b[0] === b[1]) - Number(a[0] === a[1]);
+    if (doubleDelta) return doubleDelta;
+    return b[0] + b[1] - (a[0] + a[1]);
+  });
+}
+
+export function getDominoPipTotal(hand: DominoTile[]) {
   return hand.reduce((total, tile) => total + tile[0] + tile[1], 0);
 }
 

@@ -1287,7 +1287,7 @@ html.theme-transitioning .arquivo-page * {
   .experience-route-strip {
     scrollbar-width: none;
     overscroll-behavior-inline: contain;
-    scroll-padding-inline: 0.25rem;
+    scroll-padding-inline: 0.75rem;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1513,13 +1513,6 @@ html.theme-transitioning .arquivo-page * {
 
   .experience-route-card {
     scroll-snap-stop: always;
-  }
-
-  .experience-route-strip::before,
-  .experience-route-strip::after {
-    content: "";
-    flex: 0 0 clamp(3rem, 18vw, 4rem);
-    pointer-events: none;
   }
 
   [data-experience-hub="true"] {

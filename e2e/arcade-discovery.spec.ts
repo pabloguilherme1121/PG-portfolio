@@ -5,10 +5,7 @@ test("PG Arcade mostra progresso de exploração e sugere o próximo jogo sem pe
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  await page
-    .getByRole("button", {
-      name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i,
-    })
+  await page.locator('[data-arcade-open-control="true"]')
     .click();
 
   const arcade = page.locator('[data-arcade-hub="true"]');

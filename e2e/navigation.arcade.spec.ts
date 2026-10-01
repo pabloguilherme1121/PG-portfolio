@@ -10,7 +10,7 @@ test.describe("portfólio profissional", () => {
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game).toHaveCount(0);
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
     await game.scrollIntoViewIfNeeded();
     await expect(game).toBeVisible();
     await expect(game.getByRole("heading", { name: /jogo da velha/i })).toBeVisible();
@@ -31,7 +31,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade combina presets rápidos, controles avançados e modo local", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     const presets = game.locator('[data-arcade-presets="true"]');
@@ -74,7 +74,7 @@ test.describe("portfólio profissional", () => {
       }));
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-stats="true"]')).toContainText("5");
@@ -109,7 +109,7 @@ test.describe("portfólio profissional", () => {
       });
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await game.locator('[data-arcade-presets="true"]').getByRole("button", { name: /dupla/i }).click();
@@ -124,7 +124,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade respeita a troca para O e deixa o PG Bot abrir com X", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const game = page.locator('[data-tic-tac-toe="true"]');
     await game.locator('[data-arcade-advanced="true"] summary').click();
@@ -137,7 +137,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade alterna entre dominó e damas com modos, mestre, séries e 1x1 local", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
     await expect(arcade.getByRole("tab")).toHaveCount(5);
@@ -193,7 +193,7 @@ test.describe("portfólio profissional", () => {
       );
     });
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
     const checkersTab = arcade.getByRole("tab", { name: /damas/i });
@@ -216,7 +216,7 @@ test.describe("portfólio profissional", () => {
 
   test("PG Arcade preserva a partida ao alternar entre jogos", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
     const game = arcade.locator('[data-tic-tac-toe="true"]');
@@ -236,7 +236,7 @@ test.describe("portfólio profissional", () => {
 
   test("abas do PG Arcade suportam setas, Home e End pelo teclado", async ({ page }) => {
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
     const tabs = arcade.getByRole("tab");
