@@ -167,14 +167,14 @@ export default function PortfolioExperienceHub() {
                   tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
                   onKeyDown={(event) => handleRouteKeyDown(event, index)}
-                  className={`experience-route-card group relative min-h-[72px] w-[78%] shrink-0 snap-center overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:w-auto sm:min-w-0 sm:px-4 sm:py-4 ${
+                  className={`experience-route-card group relative min-h-[72px] w-[78%] shrink-0 snap-center overflow-hidden border px-3 py-2 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:w-auto sm:min-w-0 sm:px-4 sm:py-4 ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
                   }`}
                 >
-                  <span className="flex items-center gap-4">
-                    <span className={`grid h-10 w-10 shrink-0 place-items-center border sm:h-11 sm:w-11 ${
+                  <span className="flex items-center gap-3 sm:gap-4">
+                    <span className={`grid h-9 w-9 shrink-0 place-items-center border sm:h-11 sm:w-11 ${
                       active ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]" : "border-white/10 text-[#91bad6]"
                     }`}>
                       <Icon className="h-4 w-4" aria-hidden="true" />
