@@ -512,7 +512,6 @@ export default function Home() {
                 {label}
               </a>
             ))}
-            <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="nav-link text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-[#a5f3fc] transition-colors hover:text-white">observatório <ArrowUpRight className="ml-1 inline h-3 w-3" /></a>
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
             <button
               type="button"
@@ -620,7 +619,7 @@ export default function Home() {
           {shouldLoadExperienceHub ? (
             <Suspense
               fallback={
-                <section data-experience-hub-placeholder="true" role="status" aria-live="polite" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12">
+                <section data-experience-hub-placeholder="true" role="status" aria-live="polite" className="experience-hub-surface archive-chapter min-h-[520px] border-y border-white/[0.08] bg-[#050d18] px-5 py-10 sm:min-h-[620px] sm:px-8 sm:py-14 lg:px-12">
                   <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc]">
                     carregando rotas do portfólio…
                   </div>
@@ -630,7 +629,7 @@ export default function Home() {
               <PortfolioExperienceHub />
             </Suspense>
           ) : (
-            <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12" aria-label="Rotas do portfólio">
+            <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[520px] border-y border-white/[0.08] bg-[#050d18] px-5 py-10 sm:min-h-[620px] sm:px-8 sm:py-14 lg:px-12" aria-label="Rotas do portfólio">
               <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
                 rotas do portfólio serão carregadas ao aproximar
               </div>
