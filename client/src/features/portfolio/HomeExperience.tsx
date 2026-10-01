@@ -665,7 +665,9 @@ export default function Home() {
               </Suspense>
             )}
           </div>
-        </section>\n\n        <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
+        </section>
+
+        <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
           {shouldRenderDiagnostic ? (
             <Suspense
               fallback={
