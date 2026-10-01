@@ -29,6 +29,7 @@ export const conversionEventNames = [
   "tic_tac_toe_preset_selected",
   "tic_tac_toe_hint_used",
   "arcade_game_selected",
+  "arcade_progress_reset",
   "experience_route_selected",
   "experience_route_cta",
 ] as const;
