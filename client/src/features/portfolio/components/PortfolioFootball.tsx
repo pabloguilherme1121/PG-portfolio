@@ -13,7 +13,8 @@ const feedback = {
   barreira: "Na barreira! Aumente a força ou a curva.",
 };
 export default function PortfolioFootball() {
-  const [mode, setMode] = useState<FootballMode>("penalty");\n  const [difficulty, setDifficulty] = useState<FootballDifficulty>("normal");
+  const [mode, setMode] = useState<FootballMode>("penalty");
+  const [difficulty, setDifficulty] = useState<FootballDifficulty>("normal");
   const [aim, setAim] = useState(30);
   const [power, setPower] = useState(65);
   const [curve, setCurve] = useState(0);
@@ -82,7 +83,9 @@ export default function PortfolioFootball() {
               Mire no gol, ajuste força e curva e enfrente quatro níveis de leitura do goleiro.
             </p>
           </div>
-          <div className="flex flex-col items-end gap-2">\n          <div\n            className="flex rounded-xl bg-[#0b2136] p-1"
+          <div className="flex flex-col items-end gap-2">
+          <div
+            className="flex rounded-xl bg-[#0b2136] p-1"
             aria-label="Modalidade"
           >
             {(
