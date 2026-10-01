@@ -63,10 +63,14 @@ export default function PortfolioExperienceHub() {
     if (window.matchMedia("(max-width: 639px)").matches) {
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       window.requestAnimationFrame(() => {
-        document.getElementById(`experience-route-${routeId}`)?.scrollIntoView({
+        const route = document.getElementById(`experience-route-${routeId}`);
+        const strip = route?.closest<HTMLElement>('[data-experience-route-strip="true"]');
+        if (!route || !strip) return;
+
+        const targetLeft = route.offsetLeft - (strip.clientWidth - route.offsetWidth) / 2;
+        strip.scrollTo({
+          left: Math.max(0, targetLeft),
           behavior: reduceMotion ? "auto" : "smooth",
-          block: "nearest",
-          inline: "center",
         });
       });
     }
