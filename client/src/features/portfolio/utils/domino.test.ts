@@ -3,7 +3,9 @@ import {
   chooseDominoBotMove,
   createDominoSet,
   dealDominoRound,
-  getDominoPipTotal,\n  getDominoRoundPoints,\n  sortDominoHand,
+  getDominoPipTotal,
+  getDominoRoundPoints,
+  sortDominoHand,
   getPlayableDominoSides,
   placeDominoTile,
 } from "./domino";
@@ -45,7 +47,17 @@ describe("domino", () => {
     expect(["left", "right"]).toContain(move?.side);
   });
 
-  it("sorts playable tiles first and prioritizes doubles", () => {\n    const hand = [[1, 2], [6, 6], [2, 2], [5, 0]] as const;\n    const sorted = sortDominoHand([...hand], [[3, 2]]);\n    expect(sorted.slice(0, 2)).toEqual([[2, 2], [1, 2]]);\n  });\n\n  it("awards the loser hand pips as round points", () => {\n    expect(getDominoRoundPoints([[6, 6], [3, 2]])).toBe(17);\n  });\n\n  it("sums pips for blocked-round scoring", () => {
+  it("sorts playable tiles first and prioritizes doubles", () => {
+    const hand = [[1, 2], [6, 6], [2, 2], [5, 0]] as const;
+    const sorted = sortDominoHand([...hand], [[3, 2]]);
+    expect(sorted.slice(0, 2)).toEqual([[2, 2], [1, 2]]);
+  });
+
+  it("awards the loser hand pips as round points", () => {
+    expect(getDominoRoundPoints([[6, 6], [3, 2]])).toBe(17);
+  });
+
+  it("sums pips for blocked-round scoring", () => {
     expect(getDominoPipTotal([[6, 6], [3, 2], [0, 1]])).toBe(18);
   });
 });
