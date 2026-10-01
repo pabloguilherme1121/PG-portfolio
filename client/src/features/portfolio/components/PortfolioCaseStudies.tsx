@@ -1,5 +1,6 @@
 import { caseStudies } from "@/features/portfolio/portfolioData";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import PortfolioQualityEvidence from "@/features/portfolio/components/PortfolioQualityEvidence";
 import { ArrowUpRight, CheckCircle2, Github } from "lucide-react";
 
 export default function PortfolioCaseStudies() {
@@ -109,6 +110,8 @@ export default function PortfolioCaseStudies() {
           </article>
         ))}
       </div>
+
+      <PortfolioQualityEvidence />
     </div>
   );
 }
