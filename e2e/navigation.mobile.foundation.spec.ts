@@ -236,4 +236,61 @@ test.describe("portfólio profissional", () => {
   });
 
 
+  test("cards e textos críticos permanecem dentro da largura mobile", async ({ page }) => {
+    for (const width of [320, 360, 390, 430]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+
+      await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+      await expect(page.locator('[data-arcade-hub="true"]')).toBeVisible();
+
+      const overflow = await page.evaluate(() => {
+        const selectors = [
+          '[data-arcade-hub="true"]',
+          '[data-arcade-hub="true"] [role="tab"]',
+          '[data-arcade-exploration="true"]',
+          '[data-arcade-preset-card="true"]',
+          '.featured-project-card',
+          '.process-step-card',
+          '.service-offer-panel[data-service-active="true"]',
+        ];
+
+        return selectors.flatMap((selector) =>
+          Array.from(document.querySelectorAll<HTMLElement>(selector))
+            .filter((node) => node.offsetParent !== null)
+            .filter((node) => {
+              const rect = node.getBoundingClientRect();
+              return rect.left < -1 || rect.right > window.innerWidth + 1;
+            })
+            .map((node) => ({
+              selector,
+              text: node.textContent?.trim().slice(0, 80),
+              left: Math.round(node.getBoundingClientRect().left),
+              right: Math.round(node.getBoundingClientRect().right),
+              width: Math.round(node.getBoundingClientRect().width),
+            })),
+        );
+      });
+
+      expect(overflow).toEqual([]);
+
+      const clippedText = await page.evaluate(() =>
+        Array.from(document.querySelectorAll<HTMLElement>(
+          '[data-arcade-hub="true"] p, [data-arcade-hub="true"] span, [data-arcade-hub="true"] button'
+        ))
+          .filter((node) => node.offsetParent !== null)
+          .filter((node) => node.scrollWidth > node.clientWidth + 1)
+          .map((node) => ({
+            tag: node.tagName,
+            text: node.textContent?.trim().slice(0, 80),
+            scrollWidth: node.scrollWidth,
+            clientWidth: node.clientWidth,
+          }))
+          .slice(0, 20),
+      );
+
+      expect(clippedText).toEqual([]);
+    }
+  });
+
 });

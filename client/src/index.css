@@ -1971,3 +1971,60 @@ html.theme-transitioning .arquivo-page * {
     contain-intrinsic-size: none;
   }
 }
+
+
+/* Mobile overflow guard v14 — mantém cards e palavras dentro da viewport sem mascarar conteúdo. */
+@media (max-width: 639px) {
+  .arquivo-page,
+  .arquivo-page main,
+  .arquivo-page section,
+  .arquivo-page article,
+  .arquivo-page [data-arcade-hub="true"],
+  .arquivo-page [data-arcade-exploration="true"],
+  .arquivo-page [data-arcade-preset-card="true"],
+  .arquivo-page .featured-project-card,
+  .arquivo-page .process-step-card,
+  .arquivo-page .service-offer-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .arquivo-page h1,
+  .arquivo-page h2,
+  .arquivo-page h3,
+  .arquivo-page h4,
+  .arquivo-page p,
+  .arquivo-page li,
+  .arquivo-page button,
+  .arquivo-page a,
+  .arquivo-page span {
+    overflow-wrap: anywhere;
+    word-break: normal;
+    hyphens: auto;
+  }
+
+  .arquivo-page button,
+  .arquivo-page a {
+    white-space: normal;
+  }
+
+  [data-arcade-hub="true"] [role="tab"],
+  [data-arcade-hub="true"] [data-arcade-reset-progress="true"],
+  [data-arcade-hub="true"] [data-arcade-suggestion="true"] {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  [data-arcade-hub="true"] [role="tab"] > *,
+  [data-arcade-exploration="true"] > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .service-selector-button,
+  .service-offer-panel,
+  .featured-project-card,
+  .process-step-card {
+    overflow-wrap: anywhere;
+  }
+}
