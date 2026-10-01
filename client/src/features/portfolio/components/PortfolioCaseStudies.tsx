@@ -45,7 +45,7 @@ export default function PortfolioCaseStudies() {
               <p className="mt-2 font-body text-sm leading-7 text-[#e2f5ff]">{study.objective}</p>
             </div>
 
-            <dl className="mt-6 grid gap-px bg-cyan-100/[0.1] sm:grid-cols-3">
+            <dl className="mt-6 grid gap-px bg-cyan-100/[0.1] lg:grid-cols-3">
               <div className="min-w-0 bg-[#06111f] p-4">
                 <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">problema</dt>
                 <dd className="mt-2 font-body text-sm leading-6 text-[#c5deeb]">{study.problem}</dd>
