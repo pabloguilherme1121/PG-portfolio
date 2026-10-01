@@ -140,13 +140,14 @@ test.describe("portfólio profissional", () => {
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
-    await expect(arcade.getByRole("tab")).toHaveCount(3);
+    await expect(arcade.getByRole("tab")).toHaveCount(4);
 
     await arcade.getByRole("tab", { name: /dominó/i }).click();
     const domino = arcade.locator('[data-domino-game="true"]');
     await expect(domino).toBeVisible();
     await expect(domino.getByRole("button", { name: /contra bot/i })).toHaveAttribute("aria-pressed", "true");
 
+    await domino.locator("[data-domino-settings] summary").click();
     await domino.getByRole("button", { name: /mestre/i }).click();
     await expect(domino.getByRole("button", { name: /mestre/i })).toHaveAttribute("aria-pressed", "true");
     await domino.getByRole("button", { name: /bloqueio sem compra/i }).click();

@@ -865,7 +865,7 @@ export default function Home() {
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · opcional</p>
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma área interativa com jogo da velha, dominó e damas. Há modos contra bot, dificuldades progressivas e 1 × 1 local; tudo só é carregado quando você abre o Arcade.</p>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma área interativa com jogo da velha, dominó por cores, damas e futebol com pênaltis e faltas. Há modos contra bot, dificuldades progressivas e 1 × 1 local; tudo só é carregado quando você abre o Arcade.</p>
             </div>
             <button
               type="button"
@@ -920,7 +920,7 @@ export default function Home() {
         )}
       </div>
 
-      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
+      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || pgLabOpen} tabIndex={showBackToTop && !pgLabOpen ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !pgLabOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav
         aria-label="Ações rápidas"
         aria-hidden={isDockHidden ? "true" : undefined}
