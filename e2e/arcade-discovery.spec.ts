@@ -51,3 +51,17 @@ test("PG Arcade mostra progresso de exploração e sugere o próximo jogo sem pe
     explored: ["velha", "domino", "futebol"],
   });
 });
+
+
+test("PG Arcade aparece como vitrine interativa antes dos projetos sem abrir automaticamente", async ({ page }) => {
+  await page.goto("./");
+  const arcade = page.locator("#pg-lab");
+  const projects = page.locator("#projetos");
+  await expect(arcade).toBeVisible();
+  await expect(arcade).toHaveAttribute("data-arcade-showcase", "true");
+  await expect(page.locator('[data-arcade-open-control="true"]')).toContainText("explorar PG Arcade");
+  await expect(page.locator("#pg-lab-game")).toBeHidden();
+  const arcadeBox = await arcade.boundingBox();
+  const projectsBox = await projects.boundingBox();
+  expect(arcadeBox?.y ?? Infinity).toBeLessThan(projectsBox?.y ?? -Infinity);
+});
