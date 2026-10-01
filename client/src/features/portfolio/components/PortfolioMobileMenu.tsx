@@ -236,7 +236,6 @@ export default function PortfolioMobileMenu({
             )}
           </div>
         </div>
-        )}
         </div>
       </nav>
     </div>
