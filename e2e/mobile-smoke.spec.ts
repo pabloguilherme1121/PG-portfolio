@@ -30,8 +30,11 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
 
 test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
+  await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
   await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
 
+  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
   const arcade = page.locator('[data-arcade-hub="true"]');
   const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
   await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
@@ -44,11 +47,18 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await domino.getByRole("button", { name: /1 × 1 local/i }).click();
   await expect(domino.locator('[data-domino-mode="local"]')).toHaveAttribute("aria-pressed", "true");
 
-  await arcade.getByRole("tab", { name: /damas/i }).click();
+  const checkersTab = arcade.getByRole("tab", { name: /damas/i });
+  await checkersTab.click();
+  await expect(checkersTab).toHaveAttribute("aria-selected", "true");
   const checkers = arcade.locator('[data-checkers-game="true"]');
   await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
   await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
   await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+
+  await arcade.getByRole("tab", { name: /jogo da velha/i }).click();
+  await expect(checkers).toHaveCount(0);
+  await checkersTab.click();
+  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible();
 });
 
 

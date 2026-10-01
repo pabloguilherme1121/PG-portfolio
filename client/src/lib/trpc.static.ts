@@ -35,6 +35,15 @@ function staticMutation(): StaticMutationResult {
  * Mantém a interface mínima consumida pela home sem carregar tRPC/React Query.
  */
 export const trpc = {
+  instagramFeed: {
+    status: {
+      useQuery: (..._args: unknown[]) => staticQuery({
+        status: "credentials_required" as const,
+        items: [],
+        message: "O feed ao vivo não está disponível no GitHub Pages.",
+      }),
+    },
+  },
   availability: {
     listBlocked: {
       useQuery: () => staticQuery<{ dateKey: string }[]>([]),

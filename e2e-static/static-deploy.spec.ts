@@ -2,7 +2,13 @@ import { expect, test } from "@playwright/test";
 
 function collectPageErrors(page: import("@playwright/test").Page) {
   const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("pageerror", (error) => {
+    errors.push(error.message);
+    console.error("Static page error:", error.stack ?? error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") console.error("Static browser console:", message.text());
+  });
   return errors;
 }
 
@@ -56,7 +62,7 @@ test("bundle estático resolve briefing por âncora direta", async ({ page }) =>
   expect(pageErrors).toEqual([]);
 });
 
-test("bundle estático carrega os chunks lazy do PG Arcade", async ({ page }) => {
+test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
 
   await page.goto("./");
@@ -69,8 +75,20 @@ test("bundle estático carrega os chunks lazy do PG Arcade", async ({ page }) =>
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible({ timeout: 15_000 });
 
-  await arcade.getByRole("tab", { name: /damas/i }).click();
+  const checkersTab = arcade.getByRole("tab", { name: /damas/i });
+  await checkersTab.click();
+  await expect(checkersTab).toHaveAttribute("aria-selected", "true");
   await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
 
+  expect(pageErrors).toEqual([]);
+});
+
+test("bundle estático mostra curadoria social sem depender da API", async ({ page }) => {
+  const pageErrors = collectPageErrors(page);
+  await page.goto("./");
+  await page.locator("#social").scrollIntoViewIfNeeded();
+  await expect(page.locator("#social").getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
+  await expect(page.locator("#social").getByText("curadoria editorial · perfis reais · referências selecionadas")).toBeVisible();
+  await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
   expect(pageErrors).toEqual([]);
 });

@@ -1954,3 +1954,20 @@ html.theme-transitioning .arquivo-page * {
     animation: none;
   }
 }
+
+/* Mobile sections already defer their React content and media. Intrinsic height
+   placeholders plus smooth scrolling move hit targets while WebKit scrolls to
+   them, including the Arcade trigger and tabs. Keep chapter geometry live. */
+@media (max-width: 767px) {
+  html {
+    scroll-behavior: auto;
+    scroll-padding-block: 92px 112px;
+  }
+
+  .archive-chapter,
+  #pg-lab .archive-chapter,
+  #contato .archive-chapter {
+    content-visibility: visible;
+    contain-intrinsic-size: none;
+  }
+}

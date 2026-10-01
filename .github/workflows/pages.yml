@@ -40,12 +40,14 @@ jobs:
         run: pnpm test
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium firefox webkit
-      - name: Browser tests
-        run: pnpm test:e2e
       - name: Build static portfolio
         run: pnpm build:static
       - name: Browser smoke on static bundle
         run: pnpm test:e2e:static
+      - name: Browser tests
+        run: pnpm test:e2e
+      - name: Repeat mobile WebKit Arcade regression
+        run: pnpm exec playwright test --project=mobile-webkit --grep="PG Arcade mobile" --repeat-each=5 --workers=1
       - name: Enforce bundle budget
         env:
           VITE_STATIC_DEPLOY: "true"
@@ -61,6 +63,14 @@ jobs:
           name: pages-build
           path: dist/public
           if-no-files-found: error
+
+      - name: Preserve browser failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-failure-diagnostics
+          path: test-results
+          if-no-files-found: ignore
 
   deploy:
     if: github.event_name != 'pull_request'
