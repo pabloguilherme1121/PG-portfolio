@@ -56,7 +56,7 @@ test("bundle estático resolve briefing por âncora direta", async ({ page }) =>
   expect(pageErrors).toEqual([]);
 });
 
-test("bundle estático carrega os chunks lazy do PG Arcade", async ({ page }) => {
+test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
 
   await page.goto("./");
@@ -69,7 +69,9 @@ test("bundle estático carrega os chunks lazy do PG Arcade", async ({ page }) =>
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible({ timeout: 15_000 });
 
-  await arcade.getByRole("tab", { name: /damas/i }).click();
+  const checkersTab = arcade.getByRole("tab", { name: /damas/i });
+  await checkersTab.click();
+  await expect(checkersTab).toHaveAttribute("aria-selected", "true");
   await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
 
   expect(pageErrors).toEqual([]);
