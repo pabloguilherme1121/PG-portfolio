@@ -43,6 +43,17 @@ export default function PortfolioArcadeShowcase({
           <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">
             Cinco experiências jogáveis — Jogo da Velha, Dominó, Futebol, Damas e Xadrez — demonstram lógica, estados, IA, responsividade e cuidado com interação sem competir com os cases profissionais.
           </p>
+          <div className="mt-4 flex max-w-3xl flex-wrap gap-2" aria-label="Competências demonstradas pelo PG Arcade">
+            {["lógica de regras", "bots e dificuldades", "touch + teclado", "progresso local"].map((capability) => (
+              <span
+                key={capability}
+                data-arcade-capability="true"
+                className="border border-[#67e8f9]/16 bg-[#06172f]/70 px-2.5 py-1 font-mono text-[8px] font-semibold uppercase tracking-[0.09em] text-[#a5dff4]"
+              >
+                {capability}
+              </span>
+            ))}
+          </div>
         </div>
         <button
           type="button"
