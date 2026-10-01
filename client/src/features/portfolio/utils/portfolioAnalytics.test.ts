@@ -68,8 +68,10 @@ describe("trackPortfolioEvent", () => {
 
     trackPortfolioEvent("tic_tac_toe_preset_selected", { arcadePreset: "competitive" });
     trackPortfolioEvent("tic_tac_toe_hint_used");
+    trackPortfolioEvent("arcade_game_selected", { arcadeGame: "damas" });
 
     expect(track).toHaveBeenNthCalledWith(1, "tic_tac_toe_preset_selected", { arcadePreset: "competitive" });
     expect(track).toHaveBeenNthCalledWith(2, "tic_tac_toe_hint_used", {});
+    expect(track).toHaveBeenNthCalledWith(3, "arcade_game_selected", { arcadeGame: "damas" });
   });
 });
