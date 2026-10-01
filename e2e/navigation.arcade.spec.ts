@@ -140,7 +140,7 @@ test.describe("portfólio profissional", () => {
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
-    await expect(arcade.getByRole("tab")).toHaveCount(3);
+    await expect(arcade.getByRole("tab")).toHaveCount(4);
 
     await arcade.getByRole("tab", { name: /dominó/i }).click();
     const domino = arcade.locator('[data-domino-game="true"]');

@@ -5,11 +5,13 @@ import PortfolioCheckers from "@/features/portfolio/components/PortfolioCheckers
 
 // HomeExperience already loads this entire Arcade on demand. Keep its games in
 // that loading boundary so a mobile tab switch never suspends on another import.
-type ArcadeGame = "velha" | "domino" | "damas";
+type ArcadeGame = "velha" | "domino" | "damas" | "futebol";
 
+import PortfolioFootball from "./PortfolioFootball";
 const games = [
   { id: "velha", label: "Jogo da velha", meta: "estratégia rápida" },
   { id: "domino", label: "Dominó", meta: "compra + bloqueio" },
+  { id: "futebol", label: "Futebol", meta: "pênaltis + faltas" },
   { id: "damas", label: "Damas", meta: "captura + séries" },
 ] as const;
 
@@ -45,7 +47,7 @@ export default function PortfolioArcade() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">selecionar experiência</p>
-              <p className="mt-1 font-body text-sm text-[#a9bfd8]">Três jogos com séries, regras alternativas, bot em até quatro dificuldades e 1 × 1 local.</p>
+              <p className="mt-1 font-body text-sm text-[#a9bfd8]">Quatro jogos: estratégia, dominó por cores e futebol com pênaltis e faltas.</p>
             </div>
             <span className="rounded-full border border-white/10 px-2.5 py-1 font-mono text-[7px] uppercase tracking-[0.09em] text-[#8fa8c7]">sem cadastro · mobile first</span>
           </div>
@@ -55,7 +57,7 @@ export default function PortfolioArcade() {
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-4 grid grid-cols-3 gap-2"
+            className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2"
           >
             {games.map((item) => (
               <button
@@ -79,7 +81,7 @@ export default function PortfolioArcade() {
       </div>
 
       <div role="tabpanel" id={`arcade-panel-${game}`} aria-labelledby={`arcade-tab-${game}`} className="mt-5">
-        {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : <PortfolioCheckers />}
+        {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : game === "futebol" ? <PortfolioFootball /> : <PortfolioCheckers />}
       </div>
     </div>
   );

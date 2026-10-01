@@ -33,10 +33,11 @@ const targetLabel: Record<MatchTarget, string> = {
   3: "MD5",
 };
 
+const tileColors = ["#cbd5e1", "#fda4af", "#fdba74", "#fde047", "#6ee7b7", "#7dd3fc", "#c4b5fd"];
 function TileFace({ tile }: { tile: DominoTile }) {
   return (
     <span className="inline-grid min-w-14 grid-cols-[1fr_auto_1fr] items-center gap-1 rounded-[9px] border border-white/15 bg-[#0a1b2b] px-2 py-2 font-display text-base text-white shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
-      <span>{tile[0]}</span><span className="h-5 w-px bg-white/20" aria-hidden="true" /><span>{tile[1]}</span>
+      <span className="rounded px-1.5 py-1" style={{ color: tileColors[tile[0]], backgroundColor: `${tileColors[tile[0]]}20` }}>{tile[0]}</span><span className="h-5 w-px bg-white/20" aria-hidden="true" /><span className="rounded px-1.5 py-1" style={{ color: tileColors[tile[1]], backgroundColor: `${tileColors[tile[1]]}20` }}>{tile[1]}</span>
     </span>
   );
 }
@@ -249,7 +250,7 @@ export default function PortfolioDomino() {
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-9 sm:px-8 lg:grid-cols-[0.76fr_1.24fr] lg:px-12 lg:py-14">
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Arcade · dominó</p>
-          <h2 id="domino-title" className="mt-3 font-display text-[clamp(2.3rem,10vw,4.2rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">Dominó.<br />Leitura de mesa.</h2>
+          <h2 id="domino-title" className="mt-3 font-display text-[clamp(2.3rem,10vw,4.2rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">Dominó.<br />Conecte as cores.</h2>
           <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">Partida rápida ou clássica, regras de compra ou bloqueio, quatro níveis do PG Bot, séries MD3/MD5 e 1 × 1 local com troca de mão protegida.</p>
 
           <div className="mt-6 space-y-4">
@@ -311,6 +312,7 @@ export default function PortfolioDomino() {
             <p className="font-mono text-[8px] uppercase tracking-[0.08em] text-[#7191a8]">rodada {round} · meta {matchTarget} vitória{matchTarget > 1 ? "s" : ""} · monte {boneyard.length}</p>
           </div>
 
+          <div data-domino-color-legend className="mt-4 flex flex-wrap gap-3 text-xs text-slate-200" aria-label="Cores dos valores"><span>Combine cores e números:</span>{tileColors.map((color, value) => <span key={value} className="flex items-center gap-1"><span aria-hidden="true" className="h-3 w-3 rounded-full" style={{ backgroundColor: color }} />{value}</span>)}</div>
           <div data-domino-chain="true" aria-label="Mesa de dominó" className="mt-4 flex min-h-24 items-center gap-2 overflow-x-auto rounded-[12px] border border-white/10 bg-[#04101b] p-3">
             {chain.length ? chain.map((tile, index) => <TileFace key={`${tile.join("-")}-${index}`} tile={tile} />) : <p className="mx-auto font-mono text-[8px] uppercase tracking-[0.1em] text-[#628097]">a primeira pedra abre as duas pontas</p>}
           </div>
