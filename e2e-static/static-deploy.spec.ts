@@ -66,11 +66,11 @@ test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", asyn
   const pageErrors = collectPageErrors(page);
 
   await page.goto("./");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  await page.getByRole("button", { name: /explorar pg arcade/i }).click();
 
   const arcade = page.locator('[data-arcade-hub="true"]');
   await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(4);
+  await expect(arcade.getByRole("tab")).toHaveCount(5);
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible({ timeout: 15_000 });
