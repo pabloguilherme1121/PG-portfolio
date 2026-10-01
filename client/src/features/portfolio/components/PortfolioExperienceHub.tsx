@@ -167,7 +167,7 @@ export default function PortfolioExperienceHub() {
                   tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
                   onKeyDown={(event) => handleRouteKeyDown(event, index)}
-                  className={`experience-route-card group relative min-h-[72px] w-[78%] shrink-0 snap-center overflow-hidden border px-3 py-2 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:w-auto sm:min-w-0 sm:px-4 sm:py-4 ${
+                  className={`experience-route-card group relative min-h-[72px] w-[78%] shrink-0 snap-center overflow-hidden border px-3 py-1 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:w-auto sm:min-w-0 sm:px-4 sm:py-4 ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
