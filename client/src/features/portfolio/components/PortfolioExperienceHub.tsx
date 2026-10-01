@@ -221,7 +221,7 @@ export default function PortfolioExperienceHub() {
             role="tabpanel"
             aria-labelledby={`experience-route-${selected.id}`}
             data-experience-panel={selected.id}
-            className="experience-panel-enter relative min-w-0 max-w-full overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8"
+            className="experience-panel-enter relative min-w-0 max-w-full overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-2.5 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8"
           >
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/25" aria-hidden="true" />
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
