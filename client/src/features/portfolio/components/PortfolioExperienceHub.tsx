@@ -152,6 +152,7 @@ export default function PortfolioExperienceHub() {
         <div className="mt-6 grid min-w-0 max-w-full gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div className="min-w-0 max-w-full overflow-hidden">
             <div data-experience-route-strip="true" className="experience-route-strip flex min-w-0 w-full max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:overflow-visible sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
+            <span role="presentation" aria-hidden="true" className="shrink-0 basis-[8%] sm:hidden" />
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
               const active = activeRoute === id;
               return (
@@ -166,7 +167,7 @@ export default function PortfolioExperienceHub() {
                   tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
                   onKeyDown={(event) => handleRouteKeyDown(event, index)}
-                  className={`experience-route-card group relative min-h-[72px] min-w-[calc(78%-0.5rem)] max-w-[calc(100vw-2rem)] snap-start overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:min-w-0 sm:px-4 sm:py-4 ${
+                  className={`experience-route-card group relative min-h-[72px] w-[78%] shrink-0 snap-center overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:w-auto sm:min-w-0 sm:px-4 sm:py-4 ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
@@ -183,12 +184,13 @@ export default function PortfolioExperienceHub() {
                         <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f91b7]">0{index + 1} · {eyebrow}</span>
                         <span className={`h-2 w-2 rounded-full transition-all ${active ? "bg-[#67e8f9] shadow-[0_0_14px_rgba(103,232,249,0.9)]" : "bg-white/15"}`} aria-hidden="true" />
                       </span>
-                      <span className="mt-1.5 block font-display text-lg tracking-[-0.03em] text-white sm:mt-2 sm:text-xl sm:tracking-[-0.035em]">{label}</span>
+                      <span className="mt-1.5 block font-display text-base leading-5 tracking-[-0.03em] text-white sm:mt-2 sm:text-xl sm:leading-7 sm:tracking-[-0.035em]">{label}</span>
                     </span>
                   </span>
                 </button>
               );
             })}
+            <span role="presentation" aria-hidden="true" className="shrink-0 basis-[8%] sm:hidden" />
             </div>
             <div
               data-experience-progress="true"
