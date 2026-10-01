@@ -6,6 +6,8 @@ import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalyti
 import {
   arcadeSessionStorageKey,
   getMostVisitedArcadeGame,
+  getSuggestedArcadeGame,
+  markArcadeGameExplored,
   normalizeArcadeSession,
   recordArcadeGameVisit,
   type ArcadeGame,
@@ -48,12 +50,22 @@ export default function PortfolioArcade() {
   ]);
   const tabsRef = useRef<HTMLDivElement>(null);
   const mostVisitedGame = getMostVisitedArcadeGame(session);
+  const suggestedGame = getSuggestedArcadeGame(session, game);
   const totalSelections = Object.values(session.visits).reduce(
     (total, count) => total + count,
     0,
   );
   const selectedGameLabel =
     games.find((item) => item.id === game)?.label ?? "Jogo da velha";
+  const suggestedGameLabel =
+    games.find((item) => item.id === suggestedGame)?.label ?? "Dominó";
+  const explorationPercent = Math.round(
+    (session.explored.length / games.length) * 100,
+  );
+
+  useEffect(() => {
+    setSession((current) => markArcadeGameExplored(current, game));
+  }, [game]);
 
   useEffect(() => {
     try {
@@ -150,6 +162,9 @@ export default function PortfolioArcade() {
                 tabIndex={game === item.id ? 0 : -1}
                 data-arcade-game-tab={item.id}
                 data-arcade-game-visits={session.visits[item.id]}
+                data-arcade-game-explored={
+                  session.explored.includes(item.id) ? "true" : "false"
+                }
                 data-arcade-most-visited={
                   mostVisitedGame === item.id ? "true" : undefined
                 }
@@ -161,13 +176,50 @@ export default function PortfolioArcade() {
                 </span>
                 <span className="mt-1 hidden font-body text-xs text-[#b8cce0] min-[390px]:block">
                   {item.meta}
-                  {mostVisitedGame === item.id &&
-                  session.visits[item.id] > 1
+                  {mostVisitedGame === item.id && session.visits[item.id] > 1
                     ? " · mais jogado"
-                    : ""}
+                    : session.explored.includes(item.id) && game !== item.id
+                      ? " · explorado"
+                      : ""}
                 </span>
               </button>
             ))}
+          </div>
+
+          <div
+            data-arcade-exploration="true"
+            className="mt-3 flex flex-col gap-3 rounded-[12px] border border-white/8 bg-[#041225]/70 p-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.09em] text-[#9fb7d1]">
+                <span>{session.explored.length} de {games.length} jogos explorados</span>
+                <span className="text-[#67e8f9]">
+                  próximo: {suggestedGameLabel}
+                </span>
+              </div>
+              <div
+                role="progressbar"
+                aria-label="Progresso de exploração do PG Arcade"
+                aria-valuemin={0}
+                aria-valuemax={games.length}
+                aria-valuenow={session.explored.length}
+                className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8"
+              >
+                <span
+                  aria-hidden="true"
+                  className="block h-full rounded-full bg-[#67e8f9] transition-[width] duration-300 motion-reduce:transition-none"
+                  style={{ width: `${explorationPercent}%` }}
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              data-arcade-suggestion="true"
+              onClick={() => selectGame(suggestedGame)}
+              className="min-h-11 shrink-0 rounded-[10px] border border-[#67e8f9]/35 bg-[#08203b] px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#cffafe] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            >
+              Experimentar {suggestedGameLabel}
+            </button>
           </div>
         </div>
       </div>
