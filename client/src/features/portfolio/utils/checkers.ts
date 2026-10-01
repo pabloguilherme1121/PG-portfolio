@@ -182,7 +182,8 @@ export function chooseCheckersBotMove(
       return { move, score: captureBonus + promotionBonus + positional * 2 };
     }
 
-    const searchDepth = difficulty === "expert" ? 3 : 2;\n    const lookAhead = minimax(next, opponentOf(player), player, searchDepth);
+    const searchDepth = difficulty === "expert" ? 3 : 2;
+    const lookAhead = minimax(next, opponentOf(player), player, searchDepth);
     return {
       move,
       score: captureBonus * 1.5 + promotionBonus * 1.5 + positional * 2 + lookAhead,
