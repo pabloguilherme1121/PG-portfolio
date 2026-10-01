@@ -147,7 +147,7 @@ export default function PortfolioExperienceHub() {
 
         <div className="mt-6 grid gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
           <div>
-            <div data-experience-route-strip="true" className="experience-route-strip -mx-1 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 sm:mx-0 sm:grid sm:overflow-visible sm:px-0 sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
+            <div data-experience-route-strip="true" className="experience-route-strip flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:overflow-visible sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
               const active = activeRoute === id;
               return (
@@ -162,7 +162,7 @@ export default function PortfolioExperienceHub() {
                   tabIndex={active ? 0 : -1}
                   onClick={() => selectRoute(id)}
                   onKeyDown={(event) => handleRouteKeyDown(event, index)}
-                  className={`experience-route-card group relative min-h-[72px] min-w-[78%] snap-start overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:min-w-0 sm:px-4 sm:py-4 ${
+                  className={`experience-route-card group relative min-h-[72px] min-w-[calc(78%-0.5rem)] max-w-[calc(100vw-2rem)] snap-start overflow-hidden border px-3 py-3 text-left transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:min-h-[92px] sm:min-w-0 sm:px-4 sm:py-4 ${
                     active
                       ? "border-[#67e8f9] bg-[#0a2340] shadow-[0_16px_48px_rgba(56,189,248,0.12)]"
                       : "border-white/10 bg-[#07111f]/75 hover:border-[#67e8f9]/40 hover:bg-[#09192b]"
@@ -193,11 +193,11 @@ export default function PortfolioExperienceHub() {
               aria-valuemin={1}
               aria-valuemax={experienceRoutes.length}
               aria-valuenow={selectedIndex + 1}
-              className="mt-2 border border-white/10 bg-[#07111f]/70 p-3 sm:mt-4"
+              className="mt-2 min-w-0 max-w-full overflow-hidden border border-white/10 bg-[#07111f]/70 p-3 sm:mt-4"
             >
-              <div className="flex items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7597b4]">
+              <div className="flex min-w-0 items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7597b4]">
                 <span>rota {selectedIndex + 1} de {experienceRoutes.length}</span>
-                <span className="text-[#a5f3fc]">{selected.label}</span>
+                <span className="min-w-0 truncate text-right text-[#a5f3fc]">{selected.label}</span>
               </div>
               <div className="mt-2 h-px overflow-hidden bg-white/10">
                 <span
@@ -215,7 +215,7 @@ export default function PortfolioExperienceHub() {
             role="tabpanel"
             aria-labelledby={`experience-route-${selected.id}`}
             data-experience-panel={selected.id}
-            className="experience-panel-enter relative overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8"
+            className="experience-panel-enter relative min-w-0 max-w-full overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8"
           >
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/25" aria-hidden="true" />
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
@@ -224,7 +224,7 @@ export default function PortfolioExperienceHub() {
             </div>
 
             <div className="mt-6">
-              <h3 className="max-w-3xl font-display text-[clamp(1.75rem,9vw,3.8rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white sm:leading-[0.95] sm:tracking-[-0.055em]">
+              <h3 className="max-w-full break-words font-display text-[clamp(1.75rem,9vw,3.8rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white sm:leading-[0.95] sm:tracking-[-0.055em]">
                 {selected.title}
               </h3>
               <p className="mt-4 max-w-2xl font-body text-sm leading-7 text-[#b9d6e5]">{selected.description}</p>
