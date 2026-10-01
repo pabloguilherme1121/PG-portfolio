@@ -25,7 +25,14 @@ describe("checkers", () => {
     expect(moves).toEqual([{ from: 42, to: 24, capture: 33 }]);
   });
 
-  it("allows regular pieces to capture backwards", () => {\n    const board: CheckersBoard = Array.from({ length: 64 }, () => null);\n    board[26] = { player: "blue", king: false };\n    board[35] = { player: "red", king: false };\n    expect(getCheckersMovesFrom(board, 26, true)).toContainEqual({ from: 26, to: 44, capture: 35 });\n  });\n\n  it("applies captures and promotes pieces", () => {
+  it("allows regular pieces to capture backwards", () => {
+    const board: CheckersBoard = Array.from({ length: 64 }, () => null);
+    board[26] = { player: "blue", king: false };
+    board[35] = { player: "red", king: false };
+    expect(getCheckersMovesFrom(board, 26, true)).toContainEqual({ from: 26, to: 44, capture: 35 });
+  });
+
+  it("applies captures and promotes pieces", () => {
     const board: CheckersBoard = Array.from({ length: 64 }, () => null);
     board[17] = { player: "blue", king: false };
     board[10] = { player: "red", king: false };
