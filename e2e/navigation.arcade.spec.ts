@@ -182,6 +182,58 @@ test.describe("portfólio profissional", () => {
     await expect(checkers.locator('[data-checkers-status="true"]')).toContainText(/jogador 2|vermelho/i);
   });
 
+  test("PG Arcade retoma o último jogo e atualiza a sessão local", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        "pablo-pg-arcade-session-v1",
+        JSON.stringify({
+          lastGame: "damas",
+          visits: { velha: 1, domino: 0, futebol: 0, damas: 2 },
+        }),
+      );
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    const checkersTab = arcade.getByRole("tab", { name: /damas/i });
+    await expect(checkersTab).toHaveAttribute("aria-selected", "true");
+    await expect(arcade.locator('[data-checkers-game="true"]')).toBeVisible();
+    await expect(arcade.locator('[data-arcade-session-summary="true"]')).toContainText(/último: damas.*3 seleções/i);
+
+    await arcade.getByRole("tab", { name: /futebol/i }).click();
+    await expect(arcade.locator("[data-football-game]")).toBeVisible();
+    await expect(arcade.locator('[data-arcade-session-summary="true"]')).toContainText(/último: futebol.*4 seleções/i);
+
+    const stored = await page.evaluate(() =>
+      JSON.parse(window.localStorage.getItem("pablo-pg-arcade-session-v1") || "{}"),
+    );
+    expect(stored).toMatchObject({
+      lastGame: "futebol",
+      visits: { velha: 1, domino: 0, futebol: 1, damas: 2 },
+    });
+  });
+
+  test("PG Arcade preserva a partida ao alternar entre jogos", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    const game = arcade.locator('[data-tic-tac-toe="true"]');
+    await game.locator('[data-arcade-presets="true"]').getByRole("button", { name: /dupla/i }).click();
+
+    const cells = game.locator('[data-game-cell="true"]');
+    await cells.nth(0).click();
+    await expect(cells.nth(0)).toHaveText("X");
+
+    await arcade.getByRole("tab", { name: /futebol/i }).click();
+    await expect(arcade.locator("[data-football-game]")).toBeVisible();
+    await arcade.getByRole("tab", { name: /jogo da velha/i }).click();
+
+    await expect(game).toBeVisible();
+    await expect(cells.nth(0)).toHaveText("X");
+  });
+
   test("abas do PG Arcade suportam setas, Home e End pelo teclado", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();

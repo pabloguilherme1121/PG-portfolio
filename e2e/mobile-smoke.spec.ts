@@ -56,9 +56,13 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
 
   await arcade.getByRole("tab", { name: /jogo da velha/i }).click();
-  await expect(checkers).toHaveCount(0);
+  await expect(checkers).not.toBeVisible();
   await checkersTab.click();
   await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible();
+  await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
 });
 
 
