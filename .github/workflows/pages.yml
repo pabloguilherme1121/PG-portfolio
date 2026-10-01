@@ -34,6 +34,8 @@ jobs:
         run: pnpm audit --audit-level=low
       - name: Check public media inventory
         run: pnpm audit:assets --strict-if-present
+      - name: Audit source escapes
+        run: pnpm audit:source
       - name: Typecheck
         run: pnpm check
       - name: Unit tests
