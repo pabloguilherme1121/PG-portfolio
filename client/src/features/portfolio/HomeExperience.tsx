@@ -865,7 +865,7 @@ export default function Home() {
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · opcional</p>
               <h2 id="pg-lab-title" className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">Quer testar uma interação que responde?</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma área interativa com jogo da velha, dominó por cores, damas e futebol com pênaltis e faltas. Há modos contra bot, dificuldades progressivas e 1 × 1 local; tudo só é carregado quando você abre o Arcade.</p>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Uma área interativa com jogo da velha, dominó, futebol, damas e xadrez. Há cinco níveis de desafio nos jogos estratégicos, modos contra bot e 1 × 1 local; tudo só é carregado quando você abre o Arcade.</p>
             </div>
             <button
               type="button"

@@ -70,7 +70,7 @@ test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", asyn
 
   const arcade = page.locator('[data-arcade-hub="true"]');
   await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(4);
+  await expect(arcade.getByRole("tab")).toHaveCount(5);
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible({ timeout: 15_000 });
@@ -84,6 +84,9 @@ test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", asyn
   await checkersTab.click();
   await expect(checkersTab).toHaveAttribute("aria-selected", "true");
   await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
+
+  await arcade.getByRole("tab", { name: /xadrez/i }).click();
+  await expect(arcade.locator('[data-chess-board="true"]')).toBeVisible({ timeout: 15_000 });
 
   expect(pageErrors).toEqual([]);
 });

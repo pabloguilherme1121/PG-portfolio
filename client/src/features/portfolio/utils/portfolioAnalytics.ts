@@ -52,7 +52,7 @@ type ConversionProperties = Partial<{
   briefingPreset: "site" | "dashboard" | "content";
   gameResult: "player" | "bot" | "draw";
   arcadePreset: "quick" | "competitive" | "local" | "survival";
-  arcadeGame: "velha" | "domino" | "futebol" | "damas";
+  arcadeGame: "velha" | "domino" | "futebol" | "damas" | "xadrez";
   experienceRoute: "client" | "recruiter" | "explorer";
 }>;
 

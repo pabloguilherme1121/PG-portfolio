@@ -14,7 +14,7 @@ test("PG Arcade mostra progresso de exploração e sugere o próximo jogo sem pe
   const arcade = page.locator('[data-arcade-hub="true"]');
   const exploration = arcade.locator('[data-arcade-exploration="true"]');
 
-  await expect(exploration).toContainText(/1 de 4 jogos explorados/i);
+  await expect(exploration).toContainText(/1 de 5 jogos explorados/i);
   await expect(exploration.getByRole("progressbar")).toHaveAttribute(
     "aria-valuenow",
     "1",
@@ -31,10 +31,10 @@ test("PG Arcade mostra progresso de exploração e sugere o próximo jogo sem pe
     "true",
   );
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible();
-  await expect(exploration).toContainText(/2 de 4 jogos explorados/i);
+  await expect(exploration).toContainText(/2 de 5 jogos explorados/i);
 
   await arcade.getByRole("tab", { name: /futebol/i }).click();
-  await expect(exploration).toContainText(/3 de 4 jogos explorados/i);
+  await expect(exploration).toContainText(/3 de 5 jogos explorados/i);
   await expect(
     arcade.getByRole("button", { name: /experimentar damas/i }),
   ).toBeVisible();

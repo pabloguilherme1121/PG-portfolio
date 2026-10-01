@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { RotateCcw, Target, ArrowUpRight, Check, X } from "lucide-react";
-import { resolveFootballShot, type FootballMode } from "../utils/football";
+import { chooseFootballKeeperPosition, resolveFootballShot, type FootballDifficulty, type FootballMode } from "../utils/football";
 import "./PortfolioFootball.css";
 const button =
   "min-h-11 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-50";
@@ -14,6 +14,7 @@ const feedback = {
 };
 export default function PortfolioFootball() {
   const [mode, setMode] = useState<FootballMode>("penalty");
+  const [difficulty, setDifficulty] = useState<FootballDifficulty>("normal");
   const [aim, setAim] = useState(30);
   const [power, setPower] = useState(65);
   const [curve, setCurve] = useState(0);
@@ -40,7 +41,7 @@ export default function PortfolioFootball() {
   };
   const shoot = () => {
     if (finished || timer.current) return;
-    const position = 15 + Math.random() * 70;
+    const position = chooseFootballKeeperPosition(difficulty, aim, power, curve);
     const shot = resolveFootballShot(mode, aim, power, curve, position);
     setKeeper(position);
     if (reducedMotion) {
@@ -79,7 +80,7 @@ export default function PortfolioFootball() {
               Decida no chute.
             </h2>
             <p className="mt-2 text-sm leading-5 text-[#b8cce0]">
-              Mire no gol. Ajuste a força. Faça valer suas cinco chances.
+              Mire, ajuste força e curva e vença um goleiro que lê melhor a cobrança conforme a dificuldade.
             </p>
           </div>
           <div
@@ -413,7 +414,23 @@ export default function PortfolioFootball() {
                 </label>
               )}
             </div>
-            <div className="mt-2 flex gap-2">
+            <div className="mt-3">
+              <p className="mb-2 text-xs font-medium uppercase tracking-[0.1em] text-[#8fa8c7]">dificuldade do goleiro</p>
+              <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-5" data-football-difficulty="true">
+                {(["easy", "normal", "hard", "master", "expert"] as FootballDifficulty[]).map(value => (
+                  <button
+                    key={value}
+                    type="button"
+                    aria-pressed={difficulty === value}
+                    onClick={() => { setDifficulty(value); reset(); }}
+                    className={`${button} border border-white/15 text-xs ${difficulty === value ? "bg-[#0b2746] text-white" : "text-[#9fb7c8] hover:bg-white/10"}`}
+                  >
+                    {value === "easy" ? "fácil" : value === "normal" ? "normal" : value === "hard" ? "difícil" : value === "master" ? "mestre" : "especialista"}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-3 flex gap-2">
               <button
                 type="button"
                 disabled={finished || Boolean(flight)}

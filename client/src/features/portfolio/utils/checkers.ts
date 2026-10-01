@@ -1,5 +1,5 @@
 export type CheckersPlayer = "blue" | "red";
-export type CheckersDifficulty = "easy" | "normal" | "hard" | "master";
+export type CheckersDifficulty = "easy" | "normal" | "hard" | "master" | "expert";
 export type CheckersVariant = "quick" | "classic";
 export type CheckersPiece = { player: CheckersPlayer; king: boolean };
 export type CheckersBoard = Array<CheckersPiece | null>;
@@ -182,7 +182,8 @@ export function chooseCheckersBotMove(
       return { move, score: captureBonus + promotionBonus + positional * 2 };
     }
 
-    const lookAhead = minimax(next, opponentOf(player), player, 2);
+    const searchDepth = difficulty === "expert" ? 3 : 2;
+    const lookAhead = minimax(next, opponentOf(player), player, searchDepth);
     return {
       move,
       score: captureBonus * 1.5 + promotionBonus * 1.5 + positional * 2 + lookAhead,

@@ -28,7 +28,7 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
 });
 
 
-test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progresso", async ({ page }) => {
+test("PG Arcade mobile expõe cinco jogos, preserva modos e permite zerar progresso", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
@@ -40,7 +40,7 @@ test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progr
   const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
   await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
   await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(4);
+  await expect(arcade.getByRole("tab")).toHaveCount(5);
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   const domino = arcade.locator('[data-domino-game="true"]');
@@ -65,10 +65,19 @@ test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progr
     "true",
   );
 
+  await arcade.getByRole("tab", { name: /xadrez/i }).click();
+  const chess = arcade.locator('[data-chess-game="true"]');
+  await expect(chess.locator('[data-chess-board="true"]')).toBeVisible();
+  await expect(chess.locator('[data-chess-cell="true"]')).toHaveCount(64);
+  await chess.getByRole("button", { name: /1 × 1 local/i }).click();
+  await expect(chess.locator('[data-chess-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+
+  await checkersTab.click();
+
   const resetProgress = arcade.locator('[data-arcade-reset-progress="true"]');
   await expect(resetProgress).toBeVisible();
   await resetProgress.click();
-  await expect(arcade.locator('[data-arcade-exploration="true"]')).toContainText("1 de 4 jogos explorados");
+  await expect(arcade.locator('[data-arcade-exploration="true"]')).toContainText("1 de 5 jogos explorados");
   await expect(arcade.getByRole("tab", { name: /damas/i })).toHaveAttribute(
     "data-arcade-game-visits",
     "0",

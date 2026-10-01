@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { CircleDot, Crown, Gamepad2, Goal, Grid3X3, Sparkles } from "lucide-react";
+import { CircleDot, Crown, Gamepad2, Goal, Grid3X3, Sparkles, Swords } from "lucide-react";
 import PortfolioTicTacToe from "@/features/portfolio/components/PortfolioTicTacToe";
 import PortfolioDomino from "@/features/portfolio/components/PortfolioDomino";
 import PortfolioCheckers from "@/features/portfolio/components/PortfolioCheckers";
+import PortfolioChess from "@/features/portfolio/components/PortfolioChess";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import {
   arcadeSessionStorageKey,
@@ -25,6 +26,7 @@ const games = [
   { id: "domino", label: "Dominó", meta: "compra + bloqueio", icon: CircleDot },
   { id: "futebol", label: "Futebol", meta: "pênaltis + faltas", icon: Goal },
   { id: "damas", label: "Damas", meta: "captura + séries", icon: Crown },
+  { id: "xadrez", label: "Xadrez", meta: "posição + cálculo", icon: Swords },
 ] as const;
 
 function readArcadeSession(): ArcadeSession {
@@ -41,7 +43,8 @@ function renderArcadeGame(game: ArcadeGame) {
   if (game === "velha") return <PortfolioTicTacToe />;
   if (game === "domino") return <PortfolioDomino />;
   if (game === "futebol") return <PortfolioFootball />;
-  return <PortfolioCheckers />;
+  if (game === "damas") return <PortfolioCheckers />;
+  return <PortfolioChess />;
 }
 
 export default function PortfolioArcade() {
@@ -133,8 +136,7 @@ export default function PortfolioArcade() {
                 PG Arcade · escolher jogo
               </p>
               <p className="mt-1 font-body text-sm text-[#a9bfd8]">
-                Quatro jogos: estratégia, dominó por cores e futebol com
-                pênaltis e faltas.
+                Cinco jogos com estratégia, progressão e modos locais: velha, dominó, futebol, damas e xadrez.
               </p>
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-2 sm:justify-end">
@@ -158,7 +160,7 @@ export default function PortfolioArcade() {
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4"
+            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5"
           >
             {games.map((item) => {
               const Icon = item.icon;

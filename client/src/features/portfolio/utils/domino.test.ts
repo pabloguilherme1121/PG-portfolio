@@ -45,6 +45,16 @@ describe("domino", () => {
     expect(["left", "right"]).toContain(move?.side);
   });
 
+  it("expert bot balances immediate pips with future flexibility", () => {
+    const hand = [[6, 6], [6, 1], [1, 4], [4, 5], [2, 3]] as const;
+    const chain = [[4, 6]] as const;
+    const move = chooseDominoBotMove([...hand], [...chain], "expert", () => 0);
+
+    expect(move).not.toBeNull();
+    expect(["left", "right"]).toContain(move?.side);
+    expect(move?.index).toBeLessThan(hand.length);
+  });
+
   it("sums pips for blocked-round scoring", () => {
     expect(getDominoPipTotal([[6, 6], [3, 2], [0, 1]])).toBe(18);
   });

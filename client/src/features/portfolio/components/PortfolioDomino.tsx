@@ -33,6 +33,7 @@ const difficultyLabel: Record<DominoDifficulty, string> = {
   normal: "normal",
   hard: "difícil",
   master: "mestre",
+  expert: "especialista",
 };
 
 const targetLabel: Record<MatchTarget, string> = {
@@ -273,7 +274,7 @@ export default function PortfolioDomino() {
         if (!nextHand.length) finishRound("opponent");
         else setTurn("player");
       },
-      difficulty === "master" ? 520 : 360
+      difficulty === "expert" ? 620 : difficulty === "master" ? 520 : 360
     );
 
     return () => window.clearTimeout(timer);
@@ -454,8 +455,8 @@ export default function PortfolioDomino() {
                     <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
                       dificuldade
                     </p>
-                    <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
-                      {(["easy", "normal", "hard", "master"] as const).map(
+                    <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-5">
+                      {(["easy", "normal", "hard", "master", "expert"] as const).map(
                         value => (
                           <button
                             key={value}

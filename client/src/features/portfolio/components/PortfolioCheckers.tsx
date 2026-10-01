@@ -23,6 +23,7 @@ const difficultyLabel: Record<CheckersDifficulty, string> = {
   normal: "normal",
   hard: "difícil",
   master: "mestre",
+  expert: "especialista",
 };
 
 const targetLabel: Record<MatchTarget, string> = {
@@ -159,7 +160,7 @@ export default function PortfolioCheckers() {
       const nextWinner = getCheckersWinner(next, "blue");
       if (nextWinner) finish(nextWinner);
       else setTurn("blue");
-    }, difficulty === "master" ? 540 : 420);
+    }, difficulty === "expert" ? 680 : difficulty === "master" ? 540 : 420);
 
     return () => window.clearTimeout(timer);
   }, [board, botForcedFrom, difficulty, mode, turn, winner]);
@@ -187,7 +188,7 @@ export default function PortfolioCheckers() {
         <div>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Arcade · damas</p>
           <h2 id="checkers-title" className="mt-3 font-display text-[clamp(2.3rem,10vw,4.2rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">Damas.<br />Ataque e leitura.</h2>
-          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">Versão rápida ou clássica, quatro níveis do PG Bot, séries MD3/MD5 e modo 1 × 1 local. Capturas são obrigatórias, sequências múltiplas são respeitadas e peças promovem ao chegar à última linha.</p>
+          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">Versão rápida ou clássica, cinco níveis do PG Bot, séries MD3/MD5 e modo 1 × 1 local. Capturas são obrigatórias, sequências múltiplas são respeitadas e peças promovem ao chegar à última linha.</p>
 
           <div className="mt-6 space-y-4">
             <div>
@@ -209,8 +210,8 @@ export default function PortfolioCheckers() {
             {mode === "bot" && (
               <div>
                 <p className="mb-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7191a8]">dificuldade</p>
-                <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
-                  {(["easy", "normal", "hard", "master"] as const).map((value) => (
+                <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-5">
+                  {(["easy", "normal", "hard", "master", "expert"] as const).map((value) => (
                     <button key={value} type="button" aria-pressed={difficulty === value} onClick={() => { setDifficulty(value); restart(true); }} className={optionClass(difficulty === value)}>{difficultyLabel[value]}</button>
                   ))}
                 </div>

@@ -1,6 +1,6 @@
 export type DominoTile = readonly [number, number];
 export type DominoSide = "left" | "right";
-export type DominoDifficulty = "easy" | "normal" | "hard" | "master";
+export type DominoDifficulty = "easy" | "normal" | "hard" | "master" | "expert";
 export type DominoMove = { index: number; side: DominoSide };
 
 export function createDominoSet(): DominoTile[] {
@@ -119,7 +119,10 @@ export function chooseDominoBotMove(
       return pipScore * 2 + doubleBonus * 2 + futureOptions * 3;
     }
 
-    return scoreMasterMove(hand, chain, move);
+    if (difficulty === "master") return scoreMasterMove(hand, chain, move);
+
+    const remainingPips = getDominoPipTotal(remaining);
+    return scoreMasterMove(hand, chain, move) + futureOptions * 3 - remainingPips * 0.12;
   };
 
   return [...moves].sort((a, b) => scoreMove(b) - scoreMove(a))[0];

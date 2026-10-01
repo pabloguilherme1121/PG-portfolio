@@ -20,7 +20,7 @@ describe("arcadeSession", () => {
       }),
     ).toEqual({
       lastGame: "velha",
-      visits: { velha: 0, domino: 0, futebol: 2, damas: 0 },
+      visits: { velha: 0, domino: 0, futebol: 2, damas: 0, xadrez: 0 },
       explored: ["futebol"],
     });
   });
@@ -29,11 +29,11 @@ describe("arcadeSession", () => {
     expect(
       normalizeArcadeSession({
         lastGame: "damas",
-        visits: { velha: 1, domino: 0, futebol: 0, damas: 2 },
+        visits: { velha: 1, domino: 0, futebol: 0, damas: 2, xadrez: 0 },
       }),
     ).toEqual({
       lastGame: "damas",
-      visits: { velha: 1, domino: 0, futebol: 0, damas: 2 },
+      visits: { velha: 1, domino: 0, futebol: 0, damas: 2, xadrez: 0 },
       explored: ["velha", "damas"],
     });
   });
@@ -50,7 +50,7 @@ describe("arcadeSession", () => {
 
     expect(next).toEqual({
       lastGame: "damas",
-      visits: { velha: 0, domino: 0, futebol: 0, damas: 1 },
+      visits: { velha: 0, domino: 0, futebol: 0, damas: 1, xadrez: 0 },
       explored: ["damas"],
     });
     expect(emptyArcadeSession.lastGame).toBe("velha");
@@ -65,7 +65,7 @@ describe("arcadeSession", () => {
 
     expect(resetArcadeSessionProgress(session, "domino")).toEqual({
       lastGame: "domino",
-      visits: { velha: 0, domino: 0, futebol: 0, damas: 0 },
+      visits: { velha: 0, domino: 0, futebol: 0, damas: 0, xadrez: 0 },
       explored: ["domino"],
     });
   });
@@ -90,7 +90,19 @@ describe("arcadeSession", () => {
     expect(getSuggestedArcadeGame(session, "domino")).toBe("damas");
 
     const completed = markArcadeGameExplored(session, "damas");
-    expect(getSuggestedArcadeGame(completed, "domino")).toBe("damas");
-    expect(getSuggestedArcadeGame(completed, "damas")).toBe("futebol");
+    expect(getSuggestedArcadeGame(completed, "domino")).toBe("xadrez");
+    expect(getSuggestedArcadeGame(completed, "damas")).toBe("xadrez");
+  });
+
+  it("migra sessões antigas adicionando xadrez sem perder o progresso existente", () => {
+    expect(normalizeArcadeSession({
+      lastGame: "damas",
+      visits: { velha: 2, domino: 1, futebol: 0, damas: 3 },
+      explored: ["velha", "domino", "damas"],
+    })).toMatchObject({
+      lastGame: "damas",
+      visits: { velha: 2, domino: 1, futebol: 0, damas: 3, xadrez: 0 },
+      explored: ["velha", "domino", "damas"],
+    });
   });
 });
