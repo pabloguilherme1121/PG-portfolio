@@ -1,6 +1,5 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
-import PortfolioProofDeck from "@/features/portfolio/components/PortfolioProofDeck";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
@@ -31,7 +30,7 @@ export default function PortfolioHero({
   heroCtaRef,
 }: PortfolioHeroProps) {
   return (
-    <section id="inicio" className="relative isolate min-h-[640px] overflow-hidden pt-[76px] min-[390px]:min-h-[680px] sm:min-h-[850px]">
+    <section id="inicio" className="relative isolate min-h-[590px] overflow-hidden pt-[76px] min-[390px]:min-h-[620px] sm:min-h-[780px]">
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
       {heroAvailable && (
         <picture className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-70 lg:w-[72%]">
@@ -46,7 +45,7 @@ export default function PortfolioHero({
         <img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" />
       </div>
 
-      <div className="relative mx-auto flex min-h-[564px] max-w-[1440px] min-[390px]:min-h-[604px] flex-col justify-between px-4 pb-7 pt-8 min-[390px]:pb-8 min-[390px]:pt-10 min-[360px]:px-5 min-[360px]:pt-12 sm:min-h-[774px] sm:px-8 sm:pt-24 lg:px-12">
+      <div className="relative mx-auto flex min-h-[514px] max-w-[1440px] min-[390px]:min-h-[544px] flex-col justify-between px-4 pb-6 pt-7 min-[390px]:pb-7 min-[390px]:pt-9 min-[360px]:px-5 sm:min-h-[704px] sm:px-8 sm:pt-20 lg:px-12">
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
@@ -55,11 +54,11 @@ export default function PortfolioHero({
           <h1 className="reveal delay-1 mt-5 max-w-4xl font-display text-[clamp(2.05rem,9.7vw,3.15rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-4 flex max-w-sm items-center gap-3 border border-[#67e8f9]/25 bg-[#07111f]/80 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-4 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/84 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
-              <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-20 w-20 shrink-0 object-cover object-top lg:h-56 lg:w-full" />
+              <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-16 w-16 shrink-0 object-cover object-top min-[390px]:h-20 min-[390px]:w-20 lg:h-56 lg:w-full" />
             </picture>
             <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1">
               <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</span>
@@ -76,19 +75,6 @@ export default function PortfolioHero({
               React + TypeScript · Playwright/Vitest · CI/CD · PWA · publicação web
             </p>
 
-            <div data-mobile-hero-proof-rail="true" role="list" aria-label="Provas rápidas do portfólio" className="grid grid-cols-3 gap-px overflow-hidden rounded-[14px] border border-white/[0.08] bg-white/[0.08] sm:hidden">
-              {[
-                ["produção", "Observatório publicado"],
-                ["full-stack", "Trajeto em evolução"],
-                ["qualidade", "Playwright + CI"],
-              ].map(([label, value]) => (
-                <div key={label} data-mobile-hero-proof="true" role="listitem" className="min-w-0 bg-[#071326]/92 px-2.5 py-3">
-                  <span className="block font-mono text-[7px] font-semibold uppercase tracking-[0.11em] text-[#67e8f9]">{label}</span>
-                  <span className="mt-1 block text-balance font-body text-[11px] leading-4 text-[#dcecf8]">{value}</span>
-                </div>
-              ))}
-            </div>
-
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
                 href="#diagnostico"
@@ -102,25 +88,19 @@ export default function PortfolioHero({
               </a>
             </div>
 
-            <PortfolioProofDeck />
-
           </div>
         </div>
 
-        <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
-          <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
-            PROVAS: PRODUTO PUBLICADO · CÓDIGO PÚBLICO · TESTES
-            <br />
-            FOCO: PRODUTOS DIGITAIS · INTERFACES · DADOS
-            <br />
-            ENTREGA: RESPONSIVO · ACESSÍVEL · PUBLICÁVEL
+        <div className="reveal delay-3 flex items-center justify-between gap-4 border-t border-white/[0.1] pt-4">
+          <p className="max-w-lg font-body text-xs leading-5 text-[#8fa8c7] sm:text-sm">
+            Produto, código e processo ficam verificáveis nas próximas seções — sem repetir a mesma prova na primeira dobra.
           </p>
           <a
             href="#perfil-profissional"
             onClick={() => trackPortfolioEvent("professional_profile_opened")}
-            className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.11em] text-[#b7cdf1] transition-colors hover:text-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
-            avaliar perfil profissional <ArrowDown className="h-4 w-4" />
+            ver perfil <ArrowDown className="h-4 w-4" />
           </a>
         </div>
       </div>
