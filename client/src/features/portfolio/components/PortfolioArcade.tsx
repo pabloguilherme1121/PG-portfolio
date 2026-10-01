@@ -1,47 +1,9 @@
-import { lazy, Suspense, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
+import PortfolioTicTacToe from "./PortfolioTicTacToe";
+import PortfolioDomino from "./PortfolioDomino";
+import PortfolioCheckers from "./PortfolioCheckers";
 
 type ArcadeGame = "velha" | "domino" | "damas";
-type TicTacToeModule = typeof import("@/features/portfolio/components/PortfolioTicTacToe");
-type DominoModule = typeof import("@/features/portfolio/components/PortfolioDomino");
-type CheckersModule = typeof import("@/features/portfolio/components/PortfolioCheckers");
-
-let ticTacToePromise: Promise<TicTacToeModule> | null = null;
-let dominoPromise: Promise<DominoModule> | null = null;
-let checkersPromise: Promise<CheckersModule> | null = null;
-
-const loadTicTacToe = () => {
-  if (!ticTacToePromise) {
-    ticTacToePromise = import("@/features/portfolio/components/PortfolioTicTacToe").catch((error) => {
-      ticTacToePromise = null;
-      throw error;
-    });
-  }
-  return ticTacToePromise;
-};
-
-const loadDomino = () => {
-  if (!dominoPromise) {
-    dominoPromise = import("@/features/portfolio/components/PortfolioDomino").catch((error) => {
-      dominoPromise = null;
-      throw error;
-    });
-  }
-  return dominoPromise;
-};
-
-const loadCheckers = () => {
-  if (!checkersPromise) {
-    checkersPromise = import("@/features/portfolio/components/PortfolioCheckers").catch((error) => {
-      checkersPromise = null;
-      throw error;
-    });
-  }
-  return checkersPromise;
-};
-
-const PortfolioTicTacToe = lazy(loadTicTacToe);
-const PortfolioDomino = lazy(loadDomino);
-const PortfolioCheckers = lazy(loadCheckers);
 
 const games = [
   { id: "velha", label: "Jogo da velha", meta: "estratégia rápida" },
@@ -52,13 +14,6 @@ const games = [
 export default function PortfolioArcade() {
   const [game, setGame] = useState<ArcadeGame>("velha");
   const tabsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      void Promise.allSettled([loadDomino(), loadCheckers()]);
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
@@ -110,16 +65,6 @@ export default function PortfolioArcade() {
                 aria-controls={`arcade-panel-${item.id}`}
                 tabIndex={game === item.id ? 0 : -1}
                 data-arcade-game-tab={item.id}
-                onPointerEnter={() => {
-                  if (item.id === "velha") void loadTicTacToe();
-                  if (item.id === "domino") void loadDomino();
-                  if (item.id === "damas") void loadCheckers();
-                }}
-                onFocus={() => {
-                  if (item.id === "velha") void loadTicTacToe();
-                  if (item.id === "domino") void loadDomino();
-                  if (item.id === "damas") void loadCheckers();
-                }}
                 onClick={() => setGame(item.id)}
                 className={`min-h-14 rounded-[11px] border px-2 py-2 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${game === item.id ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 bg-[#071326] text-[#9bb4c7] hover:border-[#67e8f9]/50"}`}
               >
@@ -132,15 +77,7 @@ export default function PortfolioArcade() {
       </div>
 
       <div role="tabpanel" id={`arcade-panel-${game}`} aria-labelledby={`arcade-tab-${game}`} className="mt-5">
-        <Suspense
-          fallback={
-            <div data-arcade-game-loading="true" role="status" aria-live="polite" className="mx-auto min-h-40 max-w-[1180px] px-4 py-8 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5f3fc] sm:px-8 lg:px-12">
-              carregando jogo…
-            </div>
-          }
-        >
-          {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : <PortfolioCheckers />}
-        </Suspense>
+        {game === "velha" ? <PortfolioTicTacToe /> : game === "domino" ? <PortfolioDomino /> : <PortfolioCheckers />}
       </div>
     </div>
   );

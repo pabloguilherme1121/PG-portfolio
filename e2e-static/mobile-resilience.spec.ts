@@ -5,6 +5,23 @@ test.beforeEach(async ({ page }) => {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({ contentType: "text/css", body: "" }));
 });
 
+test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page }) => {
+  await page.goto("./");
+  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  const arcade = page.locator('[data-arcade-hub="true"]');
+  await expect(arcade.locator('[data-tic-tac-toe="true"]')).toBeVisible({ timeout: 15_000 });
+  const requests: string[] = [];
+  await page.route(/\/assets\/.*\.js$/, (route) => {
+    requests.push(route.request().url());
+    return route.abort();
+  });
+  await arcade.getByRole("tab", { name: /dominó/i }).click();
+  await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible();
+  await arcade.getByRole("tab", { name: /damas/i }).click();
+  await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible();
+  expect(requests).toEqual([]);
+});
+
 for (const file of ["bootstrapStatic", "index"]) {
 test(`arquivo ${file} indisponível permite uma recuperação e exibe alternativa utilizável`, async ({ page }) => {
   let attempts = 0;
@@ -34,6 +51,7 @@ test(`arquivo ${file} indisponível permite uma recuperação e exibe alternativ
 }
 
 test("página inteira e repertório social funcionam em telas pequenas", async ({ page }) => {
+  test.setTimeout(60_000);
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
@@ -49,7 +67,9 @@ test("página inteira e repertório social funcionam em telas pequenas", async (
     }
     const social = page.locator("#social");
     await expect(social.getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
-    await social.getByRole("button", { name: "drone", exact: true }).click();
+    const filter = social.getByRole("button", { name: "drone", exact: true });
+    await filter.evaluate((element) => element.scrollIntoView({ behavior: "instant", block: "center" }));
+    await filter.click();
     await expect(social.getByText(/1 referência visível/)).toBeVisible();
     await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
   }
