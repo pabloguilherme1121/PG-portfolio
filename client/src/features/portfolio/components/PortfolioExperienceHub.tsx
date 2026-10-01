@@ -49,7 +49,6 @@ type ExperienceRouteId = (typeof experienceRoutes)[number]["id"];
 export default function PortfolioExperienceHub() {
   const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>(() => readStoredExperienceRoute(getSafeStorage("session")) as ExperienceRouteId);
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
-  const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
 
   function selectRoute(routeId: ExperienceRouteId) {
     setActiveRoute(routeId);
