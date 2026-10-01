@@ -274,4 +274,21 @@ test.describe("portfólio profissional", () => {
 
 
 
+  test("experience hub não desloca a página horizontalmente ao escolher Quero explorar", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const hubPlaceholder = page.locator('[data-experience-hub-placeholder="true"]');
+    await hubPlaceholder.scrollIntoViewIfNeeded();
+    const hub = page.locator('[data-experience-hub="true"]');
+    await expect(hub).toBeVisible();
+
+    await hub.getByRole("tab", { name: /quero explorar/i }).click();
+    await expect(hub.locator('[data-experience-panel="explorer"]')).toBeVisible();
+
+    await expect.poll(() => page.evaluate(() => window.scrollX)).toBe(0);
+    const panelBox = await hub.locator('[data-experience-panel="explorer"]').boundingBox();
+    expect(panelBox?.x ?? -1).toBeGreaterThanOrEqual(0);
+    expect((panelBox?.x ?? 0) + (panelBox?.width ?? 9999)).toBeLessThanOrEqual(390);
+  });
+
 });
