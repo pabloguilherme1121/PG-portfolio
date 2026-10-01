@@ -1208,11 +1208,6 @@ html.theme-transitioning .arquivo-page * {
     0 16px 48px rgba(2, 17, 31, 0.28);
 }
 
-.experience-progress-bar {
-  box-shadow: 0 0 14px rgba(103, 232, 249, 0.72);
-  transition: width 260ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-
 .experience-panel-enter {
   animation: experience-panel-enter 280ms cubic-bezier(0.23, 1, 0.32, 1) both;
 }
@@ -1255,7 +1250,6 @@ html.theme-transitioning .arquivo-page * {
     animation: none;
   }
 
-  .experience-progress-bar,
   .experience-route-card,
   .experience-route-card::before,
   .experience-pointer-glow {
@@ -1299,11 +1293,6 @@ html.theme-transitioning .arquivo-page * {
     min-height: 4.5rem;
   }
 
-  [data-experience-progress="true"] {
-    position: static;
-    backdrop-filter: none;
-  }
-
   .experience-panel-enter {
     box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
   }
@@ -1311,11 +1300,6 @@ html.theme-transitioning .arquivo-page * {
 
 
 /* Mobile product polish inspired by the approved mockup. */
-[data-mobile-hero-proof-rail="true"] {
-  backdrop-filter: blur(14px);
-  box-shadow: 0 14px 36px rgba(2, 17, 31, 0.22);
-}
-
 [data-mobile-menu-profile="true"] {
   position: relative;
   overflow: hidden;
@@ -1411,15 +1395,12 @@ html.theme-transitioning .arquivo-page * {
     min-height: 44px;
   }
 
-  [data-mobile-hero-proof-rail="true"],
-  [data-attention-hook="proof-deck"],
   [data-mobile-dock="true"],
   .hero-portrait-card {
     backdrop-filter: none;
   }
 
-  #inicio .blueprint-grid,
-  [data-attention-hook="proof-deck"] .blueprint-grid {
+  #inicio .blueprint-grid {
     opacity: 0.08;
   }
 
