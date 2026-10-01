@@ -97,6 +97,7 @@ export default function PortfolioHero({
           </p>
           <a
             href="#perfil-profissional"
+            aria-label="Avaliar perfil profissional"
             onClick={() => trackPortfolioEvent("professional_profile_opened")}
             className="inline-flex min-h-11 shrink-0 items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.11em] text-[#b7cdf1] transition-colors hover:text-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
