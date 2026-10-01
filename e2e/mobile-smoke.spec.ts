@@ -28,7 +28,7 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
 });
 
 
-test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
+test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progresso", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
@@ -62,6 +62,15 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute(
     "aria-pressed",
     "true",
+  );
+
+  const resetProgress = arcade.locator('[data-arcade-reset-progress="true"]');
+  await expect(resetProgress).toBeVisible();
+  await resetProgress.click();
+  await expect(arcade.locator('[data-arcade-exploration="true"]')).toContainText("1 de 4 jogos explorados");
+  await expect(arcade.getByRole("tab", { name: /damas/i })).toHaveAttribute(
+    "data-arcade-game-visits",
+    "0",
   );
 });
 
