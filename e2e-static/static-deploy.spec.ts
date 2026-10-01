@@ -85,7 +85,8 @@ test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", asyn
 
 test("bundle estático mostra curadoria social sem depender da API", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
-  await page.goto("./#social");
+  await page.goto("./");
+  await page.locator("#social").scrollIntoViewIfNeeded();
   await expect(page.locator("#social").getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
   await expect(page.locator("#social").getByText("curadoria editorial · perfis reais · referências selecionadas")).toBeVisible();
   await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
