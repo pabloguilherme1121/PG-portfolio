@@ -1,6 +1,6 @@
 export const arcadeSessionStorageKey = "pablo-pg-arcade-session-v1";
 
-export const arcadeGames = ["velha", "domino", "futebol", "damas"] as const;
+export const arcadeGames = ["velha", "domino", "futebol", "damas", "xadrez"] as const;
 export type ArcadeGame = (typeof arcadeGames)[number];
 
 export type ArcadeSession = {
@@ -16,6 +16,7 @@ export const emptyArcadeSession: ArcadeSession = {
     domino: 0,
     futebol: 0,
     damas: 0,
+    xadrez: 0,
   },
   explored: [],
 };
@@ -50,6 +51,7 @@ export function normalizeArcadeSession(value: unknown): ArcadeSession {
     domino: normalizeVisitCount(candidate.visits?.domino),
     futebol: normalizeVisitCount(candidate.visits?.futebol),
     damas: normalizeVisitCount(candidate.visits?.damas),
+    xadrez: normalizeVisitCount(candidate.visits?.xadrez),
   };
 
   const storedExplored = Array.isArray(candidate.explored)

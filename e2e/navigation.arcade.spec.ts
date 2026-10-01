@@ -140,7 +140,7 @@ test.describe("portfólio profissional", () => {
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
-    await expect(arcade.getByRole("tab")).toHaveCount(4);
+    await expect(arcade.getByRole("tab")).toHaveCount(5);
 
     await arcade.getByRole("tab", { name: /dominó/i }).click();
     const domino = arcade.locator('[data-domino-game="true"]');
@@ -246,8 +246,8 @@ test.describe("portfólio profissional", () => {
     await expect(arcade.getByRole("tab", { name: /dominó/i })).toHaveAttribute("aria-selected", "true");
 
     await page.keyboard.press("End");
-    await expect(arcade.getByRole("tab", { name: /damas/i })).toBeFocused();
-    await expect(arcade.locator('[data-checkers-game="true"]')).toBeVisible();
+    await expect(arcade.getByRole("tab", { name: /xadrez/i })).toBeFocused();
+    await expect(arcade.locator('[data-chess-game="true"]')).toBeVisible();
 
     await page.keyboard.press("Home");
     await expect(arcade.getByRole("tab", { name: /jogo da velha/i })).toBeFocused();

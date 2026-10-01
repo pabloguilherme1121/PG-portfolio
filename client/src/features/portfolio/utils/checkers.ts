@@ -45,7 +45,8 @@ export function getCheckersMovesFrom(board: CheckersBoard, from: number, capture
   const captures: CheckersMove[] = [];
   const steps: CheckersMove[] = [];
 
-  for (const rowDirection of directionsFor(piece)) {
+  const moveDirections = captureOnly || piece.king ? [-1, 1] as const : directionsFor(piece);
+  for (const rowDirection of moveDirections) {
     for (const colDirection of [-1, 1] as const) {
       const nextRow = row + rowDirection;
       const nextCol = col + colDirection;
@@ -53,7 +54,7 @@ export function getCheckersMovesFrom(board: CheckersBoard, from: number, capture
       const nextIndex = indexOf(nextRow, nextCol);
       const occupant = board[nextIndex];
 
-      if (!occupant && !captureOnly) steps.push({ from, to: nextIndex });
+      if (!occupant && !captureOnly && directionsFor(piece).some((direction) => direction === rowDirection)) steps.push({ from, to: nextIndex });
 
       if (occupant && occupant.player !== piece.player) {
         const jumpRow = row + rowDirection * 2;
