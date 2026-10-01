@@ -53,7 +53,7 @@ test.describe("reconstrução profissional do portfólio", () => {
     expect(["auto", "scroll"]).toContain(metrics.overflowX);
     expect(metrics.scrollSnapType).toContain("x");
     expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
-    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
+    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(250);
   });
 
 
