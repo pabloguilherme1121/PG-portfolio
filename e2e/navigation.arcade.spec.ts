@@ -214,6 +214,26 @@ test.describe("portfólio profissional", () => {
     });
   });
 
+  test("PG Arcade preserva a partida ao alternar entre jogos", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    const game = arcade.locator('[data-tic-tac-toe="true"]');
+    await game.locator('[data-arcade-presets="true"]').getByRole("button", { name: /dupla/i }).click();
+
+    const cells = game.locator('[data-game-cell="true"]');
+    await cells.nth(0).click();
+    await expect(cells.nth(0)).toHaveText("X");
+
+    await arcade.getByRole("tab", { name: /futebol/i }).click();
+    await expect(arcade.locator("[data-football-game]")).toBeVisible();
+    await arcade.getByRole("tab", { name: /jogo da velha/i }).click();
+
+    await expect(game).toBeVisible();
+    await expect(cells.nth(0)).toHaveText("X");
+  });
+
   test("abas do PG Arcade suportam setas, Home e End pelo teclado", async ({ page }) => {
     await page.goto("/");
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
