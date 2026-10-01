@@ -64,6 +64,14 @@ describe("checkers", () => {
     expect(continuation).toEqual({ from: 35, to: 53, capture: 44 });
   });
 
+  it("expert bot returns a legal move with deeper look-ahead", () => {
+    const board = createCheckersBoard("classic");
+    const legal = getCheckersLegalMoves(board, "red");
+    const move = chooseCheckersBotMove(board, "red", "expert", () => 0);
+    expect(move).not.toBeNull();
+    expect(legal).toContainEqual(move);
+  });
+
   it("does not switch to another piece during a forced continuation", () => {
     const board: CheckersBoard = Array.from({ length: 64 }, () => null);
     board[17] = { player: "red", king: false };
