@@ -24,32 +24,28 @@ test.describe("reconstrução profissional do portfólio", () => {
     );
   });
 
-  test("provas verificáveis viram uma faixa horizontal compacta no mobile", async ({ page }) => {
+  test("provas verificáveis ficam legíveis no mobile sem exigir gesto horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
     const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
     const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
-    const firstProof = rail.locator('[data-portfolio-proof="true"]').first();
 
     await expect(rail).toBeVisible();
+    await expect(rail.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
     const metrics = await rail.evaluate((element) => {
       const style = getComputedStyle(element);
       return {
         display: style.display,
         overflowX: style.overflowX,
-        scrollSnapType: style.scrollSnapType,
         scrollWidth: element.scrollWidth,
         clientWidth: element.clientWidth,
       };
     });
-    const firstBox = await firstProof.boundingBox();
 
-    expect(metrics.display).toBe("flex");
-    expect(["auto", "scroll"]).toContain(metrics.overflowX);
-    expect(metrics.scrollSnapType).toContain("x");
-    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
-    expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
+    expect(metrics.display).toBe("grid");
+    expect(["auto", "scroll"]).not.toContain(metrics.overflowX);
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
   });
 
 
@@ -143,7 +139,7 @@ test.describe("reconstrução profissional do portfólio", () => {
     await page.goto("/");
 
     await expect(page.locator('[data-portfolio-shell-version="2"]')).toBeVisible();
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toBeVisible();
+    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
     await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
 
     const overflow = await page.evaluate(() => ({

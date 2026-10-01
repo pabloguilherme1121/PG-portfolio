@@ -47,12 +47,12 @@ export default function PortfolioTrustBar() {
           </p>
         </div>
 
-        <div data-portfolio-proof-rail="true" aria-label="Provas verificáveis do portfólio" className="-mx-1 mt-4 flex snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0">
+        <div data-portfolio-proof-rail="true" aria-label="Provas verificáveis do portfólio" className="mt-4 grid grid-cols-1 gap-2 overflow-hidden md:grid-cols-3">
           {proofItems.map(({ eyebrow, title, description, href, cta, Icon }) => (
             <article
               key={title}
               data-portfolio-proof="true"
-              className="group flex w-[82%] min-w-[82%] shrink-0 snap-start flex-col border border-white/[0.08] bg-[#081827] p-4 transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9]/35 hover:bg-[#0a2034] motion-reduce:transform-none md:w-auto md:min-w-0 md:shrink"
+              className="group flex min-w-0 flex-col border border-white/[0.08] bg-[#081827] p-4 transition-[border-color,background-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9]/35 hover:bg-[#0a2034] motion-reduce:transform-none"
             >
               <div className="flex items-center justify-between gap-3">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#67e8f9]/20 bg-[#0b2746] text-[#67e8f9]">

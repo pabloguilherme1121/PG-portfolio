@@ -76,19 +76,6 @@ export default function PortfolioHero({
               React + TypeScript · Playwright/Vitest · CI/CD · PWA · publicação web
             </p>
 
-            <div data-mobile-hero-proof-rail="true" role="list" aria-label="Provas rápidas do portfólio" className="grid grid-cols-3 gap-px overflow-hidden rounded-[14px] border border-white/[0.08] bg-white/[0.08] sm:hidden">
-              {[
-                ["produção", "Observatório publicado"],
-                ["full-stack", "Trajeto em evolução"],
-                ["qualidade", "Playwright + CI"],
-              ].map(([label, value]) => (
-                <div key={label} data-mobile-hero-proof="true" role="listitem" className="min-w-0 bg-[#071326]/92 px-2.5 py-3">
-                  <span className="block font-mono text-[7px] font-semibold uppercase tracking-[0.11em] text-[#67e8f9]">{label}</span>
-                  <span className="mt-1 block text-balance font-body text-[11px] leading-4 text-[#dcecf8]">{value}</span>
-                </div>
-              ))}
-            </div>
-
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
                 href="#diagnostico"
