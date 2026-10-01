@@ -29,12 +29,24 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
 
 
 test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progresso", async ({ page }) => {
+  const arcadeModuleRequests: string[] = [];
+  page.on("request", (request) => {
+    if (/PortfolioArcade\.(?:tsx|js)/i.test(request.url())) {
+      arcadeModuleRequests.push(request.url());
+    }
+  });
+
   await page.goto("/");
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  const openArcade = page.getByRole("button", { name: /jogar no pg arcade/i });
+  await openArcade.focus();
+  await page.waitForTimeout(80);
+  expect(arcadeModuleRequests).toHaveLength(0);
 
+  await openArcade.click();
   await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
+  await expect.poll(() => arcadeModuleRequests.length).toBeGreaterThan(0);
   const arcade = page.locator('[data-arcade-hub="true"]');
   const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
   await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
