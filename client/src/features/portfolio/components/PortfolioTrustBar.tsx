@@ -68,6 +68,7 @@ export default function PortfolioTrustBar() {
               </div>
               <a
                 href={href}
+                aria-label={`${cta}: ${title}`}
                 target={href.startsWith("http") ? "_blank" : undefined}
                 rel={href.startsWith("http") ? "noreferrer" : undefined}
                 className={`inline-flex min-h-11 items-center gap-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#c9f8ff] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${index === 0 ? "mt-auto border-t border-white/[0.08] pt-4" : "mt-4 border-t border-white/[0.08] pt-3 md:col-start-3 md:row-span-2 md:row-start-1 md:mt-0 md:border-0 md:pt-0"}`}
