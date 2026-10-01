@@ -32,7 +32,8 @@ test("PG Arcade mobile expõe quatro jogos, preserva modos e permite zerar progr
   await page.goto("/");
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  const openArcade = page.getByRole("button", { name: /jogar no pg arcade/i });
+  await openArcade.tap();
 
   await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
   const arcade = page.locator('[data-arcade-hub="true"]');

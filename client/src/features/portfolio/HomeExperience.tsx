@@ -871,9 +871,9 @@ export default function Home() {
               type="button"
               data-arcade-open-control="true"
               data-arcade-preload="intent"
-              onPointerEnter={preloadPgArcade}
-              onFocus={preloadPgArcade}
-              onTouchStart={preloadPgArcade}
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") preloadPgArcade();
+              }}
               onClick={togglePgArcade}
               aria-expanded={pgLabOpen}
               aria-controls="pg-lab-game"
