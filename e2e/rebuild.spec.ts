@@ -9,7 +9,11 @@ test.describe("reconstrução profissional do portfólio", () => {
 
     const hero = page.locator("#inicio");
     await expect(hero.getByRole("heading", { level: 1 })).toContainText(/produtos digitais|interfaces|dados/i);
+    await expect(hero.getByRole("link", { name: /^ver projetos$/i })).toHaveAttribute("href", "#projetos");
     await expect(hero.getByRole("link", { name: /começar diagnóstico/i })).toHaveAttribute("href", "#diagnostico");
+    await expect(hero.locator('[data-hero-signal="true"]')).toHaveCount(3);
+    await expect(hero.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
+    await expect(hero.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
 
     const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
     await expect(trustBar).toBeVisible();
@@ -63,7 +67,10 @@ test.describe("reconstrução profissional do portfólio", () => {
 
     await placeholder.scrollIntoViewIfNeeded();
 
-    await expect(page.locator('[data-experience-hub="true"]')).toBeVisible();
+    const hub = page.locator('[data-experience-hub="true"]');
+    await expect(hub).toBeVisible();
+    await expect(hub.getByRole("tab")).toHaveCount(3);
+    await expect(hub.getByRole("progressbar")).toHaveCount(0);
     await expect(placeholder).toHaveCount(0);
   });
 
@@ -143,7 +150,8 @@ test.describe("reconstrução profissional do portfólio", () => {
     await page.goto("/");
 
     await expect(page.locator('[data-portfolio-shell-version="2"]')).toBeVisible();
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toBeVisible();
+    await expect(page.locator('[data-hero-signal="true"]')).toHaveCount(3);
+    await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
     await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
 
     const overflow = await page.evaluate(() => ({
