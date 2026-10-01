@@ -6,6 +6,7 @@ export type ArcadeGame = (typeof arcadeGames)[number];
 export type ArcadeSession = {
   lastGame: ArcadeGame;
   visits: Record<ArcadeGame, number>;
+  explored: ArcadeGame[];
 };
 
 export const emptyArcadeSession: ArcadeSession = {
@@ -16,6 +17,7 @@ export const emptyArcadeSession: ArcadeSession = {
     futebol: 0,
     damas: 0,
   },
+  explored: [],
 };
 
 function isArcadeGame(value: unknown): value is ArcadeGame {
@@ -33,24 +35,49 @@ export function normalizeArcadeSession(value: unknown): ArcadeSession {
     return {
       lastGame: emptyArcadeSession.lastGame,
       visits: { ...emptyArcadeSession.visits },
+      explored: [...emptyArcadeSession.explored],
     };
   }
 
   const candidate = value as {
     lastGame?: unknown;
     visits?: Partial<Record<ArcadeGame, unknown>>;
+    explored?: unknown;
   };
+
+  const visits: Record<ArcadeGame, number> = {
+    velha: normalizeVisitCount(candidate.visits?.velha),
+    domino: normalizeVisitCount(candidate.visits?.domino),
+    futebol: normalizeVisitCount(candidate.visits?.futebol),
+    damas: normalizeVisitCount(candidate.visits?.damas),
+  };
+
+  const storedExplored = Array.isArray(candidate.explored)
+    ? candidate.explored.filter(isArcadeGame)
+    : [];
+
+  const explored = arcadeGames.filter(
+    (game) => storedExplored.includes(game) || visits[game] > 0,
+  );
 
   return {
     lastGame: isArcadeGame(candidate.lastGame)
       ? candidate.lastGame
       : emptyArcadeSession.lastGame,
-    visits: {
-      velha: normalizeVisitCount(candidate.visits?.velha),
-      domino: normalizeVisitCount(candidate.visits?.domino),
-      futebol: normalizeVisitCount(candidate.visits?.futebol),
-      damas: normalizeVisitCount(candidate.visits?.damas),
-    },
+    visits,
+    explored,
+  };
+}
+
+export function markArcadeGameExplored(
+  session: ArcadeSession,
+  game: ArcadeGame,
+): ArcadeSession {
+  if (session.explored.includes(game)) return session;
+
+  return {
+    ...session,
+    explored: [...session.explored, game],
   };
 }
 
@@ -58,12 +85,17 @@ export function recordArcadeGameVisit(
   session: ArcadeSession,
   game: ArcadeGame,
 ): ArcadeSession {
+  const explored = session.explored.includes(game)
+    ? session.explored
+    : [...session.explored, game];
+
   return {
     lastGame: game,
     visits: {
       ...session.visits,
       [game]: session.visits[game] + 1,
     },
+    explored,
   };
 }
 
@@ -74,4 +106,22 @@ export function getMostVisitedArcadeGame(
   if (highest <= 0) return null;
   if (session.visits[session.lastGame] === highest) return session.lastGame;
   return arcadeGames.find((game) => session.visits[game] === highest) ?? null;
+}
+
+export function getSuggestedArcadeGame(
+  session: ArcadeSession,
+  activeGame: ArcadeGame,
+): ArcadeGame {
+  const candidates = arcadeGames.filter((game) => game !== activeGame);
+
+  return candidates.reduce((best, candidate) => {
+    const bestExplored = session.explored.includes(best);
+    const candidateExplored = session.explored.includes(candidate);
+
+    if (bestExplored !== candidateExplored) {
+      return candidateExplored ? best : candidate;
+    }
+
+    return session.visits[candidate] < session.visits[best] ? candidate : best;
+  });
 }
