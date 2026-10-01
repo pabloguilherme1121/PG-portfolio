@@ -11,7 +11,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   chooseDominoBotMove,
   dealDominoRound,
-  getDominoPipTotal,\n  getDominoRoundPoints,\n  sortDominoHand,
+  getDominoPipTotal,
+  getDominoRoundPoints,
+  sortDominoHand,
   getPlayableDominoSides,
   hasPlayableDominoTile,
   placeDominoTile,
@@ -91,7 +93,9 @@ export default function PortfolioDomino() {
   const [matchWinner, setMatchWinner] = useState<Turn | null>(null);
   const [passes, setPasses] = useState(0);
   const [round, setRound] = useState(1);
-  const [score, setScore] = useState({ player: 0, opponent: 0, draws: 0 });\n  const [points, setPoints] = useState({ player: 0, opponent: 0 });\n  const [lastMove, setLastMove] = useState("Escolha uma pedra para abrir a mesa.");
+  const [score, setScore] = useState({ player: 0, opponent: 0, draws: 0 });
+  const [points, setPoints] = useState({ player: 0, opponent: 0 });
+  const [lastMove, setLastMove] = useState("Escolha uma pedra para abrir a mesa.");
   const [handoffPending, setHandoffPending] = useState(false);
   const [pendingMove, setPendingMove] = useState<PendingMove>(null);
 
@@ -123,7 +127,9 @@ export default function PortfolioDomino() {
     setPendingMove(null);
     if (resetScore) {
       setRound(1);
-      setScore({ player: 0, opponent: 0, draws: 0 });\n      setPoints({ player: 0, opponent: 0 });\n      setLastMove("Escolha uma pedra para abrir a mesa.");
+      setScore({ player: 0, opponent: 0, draws: 0 });
+      setPoints({ player: 0, opponent: 0 });
+      setLastMove("Escolha uma pedra para abrir a mesa.");
       setMatchWinner(null);
     }
   };
@@ -229,7 +235,8 @@ export default function PortfolioDomino() {
     }
 
     const nextTurn: Turn = turn === "player" ? "opponent" : "player";
-    setLastMove(`${turn === "player" ? (mode === "bot" ? "Você" : "Jogador 1") : (mode === "bot" ? "PG Bot" : "Jogador 2")} passou a vez.`);\n    setPasses(value => value + 1);
+    setLastMove(`${turn === "player" ? (mode === "bot" ? "Você" : "Jogador 1") : (mode === "bot" ? "PG Bot" : "Jogador 2")} passou a vez.`);
+    setPasses(value => value + 1);
     setTurn(nextTurn);
     setPendingMove(null);
     if (mode === "local") setHandoffPending(true);
@@ -270,7 +277,10 @@ export default function PortfolioDomino() {
         setChain(nextChain);
         setPasses(0);
 
-        if (!nextHand.length) {\n          setPoints(current => ({ ...current, opponent: current.opponent + getDominoRoundPoints(playerHand) }));\n          finishRound("opponent");\n        }
+        if (!nextHand.length) {
+          setPoints(current => ({ ...current, opponent: current.opponent + getDominoRoundPoints(playerHand) }));
+          finishRound("opponent");
+        }
         else setTurn("player");
       },
       difficulty === "master" ? 520 : 360
@@ -617,7 +627,8 @@ export default function PortfolioDomino() {
               </div>
             ) : (
               <div data-domino-hand="true" className="flex flex-wrap gap-2">
-                {sortDominoHand(currentHand, chain).map((tile) => {\n                  const index = currentHand.indexOf(tile);
+                {sortDominoHand(currentHand, chain).map((tile) => {
+                  const index = currentHand.indexOf(tile);
                   const playable =
                     !winner && getPlayableDominoSides(tile, chain).length > 0;
                   const hidden = mode === "bot" && turn === "opponent";
