@@ -1,4 +1,4 @@
-import { ArrowDownRight, Briefcase, CheckCircle2, Compass, Sparkles, UserRound } from "lucide-react";
+import { ArrowDownRight, Briefcase, Compass, UserRound } from "lucide-react";
 import type { KeyboardEvent, PointerEvent } from "react";
 import { useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
@@ -16,7 +16,6 @@ const experienceRoutes = [
     href: "#diagnostico",
     cta: "diagnosticar meu projeto",
     Icon: Briefcase,
-    steps: ["Definir o problema", "Montar a rota", "Gerar briefing"],
     proof: "Project Lens + Briefing Studio",
   },
   {
@@ -29,7 +28,6 @@ const experienceRoutes = [
     href: "#perfil-profissional",
     cta: "abrir perfil profissional",
     Icon: UserRound,
-    steps: ["Ler o perfil", "Ver provas", "Abrir currículo"],
     proof: "Perfil + currículo + GitHub",
   },
   {
@@ -42,7 +40,6 @@ const experienceRoutes = [
     href: "#projetos",
     cta: "ver projetos selecionados",
     Icon: Compass,
-    steps: ["Abrir cases", "Comparar soluções", "Explorar o PG Lab"],
     proof: "Cases + Observatório + PG Lab",
   },
 ] as const;
@@ -120,32 +117,27 @@ export default function PortfolioExperienceHub() {
       <div className="experience-pointer-glow pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-[1440px] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
-        <div className="grid gap-5 border-b border-white/10 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+      <div className="relative mx-auto max-w-[1440px] px-4 py-8 min-[360px]:px-5 sm:px-8 sm:py-12 lg:px-12 lg:py-14">
+        <div className="grid gap-3 border-b border-white/10 pb-5 sm:gap-5 sm:pb-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div>
             <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
               PG Experience · escolha sua rota
             </p>
             <h2
               id="experience-hub-title"
-              className="mt-3 max-w-4xl font-display text-[clamp(2.05rem,10vw,5.6rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white sm:mt-4 sm:leading-[0.92] sm:tracking-[-0.06em]"
+              className="mt-2 max-w-3xl font-display text-[clamp(1.8rem,8vw,3.8rem)] font-medium leading-[0.98] tracking-[-0.05em] text-white sm:mt-3 sm:leading-[0.94]"
             >
-              Escolha como quer explorar este portfólio pelo caminho mais útil para você.
+              Escolha a rota mais útil para você.
             </h2>
           </div>
           <div className="lg:pb-1">
-            <p className="max-w-xl font-body text-sm leading-7 text-[#b7d4e4] sm:text-base">
-              Contratar, avaliar o perfil ou explorar projetos: a próxima etapa se adapta à sua intenção.
-              Você pode trocar de rota a qualquer momento.
+            <p className="max-w-xl font-body text-sm leading-6 text-[#b7d4e4] sm:text-base sm:leading-7">
+              Contratar, avaliar o perfil ou explorar projetos. Troque de rota quando quiser.
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 border border-[#67e8f9]/20 bg-[#06172f]/75 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.12em] text-[#9ed8e6]">
-              <Sparkles className="h-3.5 w-3.5 text-[#67e8f9]" aria-hidden="true" />
-              experiência orientada · sem bloquear a navegação
-            </div>
           </div>
         </div>
 
-        <div className="mt-6 grid gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
+        <div className="mt-5 grid gap-4 sm:mt-6 sm:gap-5 lg:grid-cols-[0.72fr_1.28fr]">
           <div>
             <div data-experience-route-strip="true" className="experience-route-strip flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:overflow-visible sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
@@ -186,27 +178,7 @@ export default function PortfolioExperienceHub() {
               );
             })}
             </div>
-            <div
-              data-experience-progress="true"
-              role="progressbar"
-              aria-label="Progresso entre as rotas do portfólio"
-              aria-valuemin={1}
-              aria-valuemax={experienceRoutes.length}
-              aria-valuenow={selectedIndex + 1}
-              className="mt-2 min-w-0 max-w-full overflow-hidden border border-white/10 bg-[#07111f]/70 p-3 sm:mt-4"
-            >
-              <div className="flex min-w-0 items-center justify-between gap-3 font-mono text-[8px] uppercase tracking-[0.12em] text-[#7597b4]">
-                <span>rota {selectedIndex + 1} de {experienceRoutes.length}</span>
-                <span className="min-w-0 truncate text-right text-[#a5f3fc]">{selected.label}</span>
-              </div>
-              <div className="mt-2 h-px overflow-hidden bg-white/10">
-                <span
-                  className="experience-progress-bar block h-full bg-[#67e8f9]"
-                  style={{ width: `${((selectedIndex + 1) / experienceRoutes.length) * 100}%` }}
-                  aria-hidden="true"
-                />
-              </div>
-            </div>
+
           </div>
 
           <div
@@ -215,7 +187,7 @@ export default function PortfolioExperienceHub() {
             role="tabpanel"
             aria-labelledby={`experience-route-${selected.id}`}
             data-experience-panel={selected.id}
-            className="experience-panel-enter relative min-w-0 max-w-full overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-3 shadow-[0_24px_70px_rgba(0,0,0,0.28)] sm:p-7 lg:p-8"
+            className="experience-panel-enter relative min-w-0 max-w-full overflow-hidden border border-[#67e8f9]/25 bg-[#071827]/90 p-4 shadow-[0_20px_56px_rgba(0,0,0,0.24)] sm:p-6 lg:p-7"
           >
             <div className="pointer-events-none absolute right-5 top-5 h-20 w-20 border-r border-t border-[#67e8f9]/25" aria-hidden="true" />
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
@@ -223,23 +195,11 @@ export default function PortfolioExperienceHub() {
               <p className="hidden font-mono text-[8px] uppercase tracking-[0.11em] text-[#7798b6] min-[390px]:block">rota ativa · {selected.proof}</p>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5">
               <h3 className="max-w-full break-words font-display text-[clamp(1.75rem,9vw,3.8rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white sm:leading-[0.95] sm:tracking-[-0.055em]">
                 {selected.title}
               </h3>
-              <p className="mt-4 max-w-2xl font-body text-sm leading-7 text-[#b9d6e5]">{selected.description}</p>
-            </div>
-
-            <div className="mt-5 grid grid-cols-3 gap-px bg-white/10 sm:mt-7" aria-label="Etapas desta rota">
-              {selected.steps.map((step, index) => (
-                <div key={step} className="relative min-w-0 bg-[#061423] px-2.5 py-3 sm:px-4 sm:py-4">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-[#67e8f9]" aria-hidden="true" />
-                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#6f91b7]">0{index + 1}</span>
-                  </div>
-                  <p className="mt-1.5 break-words font-body text-[11px] leading-4 text-[#e2f4fb] sm:mt-2 sm:text-sm sm:leading-normal">{step}</p>
-                </div>
-              ))}
+              <p className="mt-3 max-w-2xl font-body text-sm leading-6 text-[#b9d6e5] sm:leading-7">{selected.description}</p>
             </div>
 
             <div className="mt-5 flex flex-col gap-3 sm:mt-7 sm:flex-row sm:items-center">
