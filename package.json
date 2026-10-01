@@ -13,6 +13,7 @@
     "test:e2e": "playwright test",
     "db:push": "drizzle-kit generate && drizzle-kit migrate",
     "audit:assets": "node scripts/audit-public-assets.mjs",
+    "audit:source": "node scripts/check-source-escapes.mjs",
     "audit:bundle": "node scripts/check-bundle-budget.mjs",
     "build:server": "NODE_ENV=production vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "build:static": "VITE_DEPLOY_TARGET=github-pages VITE_STATIC_DEPLOY=true vite build",
