@@ -243,8 +243,8 @@ test.describe("portfólio profissional", () => {
   test("publica metadados, robots e sitemap coerentes", async ({ page, request }) => {
     await page.goto("/");
 
-    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /desenvolvimento web.*dashboards/i);
-    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Desenvolvimento Web & Produtos Digitais/i);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /produtos digitais, interfaces e dados com projetos verificáveis/i);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", /Produtos digitais, interfaces e dados/i);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `${new URL(baseURL).origin}/`);
 
     const robots = await request.get("/robots.txt");

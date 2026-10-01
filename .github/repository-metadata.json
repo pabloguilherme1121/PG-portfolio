@@ -1,0 +1,14 @@
+{
+  "description": "Produtos digitais, interfaces e dados com projetos verificáveis. Portfólio de Pablo Guilherme.",
+  "homepage": "https://pabloguilherme1121.github.io/PG-portfolio/",
+  "topics": [
+    "portfolio",
+    "react",
+    "typescript",
+    "vite",
+    "github-pages",
+    "accessibility",
+    "playwright",
+    "web-development"
+  ]
+}

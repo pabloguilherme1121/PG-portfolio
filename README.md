@@ -8,42 +8,17 @@
 
 **[Abrir o portfólio](https://pabloguilherme1121.github.io/PG-portfolio/)** · **[Abrir o Observatório](https://pabloguilherme01.github.io/observatorio/#dashboard)**
 
-Portfólio profissional de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, dados e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
+Produtos digitais, interfaces e dados com projetos verificáveis. Portfólio de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, dados e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
 
 O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma galeria: produto em produção, produto full-stack em evolução, decisões de interface, código verificável, testes automatizados e uma jornada de contato que transforma uma necessidade inicial em briefing estruturado.
 
-## O que este portfólio demonstra
-
-- **Produto real em produção:** o Observatório pode ser aberto, navegado e avaliado fora do portfólio.
-- **Produto full-stack em evolução:** o Trajeto expõe arquitetura de produto, frontend, API, persistência, testes, CI e segurança em código público.
-- **Engenharia verificável:** React, TypeScript, Vite, testes unitários, Playwright e auditoria de assets fazem parte do fluxo.
-- **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
-- **Briefing Studio:** fluxo progressivo em cinco etapas, com autosave local, validação e resumo do contexto.
-- **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
-- **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
-- **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
-- **Pausa interativa opcional:** jogo da velha contra o PG Bot, com lógica local, placar e controles acessíveis, sem bloquear a jornada de conversão.
-- **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
-
 ## Jornada principal
 
-```text
-Posicionamento
-    ↓
-Proof Deck
-    ↓
-Project Lens
-    ↓
-Serviços e processo
-    ↓
-Produto em produção + estudos de caso
-    ↓
-Briefing Studio
-    ↓
-Contato / WhatsApp
-```
+**Projetos verificáveis → competências e processo → contato.**
 
-A narrativa prioriza uma pergunta: **o que esta entrega resolve, como foi construída e onde pode ser verificada?**
+Observatório e Trajeto são as provas centrais. Cases conectam contexto, decisão e evidência. O briefing progressivo mantém rascunho local e prepara contato pelo WhatsApp no Pages.
+
+Project Lens, Experience Hub, currículo, repertório social e PG Arcade são recursos auxiliares. As quatro experiências do Arcade demonstram lógica local, bots determinísticos, touch/keyboard, acessibilidade e testes de navegador. O foco agora é refinamento e manutenção, sem expandir o catálogo de jogos.
 
 ## Case principal: Observatório
 
@@ -82,7 +57,7 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 O workflow de publicação só entrega o build depois das verificações de qualidade.
 
 ```bash
-pnpm audit --audit-level=high
+pnpm audit --audit-level=low
 pnpm check
 pnpm test
 pnpm test:e2e
@@ -117,12 +92,16 @@ Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mant�
 
 | Diretório | Conteúdo |
 | --- | --- |
-| `client/` | Experiência pública, componentes e mídia |
-| `client/src/features/portfolio/` | Hero, Proof Deck, Project Lens, cases, briefing e analytics |
-| `server/` e `shared/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
+| `apps/portfolio/` | Site público estático, componentes e mídia |
+| `apps/portfolio/src/features/portfolio/` | Composição de jornadas, projetos, contato e experiências opcionais |
+| `apps/api/` | Backend e cliente administrativo opcionais; não enviados ao Pages |
+| `packages/contracts/` | Inputs e tipos compartilhados, sem acoplamento ao banco |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |
+| `docs/current/` | Arquitetura, direção de produto, operação e migração vigentes |
 | `docs/archive/` | Histórico técnico e pesquisas preservadas |
+
+A instalação padrão é estática; use `pnpm dev:server` e `pnpm build:server` para a variante com API. Consulte a [documentação vigente](docs/current/README.md).
 
 ## Princípios do projeto
 

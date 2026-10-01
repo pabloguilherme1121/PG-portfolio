@@ -1,3 +1,4 @@
+import path from "node:path";
 import { defineConfig } from "drizzle-kit";
 
 const connectionString = process.env.DATABASE_URL;
@@ -6,8 +7,8 @@ if (!connectionString) {
 }
 
 export default defineConfig({
-  schema: "./drizzle/schema.ts",
-  out: "./drizzle",
+  schema: path.join(import.meta.dirname, "apps/api/drizzle/schema.ts"),
+  out: path.join(import.meta.dirname, "apps/api/drizzle"),
   dialect: "mysql",
   dbCredentials: {
     url: connectionString,

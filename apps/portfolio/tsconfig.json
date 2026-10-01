@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/typescript/portfolio.tsbuildinfo"
+  },
+  "include": ["src/**/*", "../../packages/contracts/**/*"],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}

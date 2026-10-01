@@ -1,8 +1,8 @@
 import { appendFile, readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 
-const sourceDir = path.resolve("client");
-const publicDir = path.resolve("client/public");
+const sourceDir = path.resolve("apps/portfolio");
+const publicDir = path.resolve("apps/portfolio/public");
 const validExtensions = new Set([".tsx", ".ts", ".html", ".css"]);
 const requiredAssets = new Set();
 const optionalAssets = new Set();
