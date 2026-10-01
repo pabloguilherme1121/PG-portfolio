@@ -35,6 +35,7 @@ import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
+import { useMobileKeyboardState } from "@/features/portfolio/hooks/useMobileKeyboardState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
@@ -185,7 +186,7 @@ export default function Home() {
   const [contextNavigationStatus, setContextNavigationStatus] = useState("");
   const [portfolioShareStatus, setPortfolioShareStatus] = useState<"idle" | "shared" | "copied" | "error">("idle");
   const [isBriefingFieldFocused, setIsBriefingFieldFocused] = useState(false);
-  const [isMobileKeyboardOpen, setIsMobileKeyboardOpen] = useState(false);
+  const isMobileKeyboardOpen = useMobileKeyboardState();
   const [mobileExperienceRoute, setMobileExperienceRoute] = useState<MobileExperienceRoute>(() =>
     readStoredExperienceRoute(getSafeStorage("session")),
   );
@@ -213,6 +214,7 @@ export default function Home() {
   } = useProjectDetailsController({ repositories });
   const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
+  const isBackToTopVisible = showBackToTop && !shouldHideContactFloat;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
@@ -920,7 +922,7 @@ export default function Home() {
         )}
       </div>
 
-      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop} tabIndex={showBackToTop ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
+      <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!isBackToTopVisible} tabIndex={isBackToTopVisible ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${isBackToTopVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <nav
         aria-label="Ações rápidas"
         aria-hidden={isDockHidden ? "true" : undefined}

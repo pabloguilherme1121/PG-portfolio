@@ -1,3 +1,5 @@
+import type { InstagramFeedResponse } from "../../../server/routers";
+
 type StaticQueryResult<T> = {
   data: T;
   isError: false;
@@ -35,6 +37,15 @@ function staticMutation(): StaticMutationResult {
  * Mantém a interface mínima consumida pela home sem carregar tRPC/React Query.
  */
 export const trpc = {
+  instagramFeed: {
+    status: {
+      useQuery: () => staticQuery<InstagramFeedResponse>({
+        status: "credentials_required",
+        items: [],
+        message: "Acompanhe as publicações diretamente nos perfis do Instagram.",
+      }),
+    },
+  },
   availability: {
     listBlocked: {
       useQuery: () => staticQuery<{ dateKey: string }[]>([]),
