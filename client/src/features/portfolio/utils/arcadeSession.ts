@@ -125,3 +125,14 @@ export function getSuggestedArcadeGame(
     return session.visits[candidate] < session.visits[best] ? candidate : best;
   });
 }
+
+export function resetArcadeSessionProgress(
+  _session: ArcadeSession,
+  activeGame: ArcadeGame,
+): ArcadeSession {
+  return {
+    lastGame: activeGame,
+    visits: { ...emptyArcadeSession.visits },
+    explored: [activeGame],
+  };
+}

@@ -6,6 +6,7 @@ import {
   markArcadeGameExplored,
   normalizeArcadeSession,
   recordArcadeGameVisit,
+  resetArcadeSessionProgress,
 } from "./arcadeSession";
 
 describe("arcadeSession", () => {
@@ -53,6 +54,20 @@ describe("arcadeSession", () => {
       explored: ["damas"],
     });
     expect(emptyArcadeSession.lastGame).toBe("velha");
+  });
+
+  it("zera visitas e mantém apenas o jogo atual como explorado", () => {
+    const session = normalizeArcadeSession({
+      lastGame: "damas",
+      visits: { velha: 4, domino: 2, futebol: 1, damas: 3 },
+      explored: ["velha", "domino", "futebol", "damas"],
+    });
+
+    expect(resetArcadeSessionProgress(session, "domino")).toEqual({
+      lastGame: "domino",
+      visits: { velha: 0, domino: 0, futebol: 0, damas: 0 },
+      explored: ["domino"],
+    });
   });
 
   it("identifica o jogo mais visitado e usa o último jogado para desempatar", () => {

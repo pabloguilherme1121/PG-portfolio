@@ -10,6 +10,7 @@ import {
   markArcadeGameExplored,
   normalizeArcadeSession,
   recordArcadeGameVisit,
+  resetArcadeSessionProgress,
   type ArcadeGame,
   type ArcadeSession,
 } from "@/features/portfolio/utils/arcadeSession";
@@ -87,6 +88,11 @@ export default function PortfolioArcade() {
     setGame(nextGame);
     setSession((current) => recordArcadeGameVisit(current, nextGame));
     trackPortfolioEvent("arcade_game_selected", { arcadeGame: nextGame });
+  };
+
+  const resetProgress = () => {
+    setSession((current) => resetArcadeSessionProgress(current, game));
+    trackPortfolioEvent("arcade_progress_reset", { arcadeGame: game });
   };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -212,14 +218,26 @@ export default function PortfolioArcade() {
                 />
               </div>
             </div>
-            <button
-              type="button"
-              data-arcade-suggestion="true"
-              onClick={() => selectGame(suggestedGame)}
-              className="min-h-11 shrink-0 rounded-[10px] border border-[#67e8f9]/35 bg-[#08203b] px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#cffafe] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-            >
-              Experimentar {suggestedGameLabel}
-            </button>
+            <div className="flex shrink-0 flex-col gap-2 min-[420px]:flex-row">
+              {totalSelections > 0 || session.explored.length > 1 ? (
+                <button
+                  type="button"
+                  data-arcade-reset-progress="true"
+                  onClick={resetProgress}
+                  className="min-h-11 rounded-[10px] border border-white/12 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#a9bfd8] transition-colors hover:border-white/25 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                >
+                  Zerar progresso
+                </button>
+              ) : null}
+              <button
+                type="button"
+                data-arcade-suggestion="true"
+                onClick={() => selectGame(suggestedGame)}
+                className="min-h-11 rounded-[10px] border border-[#67e8f9]/35 bg-[#08203b] px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#cffafe] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              >
+                Experimentar {suggestedGameLabel}
+              </button>
+            </div>
           </div>
         </div>
       </div>
