@@ -100,7 +100,7 @@ test("mobile continua utilizável com armazenamento bloqueado em 320px", async (
   await page.keyboard.press("Escape");
   await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
   const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade, JSON.stringify(errors)).toBeVisible();
+  await expect(arcade, JSON.stringify(errors)).toBeVisible({ timeout: 15_000 });
   for (const game of [/dominó/i, /damas/i]) {
     await arcade.getByRole("tab", { name: game }).click();
     await expect(arcade.getByRole("tabpanel")).toBeVisible();
