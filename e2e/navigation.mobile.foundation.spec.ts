@@ -82,7 +82,7 @@ test.describe("portfólio profissional", () => {
         if (box) expect(box.height).toBeGreaterThanOrEqual(44);
       }
 
-      await page.getByRole("button", { name: /abrir.*pg arcade|abrir.*pg lab|jogar.*pg arcade|jogar.*jogo da velha/i }).click();
+      await page.locator('[data-arcade-open-control="true"]').click();
       const game = page.locator('[data-tic-tac-toe="true"]');
       await game.scrollIntoViewIfNeeded();
       await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
@@ -182,7 +182,7 @@ test.describe("portfólio profissional", () => {
     await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(1);
     await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
 
-    await page.getByRole("button", { name: /abrir.*pg arcade|jogar.*pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
     await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
     const game = page.locator('[data-tic-tac-toe="true"]');
     await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(4);
@@ -241,7 +241,7 @@ test.describe("portfólio profissional", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
 
-      await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+      await page.locator('[data-arcade-open-control="true"]').click();
       await expect(page.locator('[data-arcade-hub="true"]')).toBeVisible();
 
       const overflow = await page.evaluate(() => {
