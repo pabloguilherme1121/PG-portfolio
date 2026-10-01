@@ -67,9 +67,13 @@ export default function PortfolioExperienceHub() {
         const strip = route?.closest<HTMLElement>('[data-experience-route-strip="true"]');
         if (!route || !strip) return;
 
-        const targetLeft = route.offsetLeft - (strip.clientWidth - route.offsetWidth) / 2;
+        const routeRect = route.getBoundingClientRect();
+        const stripRect = strip.getBoundingClientRect();
+        const routeLeft = routeRect.left - stripRect.left + strip.scrollLeft;
+        const targetLeft = routeLeft - (strip.clientWidth - routeRect.width) / 2;
+        const maxLeft = Math.max(0, strip.scrollWidth - strip.clientWidth);
         strip.scrollTo({
-          left: Math.max(0, targetLeft),
+          left: Math.min(maxLeft, Math.max(0, targetLeft)),
           behavior: reduceMotion ? "auto" : "smooth",
         });
       });
@@ -120,9 +124,9 @@ export default function PortfolioExperienceHub() {
       <div className="experience-pointer-glow pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute left-1/2 top-0 h-72 w-72 -translate-x-1/2 rounded-full bg-[#38bdf8]/10 blur-3xl" aria-hidden="true" />
 
-      <div className="relative mx-auto max-w-[1440px] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
-        <div className="grid gap-5 border-b border-white/10 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
-          <div>
+      <div className="relative mx-auto min-w-0 max-w-[1440px] overflow-hidden px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-18 lg:px-12 lg:py-22">
+        <div className="grid min-w-0 max-w-full gap-5 border-b border-white/10 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+          <div className="min-w-0">
             <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
               PG Experience · escolha sua rota
             </p>
@@ -133,7 +137,7 @@ export default function PortfolioExperienceHub() {
               Escolha como quer explorar este portfólio pelo caminho mais útil para você.
             </h2>
           </div>
-          <div className="lg:pb-1">
+          <div className="min-w-0 lg:pb-1">
             <p className="max-w-xl font-body text-sm leading-7 text-[#b7d4e4] sm:text-base">
               Contratar, avaliar o perfil ou explorar projetos: a próxima etapa se adapta à sua intenção.
               Você pode trocar de rota a qualquer momento.
@@ -145,9 +149,9 @@ export default function PortfolioExperienceHub() {
           </div>
         </div>
 
-        <div className="mt-6 grid gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
-          <div>
-            <div data-experience-route-strip="true" className="experience-route-strip flex w-full max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:overflow-visible sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
+        <div className="mt-6 grid min-w-0 max-w-full gap-5 sm:mt-7 sm:gap-6 lg:grid-cols-[0.78fr_1.22fr]">
+          <div className="min-w-0 max-w-full overflow-hidden">
+            <div data-experience-route-strip="true" className="experience-route-strip flex min-w-0 w-full max-w-full snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:overflow-visible sm:pb-0" role="tablist" aria-label="Escolha como quer explorar o portfólio">
             {experienceRoutes.map(({ id, label, eyebrow, Icon }, index) => {
               const active = activeRoute === id;
               return (
