@@ -42,6 +42,8 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium firefox webkit
       - name: Browser tests
         run: pnpm test:e2e
+      - name: Repeat mobile WebKit Arcade regression
+        run: pnpm exec playwright test --project=mobile-webkit --grep="PG Arcade mobile" --repeat-each=5 --workers=1
       - name: Preserve browser failure diagnostics
         if: failure()
         uses: actions/upload-artifact@v7
