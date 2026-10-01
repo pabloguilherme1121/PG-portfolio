@@ -274,7 +274,7 @@ export default function PortfolioDomino() {
         if (!nextHand.length) finishRound("opponent");
         else setTurn("player");
       },
-      difficulty === "master" ? 520 : 360
+      difficulty === "expert" ? 620 : difficulty === "master" ? 520 : 360
     );
 
     return () => window.clearTimeout(timer);
