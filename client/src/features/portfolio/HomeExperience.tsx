@@ -870,10 +870,7 @@ export default function Home() {
             <button
               type="button"
               data-arcade-open-control="true"
-              data-arcade-preload="intent"
-              onPointerEnter={preloadPgArcade}
-              onFocus={preloadPgArcade}
-              onTouchStart={preloadPgArcade}
+              data-arcade-load="activation"
               onClick={togglePgArcade}
               aria-expanded={pgLabOpen}
               aria-controls="pg-lab-game"
