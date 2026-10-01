@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { CircleDot, Crown, Gamepad2, Goal, Grid3X3, Sparkles } from "lucide-react";
 import PortfolioTicTacToe from "@/features/portfolio/components/PortfolioTicTacToe";
 import PortfolioDomino from "@/features/portfolio/components/PortfolioDomino";
 import PortfolioCheckers from "@/features/portfolio/components/PortfolioCheckers";
@@ -20,10 +21,10 @@ import {
 import PortfolioFootball from "./PortfolioFootball";
 
 const games = [
-  { id: "velha", label: "Jogo da velha", meta: "estratégia rápida" },
-  { id: "domino", label: "Dominó", meta: "compra + bloqueio" },
-  { id: "futebol", label: "Futebol", meta: "pênaltis + faltas" },
-  { id: "damas", label: "Damas", meta: "captura + séries" },
+  { id: "velha", label: "Jogo da velha", meta: "estratégia rápida", icon: Grid3X3 },
+  { id: "domino", label: "Dominó", meta: "compra + bloqueio", icon: CircleDot },
+  { id: "futebol", label: "Futebol", meta: "pênaltis + faltas", icon: Goal },
+  { id: "damas", label: "Damas", meta: "captura + séries", icon: Crown },
 ] as const;
 
 function readArcadeSession(): ArcadeSession {
@@ -121,13 +122,15 @@ export default function PortfolioArcade() {
   };
 
   return (
-    <div data-arcade-hub="true">
+    <div data-arcade-hub="true" className="relative isolate overflow-hidden bg-[#030b16]">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.14),transparent_62%)]" />
       <div className="mx-auto max-w-[1180px] px-4 pt-4 sm:px-8 lg:px-12">
-        <div className="rounded-[16px] border border-[#67e8f9]/20 bg-[#06172f]/75 p-3 sm:p-4">
+        <div className="overflow-hidden rounded-[22px] border border-[#67e8f9]/20 bg-[linear-gradient(145deg,rgba(8,32,59,0.96),rgba(4,18,37,0.92))] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-5">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
-                selecionar experiência
+              <p className="inline-flex items-center gap-2 font-mono text-[9px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9]">
+                <Gamepad2 className="h-4 w-4" aria-hidden="true" />
+                PG Arcade · escolher jogo
               </p>
               <p className="mt-1 font-body text-sm text-[#a9bfd8]">
                 Quatro jogos: estratégia, dominó por cores e futebol com
@@ -155,9 +158,12 @@ export default function PortfolioArcade() {
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4"
+            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4"
           >
-            {games.map((item) => (
+            {games.map((item) => {
+              const Icon = item.icon;
+              const isActive = game === item.id;
+              return (
               <button
                 key={item.id}
                 type="button"
@@ -175,30 +181,35 @@ export default function PortfolioArcade() {
                   mostVisitedGame === item.id ? "true" : undefined
                 }
                 onClick={() => selectGame(item.id)}
-                className={`min-h-14 rounded-[11px] border px-2 py-2 text-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${game === item.id ? "border-[#67e8f9] bg-[#0b2746] text-white" : "border-white/10 bg-[#071326] text-[#9bb4c7] hover:border-[#67e8f9]/50"}`}
+                className={`group relative min-h-[82px] overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
               >
-                <span className="block font-mono text-xs font-semibold">
-                  {item.label}
+                <span className="flex items-center justify-between gap-2">
+                  <span className={`grid h-8 w-8 place-items-center rounded-[10px] border ${isActive ? "border-[#67e8f9]/40 bg-[#67e8f9]/10 text-[#a5f3fc]" : "border-white/10 bg-white/[0.03] text-[#7894ae] group-hover:text-[#a5f3fc]"}`}>
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                  </span>
+                  {session.explored.includes(item.id) ? (
+                    <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">
+                      {mostVisitedGame === item.id && session.visits[item.id] > 1 ? "favorito" : "jogado"}
+                    </span>
+                  ) : null}
                 </span>
-                <span className="mt-1 hidden font-body text-xs text-[#b8cce0] min-[390px]:block">
+                <span className="mt-2 block font-mono text-xs font-semibold">{item.label}</span>
+                <span className="mt-0.5 hidden font-body text-[11px] leading-4 text-[#9fb7d1] min-[390px]:block">
                   {item.meta}
-                  {mostVisitedGame === item.id && session.visits[item.id] > 1
-                    ? " · mais jogado"
-                    : session.explored.includes(item.id) && game !== item.id
-                      ? " · explorado"
-                      : ""}
+
                 </span>
               </button>
-            ))}
+              );
+            })}
           </div>
 
           <div
             data-arcade-exploration="true"
-            className="mt-3 flex flex-col gap-3 rounded-[12px] border border-white/8 bg-[#041225]/70 p-3 sm:flex-row sm:items-center sm:justify-between"
+            className="mt-3 flex flex-col gap-3 rounded-[15px] border border-white/8 bg-black/15 p-3.5 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.09em] text-[#9fb7d1]">
-                <span>{session.explored.length} de {games.length} jogos explorados</span>
+                <span className="inline-flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5 text-[#67e8f9]" aria-hidden="true" />{session.explored.length} de {games.length} jogos explorados</span>
                 <span className="text-[#67e8f9]">
                   próximo: {suggestedGameLabel}
                 </span>
@@ -209,11 +220,11 @@ export default function PortfolioArcade() {
                 aria-valuemin={0}
                 aria-valuemax={games.length}
                 aria-valuenow={session.explored.length}
-                className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8"
+                className="mt-2 h-2 overflow-hidden rounded-full border border-white/5 bg-[#020913]"
               >
                 <span
                   aria-hidden="true"
-                  className="block h-full rounded-full bg-[#67e8f9] transition-[width] duration-300 motion-reduce:transition-none"
+                  className="block h-full rounded-full bg-[linear-gradient(90deg,#22d3ee,#67e8f9,#a5f3fc)] shadow-[0_0_14px_rgba(103,232,249,0.45)] transition-[width] duration-300 motion-reduce:transition-none"
                   style={{ width: `${explorationPercent}%` }}
                 />
               </div>
@@ -249,7 +260,7 @@ export default function PortfolioArcade() {
           id={`arcade-panel-${item.id}`}
           aria-labelledby={`arcade-tab-${item.id}`}
           hidden={game !== item.id}
-          className="mt-3"
+          className="mt-4"
         >
           {mountedGames.includes(item.id) ? renderArcadeGame(item.id) : null}
         </div>
