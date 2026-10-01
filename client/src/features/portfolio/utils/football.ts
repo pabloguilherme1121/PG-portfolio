@@ -1,4 +1,5 @@
-export type FootballDifficulty = "easy" | "normal" | "hard" | "master" | "expert";\nexport type FootballMode = "penalty" | "free-kick";
+export type FootballDifficulty = "easy" | "normal" | "hard" | "master" | "expert";
+export type FootballMode = "penalty" | "free-kick";
 export function resolveFootballShot(
   mode: FootballMode,
   aim: number,
