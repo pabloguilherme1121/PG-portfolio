@@ -119,7 +119,10 @@ export function chooseDominoBotMove(
       return pipScore * 2 + doubleBonus * 2 + futureOptions * 3;
     }
 
-    if (difficulty === "master") return scoreMasterMove(hand, chain, move);\n\n    const nextChain = placeDominoTile(chain, tile, move.side);\n    const remaining = hand.filter((_, index) => index !== move.index);\n    const remainingPips = getDominoPipTotal(remaining);\n    const flexibility = getLegalDominoMoves(remaining, nextChain).length;\n    return scoreMasterMove(hand, chain, move) + flexibility * 3 - remainingPips * 0.12;
+    if (difficulty === "master") return scoreMasterMove(hand, chain, move);
+
+    const remainingPips = getDominoPipTotal(remaining);
+    return scoreMasterMove(hand, chain, move) + futureOptions * 3 - remainingPips * 0.12;
   };
 
   return [...moves].sort((a, b) => scoreMove(b) - scoreMove(a))[0];
