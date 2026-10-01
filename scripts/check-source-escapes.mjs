@@ -5,17 +5,21 @@ const roots = ["client/src", "server", "e2e"];
 const extensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs"]);
 const offenders = [];
 
+function stripQuotedStrings(line) {
+  return line
+    .replace(/"(?:\\.|[^"\\])*"/g, '""')
+    .replace(/'(?:\\.|[^'\\])*'/g, "''")
+    .replace(/`(?:\\.|[^`\\])*`/g, "``");
+}
+
 async function walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) await walk(path);
     else if (extensions.has(extname(path))) {
       const source = await readFile(path, "utf8");
-      const lines = source.split("\n");
-      lines.forEach((line, index) => {
-        if (line.includes("\\n") && !line.includes('"\\n"') && !line.includes("'\\n'") && !line.includes("\\n`")) {
-          offenders.push(`${path}:${index + 1}`);
-        }
+      source.split("\n").forEach((line, index) => {
+        if (stripQuotedStrings(line).includes("\\n")) offenders.push(`${path}:${index + 1}`);
       });
     }
   }
