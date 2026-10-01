@@ -160,7 +160,7 @@ export default function PortfolioCheckers() {
       const nextWinner = getCheckersWinner(next, "blue");
       if (nextWinner) finish(nextWinner);
       else setTurn("blue");
-    }, difficulty === "expert" ? 680 : difficulty === "master" ? 540 : 420);
+    }, difficulty === "expert" ? 680 : difficulty === "expert" ? 680 : difficulty === "master" ? 540 : 420);
 
     return () => window.clearTimeout(timer);
   }, [board, botForcedFrom, difficulty, mode, turn, winner]);
