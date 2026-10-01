@@ -39,7 +39,7 @@ test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
   await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
   await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(3);
+  await expect(arcade.getByRole("tab")).toHaveCount(4);
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   const domino = arcade.locator('[data-domino-game="true"]');
