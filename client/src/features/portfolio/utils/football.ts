@@ -8,7 +8,7 @@ export function resolveFootballShot(
 ) {
   const x = aim + (mode === "free-kick" ? curve * 0.18 : 0);
   const y = 90 - power * 0.7;
-  const result =
+  const result: "gol" | "defesa" | "fora" | "barreira" =
     power > 90 || power < 25 || x < 8 || x > 92
       ? "fora"
       : mode === "free-kick" &&

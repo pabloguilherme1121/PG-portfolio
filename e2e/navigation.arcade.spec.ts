@@ -147,6 +147,7 @@ test.describe("portfólio profissional", () => {
     await expect(domino).toBeVisible();
     await expect(domino.getByRole("button", { name: /contra bot/i })).toHaveAttribute("aria-pressed", "true");
 
+    await domino.locator("[data-domino-settings] summary").click();
     await domino.getByRole("button", { name: /mestre/i }).click();
     await expect(domino.getByRole("button", { name: /mestre/i })).toHaveAttribute("aria-pressed", "true");
     await domino.getByRole("button", { name: /bloqueio sem compra/i }).click();
