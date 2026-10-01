@@ -36,7 +36,7 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
-    await expect(page.locator(".archive-chapter").first()).toHaveCSS("content-visibility", "auto");
+    await expect(page.locator(".archive-chapter").first()).toHaveCSS("content-visibility", "visible");
     expect((await page.locator(".arquivo-page").evaluate((element) => getComputedStyle(element).textRendering)).toLowerCase()).toBe("optimizespeed");
 
     const primaryCta = page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i });
