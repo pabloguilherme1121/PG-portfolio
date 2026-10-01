@@ -35,11 +35,14 @@ test.describe("portfólio profissional", () => {
   test("hero destaca provas reais e o diagnóstico prepara um briefing profissional", async ({ page }) => {
     await page.goto("/");
 
-    const proofDeck = page.locator('[data-attention-hook="proof-deck"]');
-    await expect(proofDeck).toBeVisible();
-    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir e verificar/i })).toBeVisible();
-    await proofDeck.getByRole("button", { name: /qualidade/i }).click();
-    await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar).toBeVisible();
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
+    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
+    await expect(trustBar.getByRole("link", { name: /observatório/i })).toHaveAttribute(
+      "href",
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
 
     const diagnosticPlaceholder = page.locator('[data-project-diagnostic-placeholder="true"]');
     await diagnosticPlaceholder.scrollIntoViewIfNeeded();
