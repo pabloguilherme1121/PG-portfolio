@@ -2,7 +2,13 @@ import { expect, test } from "@playwright/test";
 
 function collectPageErrors(page: import("@playwright/test").Page) {
   const errors: string[] = [];
-  page.on("pageerror", (error) => errors.push(error.message));
+  page.on("pageerror", (error) => {
+    errors.push(error.message);
+    console.error("Static page error:", error.stack ?? error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") console.error("Static browser console:", message.text());
+  });
   return errors;
 }
 
