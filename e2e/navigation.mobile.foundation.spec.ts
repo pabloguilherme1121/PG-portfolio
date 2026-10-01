@@ -106,30 +106,21 @@ test.describe("portfólio profissional", () => {
     }
   });
 
-  test("hero mobile em 320px transforma provas em rail de swipe sem comprimir leitura", async ({ page }) => {
+  test("hero mobile em 320px prioriza proposta e CTA sem repetir provas", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");
 
-    const rail = page.locator('[data-mobile-hero-proof-rail="true"]');
-    await expect(rail).toBeVisible();
-    const metrics = await rail.evaluate((element) => {
-      const style = getComputedStyle(element);
-      const first = element.querySelector<HTMLElement>('[data-mobile-hero-proof="true"]');
-      return {
-        display: style.display,
-        overflowX: style.overflowX,
-        scrollSnapType: style.scrollSnapType,
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-        firstWidth: first?.getBoundingClientRect().width ?? 0,
-      };
-    });
+    const hero = page.locator("#inicio");
+    await expect(hero.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
+    await expect(hero.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
 
-    expect(metrics.display).toBe("flex");
-    expect(["auto", "scroll"]).toContain(metrics.overflowX);
-    expect(metrics.scrollSnapType).toContain("x");
-    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
-    expect(metrics.firstWidth).toBeGreaterThanOrEqual(220);
+    const primaryAction = hero.getByRole("link", { name: /começar diagnóstico/i });
+    await expect(primaryAction).toBeVisible();
+    const actionBox = await primaryAction.boundingBox();
+    expect((actionBox?.y ?? 1000) + (actionBox?.height ?? 0)).toBeLessThan(760);
+
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
   });
 
   test("primeira dobra mobile mantém a ação legível e deixa provas detalhadas sob demanda", async ({ page }) => {
@@ -137,18 +128,12 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
     const hero = page.locator("#inicio");
     const primaryAction = hero.getByRole("link", { name: /começar diagnóstico/i });
-    const proofDeck = hero.locator('[data-attention-hook="proof-deck"]');
-    const disclosure = proofDeck.getByRole("button", { name: /explorar provas/i });
-
-    await expect(disclosure).toHaveAttribute("aria-expanded", "false");
-    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir/i })).toBeHidden();
+    await expect(hero.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
     const firstFoldAction = await primaryAction.boundingBox();
     expect((firstFoldAction?.y ?? 1000) + (firstFoldAction?.height ?? 0)).toBeLessThan(760);
-    await disclosure.click();
-    await expect(disclosure).toHaveAttribute("aria-expanded", "true");
-    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir/i })).toBeVisible();
-    await proofDeck.getByRole("button", { name: "qualidade", exact: true }).click();
-    await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
+
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
 
     await page.setViewportSize({ width: 390, height: 844 });
     const wideAction = await primaryAction.boundingBox();
@@ -161,9 +146,9 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
-    const heroProofs = page.locator('[data-mobile-hero-proof-rail="true"]');
-    await expect(heroProofs).toBeVisible();
-    await expect(heroProofs.locator('[data-mobile-hero-proof="true"]')).toHaveCount(3);
+    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     const menu = page.locator("#mobile-navigation");

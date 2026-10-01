@@ -179,64 +179,63 @@ export default function PortfolioMobileMenu({
           </a>
         </div>
 
-        <button
-          type="button"
-          data-mobile-appearance-action="true"
-          onClick={(event) => {
-            onOpenAppearance(event.currentTarget);
-            onClose();
-          }}
-          className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-        >
-          <Settings2 className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-          configurações de aparência
-        </button>
+        <div className="mt-3 border-t border-white/[0.08] pt-3">
+          <p className="px-1 font-mono text-[8px] font-semibold uppercase tracking-[0.12em] text-[#7fa5bf]">ferramentas</p>
+          <div data-mobile-utility-grid="true" className="mt-2 grid grid-cols-2 gap-2" aria-label="Ferramentas do portfólio">
+            <button
+              type="button"
+              data-mobile-appearance-action="true"
+              onClick={(event) => {
+                onOpenAppearance(event.currentTarget);
+                onClose();
+              }}
+              className="inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2.5 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            >
+              <Settings2 className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+              <span>aparência</span>
+            </button>
 
-        <button
-          type="button"
-          data-mobile-share-action="true"
-          onClick={onSharePortfolio}
-          className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-        >
-          <Share2 className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-          {portfolioShareStatus === "shared"
-            ? "portfólio compartilhado"
-            : portfolioShareStatus === "copied"
-              ? "link copiado"
-              : portfolioShareStatus === "error"
-                ? "tentar compartilhar novamente"
-                : "compartilhar portfólio"}
-        </button>
+            <button
+              type="button"
+              data-mobile-share-action="true"
+              onClick={onSharePortfolio}
+              className="inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2.5 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            >
+              <Share2 className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+              <span>{portfolioShareStatus === "shared" ? "compartilhado" : portfolioShareStatus === "copied" ? "link copiado" : portfolioShareStatus === "error" ? "tentar de novo" : "compartilhar"}</span>
+            </button>
 
-        {showInstallAction && (
-          <button
-            type="button"
-            data-mobile-install-action="true"
-            onClick={onInstallPortfolio}
-            className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/35 bg-[#071827] px-3 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-          >
-            <Download className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-            instalar portfólio
-          </button>
-        )}
+            {showInstallAction && (
+              <button
+                type="button"
+                data-mobile-install-action="true"
+                onClick={onInstallPortfolio}
+                className="inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2.5 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              >
+                <Download className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+                <span>instalar</span>
+              </button>
+            )}
 
-        {resumeAvailable && (
-          <button
-            type="button"
-            onPointerEnter={onPreloadResume}
-            onFocus={onPreloadResume}
-            onTouchStart={onPreloadResume}
-            onClick={onOpenResume}
-            data-resume-header="true"
-            data-resume-preview-preload="intent"
-            aria-haspopup="dialog"
-            aria-label="Visualizar portfólio atualizado em PDF"
-            className="resume-header-cta mt-3 inline-flex min-h-12 items-center justify-center gap-3 border border-[#67e8f9] bg-[#0b2746] px-3 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#d9fbff] transition-colors hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-          >
-            <Download className="h-4 w-4" aria-hidden="true" />
-            visualizar portfólio PDF
-          </button>
-        )}
+            {resumeAvailable && (
+              <button
+                type="button"
+                onPointerEnter={onPreloadResume}
+                onFocus={onPreloadResume}
+                onTouchStart={onPreloadResume}
+                onClick={onOpenResume}
+                data-resume-header="true"
+                data-resume-preview-preload="intent"
+                aria-haspopup="dialog"
+                aria-label="Visualizar portfólio atualizado em PDF"
+                className={`inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2.5 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#123b67] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${showInstallAction ? "" : "col-span-2"}`}
+              >
+                <FileText className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
+                <span>portfólio PDF</span>
+              </button>
+            )}
+          </div>
+        </div>
         </div>
       </nav>
     </div>

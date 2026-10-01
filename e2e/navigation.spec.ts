@@ -6,6 +6,28 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("portfólio profissional", () => {
+  test("header desktop evita link duplicado do Observatório", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("/");
+
+    const header = page.locator("header");
+    const observatorioLinks = header.getByRole("link", { name: /observatório/i });
+    await expect(observatorioLinks).toHaveCount(1);
+    await expect(observatorioLinks).toHaveAttribute("href", "#observatorio");
+  });
+
+  test("menu mobile agrupa utilidades sem uma pilha longa de botões", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+
+    const utilities = page.locator('[data-mobile-utility-grid="true"]');
+    await expect(utilities).toBeVisible();
+    await expect(utilities.locator('[data-mobile-appearance-action="true"]')).toBeVisible();
+    await expect(utilities.locator('[data-mobile-share-action="true"]')).toBeVisible();
+    await expect(utilities.locator('[data-resume-header="true"]')).toBeVisible();
+  });
+
   test("não expõe ferramentas internas de curadoria na vitrine pública", async ({ page }) => {
     await page.goto("/");
 
