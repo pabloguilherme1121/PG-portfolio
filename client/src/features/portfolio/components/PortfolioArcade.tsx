@@ -136,7 +136,8 @@ export default function PortfolioArcade() {
                 PG Arcade · escolher jogo
               </p>
               <p className="mt-1 font-body text-sm text-[#a9bfd8]">
-                Cinco jogos: estratégia, tabuleiros clássicos, dominó e futebol com\n                pênaltis e faltas.
+                Cinco jogos: estratégia, tabuleiros clássicos, dominó e futebol com
+                pênaltis e faltas.
               </p>
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-2 sm:justify-end">
