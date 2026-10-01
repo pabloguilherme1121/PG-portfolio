@@ -160,7 +160,7 @@ export default function PortfolioArcade() {
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-5"
+            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5"
           >
             {games.map((item) => {
               const Icon = item.icon;
