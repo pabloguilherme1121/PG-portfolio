@@ -140,7 +140,7 @@ test.describe("portfólio profissional", () => {
     await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
 
     const arcade = page.locator('[data-arcade-hub="true"]');
-    await expect(arcade.getByRole("tab")).toHaveCount(4);
+    await expect(arcade.getByRole("tab")).toHaveCount(5);
 
     await arcade.getByRole("tab", { name: /dominó/i }).click();
     const domino = arcade.locator('[data-domino-game="true"]');
@@ -180,6 +180,25 @@ test.describe("portfólio profissional", () => {
     await expect(checkers.locator('[data-legal-destination="true"]')).not.toHaveCount(0);
     await checkers.locator('[data-legal-destination="true"]').first().click();
     await expect(checkers.locator('[data-checkers-status="true"]')).toContainText(/jogador 2|vermelho/i);
+  });
+
+  test("PG Arcade oferece xadrez com cinco dificuldades, regras especiais e 1x1 local", async ({ page }) => {
+    await page.goto("/");
+    await page.getByRole("button", { name: /jogar.*pg arcade/i }).click();
+
+    const arcade = page.locator('[data-arcade-hub="true"]');
+    await arcade.getByRole("tab", { name: /xadrez/i }).click();
+    const chess = arcade.locator('[data-chess-game="true"]');
+    await expect(chess.locator('[data-chess-cell="true"]')).toHaveCount(64);
+    await expect(chess.locator('[data-chess-difficulty="true"]').getByRole("button")).toHaveCount(5);
+    await chess.getByRole("button", { name: /especialista/i }).click();
+    await expect(chess.getByRole("button", { name: /especialista/i })).toHaveAttribute("aria-pressed", "true");
+
+    await chess.getByRole("button", { name: /1 × 1 local/i }).click();
+    await expect(chess.locator('[data-chess-mode="local"]')).toHaveAttribute("aria-pressed", "true");
+    const whitePawn = chess.getByRole("gridcell", { name: /peão branco, linha 2, coluna E/i });
+    await whitePawn.click();
+    await expect(chess.locator('[data-chess-legal="true"]')).not.toHaveCount(0);
   });
 
   test("PG Arcade retoma o último jogo e atualiza a sessão local", async ({ page }) => {
@@ -246,8 +265,8 @@ test.describe("portfólio profissional", () => {
     await expect(arcade.getByRole("tab", { name: /dominó/i })).toHaveAttribute("aria-selected", "true");
 
     await page.keyboard.press("End");
-    await expect(arcade.getByRole("tab", { name: /damas/i })).toBeFocused();
-    await expect(arcade.locator('[data-checkers-game="true"]')).toBeVisible();
+    await expect(arcade.getByRole("tab", { name: /xadrez/i })).toBeFocused();
+    await expect(arcade.locator('[data-chess-game="true"]')).toBeVisible();
 
     await page.keyboard.press("Home");
     await expect(arcade.getByRole("tab", { name: /jogo da velha/i })).toBeFocused();
