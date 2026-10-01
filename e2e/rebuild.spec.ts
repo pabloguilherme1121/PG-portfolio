@@ -143,7 +143,8 @@ test.describe("reconstrução profissional do portfólio", () => {
     await page.goto("/");
 
     await expect(page.locator('[data-portfolio-shell-version="2"]')).toBeVisible();
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toBeVisible();
+    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
+    await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
     await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
 
     const overflow = await page.evaluate(() => ({
