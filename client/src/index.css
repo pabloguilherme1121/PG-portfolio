@@ -85,8 +85,8 @@ body {
   background:
     radial-gradient(circle at 86% -10%, rgba(59, 130, 246, 0.22), transparent 28rem),
     radial-gradient(circle at 8% 30%, rgba(37, 99, 235, 0.10), transparent 30rem),
-    #030b1e;
-  color: #eef5ff;
+    var(--portfolio-canvas);
+  color: var(--portfolio-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
