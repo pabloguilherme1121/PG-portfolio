@@ -90,10 +90,15 @@ export const processSteps = [
 export const caseStudies = [
   {
     id: "TEC.01",
+    stage: "Produto publicado",
     title: "Observatório — informação pública transformada em produto digital",
     context: "Produto publicado criado para organizar informação pública em uma experiência navegável com indicadores e dashboard.",
-    method: "Estrutura de informação, hierarquia visual, interface responsiva e publicação web com foco em reduzir o esforço para encontrar contexto e interpretar dados.",
+    problem: "Indicadores públicos podem ter fontes, datas de referência e recortes diferentes. Colocar números lado a lado sem contexto aumenta o risco de comparação incorreta.",
+    objective: "Reduzir o esforço para localizar e interpretar indicadores, mantendo data de referência, contexto e acesso à origem dos dados.",
+    decisions: "Priorizei uma leitura rápida com poucos indicadores por vez, fonte acessível no próprio fluxo, hierarquia visual forte e reorganização responsiva da mesma informação no celular.",
+    result: "Dashboard responsivo publicado no GitHub Pages, com código público e caminhos diretos para conferir a origem dos indicadores apresentados.",
     learning: "Uma boa interface de dados não precisa mostrar tudo de uma vez; precisa ajudar a pessoa a encontrar o que importa e entender o contexto.",
+    qualitySignals: ["produção pública", "responsivo", "fontes consultáveis", "código aberto"],
     tags: ["Produto digital", "Web", "Dashboard", "Dados"],
     proofs: [
       {
@@ -112,10 +117,15 @@ export const caseStudies = [
   },
   {
     id: "TEC.09",
+    stage: "Produto em evolução",
     title: "Trajeto — produto full-stack para decisões de rota e abastecimento",
-    context: "Produto em evolução para motoristas do Entorno do Distrito Federal, estruturado para ajudar a comparar parada, desvio, referência de combustível e origem dos dados antes de abrir a navegação.",
-    method: "Fluxo buscar → comparar → decidir → navegar, com frontend React + TypeScript, API tRPC/Express, persistência MySQL/Drizzle, validação Zod, testes automatizados, CI e auditoria de dependências.",
+    context: "Produto em evolução para motoristas do Entorno do Distrito Federal, estruturado para apoiar uma decisão antes de abrir a navegação.",
+    problem: "Encontrar e comparar opções de parada exige consultar fontes diferentes e entender quanto um desvio altera a rota, além de distinguir referência oficial, dado de terceiro e estimativa.",
+    objective: "Organizar contexto suficiente para comparar parada, desvio, referência de combustível e origem dos dados em um fluxo único.",
+    decisions: "Estruturei o fluxo buscar → comparar → decidir → navegar, com React + TypeScript no frontend, tRPC/Express na API, MySQL/Drizzle na persistência e validação Zod. A origem do dado permanece explícita na experiência.",
+    result: "Base técnica pública e testável com frontend, API, persistência, testes automatizados, CI e auditoria de dependências, sem apresentar estimativas como dados oficiais.",
     learning: "Produtos de decisão ficam mais úteis quando cada tela responde uma pergunta prática e a origem do dado é tratada como parte da experiência, não como detalhe técnico.",
+    qualitySignals: ["full-stack", "testes automatizados", "CI", "origem dos dados"],
     tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
     proofs: [
       {
@@ -126,7 +136,6 @@ export const caseStudies = [
       },
     ],
   },
-
 ];
 
 export type Repository = {

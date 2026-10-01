@@ -56,11 +56,24 @@
   --input: oklch(1 0 0 / 14%);
   --ring: oklch(0.62 0.20 258);
   --radius: 0;
+
+  /* Tokens semânticos do portfólio: novos componentes devem preferir estes
+     valores em vez de criar novas variações arbitrárias da mesma paleta. */
+  --portfolio-canvas: #030b1e;
+  --portfolio-page: #07111f;
+  --portfolio-surface: #071326;
+  --portfolio-surface-strong: #06172f;
+  --portfolio-accent: #67e8f9;
+  --portfolio-accent-strong: #38bdf8;
+  --portfolio-focus: #a5f3fc;
+  --portfolio-ink: #f2fbff;
+  --portfolio-muted: #a9bfd8;
+  --portfolio-border: rgba(103, 232, 249, 0.18);
 }
 
 * { border-color: var(--border); }
 
-html { scroll-behavior: smooth; background: #030b1e; }
+html { scroll-behavior: smooth; background: var(--portfolio-canvas); }
 
 [id] { scroll-margin-top: 92px; }
 
@@ -72,8 +85,8 @@ body {
   background:
     radial-gradient(circle at 86% -10%, rgba(59, 130, 246, 0.22), transparent 28rem),
     radial-gradient(circle at 8% 30%, rgba(37, 99, 235, 0.10), transparent 30rem),
-    #030b1e;
-  color: #eef5ff;
+    var(--portfolio-canvas);
+  color: var(--portfolio-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -83,9 +96,9 @@ button, input, textarea { font: inherit; }
 
 button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 
-:focus-visible { outline: 2px solid #60a5fa; outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--portfolio-focus); outline-offset: 3px; }
 
-::selection { background: rgba(59, 130, 246, 0.88); color: #f8fbff; }
+::selection { background: var(--portfolio-accent-strong); color: #02111f; }
 
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-track { background: #030b1e; }
@@ -374,10 +387,6 @@ input[type="search"]::-webkit-search-cancel-button {
    capturas longas, leitores assistivos e navegação por âncoras. A galeria já
    controla o custo das imagens por lazy loading e variantes responsivas. */
 
-html {
-  scroll-behavior: smooth;
-}
-
 .skip-link {
   position: fixed;
   left: 1rem;
@@ -413,10 +422,6 @@ html {
   .scroll-progress-bar {
     transition: none;
   }
-}
-
-section[id] {
-  scroll-margin-top: 92px;
 }
 
 
@@ -1287,7 +1292,7 @@ html.theme-transitioning .arquivo-page * {
   .experience-route-strip {
     scrollbar-width: none;
     overscroll-behavior-inline: contain;
-    scroll-padding-inline: 0.25rem;
+    scroll-padding-inline: 0.75rem;
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1513,13 +1518,6 @@ html.theme-transitioning .arquivo-page * {
 
   .experience-route-card {
     scroll-snap-stop: always;
-  }
-
-  .experience-route-strip::before,
-  .experience-route-strip::after {
-    content: "";
-    flex: 0 0 clamp(3rem, 18vw, 4rem);
-    pointer-events: none;
   }
 
   [data-experience-hub="true"] {

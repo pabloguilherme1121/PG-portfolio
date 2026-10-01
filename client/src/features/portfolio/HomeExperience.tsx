@@ -4,22 +4,8 @@
  * metadados, linha de progresso e linguagem visual de arquivo em evolução.
  */
 import {
-  ArrowDown,
   ArrowUp,
   ArrowUpRight,
-  ClipboardCheck,
-  Braces,
-  Download,
-  FileText,
-  Instagram,
-  Layers2,
-  Menu,
-  MessageCircle,
-  Send,
-  Moon,
-  Sun,
-  Settings2,
-  X,
 } from "lucide-react";
 import { FormEvent, lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -28,6 +14,9 @@ import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
+import PortfolioArcadeShowcase, { preloadPortfolioArcade } from "@/features/portfolio/components/PortfolioArcadeShowcase";
+import PortfolioHeaderBar from "@/features/portfolio/components/PortfolioHeaderBar";
+import PortfolioActionDock from "@/features/portfolio/components/PortfolioActionDock";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
@@ -44,8 +33,6 @@ import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMen
 import { useFavoriteProjects } from "@/features/portfolio/hooks/useFavoriteProjects";
 import {
   portfolioMarkUrl as markUrl,
-  portfolioMobileSectionLabels as mobileSectionLabels,
-  portfolioNavigationItems as navigationItems,
   portfolioPortraitResponsive as portraitResponsive,
   portfolioPortraitUrl as portraitUrl,
   portfolioResumeUrl as resumeUrl,
@@ -76,20 +63,6 @@ const loadPortfolioResumePreview = () =>
     default: module.PortfolioResumePreview,
   }));
 const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
-type PortfolioArcadeModule = typeof import("@/features/portfolio/components/PortfolioArcade");
-let portfolioArcadePromise: Promise<PortfolioArcadeModule> | null = null;
-
-const loadPortfolioArcade = () => {
-  if (!portfolioArcadePromise) {
-    portfolioArcadePromise = import("@/features/portfolio/components/PortfolioArcade").catch((error) => {
-      portfolioArcadePromise = null;
-      throw error;
-    });
-  }
-  return portfolioArcadePromise;
-};
-const PortfolioArcade = lazy(loadPortfolioArcade);
-
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
 declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
@@ -217,7 +190,6 @@ export default function Home() {
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
   const mobileSecondaryShortcut = mobileDock.secondary;
-  const MobileSecondaryIcon = mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
   const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
@@ -346,7 +318,7 @@ export default function Home() {
 
   function preloadPgArcade() {
     if (avoidSpeculativePreload) return;
-    void loadPortfolioArcade().catch(() => undefined);
+    void preloadPortfolioArcade().catch(() => undefined);
   }
 
   function openPgArcade() {
@@ -498,75 +470,20 @@ export default function Home() {
     <div data-portfolio-shell-version="2" data-theme={theme} data-reduced-data={avoidSpeculativePreload ? "true" : "false"} className="arquivo-page min-h-screen overflow-x-hidden bg-[#07111f] text-[#f2fbff] selection:bg-[#67e8f9] selection:text-[#061226]">
       <a href="#conteudo-principal" className="skip-link">pular para o conteúdo</a>
       <header className="fixed inset-x-0 top-0 z-50 border-b border-cyan-200/[0.14] bg-[#07111f]/94 backdrop-blur-md md:bg-[#07111f]/90 md:backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-[1440px] items-center justify-between px-4 sm:px-8 lg:px-12">
-          <a href="#inicio" aria-label="Ir ao início" className="group flex min-w-0 items-center gap-2.5 sm:gap-3" onClick={closeMenu}>
-            <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
-              <img src={markUrl} alt="Símbolo PG" width="28" height="28" decoding="async" className="h-7 w-7 object-contain" />
-            </span>
-            <span className="truncate font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-[#b7cdf1] min-[360px]:text-[10px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
-          </a>
-
-          <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
-            {navigationItems.map(([label, href, id]) => (
-              <a key={label} href={href} aria-current={activeSection === id ? "location" : undefined} className={`nav-link text-[11px] font-mono uppercase tracking-[0.14em] transition-colors hover:text-white ${activeSection === id ? "text-[#67e8f9]" : "text-[#90a3c3]"}`}>
-                {label}
-              </a>
-            ))}
-            <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="nav-link text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-[#a5f3fc] transition-colors hover:text-white">observatório <ArrowUpRight className="ml-1 inline h-3 w-3" /></a>
-            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-            <button
-              type="button"
-              data-appearance-trigger="desktop"
-              onClick={(event) => openAppearancePanel(event.currentTarget)}
-              aria-label="Configurações de aparência"
-              title="Configurações de aparência"
-              className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-            >
-              <Settings2 className="h-4 w-4" aria-hidden="true" />
-            </button>
-            {resumeAvailable && <a href={resumeUrl} onPointerEnter={preloadResumePreview} onFocus={preloadResumePreview} onTouchStart={preloadResumePreview} onClick={openResumePreview} data-resume-header="true" data-resume-preview-preload="intent" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
-              <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
-            </a>}
-            <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
-              contato <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
-          </nav>
-
-          <div className="flex shrink-0 items-center gap-1.5 md:hidden">
-            <button
-              ref={menuButtonRef}
-              type="button"
-              data-mobile-menu-toggle="true"
-              data-mobile-scroll-context="true"
-              onClick={toggleMenu}
-              className="group flex h-12 min-w-[108px] max-w-[136px] items-center gap-2 rounded-[14px] border border-[#67e8f9]/20 bg-[#071827]/92 px-1.5 text-[#d8e6fa] shadow-[0_10px_26px_rgba(2,17,31,0.24)] transition-[border-color,background-color,box-shadow] hover:border-[#67e8f9]/55 hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] min-[360px]:min-w-[124px] min-[390px]:min-w-[136px]"
-              aria-label={menuOpen ? "Fechar menu" : `Abrir menu · seção ${mobileSectionLabels[activeSection] ?? "portfólio"} · ${Math.round(scrollProgress)}% percorrido`}
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-            >
-              <span
-                data-mobile-progress-ring="true"
-                data-progress={Math.round(scrollProgress)}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full p-[2px] transition-[background] motion-reduce:transition-none"
-                style={{ background: `conic-gradient(#67e8f9 ${Math.round(scrollProgress)}%, rgba(103,232,249,0.12) 0)` }}
-                aria-hidden="true"
-              >
-                <span className="grid h-full w-full place-items-center rounded-full bg-[#07111f] shadow-inner">
-                  {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-                </span>
-              </span>
-              <span className="min-w-0 flex-1 text-left">
-                <span data-mobile-current-section="true" className="block truncate font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
-                  {mobileSectionLabels[activeSection] ?? "portfólio"}
-                </span>
-                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#7fa5bf]">
-                  {Math.round(scrollProgress)}% percorrido
-                </span>
-              </span>
-            </button>
-            <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-11 w-11 place-items-center rounded-[12px] border border-white/10 bg-[#071326]/75 text-[#d8e6fa] transition-colors hover:border-[#67e8f9] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
-          </div>
-        </div>
+        <PortfolioHeaderBar
+          theme={theme}
+          activeSection={activeSection}
+          menuOpen={menuOpen}
+          scrollProgress={scrollProgress}
+          resumeAvailable={resumeAvailable}
+          menuButtonRef={menuButtonRef}
+          onCloseMenu={closeMenu}
+          onToggleMenu={toggleMenu}
+          onToggleTheme={toggleTheme}
+          onOpenAppearance={openAppearancePanel}
+          onPreloadResume={preloadResumePreview}
+          onOpenResume={openResumePreview}
+        />
         {menuOpen && (
           <Suspense fallback={<div role="status" aria-live="polite" className="border-t border-white/[0.07] bg-[#090d16]/98 px-4 py-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc] md:hidden">carregando navegação…</div>}>
             <PortfolioMobileMenu
@@ -638,34 +555,13 @@ export default function Home() {
           )}
         </div>
 
-        <section id="pg-lab" data-arcade-showcase="true" className="archive-chapter relative scroll-mt-24 overflow-hidden border-y border-[#67e8f9]/15 bg-[#040a13] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-14 lg:px-12" aria-labelledby="pg-lab-title">
-          <div className="relative mx-auto max-w-[1440px] overflow-hidden border border-[#67e8f9]/25 bg-[linear-gradient(135deg,rgba(6,23,47,.96),rgba(5,13,24,.92))] p-5 shadow-[0_24px_80px_rgba(0,0,0,.24)] sm:grid sm:grid-cols-[1fr_auto] sm:items-end sm:gap-10 sm:p-8">
-            <div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · laboratório interativo</p>
-              <h2 id="pg-lab-title" className="mt-3 max-w-3xl font-display text-[clamp(2rem,4vw,4.25rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white">Código que você pode jogar.</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Cinco experiências jogáveis — Jogo da Velha, Dominó, Futebol, Damas e Xadrez — mostram lógica, estados, IA, responsividade e cuidado com interação sem tirar o foco dos projetos profissionais.</p>
-            </div>
-            <button
-              type="button"
-              data-arcade-open-control="true"
-              data-arcade-preload="intent"
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") preloadPgArcade();
-              }}
-              onClick={togglePgArcade}
-              aria-expanded={pgLabOpen}
-              aria-controls="pg-lab-game"
-              className="mt-6 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto"
-            >{pgLabOpen ? "fechar PG Arcade" : "explorar PG Arcade"}</button>
-          </div>
-          <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
-            {pgLabOpen && (
-              <Suspense fallback={<div data-arcade-loading="true" role="status" aria-live="polite" className="mx-4 my-5 min-h-24 rounded-[14px] border border-[#67e8f9]/20 bg-[#06172f]/70 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc] min-[360px]:mx-5 sm:mx-0">carregando PG Arcade…</div>}>
-                <PortfolioArcade />
-              </Suspense>
-            )}
-          </div>
-        </section>\n\n        <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
+        <PortfolioArcadeShowcase
+          open={pgLabOpen}
+          onToggle={togglePgArcade}
+          onPreload={preloadPgArcade}
+        />
+
+        <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
           {shouldRenderDiagnostic ? (
             <Suspense
               fallback={
@@ -921,65 +817,18 @@ export default function Home() {
       </div>
 
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!showBackToTop || pgLabOpen} tabIndex={showBackToTop && !pgLabOpen ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${showBackToTop && !pgLabOpen ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
-      <nav
-        aria-label="Ações rápidas"
-        aria-hidden={isDockHidden ? "true" : undefined}
-        inert={isDockHidden ? true : undefined}
-        data-mobile-contact-bar="true"
-        data-mobile-dock="true"
-        data-mobile-dock-hidden={isDockHidden ? "true" : "false"}
-        data-mobile-dock-compact={isMobileDockCompact ? "true" : "false"}
-        className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}>
-        <span data-mobile-dock-progress="true" aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-0 block h-px overflow-hidden rounded-full bg-white/10 sm:hidden">
-          <span className="block h-full origin-left bg-[#67e8f9] transition-transform duration-150 motion-reduce:transition-none" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
-        </span>
-        <a
-          data-mobile-primary-action="true"
-          data-mobile-dock-primary="true"
-          href={mobilePrimaryAction.href}
-          onClick={() => trackPortfolioEvent("quote_cta", { source: "floating" })}
-          className="inline-flex min-h-14 min-w-0 flex-1 touch-manipulation flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-[background-color,transform] hover:bg-[#a5f3fc] active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none min-[360px]:px-3 sm:hidden"
-          aria-label={mobilePrimaryAction.ariaLabel}
-        >
-          <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em]">
-            <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
-            {mobilePrimaryAction.label}
-          </span>
-          <span data-mobile-journey-hint="true" className={`mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px] ${isMobileDockCompact ? "hidden" : ""}`}>
-            {mobileJourneyHint}
-          </span>
-        </a>
-        <a
-          data-mobile-dock-secondary="true"
-          data-mobile-dock-secondary-route={mobileExperienceRoute}
-          href={mobileSecondaryShortcut.href}
-          onClick={(event) => {
-            if (mobileExperienceRoute !== "explorer") return;
-            event.preventDefault();
-            openPgArcade();
-          }}
-          aria-label={`Abrir ${mobileSecondaryShortcut.label}`}
-          title={mobileSecondaryShortcut.label}
-          className="mobile-context-action inline-flex min-h-14 min-w-0 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-[10px] border border-white/10 bg-[#071326] px-1 text-center text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"
-        >
-          <MobileSecondaryIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-          <span className="max-w-full truncate font-mono text-[7px] font-semibold uppercase tracking-[0.03em] min-[390px]:text-[8px]">
-            {mobileSecondaryShortcut.label === "PG Arcade" ? "arcade" : mobileSecondaryShortcut.label}
-          </span>
-        </a>
-        <a data-mobile-whatsapp-action="true" href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "floating" })} target="_blank" rel="noreferrer" aria-label="Falar no WhatsApp sobre um orçamento" title="WhatsApp — falar sobre um orçamento" className="contact-float-link contact-float-whatsapp mobile-whatsapp-action group min-h-12 border-[#38bdf8]/70 bg-[#38bdf8]/10">
-          <MessageCircle className="h-4 w-4 fill-current" aria-hidden="true" />
-          <span>WhatsApp</span>
-        </a>
-        <a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Abrir canal público de atendimento no Telegram" title="Telegram" className="contact-float-link contact-float-telegram group hidden sm:flex">
-          <Send className="h-4 w-4" aria-hidden="true" />
-          <span>Telegram</span>
-        </a>
-        <a href="https://www.instagram.com/pablogui000/" target="_blank" rel="noreferrer" aria-label="Abrir Instagram @pablogui000" title="Instagram" className="contact-float-link contact-float-instagram group hidden sm:flex">
-          <Instagram className="h-4 w-4" aria-hidden="true" />
-          <span>Instagram</span>
-        </a>
-      </nav>
+      <PortfolioActionDock
+        hidden={isDockHidden}
+        compact={isMobileDockCompact}
+        scrollProgress={scrollProgress}
+        route={mobileExperienceRoute}
+        primaryAction={mobilePrimaryAction}
+        secondaryAction={mobileSecondaryShortcut}
+        journeyHint={mobileJourneyHint}
+        whatsAppUrl={whatsAppUrl}
+        telegramUrl={telegramUrl}
+        onOpenArcade={openPgArcade}
+      />
 
       {resumePreviewOpen && (
         <Suspense fallback={<div data-resume-preview-loading-shell="true" role="status" aria-live="polite" className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-6 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c8f7ff]">carregando leitor do portfólio…</div>}>

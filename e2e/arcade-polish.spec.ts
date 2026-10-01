@@ -5,7 +5,7 @@ for (const width of [320, 390, 768]) {
   }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/");
-    await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+    await page.locator('[data-arcade-open-control="true"]').click();
     await page.getByRole("tab", { name: /futebol/i }).click();
     await expect(
       page.locator('button[aria-label="Voltar ao topo da página"]')
@@ -52,7 +52,7 @@ test("football cancels a pending shot on restart and respects reduced motion", a
   page,
 }) => {
   await page.goto("/");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  await page.locator('[data-arcade-open-control="true"]').click();
   await page.getByRole("tab", { name: /futebol/i }).click();
   const game = page.locator("[data-football-game]");
   await game.getByRole("button", { name: "Chutar", exact: true }).click();

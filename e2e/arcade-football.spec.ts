@@ -3,8 +3,7 @@ for (const width of [320, 390]) {
   test(`football and color domino work at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/");
-    await page
-      .getByRole("button", { name: /abrir.*pg arcade|jogar.*pg arcade/i })
+    await page.locator('[data-arcade-open-control="true"]')
       .click();
     await page.getByRole("tab", { name: /dominó/i }).click();
     await expect(page.locator("[data-domino-color-legend]")).toBeVisible();

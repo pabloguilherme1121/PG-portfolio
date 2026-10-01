@@ -101,6 +101,28 @@ test.describe("portfólio profissional", () => {
     await expect(capture).toHaveJSProperty("naturalWidth", 1376);
   });
 
+
+  test("estudos de caso expõem decisões, resultado e quality gate verificável", async ({ page }) => {
+    await page.goto("/#estudos-de-caso");
+
+    const studies = page.locator('[data-case-study="true"]');
+    await expect(studies).toHaveCount(2);
+
+    const observatorio = studies.filter({ hasText: "Observatório" });
+    await expect(observatorio).toContainText(/problema/i);
+    await expect(observatorio).toContainText(/decisões/i);
+    await expect(observatorio).toContainText(/resultado/i);
+    await expect(observatorio.locator('[data-case-stage="true"]')).toContainText(/produto publicado/i);
+
+    const quality = page.locator('[data-quality-evidence="true"]');
+    await expect(quality).toBeVisible();
+    await expect(quality.locator('[data-quality-gate="true"]')).toHaveCount(8);
+    await expect(quality.getByRole("link", { name: /ver pipeline público/i })).toHaveAttribute(
+      "href",
+      "https://github.com/pabloguilherme1121/PG-portfolio/actions/workflows/pages.yml",
+    );
+  });
+
   test("favoritos ignoram armazenamento legado em formato inválido sem quebrar o modal", async ({ page }) => {
     await page.addInitScript(() => {
       window.localStorage.setItem("pablo-portfolio-favorites", JSON.stringify("TEC.09"));

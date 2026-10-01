@@ -91,14 +91,17 @@ export default function PortfolioHero({
 
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
               <a
-                href="#diagnostico"
-                onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
+                href="#projetos"
                 className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
               >
-                começar diagnóstico <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
+                ver projetos e resultados <ArrowDownRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
-              <a href="#projetos" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white sm:w-auto sm:border-transparent">
-                ver projetos selecionados <ArrowDownRight className="h-3.5 w-3.5" />
+              <a
+                href="#diagnostico"
+                onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
+                className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-white/[0.1] px-3 py-3 text-center font-mono text-[11px] uppercase tracking-[0.13em] text-[#b7cdf1] transition-colors hover:border-[#67e8f9]/40 hover:text-white sm:w-auto sm:border-transparent"
+              >
+                começar diagnóstico <ArrowUpRight className="h-3.5 w-3.5" />
               </a>
             </div>
 
