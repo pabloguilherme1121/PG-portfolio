@@ -90,7 +90,8 @@ describe("arcadeSession", () => {
     expect(getSuggestedArcadeGame(session, "domino")).toBe("damas");
 
     const completed = markArcadeGameExplored(session, "damas");
-    expect(getSuggestedArcadeGame(completed, "domino")).toBe("damas");
-    expect(getSuggestedArcadeGame(completed, "damas")).toBe("futebol");
+    expect(getSuggestedArcadeGame(completed, "domino")).toBe("xadrez");
+    const fullyExplored = markArcadeGameExplored(completed, "xadrez");
+    expect(getSuggestedArcadeGame(fullyExplored, "damas")).toBe("futebol");
   });
 });
