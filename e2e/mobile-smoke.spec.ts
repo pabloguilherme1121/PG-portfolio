@@ -30,8 +30,11 @@ test("hero mobile mantém CTA principal e provas rápidas utilizáveis", async (
 
 test("PG Arcade mobile expõe três jogos e modos locais", async ({ page }) => {
   await page.goto("/");
+  await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
+  await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
   await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
 
+  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
   const arcade = page.locator('[data-arcade-hub="true"]');
   const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
   await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
