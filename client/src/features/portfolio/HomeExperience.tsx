@@ -767,6 +767,7 @@ export default function Home() {
                 </section>
               }
             >
+              <PortfolioWebResume embedded />
             </Suspense>
           ) : (
             <section data-web-resume-placeholder="true" className="archive-chapter border-t border-white/[0.07] bg-[#f5fbff] px-5 py-10 text-[#365166]" aria-label="Currículo web">
