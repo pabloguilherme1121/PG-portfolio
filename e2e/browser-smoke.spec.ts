@@ -12,7 +12,7 @@ test("carrega a jornada principal sem overflow horizontal", async ({ page }) => 
 
   await expect(page.locator("html")).toHaveJSProperty("scrollWidth", await page.locator("html").evaluate((el) => el.clientWidth));
 
-  const projects = page.getByRole("link", { name: /ver projetos selecionados/i });
+  const projects = page.getByRole("link", { name: /ver projetos/i });
   await expect(projects).toHaveAttribute("href", "#projetos");
 });
 

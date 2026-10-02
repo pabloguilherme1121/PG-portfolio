@@ -73,11 +73,14 @@ export function usePortfolioShellState() {
       );
       const readingLine = window.scrollY + window.innerHeight * 0.22;
       let nextSection = "inicio";
+      let nearestSectionTop = Number.NEGATIVE_INFINITY;
 
       for (const section of sections) {
         const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-        if (sectionTop <= readingLine + 1) nextSection = section.id;
-        else break;
+        if (sectionTop <= readingLine + 1 && sectionTop >= nearestSectionTop) {
+          nearestSectionTop = sectionTop;
+          nextSection = section.id;
+        }
       }
 
       setShowBackToTop(window.scrollY > 640);

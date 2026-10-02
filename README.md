@@ -22,7 +22,7 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
 - **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
-- **Pausa interativa opcional:** jogo da velha contra o PG Bot, com lógica local, placar e controles acessíveis, sem bloquear a jornada de conversão.
+- **Pausa interativa opcional:** PG Arcade com jogos locais, modos contra IA e controles acessíveis, sem bloquear a jornada de conversão.
 - **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
 
 ## Jornada principal
@@ -30,13 +30,13 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 ```text
 Posicionamento
     ↓
-Proof Deck
+Provas públicas e projetos
+    ↓
+Rotas do visitante e PG Arcade
     ↓
 Project Lens
     ↓
-Serviços e processo
-    ↓
-Produto em produção + estudos de caso
+Perfil profissional, serviços e processo
     ↓
 Briefing Studio
     ↓
@@ -72,7 +72,7 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 | --- | --- |
 | Interface | React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui |
 | Navegação e dados | Wouter, TanStack Query, tRPC na versão com servidor |
-| Interação | Project Lens, Proof Deck, Briefing Studio |
+| Interação | Project Lens, PG Arcade, Briefing Studio |
 | Testes | Vitest, Playwright, axe-core |
 | Publicação | GitHub Actions, GitHub Pages |
 | Qualidade | Typecheck, testes de navegador, auditoria de assets e validação de rotas |
@@ -82,7 +82,7 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 O workflow de publicação só entrega o build depois das verificações de qualidade.
 
 ```bash
-pnpm audit --audit-level=high
+pnpm audit --audit-level=low
 pnpm check
 pnpm test
 pnpm test:e2e
@@ -118,7 +118,7 @@ Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mant�
 | Diretório | Conteúdo |
 | --- | --- |
 | `client/` | Experiência pública, componentes e mídia |
-| `client/src/features/portfolio/` | Hero, Proof Deck, Project Lens, cases, briefing e analytics |
+| `client/src/features/portfolio/` | Hero, projetos, PG Arcade, Project Lens, cases, briefing e analytics |
 | `server/` e `shared/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |
