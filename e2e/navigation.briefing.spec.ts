@@ -32,14 +32,14 @@ test.describe("portfólio profissional", () => {
     await expect(page.getByRole("heading", { name: /Vamos definir uma solução clara para o seu projeto/i })).toBeVisible();
   });
 
-  test("hero destaca provas reais e o diagnóstico prepara um briefing profissional", async ({ page }) => {
+  test("hero apresenta provas reais sem redundância e o diagnóstico prepara um briefing profissional", async ({ page }) => {
     await page.goto("/");
 
-    const proofDeck = page.locator('[data-attention-hook="proof-deck"]');
-    await expect(proofDeck).toBeVisible();
-    await expect(proofDeck.getByRole("heading", { name: /provas que você pode abrir e verificar/i })).toBeVisible();
-    await proofDeck.getByRole("button", { name: /qualidade/i }).click();
-    await expect(proofDeck).toContainText(/Typecheck|Vitest|Playwright/i);
+    await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar).toBeVisible();
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
+    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
 
     const diagnosticPlaceholder = page.locator('[data-project-diagnostic-placeholder="true"]');
     await diagnosticPlaceholder.scrollIntoViewIfNeeded();
