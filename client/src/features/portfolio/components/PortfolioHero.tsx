@@ -45,7 +45,7 @@ export default function PortfolioHero({
         <img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" />
       </div>
 
-      <div className="relative mx-auto max-w-[1440px] px-4 pb-5 pt-5 min-[360px]:px-5 sm:px-8 sm:pb-14 sm:pt-16 lg:min-h-[680px] lg:px-12 lg:py-20">
+      <div className="relative mx-auto max-w-[1440px] px-4 pb-3 pt-4 min-[360px]:px-5 sm:px-8 sm:pb-14 sm:pt-16 lg:min-h-[680px] lg:px-12 lg:py-20">
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
@@ -54,7 +54,7 @@ export default function PortfolioHero({
           <h1 className="reveal delay-1 mt-3 max-w-4xl font-display text-[clamp(1.9rem,9vw,3rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-3 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-2 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
@@ -68,7 +68,7 @@ export default function PortfolioHero({
             </figcaption>
           </figure>
 
-          <div className="reveal delay-2 mt-3 flex max-w-xl flex-col gap-3 sm:mt-8 sm:gap-5 sm:ml-[16.8%]">
+          <div className="reveal delay-2 mt-2 flex max-w-xl flex-col gap-2.5 sm:mt-8 sm:gap-5 sm:ml-[16.8%]">
             <p className="text-balance font-body text-sm leading-6 text-[#bed0ea] min-[390px]:text-[15px] sm:text-lg sm:leading-8">
               Do briefing ao deploy, organizo produto, interface, código e validação para transformar uma necessidade em algo utilizável e demonstrável.
             </p>
@@ -76,7 +76,7 @@ export default function PortfolioHero({
               <a
                 href="#diagnostico"
                 onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })}
-                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
+                className="group inline-flex min-h-12 w-full items-center justify-center gap-3 bg-[#38bdf8] px-5 py-3 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.13em] text-[#02111f] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_10px_30px_rgba(56,189,248,0.32)] active:scale-[0.97] sm:w-auto"
               >
                 começar diagnóstico <ArrowUpRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5" />
               </a>
