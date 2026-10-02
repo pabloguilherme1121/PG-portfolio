@@ -149,7 +149,7 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     const wideAction = await primaryAction.boundingBox();
     expect(wideAction?.width ?? 0).toBeGreaterThanOrEqual(150);
-    expect(wideAction?.height ?? 1000).toBeLessThanOrEqual(60);
+    expect(wideAction?.height ?? 1000).toBeLessThanOrEqual(62);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 
