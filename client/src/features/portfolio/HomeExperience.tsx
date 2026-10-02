@@ -616,11 +616,70 @@ export default function Home() {
 
         <PortfolioTrustBar />
 
+        <section id="projetos" ref={projectsSectionRef} tabIndex={-1} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
+          <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+            {shouldRenderProjects ? (
+              <Suspense
+                fallback={
+                  <div data-projects-overview-placeholder="true" role="status" aria-live="polite" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/55 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:min-h-[32rem]">
+                    carregando vitrine de projetos…
+                  </div>
+                }
+              >
+                <PortfolioProjectsOverview
+                  markUrl={markUrl}
+                  portraitUrl={portraitUrl}
+                  portraitResponsive={portraitResponsive}
+                  featuredCardsReady={featuredCardsReady}
+                  featuredRepositories={featuredRepositories}
+                  openProjectDetails={openProjectDetails}
+                />
+              </Suspense>
+            ) : (
+              <div data-projects-overview-placeholder="true" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/35 p-5 sm:min-h-[32rem]" aria-label="Vitrine de projetos">
+                <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">vitrine de projetos será carregada ao aproximar</p>
+              </div>
+            )}
+            <div className="mt-10 flex flex-col gap-4 border-y border-white/[0.1] py-6 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">quer ver mais ou discutir um projeto?</p>
+                <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Os destaques acima representam a seleção principal. Para detalhes técnicos, contexto ou uma proposta, fale diretamente comigo.</p>
+              </div>
+              <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
+            </div>
+
+            <div
+              id="estudos-de-caso"
+              ref={caseStudiesSectionRef}
+              data-case-studies-anchor="true"
+              aria-busy={!shouldRenderCaseStudies}
+              className="scroll-mt-24"
+            >
+              {shouldRenderCaseStudies ? (
+                <Suspense
+                  fallback={
+                    <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:mt-16 sm:pt-10">
+                      carregando estudos de caso…
+                    </div>
+                  }
+                >
+                  <PortfolioCaseStudies />
+                </Suspense>
+              ) : (
+                <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 sm:mt-16 sm:pt-10">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">estudos de caso carregam ao aproximar</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+
         <div ref={experienceHubRef} data-experience-hub-anchor="true" aria-busy={!shouldLoadExperienceHub} className="min-h-px">
           {shouldLoadExperienceHub ? (
             <Suspense
               fallback={
-                <section data-experience-hub-placeholder="true" role="status" aria-live="polite" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12">
+                <section data-experience-hub-placeholder="true" role="status" aria-live="polite" className="experience-hub-surface archive-chapter min-h-[420px] border-y border-white/[0.08] bg-[#050d18] px-5 py-10 sm:min-h-[480px] sm:px-8 sm:py-12 lg:px-12">
                   <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc]">
                     carregando rotas do portfólio…
                   </div>
@@ -630,7 +689,7 @@ export default function Home() {
               <PortfolioExperienceHub />
             </Suspense>
           ) : (
-            <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[720px] border-y border-white/[0.08] bg-[#050d18] px-5 py-12 sm:min-h-[820px] sm:px-8 sm:py-16 lg:px-12" aria-label="Rotas do portfólio">
+            <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[420px] border-y border-white/[0.08] bg-[#050d18] px-5 py-10 sm:min-h-[480px] sm:px-8 sm:py-12 lg:px-12" aria-label="Rotas do portfólio">
               <div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">
                 rotas do portfólio serão carregadas ao aproximar
               </div>
@@ -782,64 +841,6 @@ export default function Home() {
             </section>
           )}
         </div>
-
-        <section id="projetos" ref={projectsSectionRef} tabIndex={-1} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
-          <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
-            {shouldRenderProjects ? (
-              <Suspense
-                fallback={
-                  <div data-projects-overview-placeholder="true" role="status" aria-live="polite" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/55 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:min-h-[32rem]">
-                    carregando vitrine de projetos…
-                  </div>
-                }
-              >
-                <PortfolioProjectsOverview
-                  markUrl={markUrl}
-                  portraitUrl={portraitUrl}
-                  portraitResponsive={portraitResponsive}
-                  featuredCardsReady={featuredCardsReady}
-                  featuredRepositories={featuredRepositories}
-                  openProjectDetails={openProjectDetails}
-                />
-              </Suspense>
-            ) : (
-              <div data-projects-overview-placeholder="true" className="min-h-[28rem] border border-white/[0.08] bg-[#071326]/35 p-5 sm:min-h-[32rem]" aria-label="Vitrine de projetos">
-                <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">vitrine de projetos será carregada ao aproximar</p>
-              </div>
-            )}
-            <div className="mt-10 flex flex-col gap-4 border-y border-white/[0.1] py-6 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">quer ver mais ou discutir um projeto?</p>
-                <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Os destaques acima representam a seleção principal. Para detalhes técnicos, contexto ou uma proposta, fale diretamente comigo.</p>
-              </div>
-              <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
-            </div>
-
-            <div
-              id="estudos-de-caso"
-              ref={caseStudiesSectionRef}
-              data-case-studies-anchor="true"
-              aria-busy={!shouldRenderCaseStudies}
-              className="scroll-mt-24"
-            >
-              {shouldRenderCaseStudies ? (
-                <Suspense
-                  fallback={
-                    <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9] sm:mt-16 sm:pt-10">
-                      carregando estudos de caso…
-                    </div>
-                  }
-                >
-                  <PortfolioCaseStudies />
-                </Suspense>
-              ) : (
-                <div data-case-studies-placeholder="true" className="mt-12 min-h-40 border-t border-cyan-100/[0.12] pt-8 sm:mt-16 sm:pt-10">
-                  <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#8fb6c9]">estudos de caso carregam ao aproximar</p>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
 
         <div ref={socialSectionRef} aria-hidden="true" className="h-px w-full" />
         {shouldLoadSocial ? <Suspense fallback={<section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Carregando repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">carregando repertório social</div></section>}><InstagramRepertoire /></Suspense> : <section id="social" className="archive-chapter border-t border-white/[0.07] bg-[#050c18] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28" aria-label="Repertório social"><div className="mx-auto max-w-[1440px] border-l-2 border-[#38bdf8] bg-[#071a35]/60 px-5 py-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#a5f3fc]">repertório social será carregado ao rolar</div></section>}
