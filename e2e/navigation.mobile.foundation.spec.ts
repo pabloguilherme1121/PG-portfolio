@@ -174,7 +174,7 @@ test.describe("portfólio profissional", () => {
     await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
     await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toBeVisible();
     await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toHaveAttribute("href", "#servicos");
-    await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(1);
+    await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(0);
     await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
 
     await page.locator('[data-arcade-open-control="true"]').click();
