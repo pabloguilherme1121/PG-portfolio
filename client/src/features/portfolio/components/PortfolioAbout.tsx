@@ -1,4 +1,3 @@
-import { ArrowDownRight, Download } from "lucide-react";
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -6,15 +5,11 @@ type ResponsiveSourceSet = {
 };
 
 type PortfolioAboutProps = {
-  resumeAvailable: boolean;
-  resumeUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
 };
 
 export default function PortfolioAbout({
-  resumeAvailable,
-  resumeUrl,
   portraitUrl,
   portraitResponsive,
 }: PortfolioAboutProps) {
@@ -47,24 +42,6 @@ export default function PortfolioAbout({
                 <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[#91b9cd] light-muted-ink">processo / execução</p>
               </aside>
 
-              {resumeAvailable && (
-                <a
-                  href={resumeUrl}
-                  download="portfolio-pablo-guilherme.pdf"
-                  className="group mt-9 inline-flex w-full max-w-md items-center justify-between border border-[#67e8f9]/45 bg-[#0b1d2e] px-4 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#102a3b] hover:shadow-[0_12px_30px_rgba(14,116,144,0.28)] sm:w-auto sm:min-w-[320px]"
-                >
-                  <span className="flex items-center gap-3">
-                    <span className="grid h-9 w-9 place-items-center bg-[#3b82f6] text-white transition-transform duration-200 group-hover:scale-[1.03]">
-                      <Download className="h-4 w-4" />
-                    </span>
-                    <span className="text-left">
-                      <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-white">Baixar portfólio</span>
-                      <span className="mt-1 block font-mono text-[9px] uppercase tracking-[0.11em] text-[#9edce9]">PDF · perfil profissional · links clicáveis</span>
-                    </span>
-                  </span>
-                  <ArrowDownRight className="h-4 w-4 text-[#70a6ff] transition-transform duration-200 group-hover:translate-y-1" />
-                </a>
-              )}
             </div>
 
             <div className="border-l border-white/10 pl-6 xl:mt-4">

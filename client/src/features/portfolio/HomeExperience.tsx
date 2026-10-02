@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   ClipboardCheck,
   Braces,
-  Download,
   FileText,
   Instagram,
   Layers2,
@@ -39,7 +38,6 @@ import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfol
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
-import { useResumePreviewController } from "@/features/portfolio/hooks/useResumePreviewController";
 import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
 import { useFavoriteProjects } from "@/features/portfolio/hooks/useFavoriteProjects";
 import {
@@ -48,7 +46,6 @@ import {
   portfolioNavigationItems as navigationItems,
   portfolioPortraitResponsive as portraitResponsive,
   portfolioPortraitUrl as portraitUrl,
-  portfolioResumeUrl as resumeUrl,
   portfolioTelegramUrl as telegramUrl,
   portfolioWhatsAppNumber as whatsAppNumber,
   portfolioWhatsAppUrl as whatsAppUrl,
@@ -71,11 +68,6 @@ const PortfolioContact = lazy(() =>
   })),
 );
 const PortfolioWebResume = lazy(() => import("@/features/portfolio/components/PortfolioWebResume"));
-const loadPortfolioResumePreview = () =>
-  import("@/features/portfolio/components/PortfolioResumePreview").then((module) => ({
-    default: module.PortfolioResumePreview,
-  }));
-const PortfolioResumePreview = lazy(loadPortfolioResumePreview);
 type PortfolioArcadeModule = typeof import("@/features/portfolio/components/PortfolioArcade");
 let portfolioArcadePromise: Promise<PortfolioArcadeModule> | null = null;
 
@@ -91,10 +83,6 @@ const loadPortfolioArcade = () => {
 const PortfolioArcade = lazy(loadPortfolioArcade);
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
-declare const __PORTFOLIO_RESUME_AVAILABLE__: boolean;
-declare const __PORTFOLIO_HERO_AVAILABLE__: boolean;
-const resumeAvailable = __PORTFOLIO_RESUME_AVAILABLE__;
-const heroAvailable = __PORTFOLIO_HERO_AVAILABLE__;
 
 type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
 
@@ -146,24 +134,6 @@ export default function Home() {
   } = useAppearancePanelController({ fallbackTriggerRef: menuButtonRef });
   const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [pgLabOpen, setPgLabOpen] = useState(false);
-  const {
-    open: resumePreviewOpen,
-    loading: resumePreviewLoading,
-    progress: resumePreviewProgress,
-    error: resumePreviewError,
-    closeRef: resumePreviewCloseRef,
-    preload: preloadResumePreview,
-    openPreview: openResumePreview,
-    close: closeResumePreview,
-    retry: retryResumePreview,
-    handleLoad: handleResumePreviewLoad,
-    handleError: handleResumePreviewError,
-  } = useResumePreviewController({
-    avoidSpeculativePreload,
-    loadPreview: loadPortfolioResumePreview,
-    menuButtonRef,
-    setMenuOpen,
-  });
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
@@ -211,7 +181,7 @@ export default function Home() {
     shareSelectedProject,
     copySelectedProjectLink,
   } = useProjectDetailsController({ repositories });
-  const shouldHideContactFloat = Boolean(selectedProject || resumePreviewOpen || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
+  const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
@@ -524,9 +494,6 @@ export default function Home() {
             >
               <Settings2 className="h-4 w-4" aria-hidden="true" />
             </button>
-            {resumeAvailable && <a href={resumeUrl} onPointerEnter={preloadResumePreview} onFocus={preloadResumePreview} onTouchStart={preloadResumePreview} onClick={openResumePreview} data-resume-header="true" data-resume-preview-preload="intent" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
-              <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
-            </a>}
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -577,14 +544,11 @@ export default function Home() {
               mobileExperienceRoute={mobileExperienceRoute}
               portfolioShareStatus={portfolioShareStatus}
               showInstallAction={canInstallPortfolio}
-              resumeAvailable={resumeAvailable}
               onClose={closeMenu}
               onOpenArcade={openPgArcade}
               onOpenAppearance={openAppearancePanel}
               onSharePortfolio={() => void sharePortfolio()}
               onInstallPortfolio={() => void installPortfolioPwa()}
-              onPreloadResume={preloadResumePreview}
-              onOpenResume={openResumePreview}
             />
           </Suspense>
         )}
@@ -607,7 +571,6 @@ export default function Home() {
       <main id="conteudo-principal" className="relative" style={{ fontSize: `${fontScale}rem` }} tabIndex={-1}>
         <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
         <PortfolioHero
-          heroAvailable={heroAvailable && !avoidSpeculativePreload}
           markUrl={markUrl}
           portraitUrl={portraitUrl}
           portraitResponsive={portraitResponsive}
@@ -776,8 +739,6 @@ export default function Home() {
               }
             >
               <PortfolioDeferredProfileSections
-                resumeAvailable={resumeAvailable}
-                resumeUrl={resumeUrl}
                 portraitUrl={portraitUrl}
                 portraitResponsive={portraitResponsive}
               />
@@ -806,7 +767,7 @@ export default function Home() {
                 </section>
               }
             >
-              <PortfolioWebResume embedded resumeAvailable={resumeAvailable} resumeUrl={resumeUrl} />
+              <PortfolioWebResume embedded />
             </Suspense>
           ) : (
             <section data-web-resume-placeholder="true" className="archive-chapter border-t border-white/[0.07] bg-[#f5fbff] px-5 py-10 text-[#365166]" aria-label="Currículo web">
@@ -831,7 +792,7 @@ export default function Home() {
                 </section>
               }
             >
-              <PortfolioDeferredStaticSections isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
+              <PortfolioDeferredStaticSections markUrl={markUrl} />
             </Suspense>
           ) : (
             <section data-static-sections-placeholder="true" className="archive-chapter min-h-[1200px] border-t border-white/[0.07] bg-[#070a10] px-5 py-16 sm:min-h-[1500px] sm:px-8 sm:py-24" aria-label="Competências, serviços e processo">
@@ -981,22 +942,6 @@ export default function Home() {
         </a>
       </nav>
 
-      {resumePreviewOpen && (
-        <Suspense fallback={<div data-resume-preview-loading-shell="true" role="status" aria-live="polite" className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-6 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c8f7ff]">carregando leitor do portfólio…</div>}>
-          <PortfolioResumePreview
-            open={resumePreviewOpen}
-            loading={resumePreviewLoading}
-            error={resumePreviewError}
-            progress={resumePreviewProgress}
-            resumeUrl={resumeUrl}
-            closeRef={resumePreviewCloseRef}
-            onClose={closeResumePreview}
-            onRetry={retryResumePreview}
-            onLoad={handleResumePreviewLoad}
-            onError={handleResumePreviewError}
-          />
-        </Suspense>
-      )}
 
       {selectedProject && (
         <Suspense fallback={<div data-project-details-loading-shell="true" role="status" aria-live="polite" className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-6 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c8f7ff]">carregando detalhes do projeto…</div>}>

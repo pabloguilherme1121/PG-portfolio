@@ -1,14 +1,12 @@
-import { ArrowUpRight, FileDown, Github, Mail, Printer } from "lucide-react";
+import { ArrowUpRight, Github, Mail, Printer } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
 type PortfolioWebResumeProps = {
-  resumeAvailable: boolean;
-  resumeUrl: string;
   embedded?: boolean;
 };
 
 
-export default function PortfolioWebResume({ resumeAvailable, resumeUrl, embedded = false }: PortfolioWebResumeProps) {
+export default function PortfolioWebResume({ embedded = false }: PortfolioWebResumeProps) {
   function handlePrint() {
     trackPortfolioEvent("professional_resume_printed");
     window.print();
@@ -44,17 +42,6 @@ export default function PortfolioWebResume({ resumeAvailable, resumeUrl, embedde
               <Printer className="h-4 w-4" aria-hidden="true" />
               imprimir / salvar em PDF
             </button>
-            {resumeAvailable && (
-              <a
-                href={resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#9ab7c9] px-4 py-3 font-mono text-[9px] font-semibold uppercase tracking-[0.1em] text-[#164e63] hover:border-[#0e7490]"
-              >
-                <FileDown className="h-4 w-4" aria-hidden="true" />
-                abrir PDF versionado
-              </a>
-            )}
           </div>
         </div>
 

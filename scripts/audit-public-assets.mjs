@@ -63,6 +63,6 @@ if (process.env.GITHUB_STEP_SUMMARY) {
   );
 }
 
-if (missingRequired.length && (process.argv.includes("--strict") || process.argv.includes("--strict-if-present"))) {
+if ((missingRequired.length || missingOptional.length) && (process.argv.includes("--strict") || process.argv.includes("--strict-if-present"))) {
   process.exitCode = 1;
 }

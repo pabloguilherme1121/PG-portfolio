@@ -68,26 +68,13 @@ test.describe("portfólio profissional", () => {
     await expect.poll(() => resumeRequests.length).toBeGreaterThan(0);
   });
 
-  test("carrega a prévia PDF apenas quando existe intenção do visitante", async ({ page }) => {
-    const previewRequests: string[] = [];
-    page.on("request", (request) => {
-      if (/PortfolioResumePreview/i.test(request.url())) previewRequests.push(request.url());
-    });
-
-    await page.setViewportSize({ width: 1280, height: 900 });
+  test("remove o leitor PDF legado e mantém o currículo web imprimível", async ({ page }) => {
     await page.goto("/");
-    await page.waitForLoadState("networkidle");
-    expect(previewRequests).toEqual([]);
-
-    const resumeAction = page.locator('[data-resume-header="true"]').first();
-    if (await resumeAction.count()) {
-      await expect(resumeAction).toBeVisible();
-      await resumeAction.hover();
-      await expect.poll(() => previewRequests.length).toBeGreaterThan(0);
-
-      await resumeAction.click();
-      await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
-    }
+    await expect(page.locator('[data-resume-header="true"]')).toHaveCount(0);
+    await page.goto("/#curriculo-web");
+    await expect(page.locator('[data-web-resume="true"]')).toBeVisible();
+    await expect(page.getByRole("button", { name: /imprimir.*salvar.*pdf/i })).toBeVisible();
+    await expect(page.locator('a[download]')).toHaveCount(0);
   });
 
   test("mantém estudos de caso fora do carregamento inicial e preserva acesso direto", async ({ page }) => {

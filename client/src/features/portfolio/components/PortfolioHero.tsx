@@ -1,13 +1,7 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
-import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
-const heroUrl = publicMediaPath("/manus-storage/pablo-hero-archive_fbc55c04.png");
-const heroResponsive = {
-  avif: publicMediaPath("/manus-storage/pablo-hero-archive-480w_e40b1df5.avif 480w, /manus-storage/pablo-hero-archive-768w_5499edae.avif 768w, /manus-storage/pablo-hero-archive-1200w_862455f5.avif 1200w, /manus-storage/pablo-hero-archive-1600w_1c356f9e.avif 1600w, /manus-storage/pablo-hero-archive-1920w_64ab699e.avif 1920w"),
-  webp: publicMediaPath("/manus-storage/pablo-hero-archive-480w_b3b1574d.webp 480w, /manus-storage/pablo-hero-archive-768w_cd8f428d.webp 768w, /manus-storage/pablo-hero-archive-1200w_b0307ff4.webp 1200w, /manus-storage/pablo-hero-archive-1600w_d789da48.webp 1600w, /manus-storage/pablo-hero-archive-1920w_19e9d0c3.webp 1920w"),
-};
 
 type ResponsiveSourceSet = {
   avif: string;
@@ -15,7 +9,6 @@ type ResponsiveSourceSet = {
 };
 
 type PortfolioHeroProps = {
-  heroAvailable: boolean;
   markUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
@@ -23,7 +16,6 @@ type PortfolioHeroProps = {
 };
 
 export default function PortfolioHero({
-  heroAvailable,
   markUrl,
   portraitUrl,
   portraitResponsive,
@@ -32,13 +24,6 @@ export default function PortfolioHero({
   return (
     <section id="inicio" className="relative isolate overflow-hidden pt-[76px]">
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-70" />
-      {heroAvailable && (
-        <picture className="pointer-events-none absolute inset-y-0 right-0 block w-full opacity-70 lg:w-[72%]">
-          <source type="image/avif" srcSet={heroResponsive.avif} sizes="(min-width: 1024px) 72vw, 100vw" />
-          <source type="image/webp" srcSet={heroResponsive.webp} sizes="(min-width: 1024px) 72vw, 100vw" />
-          <img src={heroUrl} alt="" width="1920" height="1080" loading="eager" fetchPriority="high" decoding="async" className="h-full w-full object-cover object-center" />
-        </picture>
-      )}
       <div className="pointer-events-none absolute inset-y-0 right-0 w-full bg-[linear-gradient(90deg,#07111f_5%,rgba(7,17,31,0.96)_30%,rgba(7,17,31,0.30)_68%,rgba(7,17,31,0.66)_100%)] lg:w-[80%]" />
       <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-52 bg-[linear-gradient(0deg,#07111f,transparent)]" />
       <div className="pointer-events-none absolute right-[8%] top-[18%] hidden w-24 opacity-30 drop-shadow-[0_0_26px_rgba(56,189,248,0.65)] lg:block">

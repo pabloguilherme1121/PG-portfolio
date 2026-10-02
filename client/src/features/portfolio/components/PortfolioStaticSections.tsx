@@ -1,15 +1,9 @@
 import { useState, type KeyboardEvent } from "react";
-import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { processSteps, serviceOffers, skillTracks } from "../portfolioData";
 import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHorizontalSnapNavigation";
 
-const textureUrl = publicMediaPath("/manus-storage/pablo-systems-texture_cf9aade1.png");
-const textureResponsive = {
-  avif: publicMediaPath("/manus-storage/pablo-systems-texture-480w_5a6395b2.avif 480w, /manus-storage/pablo-systems-texture-768w_8d43ab9a.avif 768w, /manus-storage/pablo-systems-texture-1200w_bd814e99.avif 1200w, /manus-storage/pablo-systems-texture-1600w_37d28a1c.avif 1600w, /manus-storage/pablo-systems-texture-1920w_743d3758.avif 1920w"),
-  webp: publicMediaPath("/manus-storage/pablo-systems-texture-480w_ec71c815.webp 480w, /manus-storage/pablo-systems-texture-768w_c701324d.webp 768w, /manus-storage/pablo-systems-texture-1200w_4041e6bf.webp 1200w, /manus-storage/pablo-systems-texture-1600w_c56f3109.webp 1600w, /manus-storage/pablo-systems-texture-1920w_89c6d1bd.webp 1920w"),
-};
 
 const deliveryProofs = [
   {
@@ -34,10 +28,9 @@ const deliveryProofs = [
   },
 ];
 
-export function PortfolioSkills({ isDesktopViewport, markUrl }: { isDesktopViewport: boolean; markUrl: string }) {
+export function PortfolioSkills({ markUrl }: { markUrl: string }) {
   return (
         <section id="trilha" className="archive-chapter relative overflow-hidden border-t border-white/[0.07] bg-[#070a10] py-16 sm:py-24 lg:py-32">
-          {isDesktopViewport && <picture className="pointer-events-none absolute inset-0 block"><source type="image/avif" srcSet={textureResponsive.avif} sizes="100vw" /><source type="image/webp" srcSet={textureResponsive.webp} sizes="100vw" /><img src={textureUrl} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover opacity-[0.13] mix-blend-screen" /></picture>}
           <div className="relative mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
             <div className="grid gap-8 lg:grid-cols-[0.85fr_1.4fr] lg:gap-20">
               <div>

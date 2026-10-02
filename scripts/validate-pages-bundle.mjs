@@ -54,7 +54,7 @@ assert.ok(builtScriptSources.some((source) => source.includes("vite:preloadError
 assert.ok(builtScriptSources.some((source) => source.includes("runtime-hardening-v10")), "The production bundle does not migrate legacy PWA runtime state");
 assert.ok(home.includes('content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"'));
 assert.ok(!home.includes('src="/manus-storage/"'));
-assert.ok((await readFile(path.join(root, "media-unavailable.svg"), "utf8")).includes("Imagem em preparação"));
+assert.ok(!builtScriptSources.some((source) => source.includes("/manus-storage/")), "The production bundle must not reference retired media");
 const preview = await readFile(path.join(root, "social-preview.png"));
 assert.ok(preview.length > 10_000, "Social preview is missing or empty");
 assert.ok(Buffer.byteLength(home) < 50_000, "Unexpected inline runtime in the Pages HTML");
