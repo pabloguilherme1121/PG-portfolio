@@ -22,8 +22,9 @@ test.describe("portfólio profissional", () => {
     await expect(observatorioCode).toHaveAttribute("href", "https://github.com/Pabloguilherme01/observatorio");
     await expect(observatorioCode).toHaveAttribute("target", "_blank");
 
-    await expect(page.locator('[data-quality-proof="true"]')).toHaveCount(4);
-    await expect(page.getByText("Validação automatizada", { exact: true })).toBeVisible();
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
+    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
 
     const projectCta = page.locator("#projetos").getByRole("link", { name: /falar sobre um projeto/i });
     await expect(projectCta).toHaveAttribute("href", "#contato");
@@ -181,9 +182,9 @@ test.describe("portfólio profissional", () => {
   test("oferece rota curta para recrutadores com provas e contato profissional", async ({ page }) => {
     await page.goto("/");
 
-    const recruiterEntry = page.locator("#inicio").getByRole("link", { name: /avaliar perfil profissional/i });
-    await expect(recruiterEntry).toHaveAttribute("href", "#perfil-profissional");
-    await recruiterEntry.click();
+    const heroProfileLink = page.locator("#inicio").getByRole("link", { name: /avaliar perfil/i });
+    await expect(heroProfileLink).toHaveAttribute("href", "#perfil-profissional");
+    await heroProfileLink.click();
 
     const profile = page.locator('[data-professional-snapshot="true"]');
     await expect(profile).toBeVisible();
