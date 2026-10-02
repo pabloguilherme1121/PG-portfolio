@@ -24,6 +24,45 @@ test.describe("reconstrução profissional do portfólio", () => {
     );
   });
 
+
+  test("home prioriza trabalho verificável sem repetir Proof Deck no Hero", async ({ page }) => {
+    await page.goto("/");
+
+    await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
+
+    const order = await page.evaluate(() => {
+      const projects = document.querySelector("#projetos");
+      const experience = document.querySelector('[data-experience-hub-anchor="true"]');
+      const arcade = document.querySelector("#pg-lab");
+      if (!projects || !experience || !arcade) return null;
+
+      return {
+        projectsBeforeExperience: Boolean(projects.compareDocumentPosition(experience) & Node.DOCUMENT_POSITION_FOLLOWING),
+        projectsBeforeArcade: Boolean(projects.compareDocumentPosition(arcade) & Node.DOCUMENT_POSITION_FOLLOWING),
+      };
+    });
+
+    expect(order).toEqual({
+      projectsBeforeExperience: true,
+      projectsBeforeArcade: true,
+    });
+  });
+
+  test("primeira jornada mobile é compacta sem sacrificar provas verificáveis", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    const hero = page.locator("#inicio");
+    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
+
+    const heroBox = await hero.boundingBox();
+    const trustBox = await trustBar.boundingBox();
+
+    expect(heroBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(650);
+    expect(trustBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(500);
+    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
+  });
+
   test("provas verificáveis ficam legíveis no mobile sem exigir gesto horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
