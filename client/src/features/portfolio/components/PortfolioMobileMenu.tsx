@@ -151,7 +151,7 @@ export default function PortfolioMobileMenu({
                 href={href}
                 onClick={onClose}
                 aria-current={activeSection === id ? "location" : undefined}
-                className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.08em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${
+                className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.07em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${
                   activeSection === id
                     ? "border-[#67e8f9]/45 bg-[#0b2746] text-[#d9fbff]"
                     : "border-white/10 bg-[#07111f] text-[#9fb6d0] hover:border-[#67e8f9]/30 hover:text-white"
@@ -166,7 +166,7 @@ export default function PortfolioMobileMenu({
             data-mobile-menu-primary="true"
             href={mobilePrimaryAction.href}
             onClick={onClose}
-            className="mt-3 flex min-h-12 items-center justify-between rounded-[10px] bg-[#38bdf8] px-3 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            className="mt-3 flex min-h-12 items-center justify-between rounded-[10px] bg-[#38bdf8] px-3 py-3 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
             <span className="inline-flex min-w-0 items-center gap-2">
               <ClipboardCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -187,7 +187,7 @@ export default function PortfolioMobileMenu({
                 if (mobileExperienceRoute === "explorer") onOpenArcade();
                 onClose();
               }}
-              className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               <SecondaryIcon className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
               <span className="truncate">{mobileSecondaryShortcut.label}</span>
@@ -197,7 +197,7 @@ export default function PortfolioMobileMenu({
               target="_blank"
               rel="noreferrer"
               onClick={onClose}
-              className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 py-2 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               <Eye className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
               <span>observatório</span>
@@ -216,7 +216,7 @@ export default function PortfolioMobileMenu({
                 onOpenAppearance(event.currentTarget);
                 onClose();
               }}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.07em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               aria-label="Configurações de aparência"
             >
               <Settings2 className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
@@ -227,7 +227,7 @@ export default function PortfolioMobileMenu({
               type="button"
               data-mobile-share-action="true"
               onClick={onSharePortfolio}
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.07em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               aria-label="Compartilhar portfólio"
             >
               <Share2 className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
@@ -245,7 +245,7 @@ export default function PortfolioMobileMenu({
                 type="button"
                 data-mobile-install-action="true"
                 onClick={onInstallPortfolio}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.07em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               >
                 <Download className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
                 instalar
@@ -263,7 +263,7 @@ export default function PortfolioMobileMenu({
                 data-resume-preview-preload="intent"
                 aria-haspopup="dialog"
                 aria-label="Visualizar portfólio atualizado em PDF"
-                className="resume-header-cta inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 font-mono text-[8px] font-semibold uppercase tracking-[0.07em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#123b67] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                className="resume-header-cta inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#123b67] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               >
                 <Download className="h-4 w-4" aria-hidden="true" />
                 portfólio PDF
