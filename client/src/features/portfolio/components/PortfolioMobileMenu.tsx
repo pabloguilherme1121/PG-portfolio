@@ -1,6 +1,6 @@
 import { ArrowUpRight, Braces, ClipboardCheck, Download, Eye, FileText, Layers2, Settings2, Share2 } from "lucide-react";
 import type { MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
-import { useEffect, useRef, type MouseEvent } from "react";
+import { useEffect, useRef } from "react";
 
 type MobilePrimaryAction = {
   href: string;
@@ -23,14 +23,11 @@ type PortfolioMobileMenuProps = {
   mobileExperienceRoute: MobileExperienceRoute;
   portfolioShareStatus: PortfolioShareStatus;
   showInstallAction: boolean;
-  resumeAvailable: boolean;
   onClose: () => void;
   onOpenArcade: () => void;
   onOpenAppearance: (trigger?: HTMLElement | null) => void;
   onSharePortfolio: () => void;
   onInstallPortfolio: () => void;
-  onPreloadResume: () => void;
-  onOpenResume: (event: MouseEvent<HTMLButtonElement>) => void;
 };
 
 const sectionLinks = [
@@ -48,14 +45,11 @@ export default function PortfolioMobileMenu({
   mobileExperienceRoute,
   portfolioShareStatus,
   showInstallAction,
-  resumeAvailable,
   onClose,
   onOpenArcade,
   onOpenAppearance,
   onSharePortfolio,
   onInstallPortfolio,
-  onPreloadResume,
-  onOpenResume,
 }: PortfolioMobileMenuProps) {
   const navigationRef = useRef<HTMLDivElement>(null);
   const SecondaryIcon =
@@ -255,23 +249,6 @@ export default function PortfolioMobileMenu({
               </button>
             )}
 
-            {resumeAvailable && (
-              <button
-                type="button"
-                onPointerEnter={onPreloadResume}
-                onFocus={onPreloadResume}
-                onTouchStart={onPreloadResume}
-                onClick={onOpenResume}
-                data-resume-header="true"
-                data-resume-preview-preload="intent"
-                aria-haspopup="dialog"
-                aria-label="Visualizar portfólio atualizado em PDF"
-                className="resume-header-cta inline-flex min-h-11 items-center justify-center gap-2 rounded-[10px] border border-[#67e8f9]/30 bg-[#0b2746] px-2 font-mono text-[10px] font-semibold uppercase tracking-[0.05em] text-[#d9fbff] transition-colors hover:border-[#67e8f9] hover:bg-[#123b67] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-              >
-                <Download className="h-4 w-4" aria-hidden="true" />
-                portfólio PDF
-              </button>
-            )}
           </div>
         </div>
       </nav>

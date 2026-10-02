@@ -5,9 +5,8 @@ import NotFound from "@/pages/NotFound";
 import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import Home from "./pages/Home";
-import { installMissingMediaFallback } from "@/features/portfolio/utils/installMissingMediaFallback";
 import { getPublicRoutePolicy } from "./appRoutePolicy";
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 const AvailabilityManager = isStaticDeploy ? null : lazy(() => import("./pages/AvailabilityManager"));
@@ -33,7 +32,6 @@ function AppRoutes() {
 }
 
 function App() {
-  useEffect(() => installMissingMediaFallback(import.meta.env.BASE_URL), []);
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark" switchable>

@@ -93,7 +93,12 @@ test("bundle estático mostra curadoria social sem depender da API", async ({ pa
   await page.goto("./");
   await page.locator("#social").scrollIntoViewIfNeeded();
   await expect(page.locator("#social").getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
-  await expect(page.locator("#social").getByText("curadoria editorial · perfis reais · referências selecionadas")).toBeVisible();
+  const profiles = page.locator('[data-social-profiles="true"]');
+  await expect(profiles.getByRole("link")).toHaveCount(2);
+  await expect(profiles.getByRole("link", { name: /@pablogui000/ })).toHaveAttribute("href", "https://www.instagram.com/pablogui000/");
+  await expect(profiles.getByRole("link", { name: /@mpjstoryworks/ })).toHaveAttribute("href", "https://www.instagram.com/mpjstoryworks/");
+  await expect(page.locator("#social img")).toHaveCount(0);
+  await expect(page.locator("#social button")).toHaveCount(0);
   await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
   expect(pageErrors).toEqual([]);
 });
