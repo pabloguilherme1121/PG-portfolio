@@ -212,7 +212,7 @@ export default function PortfolioExperienceHub() {
               onClick={() =>
                 trackPortfolioEvent("experience_route_cta", { experienceRoute: selected.id })
               }
-              className="group mt-5 inline-flex min-h-11 items-center gap-2 border-b border-[#38bdf8] font-mono text-[9px] font-semibold uppercase tracking-[0.11em] text-[#e3faff] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              className="group mt-5 inline-flex min-h-12 items-center gap-2 border-b border-[#38bdf8] font-mono text-[9px] font-semibold uppercase tracking-[0.11em] text-[#e3faff] transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               {selected.cta}
               <ArrowDownRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
