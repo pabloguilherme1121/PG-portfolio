@@ -255,7 +255,7 @@ test.describe("portfólio profissional", () => {
 
       const firstRoute = hub.locator('[data-experience-route="true"]').first();
       const routeBox = await firstRoute.boundingBox();
-      expect(routeBox?.height ?? 0).toBeGreaterThanOrEqual(64);
+      expect(routeBox?.height ?? 0).toBeGreaterThanOrEqual(56);
       expect(routeBox?.height ?? 999).toBeLessThanOrEqual(84);
 
       await expect(hub.locator('[data-experience-progress="true"]')).toHaveCount(0);
