@@ -812,7 +812,7 @@ html.theme-transitioning .arquivo-page * {
     box-shadow: 0 10px 28px rgba(0, 0, 0, 0.32);
   }
 
-  .arquivo-page #inicio { padding-bottom: 5.5rem; }
+  .arquivo-page #inicio { padding-bottom: 1.5rem; }
   .arquivo-page #contato-rodape { padding-bottom: 5rem; }
   .archive-quick-route { min-height: 5.25rem; }
   .footer-social-icon { width: 2.75rem; height: 2.75rem; }

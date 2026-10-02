@@ -183,8 +183,11 @@ export default function PortfolioMobileMenu({
             <a
               data-mobile-shortcut-contextual="true"
               href={mobileSecondaryShortcut.href}
-              onClick={() => {
-                if (mobileExperienceRoute === "explorer") onOpenArcade();
+              onClick={(event) => {
+                if (mobileExperienceRoute === "explorer") {
+                  event.preventDefault();
+                  onOpenArcade();
+                }
                 onClose();
               }}
               className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
