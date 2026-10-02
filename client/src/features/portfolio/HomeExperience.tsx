@@ -527,7 +527,7 @@ export default function Home() {
             {resumeAvailable && <a href={resumeUrl} onPointerEnter={preloadResumePreview} onFocus={preloadResumePreview} onTouchStart={preloadResumePreview} onClick={openResumePreview} data-resume-header="true" data-resume-preview-preload="intent" aria-haspopup="dialog" aria-label="Visualizar portfólio atualizado em PDF" title="Visualizar portfólio em PDF" className="resume-header-cta inline-flex items-center gap-2 border border-[#67e8f9] bg-[#0b2746] px-3 py-2 text-[10px] font-mono font-semibold uppercase tracking-[0.1em] text-[#d9fbff] transition-all hover:bg-[#123b67] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <Download className="h-3.5 w-3.5" aria-hidden="true" /> <span>portfólio PDF</span>
             </a>}
-            <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:bg-[#a5f3fc] hover:shadow-[0_0_28px_rgba(56,189,248,0.36)]">
+            <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
           </nav>
@@ -602,7 +602,7 @@ export default function Home() {
           </Suspense>
         )}
       </header>
-      <div className="scroll-progress-track pointer-events-none fixed inset-x-0 top-[75px] z-40 h-0.5 bg-[#67e8f9]/10" aria-hidden="true"><span className="scroll-progress-bar block h-full origin-left bg-[#67e8f9] shadow-[0_0_12px_rgba(103,232,249,0.8)]" style={{ transform: `scaleX(${scrollProgress / 100})` }} /></div>
+      <div className="scroll-progress-track pointer-events-none fixed inset-x-0 top-[75px] z-40 hidden h-0.5 bg-[#67e8f9]/10 md:block" aria-hidden="true"><span className="scroll-progress-bar block h-full origin-left bg-[#67e8f9]" style={{ transform: `scaleX(${scrollProgress / 100})` }} /></div>
 
       <main id="conteudo-principal" className="relative" style={{ fontSize: `${fontScale}rem` }} tabIndex={-1}>
         <div className="archive-spine pointer-events-none absolute bottom-0 top-0 z-20" aria-hidden="true" />
@@ -933,9 +933,6 @@ export default function Home() {
         data-mobile-dock-hidden={isDockHidden ? "true" : "false"}
         data-mobile-dock-compact={isMobileDockCompact ? "true" : "false"}
         className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}>
-        <span data-mobile-dock-progress="true" aria-hidden="true" className="pointer-events-none absolute inset-x-2 top-0 block h-px overflow-hidden rounded-full bg-white/10 sm:hidden">
-          <span className="block h-full origin-left bg-[#67e8f9] transition-transform duration-150 motion-reduce:transition-none" style={{ transform: `scaleX(${scrollProgress / 100})` }} />
-        </span>
         <a
           data-mobile-primary-action="true"
           data-mobile-dock-primary="true"
