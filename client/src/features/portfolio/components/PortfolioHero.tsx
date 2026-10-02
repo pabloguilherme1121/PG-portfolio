@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowDownRight, ArrowUpRight } from "lucide-react";
 import type { RefObject } from "react";
 import PortfolioProofDeck from "@/features/portfolio/components/PortfolioProofDeck";
+import PortfolioHomeSignalStrip from "@/features/portfolio/components/PortfolioHomeSignalStrip";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { publicMediaPath } from "@/features/portfolio/utils/publicMediaPath";
 
@@ -94,21 +95,17 @@ export default function PortfolioHero({
           </div>
         </div>
 
-        <div className="reveal delay-3 grid border-t border-white/[0.12] pt-6 sm:grid-cols-[1fr_auto] sm:items-end">
-          <p className="max-w-sm font-mono text-[10px] uppercase leading-5 tracking-[0.12em] text-[#7890b4] light-muted-ink">
-            PROVAS: PRODUTO PUBLICADO · CÓDIGO PÚBLICO · TESTES
-            <br />
-            FOCO: PRODUTOS DIGITAIS · INTERFACES · DADOS
-            <br />
-            ENTREGA: RESPONSIVO · ACESSÍVEL · PUBLICÁVEL
-          </p>
-          <a
-            href="#perfil-profissional"
-            onClick={() => trackPortfolioEvent("professional_profile_opened")}
-            className="mt-6 inline-flex min-h-11 items-center gap-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[#b7cdf1] transition-colors hover:text-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0"
-          >
-            avaliar perfil profissional <ArrowDown className="h-4 w-4" />
-          </a>
+        <div className="reveal delay-3 border-t border-white/[0.12] pt-5 sm:pt-6">
+          <PortfolioHomeSignalStrip />
+          <div className="mt-3 flex justify-end sm:mt-4">
+            <a
+              href="#perfil-profissional"
+              onClick={() => trackPortfolioEvent("professional_profile_opened")}
+              className="inline-flex min-h-11 items-center gap-3 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[#b7cdf1] transition-colors hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            >
+              avaliar perfil profissional <ArrowDown className="h-4 w-4" />
+            </a>
+          </div>
         </div>
       </div>
     </section>
