@@ -190,17 +190,17 @@ test.describe("portfólio profissional", () => {
     await expect(second).toBeFocused();
     await expect(second).toHaveAttribute("aria-selected", "true");
     await expect(hub.locator('[data-experience-panel="recruiter"]')).toBeVisible();
-    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "2");
+    await expect(hub.locator('[data-experience-panel="recruiter"]')).toContainText(/perfil|currículo/i);
 
     await page.keyboard.press("End");
     await expect(third).toBeFocused();
     await expect(third).toHaveAttribute("aria-selected", "true");
-    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "3");
+    await expect(hub.locator('[data-experience-panel="explorer"]')).toBeVisible();
 
     await page.keyboard.press("Home");
     await expect(first).toBeFocused();
     await expect(first).toHaveAttribute("aria-selected", "true");
-    await expect(hub.locator('[data-experience-progress="true"]')).toHaveAttribute("aria-valuenow", "1");
+    await expect(hub.locator('[data-experience-panel="client"]')).toBeVisible();
   });
 
   test("experience hub centraliza automaticamente a rota escolhida no mobile", async ({ page }) => {
@@ -250,16 +250,15 @@ test.describe("portfólio profissional", () => {
         clientWidth: element.clientWidth,
         overflowX: getComputedStyle(element).overflowX,
       }));
-      expect(stripOverflow.scrollWidth).toBeGreaterThan(stripOverflow.clientWidth);
-      expect(["auto", "scroll"]).toContain(stripOverflow.overflowX);
+      expect(stripOverflow.scrollWidth).toBeLessThanOrEqual(stripOverflow.clientWidth + 1);
+      expect(["auto", "scroll"]).not.toContain(stripOverflow.overflowX);
 
       const firstRoute = hub.locator('[data-experience-route="true"]').first();
       const routeBox = await firstRoute.boundingBox();
       expect(routeBox?.height ?? 0).toBeGreaterThanOrEqual(64);
       expect(routeBox?.height ?? 999).toBeLessThanOrEqual(84);
 
-      const progress = hub.locator('[data-experience-progress="true"]');
-      expect(await progress.evaluate((element) => getComputedStyle(element).position)).toBe("static");
+      await expect(hub.locator('[data-experience-progress="true"]')).toHaveCount(0);
 
       const panel = hub.locator('[data-experience-panel="client"]');
       await expect(panel).toBeVisible();
