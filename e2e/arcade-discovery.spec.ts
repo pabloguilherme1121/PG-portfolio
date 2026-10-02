@@ -50,7 +50,7 @@ test("PG Arcade mostra progresso de exploração e sugere o próximo jogo sem pe
 });
 
 
-test("PG Arcade aparece como vitrine interativa antes dos projetos sem abrir automaticamente", async ({ page }) => {
+test("PG Arcade permanece como vitrine interativa após os projetos sem abrir automaticamente", async ({ page }) => {
   await page.goto("./");
   const arcade = page.locator("#pg-lab");
   const projects = page.locator("#projetos");
@@ -60,5 +60,5 @@ test("PG Arcade aparece como vitrine interativa antes dos projetos sem abrir aut
   await expect(page.locator("#pg-lab-game")).toBeHidden();
   const arcadeBox = await arcade.boundingBox();
   const projectsBox = await projects.boundingBox();
-  expect(arcadeBox?.y ?? Infinity).toBeLessThan(projectsBox?.y ?? -Infinity);
+  expect(projectsBox?.y ?? Infinity).toBeLessThan(arcadeBox?.y ?? -Infinity);
 });
