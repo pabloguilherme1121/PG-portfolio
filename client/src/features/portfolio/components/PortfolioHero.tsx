@@ -45,20 +45,20 @@ export default function PortfolioHero({
         <img src={markUrl} alt="" width="160" height="160" decoding="async" className="w-full" />
       </div>
 
-      <div className="relative mx-auto max-w-[1440px] px-4 pb-7 pt-7 min-[360px]:px-5 min-[390px]:pb-8 min-[390px]:pt-8 sm:px-8 sm:pb-14 sm:pt-16 lg:min-h-[680px] lg:px-12 lg:py-20">
+      <div className="relative mx-auto max-w-[1440px] px-4 pb-5 pt-5 min-[360px]:px-5 sm:px-8 sm:pb-14 sm:pt-16 lg:min-h-[680px] lg:px-12 lg:py-20">
         <div className="relative max-w-4xl">
           <div className="reveal flex items-center gap-3 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
             <span className="h-px w-10 bg-[#38bdf8]" />
             Pablo Guilherme · produto digital, interface e desenvolvimento web
           </div>
-          <h1 className="reveal delay-1 mt-5 max-w-4xl font-display text-[clamp(2.05rem,9.7vw,3.15rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
+          <h1 className="reveal delay-1 mt-3 max-w-4xl font-display text-[clamp(1.9rem,9vw,3rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-4 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-3 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
-              <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-16 w-16 shrink-0 object-cover object-top min-[390px]:h-18 min-[390px]:w-18 lg:h-56 lg:w-full" />
+              <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-14 w-14 shrink-0 object-cover object-top min-[390px]:h-16 min-[390px]:w-16 lg:h-56 lg:w-full" />
             </picture>
             <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1">
               <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</span>
@@ -68,8 +68,8 @@ export default function PortfolioHero({
             </figcaption>
           </figure>
 
-          <div className="reveal delay-2 mt-4 flex max-w-xl flex-col gap-4 sm:mt-8 sm:gap-5 sm:ml-[16.8%]">
-            <p className="text-balance font-body text-base leading-7 text-[#bed0ea] sm:text-lg sm:leading-8">
+          <div className="reveal delay-2 mt-3 flex max-w-xl flex-col gap-3 sm:mt-8 sm:gap-5 sm:ml-[16.8%]">
+            <p className="text-balance font-body text-sm leading-6 text-[#bed0ea] min-[390px]:text-[15px] sm:text-lg sm:leading-8">
               Do briefing ao deploy, organizo produto, interface, código e validação para transformar uma necessidade em algo utilizável e demonstrável.
             </p>
             <div ref={heroCtaRef} data-hero-cta="true" className="grid w-full grid-cols-1 gap-2 min-[360px]:grid-cols-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center sm:gap-3">
