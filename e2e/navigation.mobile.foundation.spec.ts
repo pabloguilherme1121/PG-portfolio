@@ -106,29 +106,23 @@ test.describe("portfólio profissional", () => {
     }
   });
 
-  test("hero mobile evita provas duplicadas e a Trust Bar fica legível sem swipe obrigatório", async ({ page }) => {
+  test("hero mobile evita provas duplicadas e resume evidências em sinais compactos", async ({ page }) => {
     await page.setViewportSize({ width: 320, height: 812 });
     await page.goto("/");
 
     await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
+    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toHaveCount(0);
 
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await trustBar.scrollIntoViewIfNeeded();
-    await expect(trustBar).toBeVisible();
+    const strip = page.locator('[data-home-signal-strip="true"]');
+    await expect(strip).toBeVisible();
+    await expect(strip.locator('[data-home-signal="true"]')).toHaveCount(4);
 
-    const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
-    await expect(rail.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    const metrics = await rail.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        display: style.display,
-        overflowX: style.overflowX,
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-      };
-    });
+    const metrics = await strip.evaluate((element) => ({
+      overflowX: getComputedStyle(element).overflowX,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    }));
 
-    expect(metrics.display).toBe("grid");
     expect(["auto", "scroll"]).not.toContain(metrics.overflowX);
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
   });
@@ -158,12 +152,34 @@ test.describe("portfólio profissional", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 
+  test("menu mobile permite trocar o modo da experiência sem voltar ao Experience Hub", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const menu = page.locator("#mobile-navigation");
+    await expect(menu).toBeVisible();
+
+    const recruiterMode = menu.locator('[data-mobile-experience-mode="recruiter"]');
+    await expect(recruiterMode).toBeVisible();
+    await recruiterMode.click();
+
+    await expect(page.locator('[data-mobile-dock-secondary="true"]')).toHaveAttribute(
+      "data-mobile-dock-secondary-route",
+      "recruiter",
+    );
+    await expect(page.locator('[data-mobile-dock-primary="true"]')).toHaveAttribute(
+      "href",
+      "#perfil-profissional",
+    );
+  });
+
   test("mobile incorpora hierarquia visual do mockup sem aumentar a carga de navegação", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
     await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
+    await expect(page.locator('[data-home-signal-strip="true"]')).toBeVisible();
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     const menu = page.locator("#mobile-navigation");
