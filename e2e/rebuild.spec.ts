@@ -11,39 +11,34 @@ test.describe("reconstrução profissional do portfólio", () => {
     await expect(hero.getByRole("heading", { level: 1 })).toContainText(/produtos digitais|interfaces|dados/i);
     await expect(hero.getByRole("link", { name: /começar diagnóstico/i })).toHaveAttribute("href", "#diagnostico");
 
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await expect(trustBar).toBeVisible();
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    await expect(trustBar.getByRole("link", { name: /observatório/i })).toHaveAttribute(
+    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toHaveCount(0);
+
+    const signals = hero.locator('[data-home-signal-strip="true"]');
+    await expect(signals).toBeVisible();
+    await expect(signals.locator('[data-home-signal="true"]')).toHaveCount(4);
+    await expect(signals).toContainText(/2 cases/i);
+    await expect(signals).toContainText(/1 produto publicado/i);
+    await expect(signals).toContainText(/5 jogos/i);
+    await expect(signals.getByRole("link", { name: /observatório publicado/i })).toHaveAttribute(
       "href",
       "https://pabloguilherme01.github.io/observatorio/#dashboard",
     );
-    await expect(trustBar.getByRole("link", { name: /trajeto/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
-    );
   });
 
-  test("provas verificáveis ficam legíveis no mobile sem exigir gesto horizontal", async ({ page }) => {
+  test("sinais da home ficam compactos no mobile sem exigir gesto horizontal", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
+    const strip = page.locator('[data-home-signal-strip="true"]');
+    await expect(strip).toBeVisible();
+    await expect(strip.locator('[data-home-signal="true"]')).toHaveCount(4);
 
-    await expect(rail).toBeVisible();
-    await expect(rail.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    const metrics = await rail.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        display: style.display,
-        overflowX: style.overflowX,
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-      };
-    });
+    const metrics = await strip.evaluate((element) => ({
+      overflowX: getComputedStyle(element).overflowX,
+      scrollWidth: element.scrollWidth,
+      clientWidth: element.clientWidth,
+    }));
 
-    expect(metrics.display).toBe("grid");
     expect(["auto", "scroll"]).not.toContain(metrics.overflowX);
     expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
   });
@@ -140,7 +135,7 @@ test.describe("reconstrução profissional do portfólio", () => {
 
     await expect(page.locator('[data-portfolio-shell-version="2"]')).toBeVisible();
     await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
+    await expect(page.locator('[data-home-signal-strip="true"]')).toBeVisible();
 
     const overflow = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
