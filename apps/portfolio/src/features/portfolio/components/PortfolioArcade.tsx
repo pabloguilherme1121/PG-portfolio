@@ -170,11 +170,12 @@ export default function PortfolioArcade() {
           </div>
           <div
             ref={tabsRef}
+            data-arcade-game-tabs="true"
             role="tablist"
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5"
+            className="mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto overscroll-x-contain pb-2 sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 sm:snap-none lg:grid-cols-5"
           >
             {games.map((item) => {
               const Icon = item.icon;
@@ -197,7 +198,7 @@ export default function PortfolioArcade() {
                   mostVisitedGame === item.id ? "true" : undefined
                 }
                 onClick={() => selectGame(item.id)}
-                className={`group relative min-h-[82px] min-w-0 max-w-full overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
+                className={`group relative min-h-[82px] min-w-[148px] snap-start overflow-hidden sm:min-w-0 rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
               >
                 <span className="flex items-center justify-between gap-2">
                   <span className={`grid h-8 w-8 place-items-center rounded-[10px] border ${isActive ? "border-[#67e8f9]/40 bg-[#67e8f9]/10 text-[#a5f3fc]" : "border-white/10 bg-white/[0.03] text-[#7894ae] group-hover:text-[#a5f3fc]"}`}>
