@@ -29,4 +29,3 @@ void bootstrap().catch(async (error) => {
   const recovering = await rescue?.rescue?.("bootstrap-error");
   if (!recovering) rescue?.showLoadFailure?.();
 });
-

@@ -244,4 +244,3 @@ export function installVitePreloadRecovery(baseUrl: string): () => void {
 export async function recoverFromRuntimeError(_error: unknown, baseUrl: string): Promise<void> {
   await navigateWithFreshRuntime(baseUrl, "manual");
 }
-

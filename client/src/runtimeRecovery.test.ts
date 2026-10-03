@@ -46,4 +46,3 @@ describe("runtimeRecovery", () => {
     expect(freshUrl.hash).toBe("#projetos");
   });
 });
-

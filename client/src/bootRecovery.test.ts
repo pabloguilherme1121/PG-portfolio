@@ -48,4 +48,3 @@ describe("pre-React recovery", () => {
     expect(await boot(href, false, values).rescue("window-error")).toBe(false);
   });
 });
-
