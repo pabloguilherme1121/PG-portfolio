@@ -5,9 +5,12 @@ test.beforeEach(async ({ page }) => {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({ contentType: "text/css", body: "" }));
 });
 
-test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page }) => {
+test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page, isMobile }) => {
   await page.goto("./");
-  await page.locator('[data-arcade-open-control="true"]').click();
+  const opener = page.locator('[data-arcade-open-control="true"]');
+  if (isMobile) await opener.tap();
+  else await opener.click();
+  await expect(opener).toHaveAttribute("aria-expanded", "true");
   const arcade = page.locator('[data-arcade-hub="true"]');
   await expect(arcade).toBeVisible({ timeout: 15_000 });
   const requests: string[] = [];
