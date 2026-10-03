@@ -4,12 +4,11 @@ import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
   applyChessMove,
   chooseChessBotMove,
-  createChessBoard,
+  createInitialChessState,
   getChessLegalMoves,
-  getChessOutcome,
-  isChessInCheck,
-  oppositeChessColor,
-  type ChessBoard,
+  getChessStatus,
+  isChessKingInCheck,
+  type ChessState,
   type ChessColor,
   type ChessDifficulty,
   type ChessMove,
@@ -39,6 +38,7 @@ const labels: Record<ChessDifficulty, string> = {
   normal: "normal",
   hard: "difícil",
   master: "mestre",
+  expert: "especialista",
 };
 const pieceLabels: Record<ChessPieceType, string> = {
   king: "rei",
@@ -75,34 +75,34 @@ export default function PortfolioChess() {
   const [focusedSquare, setFocusedSquare] = useState(52);
   const [mode, setMode] = useState<Mode>("bot"),
     [difficulty, setDifficulty] = useState<ChessDifficulty>("normal");
-  const [board, setBoard] = useState(createChessBoard),
-    [turn, setTurn] = useState<ChessColor>("white"),
-    [selected, setSelected] = useState<number | null>(null);
-  const [history, setHistory] = useState<
-    Array<{ board: ChessBoard; turn: ChessColor }>
-  >([]);
-  const legal = useMemo(() => getChessLegalMoves(board, turn), [board, turn]);
-  const outcome = getChessOutcome(board, turn);
+  const [state, setState] = useState(createInitialChessState);
+  const { board, turn } = state;
+  const [selected, setSelected] = useState<number | null>(null);
+  const [history, setHistory] = useState<ChessState[]>([]);
+  const legal = useMemo(() => getChessLegalMoves(state), [state]);
+  const statusKind = getChessStatus(state).kind;
+  const outcome =
+    statusKind === "checkmate" || statusKind === "stalemate"
+      ? statusKind
+      : null;
   const restart = () => {
-    setBoard(createChessBoard());
-    setTurn("white");
+    setState(createInitialChessState());
     setSelected(null);
     setHistory([]);
   };
   const commit = (move: ChessMove) => {
-    setHistory(current => [...current, { board, turn }]);
-    const next = applyChessMove(board, move);
-    setBoard(next);
+    const next = applyChessMove(state, move);
+    if (!next) return;
+    setHistory(current => [...current, state]);
+    setState(next);
     setSelected(null);
-    setTurn(oppositeChessColor(turn));
   };
   const undo = () => {
     const count = mode === "bot" && turn === "white" ? 2 : 1;
     const index = Math.max(0, history.length - count);
     const previous = history[index];
     if (!previous) return;
-    setBoard(previous.board);
-    setTurn(previous.turn);
+    setState(previous);
     setSelected(null);
     setHistory(history.slice(0, index));
   };
@@ -120,13 +120,13 @@ export default function PortfolioChess() {
     if (mode !== "bot" || turn !== "black" || outcome) return;
     const t = window.setTimeout(
       () => {
-        const m = chooseChessBotMove(board, "black", difficulty);
+        const m = chooseChessBotMove(state, "black", difficulty);
         if (m) commit(m);
       },
       difficulty === "master" ? 520 : 360
     );
     return () => clearTimeout(t);
-  }, [board, difficulty, mode, outcome, turn]);
+  }, [state, difficulty, mode, outcome, turn]);
   const selectedMoves =
     selected === null
       ? []
@@ -140,7 +140,7 @@ export default function PortfolioChess() {
         : "Brancas venceram por xeque-mate."
       : outcome === "stalemate"
         ? "Empate por afogamento."
-        : `${turn === "white" ? (mode === "bot" ? "Sua vez" : "Vez das brancas") : mode === "bot" ? "PG Bot pensando" : "Vez das pretas"}${isChessInCheck(board, turn) ? " · xeque!" : ""}`;
+        : `${turn === "white" ? (mode === "bot" ? "Sua vez" : "Vez das brancas") : mode === "bot" ? "PG Bot pensando" : "Vez das pretas"}${isChessKingInCheck(board, turn) ? " · xeque!" : ""}`;
   const option = (on: boolean) =>
     `min-h-11 rounded-[10px] border px-3 font-mono text-[9px] uppercase tracking-[.08em] ${on ? "border-cyan-300 bg-[#0b2746] text-white" : "border-white/10 text-[#9db5c8]"}`;
   return (
@@ -151,7 +151,11 @@ export default function PortfolioChess() {
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-9 sm:px-8 lg:grid-cols-[.7fr_1.3fr] lg:px-12">
         <div data-arcade-arena className="mx-auto w-full max-w-[620px]">
-          <ArcadeDifficultyNotice game="xadrez" level={difficulty} local={mode === "local"} />
+          <ArcadeDifficultyNotice
+            game="xadrez"
+            level={difficulty}
+            local={mode === "local"}
+          />
           <p
             role="status"
             aria-live="polite"
@@ -258,7 +262,7 @@ export default function PortfolioChess() {
           </h2>
           <p className="mt-4 text-sm leading-6 text-[#a8c4d7]">
             Xadrez rápido com xeque, xeque-mate, promoção automática, 1×1 local
-            e quatro níveis de bot.
+            roque, en passant e cinco níveis de bot.
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <button
@@ -287,24 +291,28 @@ export default function PortfolioChess() {
           </div>
           {mode === "bot" && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {(["easy", "normal", "hard", "master"] as ChessDifficulty[]).map(
-                d => (
-                  <button
-                    key={d}
-                    aria-pressed={difficulty === d}
-                    onClick={() => {
-                      setDifficulty(d);
-                      restart();
-                    }}
-                    className={option(difficulty === d)}
-                  >
-                    {d === "master" && (
-                      <Crown className="mr-1 inline h-3 w-3" />
-                    )}
-                    {labels[d]}
-                  </button>
-                )
-              )}
+              {(
+                [
+                  "easy",
+                  "normal",
+                  "hard",
+                  "master",
+                  "expert",
+                ] as ChessDifficulty[]
+              ).map(d => (
+                <button
+                  key={d}
+                  aria-pressed={difficulty === d}
+                  onClick={() => {
+                    setDifficulty(d);
+                    restart();
+                  }}
+                  className={option(difficulty === d)}
+                >
+                  {d === "master" && <Crown className="mr-1 inline h-3 w-3" />}
+                  {labels[d]}
+                </button>
+              ))}
             </div>
           )}
         </div>

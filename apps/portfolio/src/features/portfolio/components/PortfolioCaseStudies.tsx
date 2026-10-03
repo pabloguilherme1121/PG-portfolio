@@ -15,11 +15,21 @@ export default function PortfolioCaseStudies() {
       <div className="mt-6 grid gap-px sm:mt-8 bg-cyan-100/[0.1] lg:grid-cols-2">
         {caseStudies.map((study) => (
           <article key={study.id} data-case-study="true" className="relative min-w-0 bg-[#071326] p-4 min-[360px]:p-5 sm:p-8">
-            <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]">nota de processo</span></div>
+            <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]" data-case-stage="true">{study.stage}</span></div>
             <h4 className="mt-5 font-display text-[1.65rem] leading-tight sm:mt-7 sm:text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
             <dl className="mt-5 grid gap-4 font-body sm:mt-6 sm:gap-5 text-sm leading-7 text-[#bcd9e7]">
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">contexto</dt><dd className="mt-1">{study.context}</dd></div>
-              <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">como resolvi</dt><dd className="mt-1">{study.method}</dd></div>
+              {([
+                ["problema", study.problem],
+                ["objetivo", study.objective],
+                ["decisões", study.decisions],
+                ["resultado", study.result],
+              ] as const).map(([label, text]) => (
+                <div key={label} data-case-detail={label}>
+                  <dt className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8fa8c7]">{label}</dt>
+                  <dd className="mt-1">{text}</dd>
+                </div>
+              ))}
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">o que aprendi</dt><dd className="mt-1 text-[#d9f4ff]">{study.learning}</dd></div>
             </dl>
             <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">{study.tags.map((tag) => <span key={tag} className="border border-cyan-100/[0.16] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5dff4]">{tag}</span>)}</div>
@@ -40,7 +50,7 @@ export default function PortfolioCaseStudies() {
                     >
                       <span className="min-w-0">
                         <span className="block font-mono text-[9px] font-semibold uppercase tracking-[0.11em] text-[#e3fbff]">{proof.label}</span>
-                        <span className="mt-1 block font-body text-xs leading-5 text-[#8fb6c9]">{proof.description}</span>
+                        <span className="mt-1 block font-body text-sm leading-6 text-[#8fb6c9]">{proof.description}</span>
                       </span>
                       <Icon className="h-4 w-4 shrink-0 text-[#67e8f9] transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
                     </a>

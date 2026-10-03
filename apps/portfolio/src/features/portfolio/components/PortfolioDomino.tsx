@@ -36,6 +36,7 @@ const difficultyLabel: Record<DominoDifficulty, string> = {
   normal: "normal",
   hard: "difícil",
   master: "mestre",
+  expert: "especialista",
 };
 
 const targetLabel: Record<MatchTarget, string> = {
@@ -562,7 +563,7 @@ export default function PortfolioDomino() {
             Conecte as cores.
           </h2>
           <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">
-            Partida rápida ou clássica, regras de compra ou bloqueio, quatro
+            Partida rápida ou clássica, regras de compra ou bloqueio, cinco
             níveis do PG Bot, séries MD3/MD5 e 1 × 1 local com troca de mão
             protegida.
           </p>
@@ -673,7 +674,7 @@ export default function PortfolioDomino() {
                       dificuldade
                     </p>
                     <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
-                      {(["easy", "normal", "hard", "master"] as const).map(
+                      {(["easy", "normal", "hard", "master", "expert"] as const).map(
                         value => (
                           <button
                             key={value}
