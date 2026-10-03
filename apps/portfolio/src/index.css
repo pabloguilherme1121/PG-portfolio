@@ -2016,3 +2016,10 @@ html.theme-transitioning .arquivo-page * {
 .arquivo-page[data-theme="light"] #observatorio [class*="text-[#9fc4e8]"] {
   color: #46627f !important;
 }
+.arquivo-page[data-theme="light"] #inicio,
+.arquivo-page[data-theme="light"] .hero-portrait-card {
+  background-color: #f4f8fc !important;
+}
+.arquivo-page[data-theme="light"] #inicio .hero-shade {
+  display: none;
+}

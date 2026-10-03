@@ -9,6 +9,10 @@ for (const theme of ["dark", "light"]) {
     await page.goto("/");
     await expect(page.locator("#inicio h1")).toBeVisible();
     await page.locator("#observatorio").waitFor();
+    if (theme === "light") {
+      await expect(page.locator("#inicio")).toHaveCSS("background-color", "rgb(244, 248, 252)");
+      for (const shade of await page.locator("#inicio .hero-shade").all()) await expect(shade).toBeHidden();
+    }
     const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze();
     expect(result.violations).toEqual([]);
   });
