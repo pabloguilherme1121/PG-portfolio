@@ -30,4 +30,7 @@ test("menu troca objetivo mesmo quando o armazenamento é bloqueado", async ({ p
   await menu.getByRole("button", { name: "Explorar", exact: true }).click();
   await expect(menu.getByRole("button", { name: "Explorar", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(menu.locator('[data-mobile-menu-primary="true"]')).toHaveAttribute("href", "#projetos");
+  await page.keyboard.press("Escape");
+  await page.locator('[data-experience-hub-anchor="true"]').scrollIntoViewIfNeeded();
+  await expect(page.locator('[data-experience-panel="explorer"]')).toBeVisible();
 });

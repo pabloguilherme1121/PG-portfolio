@@ -657,7 +657,7 @@ export default function Home() {
                 </section>
               }
             >
-              <PortfolioExperienceHub />
+              <PortfolioExperienceHub route={mobileExperienceRoute} />
             </Suspense>
           ) : (
             <section data-experience-hub-placeholder="true" className="experience-hub-surface archive-chapter min-h-[420px] border-y border-white/[0.08] bg-[#050d18] px-5 py-10 sm:min-h-[480px] sm:px-8 sm:py-12 lg:px-12" aria-label="Rotas do portfólio">

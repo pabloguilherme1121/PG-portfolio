@@ -48,13 +48,17 @@ const experienceRoutes = [
 
 type ExperienceRouteId = (typeof experienceRoutes)[number]["id"];
 
-export default function PortfolioExperienceHub() {
+export default function PortfolioExperienceHub({ route }: { route?: MobileExperienceRoute }) {
   const [activeRoute, setActiveRoute] = useState<ExperienceRouteId>(
-    () => readStoredExperienceRoute(getSafeStorage("session")) as ExperienceRouteId,
+    () => route ?? readStoredExperienceRoute(getSafeStorage("session")),
   );
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
   const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
   const SelectedIcon = selected.Icon;
+
+  useEffect(() => {
+    if (route) setActiveRoute(route);
+  }, [route]);
 
   useEffect(() => {
     const update = (event: Event) => {
