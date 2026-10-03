@@ -159,7 +159,9 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const portrait = page.locator(".hero-portrait-card img");
-    await expect(portrait).toHaveAttribute("src", /portfolio-media\/pablo-profile-2026\.webp$/);
+    await expect(portrait).toBeVisible();
+    await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).currentSrc)).toMatch(/portfolio-media\/pablo-profile-2026\.(avif|webp)$/);
+    await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(1);
 
     for (const asset of [
       "/portfolio-media/pablo-profile-2026.avif",
