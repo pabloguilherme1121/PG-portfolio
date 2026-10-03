@@ -1,5 +1,6 @@
 import { Bot, Crown, RotateCcw, Swords, Undo2, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
   applyChessMove,
   chooseChessBotMove,
@@ -150,6 +151,7 @@ export default function PortfolioChess() {
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-9 sm:px-8 lg:grid-cols-[.7fr_1.3fr] lg:px-12">
         <div data-arcade-arena className="mx-auto w-full max-w-[620px]">
+          <ArcadeDifficultyNotice game="xadrez" level={difficulty} local={mode === "local"} />
           <p
             role="status"
             aria-live="polite"

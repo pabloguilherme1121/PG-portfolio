@@ -1,5 +1,6 @@
 import { Bot, Crown, RotateCcw, Sparkles, Swords, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import {
   applyCheckersMove,
   chooseCheckersBotMove,
@@ -185,6 +186,7 @@ export default function PortfolioCheckers() {
     <section data-checkers-game="true" aria-labelledby="checkers-title" className="border-y border-white/[0.07] bg-[#06111e]">
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-9 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-12 lg:py-14">
         <div data-arcade-arena className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5">
+          <ArcadeDifficultyNotice game="damas" level={difficulty} local={mode === "local"} />
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p data-checkers-status="true" role="status" aria-live="polite" className="font-mono text-[9px] uppercase tracking-[0.09em] text-[#d9fbff]">{status}</p>
             <span className="font-mono text-[8px] uppercase tracking-[0.08em] text-[#7191a8]">rodada {round} · meta {matchTarget} · {legalMoves.some((move) => move.capture !== undefined) ? "captura obrigatória" : "movimento diagonal"}</span>
@@ -201,6 +203,7 @@ export default function PortfolioCheckers() {
                   key={index}
                   type="button"
                   role="gridcell"
+                  aria-selected={active}
                   data-checkers-cell="true"
                   data-legal-destination={legalDestination ? "true" : "false"}
                   aria-label={piece ? `${piece.player === "blue" ? "Peça azul" : "Peça vermelha"}${piece.king ? " dama" : ""}, linha ${row + 1}, coluna ${col + 1}` : `Casa vazia, linha ${row + 1}, coluna ${col + 1}`}

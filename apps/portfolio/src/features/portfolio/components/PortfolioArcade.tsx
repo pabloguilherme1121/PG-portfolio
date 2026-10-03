@@ -135,7 +135,7 @@ export default function PortfolioArcade() {
   };
 
   return (
-    <div data-arcade-hub="true" data-arcade-focus={focusMode} className="arcade-hub relative isolate overflow-hidden bg-[#030b16]">
+    <div data-arcade-hub="true" data-arcade-game={game} data-arcade-focus={focusMode} className="arcade-hub relative isolate overflow-hidden bg-[#030b16]">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.14),transparent_62%)]" />
       <div className="mx-auto max-w-[1180px] px-4 pt-4 sm:px-8 lg:px-12">
         <div className="overflow-hidden rounded-[22px] border border-[#67e8f9]/20 bg-[linear-gradient(145deg,rgba(8,32,59,0.96),rgba(4,18,37,0.92))] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-5">

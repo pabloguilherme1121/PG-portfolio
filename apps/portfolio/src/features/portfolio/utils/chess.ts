@@ -89,23 +89,32 @@ const values:Record<ChessPieceType,number>={pawn:1,knight:3,bishop:3.2,rook:5,qu
 function evaluate(board:ChessBoard,root:ChessColor){
   return board.reduce((s,p)=>!p?s:s+(p.color===root?1:-1)*values[p.type],0);
 }
-function minimax(board:ChessBoard,turn:ChessColor,root:ChessColor,depth:number):number{
+function minimax(board:ChessBoard,turn:ChessColor,root:ChessColor,depth:number,alpha=-Infinity,beta=Infinity):number{
   const outcome=getChessOutcome(board,turn);
   if(outcome==="checkmate") return turn===root?-10000-depth:10000+depth;
   if(outcome==="stalemate") return 0;
   if(depth<=0) return evaluate(board,root);
-  const scores=getChessLegalMoves(board,turn).map(m=>minimax(applyChessMove(board,m),oppositeChessColor(turn),root,depth-1));
-  return turn===root?Math.max(...scores):Math.min(...scores);
+  const maximizing=turn===root;
+  let best=maximizing?-Infinity:Infinity;
+  const moves=getChessLegalMoves(board,turn).sort((a,b)=>(board[b.to]?values[board[b.to]!.type]:0)-(board[a.to]?values[board[a.to]!.type]:0));
+  for(const move of moves){
+    const score=minimax(applyChessMove(board,move),oppositeChessColor(turn),root,depth-1,alpha,beta);
+    best=maximizing?Math.max(best,score):Math.min(best,score);
+    if(maximizing) alpha=Math.max(alpha,best); else beta=Math.min(beta,best);
+    if(beta<=alpha) break;
+  }
+  return best;
 }
 export function chooseChessBotMove(board:ChessBoard,color:ChessColor,difficulty:ChessDifficulty,random:()=>number=Math.random):ChessMove|null{
   const moves=getChessLegalMoves(board,color); if(!moves.length) return null;
   if(difficulty==="easy") return moves[Math.floor(random()*moves.length)]??moves[0];
   const depth=difficulty==="master"?2:difficulty==="hard"?1:0;
   const scored=moves.map(move=>{
-    const captured=board[move.to]; const next=applyChessMove(board,move);
-    const tactical=(captured?values[captured.type]*10:0)+(move.promotion?8:0);
+    const next=applyChessMove(board,move);
     const look=depth?minimax(next,oppositeChessColor(color),color,depth):evaluate(next,color);
-    return {move,score:tactical+look+(difficulty==="normal"?random()*0.5:0)};
+    // Search already includes material gained and lost. A separate capture bonus
+    // would reward a sacrifice even after the reply proves it loses material.
+    return {move,score:look+(difficulty==="normal"?random()*0.5:0)};
   });
   return scored.sort((a,b)=>b.score-a.score)[0].move;
 }

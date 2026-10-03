@@ -13,6 +13,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import {
   chooseTicTacToeBotMoveByDifficulty,
@@ -248,6 +249,7 @@ export default function PortfolioTicTacToe() {
     <section data-tic-tac-toe="true" aria-labelledby="tic-tac-toe-title" className="archive-chapter border-y border-white/[0.07] bg-[#06111e]">
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-10 sm:px-8 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
         <div data-arcade-arena className="mx-auto w-full max-w-[540px] rounded-[16px] border border-[#67e8f9]/20 bg-[#071827]/80 p-3.5 min-[360px]:p-4 sm:p-6">
+          <ArcadeDifficultyNotice game="velha" level={difficulty} local={mode === "local"} />
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena · {selectedPreset === "survival" ? "sobrevivência" : selectedPreset === "competitive" ? "competitiva" : selectedPreset === "local" ? "dupla" : "rápida"}</p>

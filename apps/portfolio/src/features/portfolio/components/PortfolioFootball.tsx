@@ -3,6 +3,7 @@ import { useReducedMotion } from "framer-motion";
 import { RotateCcw, Target, ArrowUpRight, Check, X } from "lucide-react";
 import { chooseFootballKeeperPosition, resolveFootballShot, type FootballDifficulty, type FootballMode } from "../utils/football";
 import "./PortfolioFootball.css";
+import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 const button =
   "min-h-11 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-50";
 type Shot = ReturnType<typeof resolveFootballShot>;
@@ -112,7 +113,7 @@ export default function PortfolioFootball() {
             {(["easy","normal","hard","master"] as FootballDifficulty[]).map(level => (
               <button key={level} type="button" aria-pressed={difficulty===level}
                 onClick={() => { setDifficulty(level); reset(); }}
-                className={`${button} !min-h-9 border px-2 text-xs ${difficulty===level ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/10 text-[#9fb7c9]"}`}>
+                className={`${button} border px-2 text-xs ${difficulty===level ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/10 text-[#9fb7c9]"}`}>
                 {{easy:"Fácil",normal:"Normal",hard:"Difícil",master:"Mestre"}[level]}
               </button>
             ))}
@@ -121,6 +122,7 @@ export default function PortfolioFootball() {
         </div>
         <div className="mt-4 grid gap-4 lg:grid-cols-[1.5fr_1fr] lg:gap-6">
           <div className="min-w-0">
+            <ArcadeDifficultyNotice game="futebol" level={difficulty} />
             <div className="mb-2 flex items-center justify-between gap-2 text-sm">
               <p className="font-medium tabular-nums">
                 {goals} gols · {shots.length} / 5 cobranças
