@@ -6,7 +6,7 @@ import "./PortfolioFootball.css";
 import ArcadeDifficultyNotice from "./ArcadeDifficultyNotice";
 const button =
   "min-h-11 rounded-lg px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-50";
-type Shot = ReturnType<typeof resolveFootballShot>;
+type Shot = ReturnType<typeof resolveFootballShot> & { bend: number };
 const feedback = {
   gol: "Gol! Boa colocação.",
   defesa: "Defesa! Tente outro canto.",
@@ -33,6 +33,10 @@ export default function PortfolioFootball() {
   const last = shots.at(-1);
   const goals = shots.filter(shot => shot.result === "gol").length;
   const finished = shots.length === 5;
+  const levels: FootballDifficulty[] = ["easy", "normal", "hard", "master"];
+  const nextLevel = levels[levels.indexOf(difficulty) + 1];
+  const preview = resolveFootballShot(mode, aim, power, curve, 50);
+  const previewY = preview.result === "barreira" ? 185 : preview.result === "fora" ? 20 : 35 + preview.y;
   const reset = () => {
     if (timer.current) clearTimeout(timer.current);
     timer.current = null;
@@ -43,7 +47,7 @@ export default function PortfolioFootball() {
   const shoot = () => {
     if (finished || timer.current) return;
     const position = chooseFootballKeeperPosition(difficulty, aim);
-    const shot = resolveFootballShot(mode, aim, power, curve, position);
+    const shot = { ...resolveFootballShot(mode, aim, power, curve, position), bend: mode === "free-kick" ? curve * 0.7 : 0 };
     setKeeper(position);
     if (reducedMotion) {
       setShots(previous => [...previous, shot]);
@@ -154,7 +158,7 @@ export default function PortfolioFootball() {
                 ))}
               </ol>
             </div>
-            <div className="football-pitch relative overflow-hidden rounded-xl border border-[#4c8879] bg-[#123f36]">
+            <div data-football-result={flight ? "flight" : last?.result ?? "ready"} className="football-pitch relative overflow-hidden rounded-xl border border-[#4c8879] bg-[#123f36]">
               <svg
                 viewBox="0 0 400 280"
                 className="block w-full"
@@ -207,7 +211,7 @@ export default function PortfolioFootball() {
                   opacity=".5"
                 />
                 <g
-                  transform={`translate(${40 + keeper * 3.2},110)`}
+                  style={{ transform: `translate(${40 + keeper * 3.2}px,110px) rotate(${flight ? (keeper >= 50 ? 18 : -18) : 0}deg)` }}
                   className="football-keeper"
                 >
                   <ellipse cy="21" rx="18" ry="4" fill="#041a19" opacity=".4" />
@@ -250,7 +254,8 @@ export default function PortfolioFootball() {
                   </g>
                 )}
                 <path
-                  d={`M200 246 Q${200 + (mode === "free-kick" ? curve * 0.7 : 0)} 150 ${40 + aim * 3.2} 72`}
+                  data-football-preview
+                  d={`M200 250 Q${200 + (mode === "free-kick" ? curve * 0.7 : 0)} 140 ${Math.max(15, Math.min(385, 40 + preview.x * 3.2))} ${previewY}`}
                   stroke="#f6d383"
                   strokeWidth="2"
                   strokeDasharray="4 6"
@@ -267,7 +272,7 @@ export default function PortfolioFootball() {
                     <animateMotion
                       dur=".6s"
                       fill="freeze"
-                      path={`M200 250 Q${200 + (mode === "free-kick" ? curve * 0.7 : 0)} 140 ${ballX} ${ballY}`}
+                      path={`M200 250 Q${200 + flight.bend} 140 ${ballX} ${ballY}`}
                       calcMode="spline"
                       keyTimes="0;1"
                       keySplines=".16 1 .3 1"
@@ -289,9 +294,11 @@ export default function PortfolioFootball() {
                 aria-valuemax={100}
                 aria-valuenow={aim}
                 aria-valuetext={`${aim}% da esquerda para a direita`}
+                aria-disabled={Boolean(flight)}
                 tabIndex={0}
                 className="absolute left-[10%] top-[12.5%] h-[35.7%] w-[80%] cursor-crosshair touch-none rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-yellow-200"
                 onPointerDown={event => {
+                  if (flight) return;
                   event.currentTarget.setPointerCapture(event.pointerId);
                   const box = event.currentTarget.getBoundingClientRect();
                   setAim(
@@ -307,6 +314,7 @@ export default function PortfolioFootball() {
                   );
                 }}
                 onPointerMove={event => {
+                  if (flight) return;
                   if (!event.currentTarget.hasPointerCapture(event.pointerId))
                     return;
                   const box = event.currentTarget.getBoundingClientRect();
@@ -323,6 +331,7 @@ export default function PortfolioFootball() {
                   );
                 }}
                 onKeyDown={event => {
+                  if (flight) return;
                   if (
                     [
                       "ArrowLeft",
@@ -376,6 +385,11 @@ export default function PortfolioFootball() {
             </p>
           </div>
           <div className="min-w-0 lg:border-l lg:border-white/10 lg:pl-6">
+            <div className="mb-3 grid grid-cols-3 gap-2" aria-label="Escolher canto rápido">
+              {([[20, "Canto esquerdo"], [50, "Centro"], [80, "Canto direito"]] as const).map(([value, label]) => (
+                <button key={value} type="button" disabled={Boolean(flight)} aria-pressed={aim === value} onClick={() => setAim(value)} className={`${button} border text-xs ${aim === value ? "border-emerald-300 bg-emerald-300/10 text-emerald-100" : "border-white/15 text-[#b8cce0]"}`}>{label}</button>
+              ))}
+            </div>
             <label className="block text-sm font-medium">
               Mira{" "}
               <span className="float-right tabular-nums text-[#b8cce0]">
@@ -388,6 +402,7 @@ export default function PortfolioFootball() {
                 min="0"
                 max="100"
                 value={aim}
+                disabled={Boolean(flight)}
                 onChange={event => setAim(Number(event.target.value))}
               />
             </label>
@@ -406,6 +421,7 @@ export default function PortfolioFootball() {
                   min="0"
                   max="100"
                   value={power}
+                  disabled={Boolean(flight)}
                   onChange={event => setPower(Number(event.target.value))}
                 />
               </label>
@@ -422,11 +438,19 @@ export default function PortfolioFootball() {
                     min="-100"
                     max="100"
                     value={curve}
+                    disabled={Boolean(flight)}
                     onChange={event => setCurve(Number(event.target.value))}
                   />
                 </label>
               )}
             </div>
+            {finished && <div data-football-series-review className="football-series-review mt-4 rounded-xl border border-emerald-300/30 bg-emerald-300/5 p-4">
+              <h3 className="text-base font-semibold text-emerald-100">Série concluída</h3>
+              <p className="mt-2 text-sm text-white">{Math.round(goals / 5 * 100)}% de aproveitamento · {goals} gols</p>
+              <p className="mt-2 text-sm leading-6 text-[#b8cce0]">{shots.filter(s => s.result === "defesa").length} defesas · {shots.filter(s => s.result === "fora").length} para fora · {shots.filter(s => s.result === "barreira").length} na barreira</p>
+              <p className="mt-2 text-sm leading-6 text-[#d2e9df]">{goals >= 4 ? "Boa precisão. Experimente um goleiro mais atento." : goals >= 2 ? "Boa base. Varie os cantos para melhorar a colocação." : "Treine a mira e mantenha a força entre 58 e 90. Nas faltas, experimente a curva."}</p>
+              {nextLevel && <button type="button" onClick={() => { setDifficulty(nextLevel); reset(); }} className={`${button} mt-3 border border-emerald-300/40 text-emerald-100`}>Próximo nível</button>}
+            </div>}
             <div className="mt-2 flex gap-2">
               <button
                 type="button"
