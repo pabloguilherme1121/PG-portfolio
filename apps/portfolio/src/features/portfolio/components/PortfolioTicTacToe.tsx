@@ -247,7 +247,38 @@ export default function PortfolioTicTacToe() {
   return (
     <section data-tic-tac-toe="true" aria-labelledby="tic-tac-toe-title" className="archive-chapter border-y border-white/[0.07] bg-[#06111e]">
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-10 sm:px-8 sm:py-18 lg:grid-cols-[0.78fr_1.22fr] lg:items-start lg:px-12 lg:py-20">
-        <div>
+        <div data-arcade-arena className="mx-auto w-full max-w-[540px] rounded-[16px] border border-[#67e8f9]/20 bg-[#071827]/80 p-3.5 min-[360px]:p-4 sm:p-6">
+          <div className="mb-4 flex items-start justify-between gap-4">
+            <div>
+              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena · {selectedPreset === "survival" ? "sobrevivência" : selectedPreset === "competitive" ? "competitiva" : selectedPreset === "local" ? "dupla" : "rápida"}</p>
+              <p data-game-status="true" role="status" aria-live="polite" className="mt-1 font-body text-sm text-[#d5edf7]">{status}</p>
+            </div>
+            <Swords className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Tabuleiro do jogo da velha">
+            {board.map((cell, index) => {
+              const row = Math.floor(index / 3) + 1;
+              const column = (index % 3) + 1;
+              const won = winningLine?.includes(index) ?? false;
+              const hinted = hintIndex === index && !cell;
+              return (
+                <button key={index} type="button" data-game-cell="true" data-winning-cell={won ? "true" : undefined} data-hint-cell={hinted ? "true" : undefined} disabled={Boolean(cell) || Boolean(result) || Boolean(matchWinner)} onClick={() => play(index)} aria-label={`Linha ${row}, coluna ${column}: ${cell ?? "vazio"}${hinted ? ", dica sugerida" : ""}`} className={`aspect-square min-h-16 rounded-[12px] border font-display text-[clamp(2rem,8vw,4.5rem)] font-medium transition-[border-color,background-color,transform,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-default motion-reduce:transition-none ${won ? "border-[#67e8f9] bg-[#0d3850] shadow-[inset_0_0_28px_rgba(103,232,249,0.12)]" : hinted ? "border-[#f4d67a] bg-[#3a3318]/60 shadow-[inset_0_0_24px_rgba(244,214,122,0.12)]" : "border-white/10 bg-[#08111d] hover:-translate-y-0.5 hover:border-[#67e8f9]/60 hover:bg-[#0a2034] disabled:hover:translate-y-0"}`}>
+                  <span className={cell === playerMark ? "text-[#67e8f9]" : "text-white"}>{cell ?? ""}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {mode === "bot" && !result && !matchWinner && (
+              <button data-arcade-hint="true" type="button" onClick={showHint} className={optionClass(false)}><Lightbulb className="mr-2 h-3.5 w-3.5" aria-hidden="true" />dica estratégica</button>
+            )}
+            {result && !matchWinner && <button type="button" onClick={nextRound} className={optionClass(true)}><Sparkles className="mr-2 h-3.5 w-3.5" aria-hidden="true" />próxima rodada</button>}
+            <button type="button" onClick={restartMatch} className={optionClass(false)} aria-label="Reiniciar partida"><RotateCcw className="mr-2 h-3.5 w-3.5" aria-hidden="true" />reiniciar</button>
+          </div>
+        </div>
+        <div data-arcade-settings>
           <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">PG Lab · arcade experimental</p>
           <h2 id="tic-tac-toe-title" className="mt-3 font-display text-[clamp(2.35rem,11vw,4.6rem)] font-medium leading-[0.92] tracking-[-0.055em] text-white">
             Jogo da velha.
@@ -355,37 +386,6 @@ export default function PortfolioTicTacToe() {
           <p className="mt-3 font-mono text-[8px] uppercase tracking-[0.1em] text-[#7191a8]">rodada {round} · primeiro a {winsNeeded} vitória{winsNeeded > 1 ? "s" : ""}</p>
         </div>
 
-        <div className="mx-auto w-full max-w-[540px] rounded-[16px] border border-[#67e8f9]/20 bg-[#071827]/80 p-3.5 min-[360px]:p-4 sm:p-6">
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div>
-              <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">arena · {selectedPreset === "survival" ? "sobrevivência" : selectedPreset === "competitive" ? "competitiva" : selectedPreset === "local" ? "dupla" : "rápida"}</p>
-              <p data-game-status="true" role="status" aria-live="polite" className="mt-1 font-body text-sm text-[#d5edf7]">{status}</p>
-            </div>
-            <Swords className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
-          </div>
-
-          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Tabuleiro do jogo da velha">
-            {board.map((cell, index) => {
-              const row = Math.floor(index / 3) + 1;
-              const column = (index % 3) + 1;
-              const won = winningLine?.includes(index) ?? false;
-              const hinted = hintIndex === index && !cell;
-              return (
-                <button key={index} type="button" data-game-cell="true" data-winning-cell={won ? "true" : undefined} data-hint-cell={hinted ? "true" : undefined} disabled={Boolean(cell) || Boolean(result) || Boolean(matchWinner)} onClick={() => play(index)} aria-label={`Linha ${row}, coluna ${column}: ${cell ?? "vazio"}${hinted ? ", dica sugerida" : ""}`} className={`aspect-square min-h-16 rounded-[12px] border font-display text-[clamp(2rem,8vw,4.5rem)] font-medium transition-[border-color,background-color,transform,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-default motion-reduce:transition-none ${won ? "border-[#67e8f9] bg-[#0d3850] shadow-[inset_0_0_28px_rgba(103,232,249,0.12)]" : hinted ? "border-[#f4d67a] bg-[#3a3318]/60 shadow-[inset_0_0_24px_rgba(244,214,122,0.12)]" : "border-white/10 bg-[#08111d] hover:-translate-y-0.5 hover:border-[#67e8f9]/60 hover:bg-[#0a2034] disabled:hover:translate-y-0"}`}>
-                  <span className={cell === playerMark ? "text-[#67e8f9]" : "text-white"}>{cell ?? ""}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {mode === "bot" && !result && !matchWinner && (
-              <button data-arcade-hint="true" type="button" onClick={showHint} className={optionClass(false)}><Lightbulb className="mr-2 h-3.5 w-3.5" aria-hidden="true" />dica estratégica</button>
-            )}
-            {result && !matchWinner && <button type="button" onClick={nextRound} className={optionClass(true)}><Sparkles className="mr-2 h-3.5 w-3.5" aria-hidden="true" />próxima rodada</button>}
-            <button type="button" onClick={restartMatch} className={optionClass(false)} aria-label="Reiniciar partida"><RotateCcw className="mr-2 h-3.5 w-3.5" aria-hidden="true" />reiniciar</button>
-          </div>
-        </div>
       </div>
     </section>
   );

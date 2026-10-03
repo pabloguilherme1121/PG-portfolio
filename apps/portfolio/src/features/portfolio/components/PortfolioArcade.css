@@ -14,3 +14,25 @@
 .arcade-hub[data-arcade-focus="true"] [role="tab"] > span:nth-child(2) {
   margin-top: 0;
 }
+
+@media (max-width: 1023px) {
+  .arcade-hub [data-arcade-arena] {
+    grid-row: 1;
+  }
+
+  .arcade-hub [data-arcade-settings] {
+    grid-row: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .arcade-hub [data-arcade-settings] {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .arcade-hub [data-arcade-arena] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+}

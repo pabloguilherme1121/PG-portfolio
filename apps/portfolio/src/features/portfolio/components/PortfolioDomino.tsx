@@ -341,207 +341,7 @@ export default function PortfolioDomino() {
       className="border-y border-white/[0.07] bg-[#06111e]"
     >
       <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-5 sm:px-8 lg:grid-cols-[0.76fr_1.24fr] lg:px-12 lg:py-14">
-        <div>
-          <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">
-            PG Arcade · dominó
-          </p>
-          <h2
-            id="domino-title"
-            className="mt-3 font-display text-[clamp(2rem,8vw,3.5rem)] font-medium leading-[0.92] tracking-[-0.04em] text-white"
-          >
-            Dominó.
-            <br />
-            Conecte as cores.
-          </h2>
-          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">
-            Partida rápida ou clássica, regras de compra ou bloqueio, quatro
-            níveis do PG Bot, séries MD3/MD5 e 1 × 1 local com troca de mão
-            protegida.
-          </p>
-
-          <div className="mt-6 space-y-4">
-            <div>
-              <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
-                modo
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  data-domino-mode="bot"
-                  type="button"
-                  aria-pressed={mode === "bot"}
-                  onClick={() => {
-                    setMode("bot");
-                    restartRound(true);
-                  }}
-                  className={optionClass(mode === "bot")}
-                >
-                  <Bot className="mr-2 h-4 w-4" />
-                  contra bot
-                </button>
-                <button
-                  data-domino-mode="local"
-                  type="button"
-                  aria-pressed={mode === "local"}
-                  onClick={() => {
-                    setMode("local");
-                    restartRound(true);
-                  }}
-                  className={optionClass(mode === "local")}
-                >
-                  <UsersRound className="mr-2 h-4 w-4" />1 × 1 local
-                </button>
-              </div>
-            </div>
-
-            <details
-              data-domino-settings
-              className="rounded-xl border border-white/10 p-3"
-            >
-              <summary className="min-h-11 cursor-pointer py-3 text-sm text-[#d8e7f0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
-                Ajustar regras, dificuldade e série
-              </summary>
-              <div className="space-y-4 pt-3">
-                <div>
-                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
-                    partida
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      type="button"
-                      aria-pressed={variant === "quick"}
-                      onClick={() => setVariant("quick")}
-                      className={optionClass(variant === "quick")}
-                    >
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      rápida · 5 pedras
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={variant === "classic"}
-                      onClick={() => setVariant("classic")}
-                      className={optionClass(variant === "classic")}
-                    >
-                      <Swords className="mr-2 h-4 w-4" />
-                      clássica · 7 pedras
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
-                    regra
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <button
-                      data-domino-rules="draw"
-                      type="button"
-                      aria-pressed={rules === "draw"}
-                      onClick={() => {
-                        setRules("draw");
-                        restartRound(true);
-                      }}
-                      className={optionClass(rules === "draw")}
-                    >
-                      comprar até jogar
-                    </button>
-                    <button
-                      data-domino-rules="block"
-                      type="button"
-                      aria-pressed={rules === "block"}
-                      onClick={() => {
-                        setRules("block");
-                        restartRound(true);
-                      }}
-                      className={optionClass(rules === "block")}
-                    >
-                      bloqueio sem compra
-                    </button>
-                  </div>
-                </div>
-
-                {mode === "bot" && (
-                  <div>
-                    <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
-                      dificuldade
-                    </p>
-                    <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
-                      {(["easy", "normal", "hard", "master"] as const).map(
-                        value => (
-                          <button
-                            key={value}
-                            type="button"
-                            aria-pressed={difficulty === value}
-                            onClick={() => {
-                              setDifficulty(value);
-                              restartRound(true);
-                            }}
-                            className={optionClass(difficulty === value)}
-                          >
-                            {difficultyLabel[value]}
-                          </button>
-                        )
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
-                    série
-                  </p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {([1, 2, 3] as MatchTarget[]).map(target => (
-                      <button
-                        key={target}
-                        data-domino-series={targetLabel[target]}
-                        type="button"
-                        aria-pressed={matchTarget === target}
-                        onClick={() => {
-                          setMatchTarget(target);
-                          restartRound(true);
-                        }}
-                        className={optionClass(matchTarget === target)}
-                      >
-                        {targetLabel[target]}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </details>
-          </div>
-          <div
-            data-domino-score="true"
-            className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-[12px] bg-white/10"
-          >
-            <div className="bg-[#071827] p-3 text-center">
-              <p className="font-body text-[11px] uppercase text-[#7191a8]">
-                {mode === "bot" ? "você" : "jogador 1"}
-              </p>
-              <p className="mt-1 font-display text-2xl text-[#67e8f9]">
-                {score.player}
-              </p>
-            </div>
-            <div className="bg-[#071827] p-3 text-center">
-              <p className="font-body text-[11px] uppercase text-[#7191a8]">
-                {mode === "bot" ? "bot" : "jogador 2"}
-              </p>
-              <p className="mt-1 font-display text-2xl text-white">
-                {score.opponent}
-              </p>
-            </div>
-            <div className="bg-[#071827] p-3 text-center">
-              <p className="font-body text-[11px] uppercase text-[#7191a8]">
-                empates
-              </p>
-              <p className="mt-1 font-display text-2xl text-[#b8cce0]">
-                {score.draws}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5">
+        <div data-arcade-arena className="min-w-0 rounded-[18px] border border-white/10 bg-[#071827]/85 p-4 sm:p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p
               data-domino-status="true"
@@ -747,6 +547,206 @@ export default function PortfolioDomino() {
             )}
           </div>
         </div>
+        <div data-arcade-settings>
+          <p className="font-body text-xs font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">
+            PG Arcade · dominó
+          </p>
+          <h2
+            id="domino-title"
+            className="mt-3 font-display text-[clamp(2rem,8vw,3.5rem)] font-medium leading-[0.92] tracking-[-0.04em] text-white"
+          >
+            Dominó.
+            <br />
+            Conecte as cores.
+          </h2>
+          <p className="mt-4 max-w-xl font-body text-sm leading-6 text-[#a8c4d7]">
+            Partida rápida ou clássica, regras de compra ou bloqueio, quatro
+            níveis do PG Bot, séries MD3/MD5 e 1 × 1 local com troca de mão
+            protegida.
+          </p>
+
+          <div className="mt-6 space-y-4">
+            <div>
+              <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
+                modo
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  data-domino-mode="bot"
+                  type="button"
+                  aria-pressed={mode === "bot"}
+                  onClick={() => {
+                    setMode("bot");
+                    restartRound(true);
+                  }}
+                  className={optionClass(mode === "bot")}
+                >
+                  <Bot className="mr-2 h-4 w-4" />
+                  contra bot
+                </button>
+                <button
+                  data-domino-mode="local"
+                  type="button"
+                  aria-pressed={mode === "local"}
+                  onClick={() => {
+                    setMode("local");
+                    restartRound(true);
+                  }}
+                  className={optionClass(mode === "local")}
+                >
+                  <UsersRound className="mr-2 h-4 w-4" />1 × 1 local
+                </button>
+              </div>
+            </div>
+
+            <details
+              data-domino-settings
+              className="rounded-xl border border-white/10 p-3"
+            >
+              <summary className="min-h-11 cursor-pointer py-3 text-sm text-[#d8e7f0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
+                Ajustar regras, dificuldade e série
+              </summary>
+              <div className="space-y-4 pt-3">
+                <div>
+                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
+                    partida
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      aria-pressed={variant === "quick"}
+                      onClick={() => setVariant("quick")}
+                      className={optionClass(variant === "quick")}
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      rápida · 5 pedras
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={variant === "classic"}
+                      onClick={() => setVariant("classic")}
+                      className={optionClass(variant === "classic")}
+                    >
+                      <Swords className="mr-2 h-4 w-4" />
+                      clássica · 7 pedras
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
+                    regra
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      data-domino-rules="draw"
+                      type="button"
+                      aria-pressed={rules === "draw"}
+                      onClick={() => {
+                        setRules("draw");
+                        restartRound(true);
+                      }}
+                      className={optionClass(rules === "draw")}
+                    >
+                      comprar até jogar
+                    </button>
+                    <button
+                      data-domino-rules="block"
+                      type="button"
+                      aria-pressed={rules === "block"}
+                      onClick={() => {
+                        setRules("block");
+                        restartRound(true);
+                      }}
+                      className={optionClass(rules === "block")}
+                    >
+                      bloqueio sem compra
+                    </button>
+                  </div>
+                </div>
+
+                {mode === "bot" && (
+                  <div>
+                    <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
+                      dificuldade
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 min-[430px]:grid-cols-4">
+                      {(["easy", "normal", "hard", "master"] as const).map(
+                        value => (
+                          <button
+                            key={value}
+                            type="button"
+                            aria-pressed={difficulty === value}
+                            onClick={() => {
+                              setDifficulty(value);
+                              restartRound(true);
+                            }}
+                            className={optionClass(difficulty === value)}
+                          >
+                            {difficultyLabel[value]}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <p className="mb-2 font-body text-xs uppercase tracking-[0.12em] text-[#7191a8]">
+                    série
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([1, 2, 3] as MatchTarget[]).map(target => (
+                      <button
+                        key={target}
+                        data-domino-series={targetLabel[target]}
+                        type="button"
+                        aria-pressed={matchTarget === target}
+                        onClick={() => {
+                          setMatchTarget(target);
+                          restartRound(true);
+                        }}
+                        className={optionClass(matchTarget === target)}
+                      >
+                        {targetLabel[target]}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+          <div
+            data-domino-score="true"
+            className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-[12px] bg-white/10"
+          >
+            <div className="bg-[#071827] p-3 text-center">
+              <p className="font-body text-[11px] uppercase text-[#7191a8]">
+                {mode === "bot" ? "você" : "jogador 1"}
+              </p>
+              <p className="mt-1 font-display text-2xl text-[#67e8f9]">
+                {score.player}
+              </p>
+            </div>
+            <div className="bg-[#071827] p-3 text-center">
+              <p className="font-body text-[11px] uppercase text-[#7191a8]">
+                {mode === "bot" ? "bot" : "jogador 2"}
+              </p>
+              <p className="mt-1 font-display text-2xl text-white">
+                {score.opponent}
+              </p>
+            </div>
+            <div className="bg-[#071827] p-3 text-center">
+              <p className="font-body text-[11px] uppercase text-[#7191a8]">
+                empates
+              </p>
+              <p className="mt-1 font-display text-2xl text-[#b8cce0]">
+                {score.draws}
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );
