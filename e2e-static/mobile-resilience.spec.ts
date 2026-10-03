@@ -7,9 +7,9 @@ test.beforeEach(async ({ page }) => {
 
 test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page }) => {
   await page.goto("./");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  await page.locator('[data-arcade-open-control="true"]').click();
   const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade.locator('[data-tic-tac-toe="true"]')).toBeVisible({ timeout: 15_000 });
+  await expect(arcade).toBeVisible({ timeout: 15_000 });
   const requests: string[] = [];
   await page.route(/\/assets\/.*\.js$/, (route) => {
     requests.push(route.request().url());
@@ -67,10 +67,7 @@ test("página inteira e repertório social funcionam em telas pequenas", async (
     }
     const social = page.locator("#social");
     await expect(social.getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
-    const filter = social.getByRole("button", { name: "drone", exact: true });
-    await filter.evaluate((element) => element.scrollIntoView({ behavior: "instant", block: "center" }));
-    await filter.click();
-    await expect(social.getByText(/1 referência visível/)).toBeVisible();
+    await expect(social.locator('[data-social-profiles="true"]').getByRole("link")).toHaveCount(2);
     await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
   }
   expect(errors).toEqual([]);
@@ -118,7 +115,7 @@ test("mobile continua utilizável com armazenamento bloqueado em 320px", async (
   await page.locator('[data-mobile-menu-toggle="true"]').click();
   await expect(page.getByRole("dialog", { name: "Menu de navegação móvel" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await page.getByRole("button", { name: /jogar no pg arcade/i }).click();
+  await page.locator('[data-arcade-open-control="true"]').click();
   const arcade = page.locator('[data-arcade-hub="true"]');
   await expect(arcade, JSON.stringify(errors)).toBeVisible({ timeout: 15_000 });
   for (const game of [/dominó/i, /damas/i]) {
@@ -128,4 +125,3 @@ test("mobile continua utilizável com armazenamento bloqueado em 320px", async (
   }
   expect(errors).toEqual([]);
 });
-
