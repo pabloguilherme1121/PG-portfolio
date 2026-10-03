@@ -265,7 +265,11 @@ test.describe("portfólio profissional", () => {
       const cta = panel.getByRole("link", { name: /diagnosticar meu projeto/i });
       const ctaBox = await cta.boundingBox();
       expect(ctaBox?.height ?? 0).toBeGreaterThanOrEqual(48);
-      expect(ctaBox?.width ?? 0).toBeGreaterThanOrEqual(width - 64);
+      const availableWidth = await panel.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return element.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      });
+      expect(ctaBox?.width ?? 0).toBeGreaterThanOrEqual(availableWidth - 1);
 
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
     }

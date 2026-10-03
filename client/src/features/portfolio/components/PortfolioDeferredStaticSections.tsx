@@ -4,10 +4,8 @@ import { PortfolioProcess, PortfolioServices, PortfolioSkills } from "@/features
 const staticSectionHashes = new Set(["#trilha", "#qualidade", "#servicos", "#processo"]);
 
 export default function PortfolioDeferredStaticSections({
-  isDesktopViewport,
   markUrl,
 }: {
-  isDesktopViewport: boolean;
   markUrl: string;
 }) {
   useEffect(() => {
@@ -35,7 +33,7 @@ export default function PortfolioDeferredStaticSections({
 
   return (
     <>
-      <PortfolioSkills isDesktopViewport={isDesktopViewport} markUrl={markUrl} />
+      <PortfolioSkills markUrl={markUrl} />
       <PortfolioServices markUrl={markUrl} />
       <PortfolioProcess />
     </>

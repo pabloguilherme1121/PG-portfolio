@@ -8,8 +8,6 @@ type ResponsiveSourceSet = {
 };
 
 type PortfolioDeferredProfileSectionsProps = {
-  resumeAvailable: boolean;
-  resumeUrl: string;
   portraitUrl: string;
   portraitResponsive: ResponsiveSourceSet;
 };
@@ -17,8 +15,6 @@ type PortfolioDeferredProfileSectionsProps = {
 const profileHashes = new Set(["#sobre", "#perfil-profissional"]);
 
 export default function PortfolioDeferredProfileSections({
-  resumeAvailable,
-  resumeUrl,
   portraitUrl,
   portraitResponsive,
 }: PortfolioDeferredProfileSectionsProps) {
@@ -48,8 +44,6 @@ export default function PortfolioDeferredProfileSections({
   return (
     <>
       <PortfolioAbout
-        resumeAvailable={resumeAvailable}
-        resumeUrl={resumeUrl}
         portraitUrl={portraitUrl}
         portraitResponsive={portraitResponsive}
       />

@@ -6,6 +6,20 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:3000";
 test.use({ baseURL });
 
 test.describe("portfólio profissional", () => {
+  test("seção ativa acompanha a posição real dos projetos antes de serviços", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
+    await page.evaluate(() => {
+      const projects = document.getElementById("projetos")!;
+      window.scrollTo({ top: projects.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.22 + 2, behavior: "instant" });
+    });
+    await expect(page.locator('[data-mobile-current-section="true"]')).toHaveText("projetos");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    await expect(page.locator('#mobile-navigation a[href="#projetos"]')).toHaveAttribute("aria-current", "location");
+  });
+
   test("header mobile mostra seção atual e progresso da jornada", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
@@ -300,8 +314,10 @@ test.describe("portfólio profissional", () => {
     const shortcut = page.locator('[data-mobile-shortcut-contextual="true"]');
     await expect(shortcut).toHaveAttribute("href", "#pg-lab");
     await expect(shortcut).toContainText(/PG Arcade/i);
+    const previousHash = await page.evaluate(() => location.hash);
     await shortcut.click();
 
+    expect(await page.evaluate(() => location.hash)).toBe(previousHash);
     await expect(page.locator("#pg-lab")).toBeVisible();
     await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
   });
@@ -325,19 +341,15 @@ test.describe("portfólio profissional", () => {
   });
 
 
-  test("abrir o PDF pelo menu mobile fecha a navegação antes de exibir o modal", async ({ page }) => {
+  test("menu mobile abre currículo web sem depender de PDF ausente", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("pablo-portfolio-experience-route", "recruiter"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
-
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     const menu = page.locator("#mobile-navigation");
-    await expect(menu).toBeVisible();
-
-    const resumeAction = menu.locator('[data-resume-header="true"]');
-    await expect(resumeAction).toBeVisible();
-    await resumeAction.click();
-
-    await expect(page.getByRole("dialog", { name: /portfólio de Pablo Guilherme/i })).toBeVisible();
+    await expect(menu.locator('[data-resume-header="true"]')).toHaveCount(0);
+    await menu.locator('[data-mobile-shortcut-contextual="true"]').click();
+    await expect(page.locator('[data-web-resume="true"]')).toBeVisible();
     await expect(menu).toHaveCount(0);
     await expect(page.locator('[data-mobile-menu-toggle="true"]')).toHaveAttribute("aria-expanded", "false");
   });

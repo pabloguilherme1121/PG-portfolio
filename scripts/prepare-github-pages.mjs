@@ -18,7 +18,6 @@ for (const file of await walk(outputDir)) {
   if (!textExtensions.has(path.extname(file))) continue;
   const source = await readFile(file, "utf8");
   const rewritten = source
-    .replaceAll("/manus-storage/", `${repositoryBase}/manus-storage/`)
     .replaceAll("/attached_assets/", `${repositoryBase}/attached_assets/`);
   if (rewritten !== source) await writeFile(file, rewritten, "utf8");
 }

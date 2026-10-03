@@ -28,6 +28,8 @@ test.describe("reconstrução profissional do portfólio", () => {
   test("home prioriza trabalho verificável sem repetir Proof Deck no Hero", async ({ page }) => {
     await page.goto("/");
 
+    await expect(page.locator("#inicio").getByRole("heading", { level: 1 })).toBeVisible();
+
     await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
 
     const order = await page.evaluate(() => {
@@ -59,8 +61,21 @@ test.describe("reconstrução profissional do portfólio", () => {
     const trustBox = await trustBar.boundingBox();
 
     expect(heroBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(650);
+    await expect(hero.locator(".hero-portrait-card")).toBeHidden();
     expect(trustBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(500);
     await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
+  });
+
+  test("descrições das provas permanecem legíveis em telas estreitas", async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+      const descriptions = page.locator('[data-portfolio-proof="true"] .font-body');
+      await expect(descriptions).toHaveCount(3);
+      const sizes = await descriptions.evaluateAll(nodes => nodes.map(node => parseFloat(getComputedStyle(node).fontSize)));
+      expect(sizes.every(size => size >= 14)).toBe(true);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    }
   });
 
   test("provas verificáveis ficam legíveis no mobile sem exigir gesto horizontal", async ({ page }) => {
