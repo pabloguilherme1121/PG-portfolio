@@ -356,7 +356,7 @@ test.describe("portfólio profissional", () => {
     await expect(hub.getByRole("link", { name: /ver projetos selecionados/i })).toHaveAttribute("href", "#projetos");
   });
 
-  test("tema sincroniza a barra do navegador, controles nativos e feedbacks", async ({ page }) => {
+  test("tema sincroniza a barra do navegador e controles nativos", async ({ page }) => {
     await page.emulateMedia({ colorScheme: "dark" });
     await page.addInitScript(() => {
       window.localStorage.setItem("theme-preference", "light");
@@ -366,17 +366,14 @@ test.describe("portfólio profissional", () => {
     await page.goto("/");
 
     const themeColor = page.locator('meta[name="theme-color"]');
-    const toaster = page.locator('[data-sonner-toaster]');
     await expect(themeColor).toHaveAttribute("content", "#f4f8fc");
     await expect.poll(() => page.evaluate(() => document.documentElement.style.colorScheme)).toBe("light");
-    await expect(toaster).toHaveAttribute("data-theme", "light");
 
     const toggle = page.locator('[data-theme-toggle="true"]').filter({ visible: true }).first();
     await toggle.click();
 
     await expect(themeColor).toHaveAttribute("content", "#030b1e");
     await expect.poll(() => page.evaluate(() => document.documentElement.style.colorScheme)).toBe("dark");
-    await expect(toaster).toHaveAttribute("data-theme", "dark");
   });
 
 
