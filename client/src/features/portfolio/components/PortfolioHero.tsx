@@ -39,7 +39,7 @@ export default function PortfolioHero({
           <h1 className="reveal delay-1 mt-3 max-w-4xl font-display text-[clamp(1.9rem,9vw,3rem)] font-semibold leading-[0.94] tracking-[-0.06em] sm:mt-7 sm:leading-[0.84] sm:tracking-[-0.075em] text-white min-[400px]:text-[clamp(2.85rem,8.8vw,8.8rem)]">
             Desenvolvo produtos digitais que tornam informação complexa simples de usar.
           </h1>
-          <figure className="hero-portrait-card mt-2 flex max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
+          <figure className="hero-portrait-card mt-2 hidden max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 sm:flex lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
               <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
               <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />

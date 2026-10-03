@@ -342,7 +342,7 @@ test.describe("portfólio profissional", () => {
 
 
   test("menu mobile abre currículo web sem depender de PDF ausente", async ({ page }) => {
-    await page.addInitScript(() => localStorage.setItem("pablo-portfolio-experience-route", "recruiter"));
+    await page.addInitScript(() => sessionStorage.setItem("pablo-portfolio-experience-route", "recruiter"));
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.locator('[data-mobile-menu-toggle="true"]').click();
@@ -392,3 +392,4 @@ test.describe("portfólio profissional", () => {
   });
 
 });
+

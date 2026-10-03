@@ -74,7 +74,7 @@ export default function PortfolioTrustBar() {
                 </span>
 
                 <span className="min-w-0">
-                  <span className="flex items-center gap-2 font-mono text-[7px] font-semibold uppercase tracking-[0.12em] text-[#7ea4bd] md:text-[8px]">
+                  <span className="flex items-center gap-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#9fb6d0]">
                     <span>{eyebrow}</span>
                     <span aria-hidden="true">·</span>
                     <span className="text-[#67e8f9]">{status}</span>
@@ -82,7 +82,7 @@ export default function PortfolioTrustBar() {
                   <span className="mt-1 block font-display text-base font-semibold tracking-[-0.03em] text-white md:text-xl">
                     {title}
                   </span>
-                  <span className="mt-1 block font-body text-[11px] leading-4 text-[#9fb6d0] md:text-xs md:leading-5">
+                  <span className="mt-1 block font-body text-sm leading-5 text-[#9fb6d0]">
                     {description}
                   </span>
                 </span>
