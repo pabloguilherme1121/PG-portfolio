@@ -1996,3 +1996,23 @@ html.theme-transitioning .arquivo-page * {
     overflow-wrap: anywhere;
   }
 }
+
+.arquivo-page[data-theme="light"] [data-mobile-current-section] { color: #164e63 !important; }
+.arquivo-page[data-theme="light"] [data-mobile-progress-value] { color: #365875 !important; }
+.arquivo-page[data-theme="light"] [data-portfolio-trust-bar] { background-color: #f4f8fc !important; }
+.arquivo-page[data-theme="light"] [data-portfolio-proof] { background-color: #ffffff !important; }
+.arquivo-page[data-theme="light"] [data-portfolio-proof] > a:hover { background-color: #e4f3ff !important; }
+.arquivo-page[data-theme="light"] [data-portfolio-proof] [class*="text-[#9fb6d0"] {
+  color: #46627f !important;
+}
+.arquivo-page[data-theme="light"] #observatorio {
+  background: #f4f8fc !important;
+}
+.arquivo-page[data-theme="light"] [data-featured-swipe-hint],
+.arquivo-page[data-theme="light"] [aria-labelledby="trabalhos-destaque-title"] [class*="text-[#60a5fa]"],
+.arquivo-page[data-theme="light"] [data-footer-placeholder] p {
+  color: #365875 !important;
+}
+.arquivo-page[data-theme="light"] #observatorio [class*="text-[#9fc4e8]"] {
+  color: #46627f !important;
+}

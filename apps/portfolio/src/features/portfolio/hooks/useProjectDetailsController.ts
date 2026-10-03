@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type TouchEvent } from "react";
 import { getSafeStorage, readStorage, writeStorage } from "@/lib/safeStorage";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildProjectShareUrl } from "@/features/portfolio/utils/shareProject";
+import { copyText } from "@/features/portfolio/utils/clipboardFeedback";
 import { getProjectNavigationModel } from "@/features/portfolio/utils/projectNavigation";
 import type { Repository } from "@/features/portfolio/portfolioData";
 
@@ -125,7 +126,7 @@ export function useProjectDetailsController({
     if (!projectUrl) return;
 
     try {
-      await navigator.clipboard.writeText(projectUrl);
+      if (!await copyText(projectUrl)) throw new Error("Não foi possível copiar o link");
       if (selectedProject) {
         trackPortfolioEvent("share_project", {
           projectId: selectedProject.id,

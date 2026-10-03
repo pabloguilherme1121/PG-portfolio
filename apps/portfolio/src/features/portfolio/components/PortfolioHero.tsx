@@ -41,9 +41,10 @@ export default function PortfolioHero({
           </h1>
           <figure className="hero-portrait-card mt-2 hidden max-w-sm items-center gap-3 border border-[#67e8f9]/20 bg-[#07111f]/82 p-2 sm:flex lg:absolute lg:right-[-8rem] lg:top-0 lg:mt-0 lg:w-56 lg:flex-col lg:items-stretch lg:p-2">
             <picture>
-              <source type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
-              <source type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
-              <img src={portraitUrl} alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-14 w-14 shrink-0 object-cover object-top min-[390px]:h-16 min-[390px]:w-16 lg:h-56 lg:w-full" />
+              <source media="(min-width: 640px)" type="image/avif" srcSet={portraitResponsive.avif} sizes="(min-width: 1024px) 224px, 80px" />
+              <source media="(min-width: 640px)" type="image/webp" srcSet={portraitResponsive.webp} sizes="(min-width: 1024px) 224px, 80px" />
+              <source media="(min-width: 640px)" srcSet={portraitUrl} />
+              <img src="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%271%27%20height=%271%27/%3E" alt="Pablo Guilherme em retrato profissional" width="720" height="900" loading="eager" fetchPriority="high" decoding="async" className="h-14 w-14 shrink-0 object-cover object-top min-[390px]:h-16 min-[390px]:w-16 lg:h-56 lg:w-full" />
             </picture>
             <figcaption className="min-w-0 py-1 lg:px-1 lg:pb-1">
               <span className="block font-mono text-[8px] uppercase tracking-[0.15em] text-[#67e8f9]">perfil profissional</span>

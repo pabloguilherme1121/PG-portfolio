@@ -29,7 +29,7 @@ import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
-import { copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
+import { copyText, copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
 import { useNearViewport } from "@/features/portfolio/hooks/useNearViewport";
@@ -393,7 +393,7 @@ export default function Home() {
     }
 
     try {
-      await navigator.clipboard.writeText(canonicalUrl);
+      if (!await copyText(canonicalUrl)) throw new Error("Não foi possível copiar o link");
       trackPortfolioEvent("share_portfolio", { source: "mobile_menu", channel: "copy_link" });
       setPortfolioShareStatus("copied");
     } catch {

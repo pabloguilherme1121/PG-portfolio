@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 
-const url = process.env.SITE_URL ?? "https://3000-ifdjg8odfpc7tjerrl156-59b127c0.us3.manus.computer";
+const url = process.env.SITE_URL ?? "http://127.0.0.1:3000/";
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
 await context.addInitScript(() => localStorage.setItem("theme-preference", "light"));
