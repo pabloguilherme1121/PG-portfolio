@@ -113,11 +113,11 @@ temp/
 .webdev/
 
 # Manus version file (auto-generated, not part of source)
-client/public/__manus__/version.json
+apps/portfolio/public/__manus__/version.json
 .project-config.json
 
 # Development-only Manus debug collector
-client/public/__manus__/debug-collector.js
+apps/portfolio/public/__manus__/debug-collector.js
 
 # Secrets and private credentials
 *.pem
@@ -130,3 +130,5 @@ credentials.json
 service-account*.json
 
 /test-results/
+
+/apps/api/dist/

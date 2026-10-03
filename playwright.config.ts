@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   reporter: [["list"]],
   webServer: {
-    command: "pnpm exec vite --host 127.0.0.1 --port 3000",
+    command: "node scripts/run-workspace.mjs dev-server --host 127.0.0.1 --port 3000",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

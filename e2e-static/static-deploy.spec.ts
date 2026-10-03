@@ -1,5 +1,15 @@
 import { expect, test } from "@playwright/test";
 
+test("build público exclui rotas administrativas e conserva retorno à home", async ({ page }) => {
+  for (const route of ["agenda", "favoritos", "curadoria"]) {
+    await page.goto(`./${route}`);
+    await expect(page.getByRole("heading", { name: "Esta página ficou fora do arquivo." })).toBeVisible();
+    await page.getByRole("button", { name: "Voltar ao início" }).click();
+    await expect(page.locator("#inicio")).toBeVisible();
+    await expect(page).toHaveURL(/\/PG-portfolio\/$/);
+  }
+});
+
 function collectPageErrors(page: import("@playwright/test").Page) {
   const errors: string[] = [];
   page.on("pageerror", (error) => {

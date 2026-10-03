@@ -111,15 +111,17 @@ pnpm build:static
 node scripts/prepare-github-pages.mjs
 ```
 
+O frontend é estático por padrão. Os comandos de build e desenvolvimento funcionam em Windows e Linux. Para a variante com API, execute `pnpm build:server` e depois `pnpm start`; `pnpm build` gera apenas o site estático. Use `pnpm dev:server` para desenvolver a API. A arquitetura vigente está em [docs/current/architecture.md](docs/current/architecture.md).
+
 Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mantém a confirmação de envio sob controle do visitante.
 
 ## Estrutura
 
 | Diretório | Conteúdo |
 | --- | --- |
-| `client/` | Experiência pública, componentes e mídia |
-| `client/src/features/portfolio/` | Hero, projetos, PG Arcade, Project Lens, cases, briefing e analytics |
-| `server/` e `shared/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
+| `apps/portfolio/` | Experiência pública, componentes e mídia |
+| `apps/portfolio/src/features/portfolio/` | Hero, projetos, PG Arcade, Project Lens, cases, briefing e analytics |
+| `apps/api/` e `packages/contracts/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |
 | `docs/archive/` | Histórico técnico e pesquisas preservadas |

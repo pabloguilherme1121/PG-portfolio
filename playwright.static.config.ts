@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: [["list"]],
   webServer: {
     command:
-      "VITE_DEPLOY_TARGET=github-pages VITE_STATIC_DEPLOY=true pnpm exec vite preview --host 127.0.0.1 --port 4173",
+      "node scripts/run-workspace.mjs preview --host 127.0.0.1 --port 4173",
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
