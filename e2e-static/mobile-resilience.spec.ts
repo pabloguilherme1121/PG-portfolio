@@ -12,8 +12,13 @@ test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page
   await expect(arcade).toBeVisible({ timeout: 15_000 });
   const requests: string[] = [];
   await page.route(/\/assets\/.*\.js$/, (route) => {
-    requests.push(route.request().url());
-    return route.abort();
+    const url = route.request().url();
+    // Scrolling tabs can mount unrelated deferred sections; only game code is forbidden.
+    if (/Portfolio(?:Arcade|Checkers|Domino|TicTacToe|Football|Chess)-/.test(url)) {
+      requests.push(url);
+      return route.abort();
+    }
+    return route.continue();
   });
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible();
