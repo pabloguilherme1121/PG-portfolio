@@ -215,6 +215,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("mantém contato e briefing fora do bundle inicial sem quebrar acesso direto", async ({ page }) => {
+    await useDataSavingConnection(page);
     const contactRequests: string[] = [];
     page.on("request", (request) => {
       if (/PortfolioContact/i.test(request.url())) contactRequests.push(request.url());

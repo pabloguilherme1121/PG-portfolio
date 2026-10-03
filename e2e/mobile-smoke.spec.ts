@@ -37,7 +37,15 @@ test("PG Arcade mobile expõe cinco jogos, preserva modos e permite zerar progre
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
   await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
   const openArcade = page.locator('[data-arcade-open-control="true"]');
+  const arcadeRequests: string[] = [];
+  page.on("request", request => {
+    if (/PortfolioArcade\.(?:tsx|js)/i.test(request.url())) arcadeRequests.push(request.url());
+  });
+  await openArcade.focus();
+  await page.waitForTimeout(100);
+  expect(arcadeRequests).toHaveLength(0);
   await openArcade.tap();
+  await expect.poll(() => arcadeRequests.length).toBeGreaterThan(0);
 
   await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
   const arcade = page.locator('[data-arcade-hub="true"]');

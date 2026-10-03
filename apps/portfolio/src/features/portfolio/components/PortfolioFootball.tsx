@@ -33,7 +33,7 @@ export default function PortfolioFootball() {
   const last = shots.at(-1);
   const goals = shots.filter(shot => shot.result === "gol").length;
   const finished = shots.length === 5;
-  const levels: FootballDifficulty[] = ["easy", "normal", "hard", "master"];
+  const levels: FootballDifficulty[] = ["easy", "normal", "hard", "master", "expert"];
   const nextLevel = levels[levels.indexOf(difficulty) + 1];
   const preview = resolveFootballShot(mode, aim, power, curve, 50);
   const previewY = preview.result === "barreira" ? 185 : preview.result === "fora" ? 20 : 35 + preview.y;
@@ -85,7 +85,7 @@ export default function PortfolioFootball() {
               Decida no chute.
             </h2>
             <p className="mt-2 text-sm leading-5 text-[#b8cce0]">
-              Mire no gol, ajuste força e curva e enfrente quatro níveis de leitura do goleiro.
+              Mire no gol, ajuste força e curva e enfrente cinco níveis de leitura do goleiro.
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
@@ -114,11 +114,11 @@ export default function PortfolioFootball() {
             ))}
           </div>
           <div className="flex flex-wrap justify-end gap-1" aria-label="Dificuldade do goleiro">
-            {(["easy","normal","hard","master"] as FootballDifficulty[]).map(level => (
+            {(["easy","normal","hard","master","expert"] as FootballDifficulty[]).map(level => (
               <button key={level} type="button" aria-pressed={difficulty===level}
                 onClick={() => { setDifficulty(level); reset(); }}
                 className={`${button} border px-2 text-xs ${difficulty===level ? "border-cyan-300 bg-cyan-300/15 text-cyan-100" : "border-white/10 text-[#9fb7c9]"}`}>
-                {{easy:"Fácil",normal:"Normal",hard:"Difícil",master:"Mestre"}[level]}
+                {{easy:"Fácil",normal:"Normal",hard:"Difícil",master:"Mestre",expert:"Especialista"}[level]}
               </button>
             ))}
           </div>

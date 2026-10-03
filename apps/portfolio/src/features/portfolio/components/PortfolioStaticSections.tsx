@@ -68,6 +68,11 @@ export function PortfolioSkills({ markUrl }: { markUrl: string }) {
                     <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#a5f3fc]">{proof.label}</p>
                     <h3 className="mt-4 font-display text-2xl font-medium tracking-[-0.04em] text-white">{proof.title}</h3>
                     <p className="mt-3 max-w-sm font-body text-sm leading-6 text-[#c2d9e7]">{proof.text}</p>
+                    {proof.label === "qualidade" && (
+                      <a data-quality-pipeline="true" href="https://github.com/pabloguilherme1121/PG-portfolio/actions/workflows/pages.yml" target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex min-h-12 items-center gap-2 text-sm text-[#a5f3fc] underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                        Ver validações no GitHub <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                      </a>
+                    )}
                   </article>
                 ))}
               </div>
