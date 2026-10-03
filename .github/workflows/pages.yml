@@ -72,6 +72,8 @@ jobs:
         run: pnpm build:static
       - name: Browser smoke on static bundle
         run: pnpm test:e2e:static
+      - name: Repeat static mobile WebKit Arcade opening
+        run: pnpm exec playwright test --config=playwright.static.config.ts --project=static-mobile-webkit --grep="bundle estático carrega PG Arcade" --repeat-each=5 --workers=1
       - name: Browser tests
         run: pnpm test:e2e
       - name: Repeat mobile WebKit Arcade regression

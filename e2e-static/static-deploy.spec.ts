@@ -72,11 +72,14 @@ test("bundle estático resolve briefing por âncora direta", async ({ page }) =>
   expect(pageErrors).toEqual([]);
 });
 
-test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", async ({ page }) => {
+test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", async ({ page, isMobile }) => {
   const pageErrors = collectPageErrors(page);
 
   await page.goto("./");
-  await page.locator('[data-arcade-open-control="true"]').click();
+  const openArcade = page.locator('[data-arcade-open-control="true"]');
+  if (isMobile) await openArcade.tap();
+  else await openArcade.click();
+  await expect(openArcade).toHaveAttribute("aria-expanded", "true");
 
   const arcade = page.locator('[data-arcade-hub="true"]');
   await expect(arcade).toBeVisible({ timeout: 15_000 });
