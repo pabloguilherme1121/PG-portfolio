@@ -38,6 +38,7 @@ export function useBriefingFlow({
   const briefingStartedRef = useRef(false);
   const briefingFormRef = useRef<HTMLFormElement>(null);
   const [briefingDraft, setBriefingDraft] = useState<BriefingDraft>(readBriefingDraft);
+  const briefingDraftRef = useRef(briefingDraft);
   const [briefingRevision, setBriefingRevision] = useState(0);
   const [briefingStep, setBriefingStep] = useState(0);
   const { progress: briefingProgress, status: briefingStatus } =
@@ -88,6 +89,7 @@ export function useBriefingFlow({
       briefingFieldNames.map((field) => [field, String(data.get(field) || "")]),
     ) as BriefingDraft;
 
+    briefingDraftRef.current = nextDraft;
     setBriefingDraft(nextDraft);
     persistBriefingDraft(nextDraft);
     notifyBriefingProgress(nextDraft);
@@ -141,6 +143,7 @@ export function useBriefingFlow({
 
     const resetDraft = { ...briefingDefaultValues };
     flushSync(() => {
+      briefingDraftRef.current = resetDraft;
       setBriefingDraft(resetDraft);
       setBriefingStep(0);
       setBriefingRevision((value) => value + 1);
@@ -155,11 +158,12 @@ export function useBriefingFlow({
   function applyBriefingSeed(detail: BriefingSeed, announce: boolean) {
     const nextDraft = {
       ...readBriefingDraft(),
-      ...briefingDraft,
+      ...briefingDraftRef.current,
       ...detail,
     };
 
     flushSync(() => {
+      briefingDraftRef.current = nextDraft;
       setBriefingDraft(nextDraft);
       setBriefingRevision((value) => value + 1);
     });
@@ -182,7 +186,7 @@ export function useBriefingFlow({
 
     window.addEventListener("portfolio:briefing-seed", applySeed);
     return () => window.removeEventListener("portfolio:briefing-seed", applySeed);
-  }, [briefingDraft]);
+  }, []);
 
   useEffect(() => {
     if (!initialBriefingSeed) return;
