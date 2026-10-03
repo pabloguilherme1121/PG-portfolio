@@ -1,14 +1,15 @@
 import { expect, test } from "@playwright/test";
 
 test("futebol oferece cantos rápidos e mantém os ajustes durante o chute", async ({ page }) => {
-  await page.clock.install();
-  await page.clock.pauseAt(new Date());
   await page.goto("/");
   await page.locator('[data-arcade-open-control]').click();
   await page.getByRole("tab", { name: /Futebol/ }).click();
   const game = page.locator('[data-football-game]');
   await game.getByRole("button", { name: "Canto direito", exact: true }).click();
   await expect(game.getByLabel("Mira", { exact: true })).toHaveValue("80");
+  // Freeze only the shot timer, after lazy loading and startup have finished.
+  await page.clock.install();
+  await page.clock.pauseAt(new Date());
   await game.getByRole("button", { name: "Chutar", exact: true }).click();
   await expect(game.getByLabel("Força", { exact: true })).toBeDisabled();
   await expect(game.getByLabel("Mira", { exact: true })).toBeDisabled();
