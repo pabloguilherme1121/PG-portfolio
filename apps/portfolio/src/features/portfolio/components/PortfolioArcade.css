@@ -1,0 +1,16 @@
+.arcade-hub[data-arcade-focus="true"] [data-arcade-overview],
+.arcade-hub[data-arcade-focus="true"] [data-arcade-session-summary],
+.arcade-hub[data-arcade-focus="true"] [data-arcade-exploration],
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:first-child,
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:last-child {
+  display: none;
+}
+
+.arcade-hub[data-arcade-focus="true"] [role="tab"] {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
+.arcade-hub[data-arcade-focus="true"] [role="tab"] > span:nth-child(2) {
+  margin-top: 0;
+}

@@ -20,6 +20,7 @@ import {
 // HomeExperience already loads this entire Arcade on demand. Keep its games in
 // that loading boundary so a mobile tab switch never suspends on another import.
 import PortfolioFootball from "./PortfolioFootball";
+import "./PortfolioArcade.css";
 
 const games = [
   { id: "velha", label: "Jogo da velha", meta: "estratégia rápida", icon: Grid3X3 },
@@ -28,6 +29,14 @@ const games = [
   { id: "damas", label: "Damas", meta: "captura + séries", icon: Crown },
   { id: "xadrez", label: "Xadrez", meta: "xeque + quatro níveis", icon: Castle },
 ] as const;
+
+const gameHelp: Record<ArcadeGame, string> = {
+  velha: "Toque em uma casa vazia. Complete três marcas em linha, coluna ou diagonal. Use a dica ou escolha 1 × 1 para jogar no mesmo aparelho.",
+  domino: "Escolha uma peça que combine com uma das pontas da mesa. Compre quando não houver jogada. Os números identificam as peças, além das cores.",
+  futebol: "Ajuste a mira tocando no campo ou usando os controles. Regule força e curva e chute. São cinco cobranças por série; experimente também as faltas.",
+  damas: "Selecione uma peça e uma casa disponível. Capturas são obrigatórias; continue a sequência com a mesma peça. Chegue à última linha para promover sua peça.",
+  xadrez: "Selecione uma peça para ver as jogadas e toque no destino. Proteja seu rei e busque o xeque-mate. Comece em um nível fácil e aumente a dificuldade aos poucos.",
+};
 
 function readArcadeSession(): ArcadeSession {
   if (typeof window === "undefined") return normalizeArcadeSession(null);
@@ -48,6 +57,7 @@ function renderArcadeGame(game: ArcadeGame) {
 }
 
 export default function PortfolioArcade() {
+  const [focusMode, setFocusMode] = useState(false);
   const [session, setSession] = useState<ArcadeSession>(readArcadeSession);
   const [game, setGame] = useState<ArcadeGame>(session.lastGame);
   const [mountedGames, setMountedGames] = useState<ArcadeGame[]>(() => [
@@ -125,7 +135,7 @@ export default function PortfolioArcade() {
   };
 
   return (
-    <div data-arcade-hub="true" className="relative isolate overflow-hidden bg-[#030b16]">
+    <div data-arcade-hub="true" data-arcade-focus={focusMode} className="arcade-hub relative isolate overflow-hidden bg-[#030b16]">
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.14),transparent_62%)]" />
       <div className="mx-auto max-w-[1180px] px-4 pt-4 sm:px-8 lg:px-12">
         <div className="overflow-hidden rounded-[22px] border border-[#67e8f9]/20 bg-[linear-gradient(145deg,rgba(8,32,59,0.96),rgba(4,18,37,0.92))] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.28)] sm:p-5">
@@ -135,13 +145,16 @@ export default function PortfolioArcade() {
                 <Gamepad2 className="h-4 w-4" aria-hidden="true" />
                 PG Arcade · escolher jogo
               </p>
-              <p className="mt-1 font-body text-sm text-[#a9bfd8]">
+              <p data-arcade-overview="true" className="mt-1 font-body text-sm text-[#a9bfd8]">
                 Cinco jogos: estratégia, tabuleiros clássicos, dominó e futebol com
                 pênaltis e faltas.
               </p>
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-2 sm:justify-end">
-              <span className="max-w-full rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#8fa8c7] [overflow-wrap:anywhere]">
+              <button type="button" aria-pressed={focusMode} onClick={() => setFocusMode((current) => !current)} className="min-h-11 rounded-xl border border-[#67e8f9]/40 bg-[#08203b] px-3 text-sm text-[#cffafe] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                Modo de jogo
+              </button>
+              <span data-arcade-overview="true" className="max-w-full rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#8fa8c7] [overflow-wrap:anywhere]">
                 sem cadastro · progresso local
               </span>
               <span
@@ -192,7 +205,7 @@ export default function PortfolioArcade() {
                   </span>
                   {session.explored.includes(item.id) ? (
                     <span className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#67e8f9]">
-                      {mostVisitedGame === item.id && session.visits[item.id] > 1 ? "favorito" : "jogado"}
+                      {mostVisitedGame === item.id && session.visits[item.id] > 1 ? "mais aberto" : "visitado"}
                     </span>
                   ) : null}
                 </span>
@@ -255,6 +268,11 @@ export default function PortfolioArcade() {
           </div>
         </div>
       </div>
+
+      <details key={game} className="mx-auto mt-4 max-w-[1180px] px-4 text-[#a9bfd8] sm:px-8 lg:px-12">
+        <summary className="min-h-11 cursor-pointer rounded-xl border border-white/15 px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">Como jogar {selectedGameLabel}</summary>
+        <p className="px-3 py-3 text-sm leading-6">{gameHelp[game]}</p>
+      </details>
 
       {games.map((item) => (
         <div
