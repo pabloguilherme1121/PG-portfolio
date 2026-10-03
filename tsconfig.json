@@ -1,9 +1,8 @@
 {
-  "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
   "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
   "compilerOptions": {
     "incremental": true,
-    "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+    "tsBuildInfoFile": "./node_modules/typescript/workspace.tsbuildinfo",
     "noEmit": true,
     "module": "ESNext",
     "strict": true,
@@ -16,8 +15,11 @@
     "baseUrl": ".",
     "types": ["node", "vite/client"],
     "paths": {
-      "@/*": ["./client/src/*"],
-      "@shared/*": ["./shared/*"]
-    }
+      "@/*": ["./apps/portfolio/src/*"],
+      "@shared/*": ["./packages/contracts/*"],
+      "@api/*": ["./apps/api/client/*"],
+      "@portfolio/bootstrap": ["./apps/portfolio/src/bootstrapStatic.tsx"]
+    },
+    "target": "ES2022"
   }
 }

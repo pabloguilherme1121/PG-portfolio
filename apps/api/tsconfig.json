@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../../node_modules/typescript/api.tsbuildinfo",
+    "paths": {
+      "@/*": ["./apps/portfolio/src/*"],
+      "@shared/*": ["./packages/contracts/*"],
+      "@api/*": ["./apps/api/client/*"],
+      "@portfolio/bootstrap": ["./apps/portfolio/src/bootstrapStatic.tsx"],
+      "@/lib/portfolioApi": ["./apps/api/client/trpc.ts"]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "client/**/*",
+    "drizzle/**/*",
+    "../../packages/contracts/**/*"
+  ],
+  "exclude": ["node_modules", "**/*.test.ts"]
+}

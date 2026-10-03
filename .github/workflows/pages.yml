@@ -15,6 +15,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  static-isolation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Enable Corepack
+        run: corepack enable
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install public app and build tools only
+        run: pnpm --filter . --filter @pg/portfolio... install --frozen-lockfile
+      - name: Typecheck public app without API packages
+        run: pnpm check:portfolio
+      - name: Build public app without API packages
+        run: pnpm build:static
+      - name: Verify API dependencies are isolated
+        run: node scripts/verify-static-isolation.mjs
+
   quality:
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -42,6 +64,10 @@ jobs:
         run: pnpm test
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium firefox webkit
+      - name: Build optional API variant
+        run: pnpm build:server
+      - name: Smoke optional API variant
+        run: node scripts/smoke-api.mjs
       - name: Build static portfolio
         run: pnpm build:static
       - name: Browser smoke on static bundle
@@ -76,7 +102,7 @@ jobs:
 
   deploy:
     if: github.event_name != 'pull_request'
-    needs: quality
+    needs: [quality, static-isolation]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
