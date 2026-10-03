@@ -24,6 +24,7 @@ type PortfolioMobileMenuProps = {
   portfolioShareStatus: PortfolioShareStatus;
   showInstallAction: boolean;
   onClose: () => void;
+  onSelectRoute: (route: MobileExperienceRoute) => void;
   onOpenArcade: () => void;
   onOpenAppearance: (trigger?: HTMLElement | null) => void;
   onSharePortfolio: () => void;
@@ -46,6 +47,7 @@ export default function PortfolioMobileMenu({
   portfolioShareStatus,
   showInstallAction,
   onClose,
+  onSelectRoute,
   onOpenArcade,
   onOpenAppearance,
   onSharePortfolio,
@@ -138,6 +140,15 @@ export default function PortfolioMobileMenu({
             </div>
           </div>
 
+          <div role="group" aria-label="Objetivo da visita" className="mb-3 grid grid-cols-3 gap-2">
+            {([['client', 'Contratar'], ['recruiter', 'Recrutador'], ['explorer', 'Explorar']] as const).map(([route, label]) => (
+              <button key={route} type="button" aria-pressed={mobileExperienceRoute === route}
+                onClick={() => onSelectRoute(route)}
+                className="min-h-11 rounded-[10px] border border-cyan-200/20 px-1 text-xs text-[#d7e9f8] aria-pressed:bg-[#0b2746] aria-pressed:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="grid grid-cols-2 gap-2" aria-label="Seções do portfólio">
             {sectionLinks.map(([label, href, id]) => (
               <a

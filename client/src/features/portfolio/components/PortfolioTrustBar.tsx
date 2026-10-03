@@ -38,22 +38,7 @@ export default function PortfolioTrustBar() {
       className="border-y border-cyan-100/[0.09] bg-[#06101d] px-4 py-4 min-[360px]:px-5 sm:px-8 sm:py-6 lg:px-12"
     >
       <div className="mx-auto max-w-[1440px]">
-        <div className="flex items-end justify-between gap-5">
-          <div>
-            <p className="font-mono text-[8px] font-semibold uppercase tracking-[0.16em] text-[#67e8f9] sm:text-[9px]">
-              provas verificáveis
-            </p>
-            <h2
-              id="portfolio-proof-title"
-              className="mt-1 max-w-2xl font-display text-lg font-semibold tracking-[-0.035em] text-white sm:text-2xl"
-            >
-              Produto publicado, código público e qualidade automatizada.
-            </h2>
-          </div>
-          <p className="hidden max-w-md font-body text-xs leading-5 text-[#8fa8c7] sm:block sm:text-right">
-            Evidências rápidas antes de qualquer promessa.
-          </p>
-        </div>
+        <h2 id="portfolio-proof-title" className="font-mono text-xs font-semibold uppercase tracking-[0.08em] text-[#a5f3fc]">Provas verificáveis</h2>
 
         <div
           data-portfolio-proof-rail="true"

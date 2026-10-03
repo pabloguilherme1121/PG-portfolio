@@ -128,3 +128,5 @@ client/public/__manus__/debug-collector.js
 *.keystore
 credentials.json
 service-account*.json
+
+/test-results/

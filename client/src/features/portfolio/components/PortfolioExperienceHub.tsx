@@ -1,9 +1,10 @@
 import { ArrowDownRight, Briefcase, CheckCircle2, Compass, UserRound } from "lucide-react";
 import type { KeyboardEvent } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import {
   experienceRouteStorageKey,
+  isMobileExperienceRoute,
   readStoredExperienceRoute,
   type MobileExperienceRoute,
 } from "@/features/portfolio/utils/mobileJourney";
@@ -54,6 +55,15 @@ export default function PortfolioExperienceHub() {
   const selected = experienceRoutes.find((route) => route.id === activeRoute) ?? experienceRoutes[0];
   const selectedIndex = experienceRoutes.findIndex((route) => route.id === selected.id);
   const SelectedIcon = selected.Icon;
+
+  useEffect(() => {
+    const update = (event: Event) => {
+      const route = (event as CustomEvent<{ routeId?: unknown }>).detail?.routeId;
+      if (isMobileExperienceRoute(route)) setActiveRoute(route);
+    };
+    window.addEventListener("portfolio:experience-route", update);
+    return () => window.removeEventListener("portfolio:experience-route", update);
+  }, []);
 
   function selectRoute(routeId: ExperienceRouteId) {
     setActiveRoute(routeId);

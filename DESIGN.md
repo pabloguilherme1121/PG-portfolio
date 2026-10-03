@@ -127,3 +127,7 @@ A ordem padrão da home é:
 - Alturas mínimas grandes sem necessidade de conteúdo.
 - Botões menores que 44px em touch.
 - Recursos órfãos, preferências sem efeito ou componentes sem consumidor.
+
+## Contratos da simplificação
+
+Manter uma única faixa de provas verificáveis, descrições de pelo menos 14px e ações de pelo menos 44px. O menu e o Experience Hub compartilham o objetivo da visita, com sessionStorage e fallback para armazenamento bloqueado. Preservar lazy loading, retorno de foco, cinco jogos e as remoções de PDF e mídias ausentes da main.
