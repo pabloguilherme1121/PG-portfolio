@@ -365,7 +365,7 @@ test.describe("portfólio profissional", () => {
     await expect(menu).toBeVisible();
 
     const focusables = menu.locator('a[href], button:not([disabled])');
-    await expect(focusables.first()).toBeFocused();
+    await expect(menu.locator('[aria-current="location"]')).toBeFocused();
 
     await page.keyboard.press("Shift+Tab");
     await expect.poll(() =>

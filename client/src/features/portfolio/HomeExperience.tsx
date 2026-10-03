@@ -547,6 +547,12 @@ export default function Home() {
               portfolioShareStatus={portfolioShareStatus}
               showInstallAction={canInstallPortfolio}
               onClose={closeMenu}
+              onSelectRoute={(routeId) => {
+                setMobileExperienceRoute(routeId);
+                writeStorage(getSafeStorage("session"), "pablo-portfolio-experience-route", routeId);
+                window.dispatchEvent(new CustomEvent("portfolio:experience-route", { detail: { routeId } }));
+                trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
+              }}
               onOpenArcade={openPgArcade}
               onOpenAppearance={openAppearancePanel}
               onSharePortfolio={() => void sharePortfolio()}
