@@ -60,7 +60,7 @@ test("xadrez permite roque local e desfaz rei e torre juntos", async ({
   await expect(square("h1")).toHaveAttribute("aria-label", /torre branco/);
 });
 
-test("quatro jogos oferecem especialista sem perder modo local", async ({
+test("quatro jogos oferecem especialista no controle de dificuldade", async ({
   page,
 }) => {
   await page.goto("/");
@@ -73,6 +73,9 @@ test("quatro jogos oferecem especialista sem perder modo local", async ({
   ]) {
     await page.getByRole("tab", { name: new RegExp(tab, "i") }).click();
     const game = page.locator(`[data-${selector}-game]`);
+    if (selector === "domino") {
+      await game.locator("[data-domino-settings] summary").click();
+    }
     const expert = game.getByRole("button", {
       name: /^especialista$/i,
       exact: true,
