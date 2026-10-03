@@ -21,4 +21,12 @@ async function bootstrap() {
   }
 }
 
-void bootstrap();
+void bootstrap().catch(async (error) => {
+  console.error("[Portfolio] Startup failed", error);
+  const rescue = (window as Window & {
+    __pgRuntimeRescue?: { rescue?: (reason: string) => Promise<boolean>; showLoadFailure?: () => void };
+  }).__pgRuntimeRescue;
+  const recovering = await rescue?.rescue?.("bootstrap-error");
+  if (!recovering) rescue?.showLoadFailure?.();
+});
+

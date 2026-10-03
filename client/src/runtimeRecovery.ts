@@ -186,6 +186,12 @@ export async function preparePortfolioRuntime(baseUrl: string): Promise<boolean>
 }
 
 function reserveAutomaticRecovery(now = Date.now()): boolean {
+  const bridge = (window as Window & {
+    __pgRuntimeRescue?: { reserveRecovery?: () => boolean };
+  }).__pgRuntimeRescue;
+  if (bridge?.reserveRecovery) return bridge.reserveRecovery();
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("pg_boot_rescue") || url.searchParams.has(RUNTIME_RECOVERY_PARAM)) return false;
   const session = getSafeStorage("session");
   const previous = Number(readStorage(session, RECOVERY_MARKER_KEY) ?? 0);
   if (Number.isFinite(previous) && previous > 0 && now - previous < RECOVERY_COOLDOWN_MS) {
@@ -211,7 +217,7 @@ export async function attemptAutomaticRuntimeRecovery(
   error: unknown,
   baseUrl: string,
 ): Promise<boolean> {
-  if (typeof window === "undefined" || navigator.onLine === false || !reserveAutomaticRecovery()) {
+  if (typeof window === "undefined" || !isStaleBundleError(error) || navigator.onLine === false || !reserveAutomaticRecovery()) {
     return false;
   }
 
@@ -238,3 +244,4 @@ export function installVitePreloadRecovery(baseUrl: string): () => void {
 export async function recoverFromRuntimeError(_error: unknown, baseUrl: string): Promise<void> {
   await navigateWithFreshRuntime(baseUrl, "manual");
 }
+

@@ -1,7 +1,20 @@
-import { describe, expect, it } from "vitest";
-import { buildFreshRuntimeUrl, isStaleBundleError } from "./runtimeRecovery";
+import { describe, expect, it, vi } from "vitest";
+import { attemptAutomaticRuntimeRecovery, buildFreshRuntimeUrl, isStaleBundleError } from "./runtimeRecovery";
 
 describe("runtimeRecovery", () => {
+  it("does not reload an ordinary application error automatically", async () => {
+    const replace = vi.fn();
+    vi.stubGlobal("window", {
+      location: { href: "https://example.com/PG-portfolio/", replace },
+    });
+    vi.stubGlobal("navigator", { onLine: true });
+    try {
+      expect(await attemptAutomaticRuntimeRecovery(new Error("Cannot read properties of undefined"), "/PG-portfolio/")).toBe(false);
+      expect(replace).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
   it("recognizes stale dynamic-import failures produced after a deployment", () => {
     expect(
       isStaleBundleError(
@@ -33,3 +46,4 @@ describe("runtimeRecovery", () => {
     expect(freshUrl.hash).toBe("#projetos");
   });
 });
+

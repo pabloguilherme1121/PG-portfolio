@@ -70,6 +70,8 @@
         var rescueStarted = false;
         var currentUrl = new URL(window.location.href);
         var previousRescue = currentUrl.searchParams.get(rescueParam);
+        var arrivedAfterRecovery = !!(previousRescue || currentUrl.searchParams.get("pg_recover"));
+        var recoveryMarkerKey = "pg-portfolio-runtime-recovery-at";
         var scopeUrl = new URL(baseUrl, window.location.href).href;
         var hadController = "serviceWorker" in navigator && !!navigator.serviceWorker.controller;
 
@@ -134,9 +136,25 @@
           window.location.replace(nextUrl.toString());
         }
 
-        function rescueRuntime(reason) {
-          if (rescueStarted || navigator.onLine === false) return Promise.resolve(false);
+        function reserveRecovery() {
+          if (rescueStarted || arrivedAfterRecovery || navigator.onLine === false) return false;
+          var now = Date.now();
+          try {
+            var previous = Number(window.sessionStorage.getItem(recoveryMarkerKey) || 0);
+            if (previous > 0 && now - previous < 45000) return false;
+            window.sessionStorage.setItem(recoveryMarkerKey, String(now));
+          } catch (_) {
+            // The URL marker still stops retries when private browsing blocks storage.
+          }
           rescueStarted = true;
+          return true;
+        }
+
+        function rescueRuntime(reason) {
+          if (!reserveRecovery()) {
+            showLoadFailure();
+            return Promise.resolve(false);
+          }
 
           return Promise.all([clearPortfolioCaches(), retirePortfolioWorkers()])
             .then(function () {
@@ -166,7 +184,9 @@
         window.addEventListener(
           "error",
           function (event) {
-            if (staleRuntimePattern.test(getMessage(event.error) || event.message || "")) {
+            var target = event.target;
+            var entryFailed = target && target.tagName === "SCRIPT" && target.type === "module" && target.src;
+            if (entryFailed || staleRuntimePattern.test(getMessage(event.error) || event.message || "")) {
               void rescueRuntime("window-error");
             }
           },
@@ -204,7 +224,14 @@
           mode: rescueMode,
           scope: scopeUrl,
           rescue: rescueRuntime,
+          reserveRecovery: reserveRecovery,
+          showLoadFailure: showLoadFailure,
         };
+
+        function showLoadFailure() {
+          var fallback = document.getElementById("portfolio-startup-fallback");
+          if (fallback) fallback.hidden = false;
+        }
       })();
     </script>
     <script type="application/ld+json">
@@ -237,7 +264,15 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main id="portfolio-startup-fallback" hidden style="min-height:100svh;padding:32px 20px;background:#050b16;color:#f5f7fb;font-family:system-ui,sans-serif">
+        <div style="max-width:560px;margin:15vh auto;overflow-wrap:anywhere">
+          <h1 style="font-size:32px;line-height:1.15">Não foi possível carregar o portfólio.</h1>
+          <p style="line-height:1.7;color:#a8b5c7">Confira sua conexão e tente abrir a página novamente.</p>
+          <a href="%BASE_URL%" style="display:inline-flex;min-height:48px;align-items:center;padding:0 20px;background:#38bdf8;color:#06111f;border-radius:10px;text-decoration:none">Abrir o portfólio novamente</a>
+        </div>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
     <script type="module">
       const endpoint = import.meta.env.VITE_ANALYTICS_ENDPOINT;
@@ -252,3 +287,4 @@
     </script>
   </body>
 </html>
+
