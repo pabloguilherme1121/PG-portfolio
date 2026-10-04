@@ -27,6 +27,7 @@ import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
+import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioArcadeShowcase";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import { copyText, copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
@@ -69,19 +70,6 @@ const PortfolioContact = lazy(() =>
   })),
 );
 const PortfolioWebResume = lazy(() => import("@/features/portfolio/components/PortfolioWebResume"));
-type PortfolioArcadeModule = typeof import("@/features/portfolio/components/PortfolioArcade");
-let portfolioArcadePromise: Promise<PortfolioArcadeModule> | null = null;
-
-const loadPortfolioArcade = () => {
-  if (!portfolioArcadePromise) {
-    portfolioArcadePromise = import("@/features/portfolio/components/PortfolioArcade").catch((error) => {
-      portfolioArcadePromise = null;
-      throw error;
-    });
-  }
-  return portfolioArcadePromise;
-};
-const PortfolioArcade = lazy(loadPortfolioArcade);
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 
@@ -134,7 +122,6 @@ export default function Home() {
     closePanel: closeAppearancePanel,
   } = useAppearancePanelController({ fallbackTriggerRef: menuButtonRef });
   const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
-  const [pgLabOpen, setPgLabOpen] = useState(false);
   const [formSent, setFormSent] = useState(false);
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
@@ -182,7 +169,7 @@ export default function Home() {
     shareSelectedProject,
     copySelectedProjectLink,
   } = useProjectDetailsController({ repositories });
-  const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || pgLabOpen || menuOpen || appearanceOpen);
+  const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const isBackToTopVisible = showBackToTop && !shouldHideContactFloat;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
@@ -316,37 +303,13 @@ export default function Home() {
     }
   }
 
-  function preloadPgArcade() {
-    if (avoidSpeculativePreload) return;
-    void loadPortfolioArcade().catch(() => undefined);
-  }
-
-  function openPgArcade() {
-    preloadPgArcade();
-    setPgLabOpen(true);
-    window.requestAnimationFrame(() => {
-      const target = document.getElementById("pg-lab");
-      if (!target) return;
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const isMobileViewport = window.matchMedia("(max-width: 767px)").matches;
-      target.scrollIntoView({
-        behavior: reduceMotion || isMobileViewport ? "auto" : "smooth",
-        block: "start",
-      });
-    });
-  }
-
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("arcade") === "1") openPgArcade();
+    if (new URLSearchParams(window.location.search).get("arcade") !== "1") return;
+    const frameId = window.requestAnimationFrame(() => {
+      document.getElementById("pg-lab")?.scrollIntoView({ behavior: "auto", block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frameId);
   }, []);
-
-  function togglePgArcade() {
-    if (pgLabOpen) {
-      setPgLabOpen(false);
-      return;
-    }
-    openPgArcade();
-  }
 
   function scrollToTop() {
     const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -557,7 +520,6 @@ export default function Home() {
                 window.dispatchEvent(new CustomEvent("portfolio:experience-route", { detail: { routeId } }));
                 trackPortfolioEvent("experience_route_selected", { experienceRoute: routeId });
               }}
-              onOpenArcade={openPgArcade}
               onOpenAppearance={openAppearancePanel}
               onSharePortfolio={() => void sharePortfolio()}
               onInstallPortfolio={() => void installPortfolioPwa()}
@@ -672,38 +634,7 @@ export default function Home() {
           )}
         </div>
 
-        <section id="pg-lab" data-arcade-showcase="true" className="archive-chapter relative scroll-mt-24 overflow-hidden border-y border-[#67e8f9]/15 bg-[#040a13] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-14 lg:px-12" aria-labelledby="pg-lab-title">
-          <div className="relative mx-auto max-w-[1440px] overflow-hidden border border-[#67e8f9]/25 bg-[linear-gradient(135deg,rgba(6,23,47,.96),rgba(5,13,24,.92))] p-5 shadow-[0_24px_80px_rgba(0,0,0,.24)] sm:grid sm:grid-cols-[1fr_auto] sm:items-end sm:gap-10 sm:p-8">
-            <div>
-              <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">PG Arcade · laboratório interativo</p>
-              <h2 id="pg-lab-title" className="mt-3 max-w-3xl font-display text-[clamp(2rem,4vw,4.25rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white">Código que você pode jogar.</h2>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Cinco experiências jogáveis — Jogo da Velha, Dominó, Futebol, Damas e Xadrez — mostram lógica, estados, IA, responsividade e cuidado com interação sem tirar o foco dos projetos profissionais.</p>
-            </div>
-            <div className="mt-6 flex flex-col gap-3 sm:mt-0">
-            <a href="https://pabloguilherme1121.github.io/PG-Arcade/" target="_blank" rel="noopener noreferrer" data-arcade-full-site="true" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#67e8f9]/45 bg-[#0b2746] px-4 text-sm font-semibold text-[#bdf7ff] transition-colors hover:bg-[#103857] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">Jogar no PG Arcade completo <span aria-hidden="true">↗</span></a>
-            <p className="max-w-xs text-xs leading-5 text-[#a9bfd8]">Corrida, carros, tiro, lógica e casuais. Abre em outra aba.</p>
-            <button
-              type="button"
-              data-arcade-open-control="true"
-              data-arcade-preload="intent"
-              onPointerEnter={(event) => {
-                if (event.pointerType === "mouse") preloadPgArcade();
-              }}
-              onClick={togglePgArcade}
-              aria-expanded={pgLabOpen}
-              aria-controls="pg-lab-game"
-              className="mt-6 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto"
-            >{pgLabOpen ? "fechar PG Arcade" : "explorar PG Arcade"}</button>
-            </div>
-          </div>
-          <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
-            {pgLabOpen && (
-              <Suspense fallback={<div data-arcade-loading="true" role="status" aria-live="polite" className="mx-4 my-5 min-h-24 rounded-[14px] border border-[#67e8f9]/20 bg-[#06172f]/70 p-5 font-mono text-[9px] uppercase tracking-[0.12em] text-[#a5f3fc] min-[360px]:mx-5 sm:mx-0">carregando PG Arcade…</div>}>
-                <PortfolioArcade />
-              </Suspense>
-            )}
-          </div>
-        </section>
+        <PortfolioArcadeShowcase />
 
         <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
           {shouldRenderDiagnostic ? (
@@ -930,11 +861,8 @@ export default function Home() {
           data-mobile-dock-secondary="true"
           data-mobile-dock-secondary-route={mobileExperienceRoute}
           href={mobileSecondaryShortcut.href}
-          onClick={(event) => {
-            if (mobileExperienceRoute !== "explorer") return;
-            event.preventDefault();
-            openPgArcade();
-          }}
+          target={mobileExperienceRoute === "explorer" ? "_blank" : undefined}
+          rel={mobileExperienceRoute === "explorer" ? "noopener noreferrer" : undefined}
           aria-label={`Abrir ${mobileSecondaryShortcut.label}`}
           title={mobileSecondaryShortcut.label}
           className="mobile-context-action inline-flex min-h-14 min-w-0 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-[10px] border border-white/10 bg-[#071326] px-1 text-center text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"

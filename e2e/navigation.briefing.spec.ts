@@ -272,7 +272,7 @@ test.describe("portfólio profissional", () => {
     expect(manifest.shortcuts).toEqual(expect.arrayContaining([
       expect.objectContaining({ name: "Ver trabalhos", url: "./#projetos" }),
       expect.objectContaining({ name: "Entrar em contato", url: "./#contato" }),
-      expect.objectContaining({ name: "Abrir PG Arcade", url: "./#pg-lab" }),
+      expect.objectContaining({ name: "Abrir PG Arcade", url: "https://pabloguilherme1121.github.io/PG-Arcade/" }),
     ]));
   });
 

@@ -262,7 +262,7 @@ test.describe("portfólio profissional", () => {
     await expect(primaryAction).toHaveAttribute("href", "#projetos");
     await expect(primaryAction).toContainText(/explorar/i);
     await expect(primaryAction.locator('[data-mobile-journey-hint="true"]')).toContainText(/projetos.*cases.*código/i);
-    await expect(secondaryAction).toHaveAttribute("href", "#pg-lab");
+    await expect(secondaryAction).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
 
     const form = await openContactBriefing(page);
     await form.locator('input[name="name"]').fill("Visitante mobile");
@@ -312,14 +312,12 @@ test.describe("portfólio profissional", () => {
 
     await page.locator('[data-mobile-menu-toggle="true"]').click();
     const shortcut = page.locator('[data-mobile-shortcut-contextual="true"]');
-    await expect(shortcut).toHaveAttribute("href", "#pg-lab");
+    await expect(shortcut).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
+    await expect(shortcut).toHaveAttribute("target", "_blank");
+    await expect(shortcut).toHaveAttribute("rel", "noopener noreferrer");
     await expect(shortcut).toContainText(/PG Arcade/i);
-    const previousHash = await page.evaluate(() => location.hash);
-    await shortcut.click();
-
-    expect(await page.evaluate(() => location.hash)).toBe(previousHash);
-    await expect(page.locator("#pg-lab")).toBeVisible();
-    await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
+    await expect(page.locator('#pg-lab[data-arcade-showcase="true"]')).toBeVisible();
+    await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
   });
 
   test("menu mobile move o foco para a seção atual e devolve ao botão ao fechar com Escape", async ({ page }) => {

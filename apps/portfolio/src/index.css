@@ -1307,20 +1307,6 @@ html.theme-transitioning .arquivo-page * {
   pointer-events: none;
 }
 
-[data-arcade-preset-card="true"] {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
-}
-
-[data-arcade-preset-card="true"][aria-pressed="true"] {
-  border-color: rgba(103, 232, 249, 0.92);
-  background: linear-gradient(145deg, #22d3ee, #38bdf8);
-  color: #02111f;
-  box-shadow: 0 10px 28px rgba(56, 189, 248, 0.22);
-}
-
-[data-arcade-preset-card="true"][aria-pressed="true"] span:last-child {
-  color: #0c4a5b !important;
-}
 
 @media (max-width: 639px) {
   [data-mobile-dock="true"] {
@@ -1352,17 +1338,6 @@ html.theme-transitioning .arquivo-page * {
       linear-gradient(135deg, rgba(10, 39, 70, 0.94), rgba(7, 19, 38, 0.96));
   }
 
-  [data-tic-tac-toe="true"] [data-arcade-presets="true"] {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    padding-top: 0.25rem;
-    background: linear-gradient(180deg, #06111e 78%, rgba(6, 17, 30, 0));
-  }
-
-  [data-tic-tac-toe="true"] [data-game-cell="true"] {
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.025);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1405,19 +1380,11 @@ html.theme-transitioning .arquivo-page * {
     transition: none;
   }
 
-  #pg-lab .archive-chapter,
   #contato .archive-chapter {
     content-visibility: auto;
     contain-intrinsic-size: 680px;
   }
 
-  [data-tic-tac-toe="true"] [data-arcade-stats="true"] {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  [data-tic-tac-toe="true"] [data-arcade-stats="true"] > div {
-    padding-inline: 0.25rem;
-  }
 }
 
 
@@ -1925,7 +1892,7 @@ html.theme-transitioning .arquivo-page * {
 
 /* Mobile sections already defer their React content and media. Intrinsic height
    placeholders plus smooth scrolling move hit targets while WebKit scrolls to
-   them, including the Arcade trigger and tabs. Keep chapter geometry live. */
+   them while WebKit scrolls to deferred content. Keep chapter geometry live. */
 @media (max-width: 767px) {
   html {
     scroll-behavior: auto;
@@ -1933,7 +1900,6 @@ html.theme-transitioning .arquivo-page * {
   }
 
   .archive-chapter,
-  #pg-lab .archive-chapter,
   #contato .archive-chapter {
     content-visibility: visible;
     contain-intrinsic-size: none;
@@ -1947,9 +1913,6 @@ html.theme-transitioning .arquivo-page * {
   .arquivo-page main,
   .arquivo-page section,
   .arquivo-page article,
-  .arquivo-page [data-arcade-hub="true"],
-  .arquivo-page [data-arcade-exploration="true"],
-  .arquivo-page [data-arcade-preset-card="true"],
   .arquivo-page .featured-project-card,
   .arquivo-page .process-step-card,
   .arquivo-page .service-offer-panel {
@@ -1976,18 +1939,6 @@ html.theme-transitioning .arquivo-page * {
     white-space: normal;
   }
 
-  [data-arcade-hub="true"] [role="tab"],
-  [data-arcade-hub="true"] [data-arcade-reset-progress="true"],
-  [data-arcade-hub="true"] [data-arcade-suggestion="true"] {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  [data-arcade-hub="true"] [role="tab"] > *,
-  [data-arcade-exploration="true"] > * {
-    min-width: 0;
-    max-width: 100%;
-  }
 
   .service-selector-button,
   .service-offer-panel,

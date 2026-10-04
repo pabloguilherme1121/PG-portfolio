@@ -32,87 +32,27 @@ test("hero mobile mantém CTA principal e concentra provas verificáveis na Trus
 });
 
 
-test("PG Arcade mobile expõe cinco jogos, preserva modos e permite zerar progresso", async ({ page }) => {
+test("PG Arcade mobile aponta para a experiência dedicada sem carregar jogos locais", async ({ page }) => {
   await page.goto("/");
+
   await expect(page.locator("html")).toHaveCSS("scroll-behavior", "auto");
-  await expect(page.locator("#pg-lab")).toHaveCSS("content-visibility", "visible");
-  const openArcade = page.locator('[data-arcade-open-control="true"]');
-  const arcadeRequests: string[] = [];
-  page.on("request", request => {
-    if (/PortfolioArcade\.(?:tsx|js)/i.test(request.url())) arcadeRequests.push(request.url());
-  });
-  await openArcade.focus();
-  await page.waitForTimeout(100);
-  expect(arcadeRequests).toHaveLength(0);
-  await openArcade.tap();
-  await expect.poll(() => arcadeRequests.length).toBeGreaterThan(0);
+  const showcase = page.locator("#pg-lab");
+  await showcase.scrollIntoViewIfNeeded();
+  await expect(showcase).toBeVisible();
+  await expect(showcase).toHaveAttribute("data-arcade-showcase", "true");
 
-  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveAttribute("aria-expanded", "true");
-  const arcade = page.locator('[data-arcade-hub="true"]');
-  const loadingOrArcade = page.locator('[data-arcade-loading="true"], [data-arcade-hub="true"]');
-  await expect(loadingOrArcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(5);
-
-  const gameTabs = arcade.getByRole("tablist", { name: "Jogos do PG Arcade" });
-  await expect(gameTabs).toHaveCSS("overflow-x", "auto");
-  const tabRows = await gameTabs.getByRole("tab").evaluateAll((tabs) =>
-    tabs.map((tab) => Math.round(tab.getBoundingClientRect().top)),
+  const link = showcase.locator('[data-arcade-full-site="true"]');
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://pabloguilherme1121.github.io/PG-Arcade/",
   );
-  expect(new Set(tabRows).size).toBe(1);
-  const tabStripBox = await gameTabs.boundingBox();
-  expect(tabStripBox?.height ?? 999).toBeLessThan(110);
-  expect(
-    await gameTabs.evaluate(
-      element => element.scrollWidth > element.clientWidth
-    )
-  ).toBe(true);
-
-  const focusToggle = arcade.locator('[data-arcade-focus-toggle="true"]');
-  await expect(focusToggle).toHaveText(/modo foco/i);
-  await expect(focusToggle).toHaveAttribute("aria-pressed", "false");
-  await focusToggle.click();
-  await expect(focusToggle).toHaveText(/sair do foco/i);
-  await expect(focusToggle).toHaveAttribute("aria-pressed", "true");
-  await focusToggle.click();
-
-  await arcade.getByRole("tab", { name: /dominó/i }).click();
-  const domino = arcade.locator('[data-domino-game="true"]');
-  await expect(domino).toBeVisible();
-  await domino.getByRole("button", { name: /1 × 1 local/i }).click();
-  await expect(domino.locator('[data-domino-mode="local"]')).toHaveAttribute("aria-pressed", "true");
-
-  const checkersTab = arcade.getByRole("tab", { name: /damas/i });
-  await checkersTab.click();
-  await expect(checkersTab).toHaveAttribute("aria-selected", "true");
-  const checkers = arcade.locator('[data-checkers-game="true"]');
-  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
-  await checkers.getByRole("button", { name: /1 × 1 local/i }).click();
-  await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute("aria-pressed", "true");
-
-  await arcade.getByRole("tab", { name: /jogo da velha/i }).click();
-  await expect(checkers).not.toBeVisible();
-  await checkersTab.click();
-  await expect(checkers.locator('[data-checkers-board="true"]')).toBeVisible();
-  await expect(checkers.locator('[data-checkers-mode="local"]')).toHaveAttribute(
-    "aria-pressed",
-    "true",
-  );
-
-  await arcade.getByRole("tab", { name: /xadrez/i }).click();
-  const chess = arcade.locator('[data-chess-game="true"]');
-  await expect(chess.locator('[data-chess-board="true"]')).toBeVisible();
-  await chess.getByRole("button", { name: /1 × 1 local/i }).click();
-  await expect(chess.locator('[data-chess-mode="local"]')).toHaveAttribute("aria-pressed", "true");
-
-  const resetProgress = arcade.locator('[data-arcade-reset-progress="true"]');
-  await expect(resetProgress).toBeVisible();
-  await resetProgress.click();
-  await expect(arcade.locator('[data-arcade-exploration="true"]')).toContainText("1 de 5 jogos explorados");
-  await expect(arcade.getByRole("tab", { name: /damas/i })).toHaveAttribute(
-    "data-arcade-game-visits",
-    "0",
-  );
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", "noopener noreferrer");
+  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-arcade-hub="true"]')).toHaveCount(0);
+  await expect.poll(
+    () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBeTruthy();
 });
 
 

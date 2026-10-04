@@ -25,7 +25,6 @@ type PortfolioMobileMenuProps = {
   showInstallAction: boolean;
   onClose: () => void;
   onSelectRoute: (route: MobileExperienceRoute) => void;
-  onOpenArcade: () => void;
   onOpenAppearance: (trigger?: HTMLElement | null) => void;
   onSharePortfolio: () => void;
   onInstallPortfolio: () => void;
@@ -48,7 +47,6 @@ export default function PortfolioMobileMenu({
   showInstallAction,
   onClose,
   onSelectRoute,
-  onOpenArcade,
   onOpenAppearance,
   onSharePortfolio,
   onInstallPortfolio,
@@ -188,13 +186,9 @@ export default function PortfolioMobileMenu({
             <a
               data-mobile-shortcut-contextual="true"
               href={mobileSecondaryShortcut.href}
-              onClick={(event) => {
-                if (mobileExperienceRoute === "explorer") {
-                  event.preventDefault();
-                  onOpenArcade();
-                }
-                onClose();
-              }}
+              onClick={onClose}
+              target={mobileExperienceRoute === "explorer" ? "_blank" : undefined}
+              rel={mobileExperienceRoute === "explorer" ? "noopener noreferrer" : undefined}
               className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               <SecondaryIcon className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />

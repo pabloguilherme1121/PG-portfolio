@@ -31,7 +31,7 @@ describe("mobileJourney", () => {
   it("adapta o atalho secundário à intenção sem repetir a ação principal", () => {
     expect(getMobileSecondaryShortcut("client")).toEqual({ href: "#servicos", label: "serviços" });
     expect(getMobileSecondaryShortcut("recruiter")).toEqual({ href: "#curriculo-web", label: "currículo" });
-    expect(getMobileSecondaryShortcut("explorer")).toEqual({ href: "#pg-lab", label: "PG Arcade" });
+    expect(getMobileSecondaryShortcut("explorer")).toEqual({ href: "https://pabloguilherme1121.github.io/PG-Arcade/", label: "PG Arcade" });
   });
   it("compõe um dock contextual sem perder a prioridade do briefing salvo", () => {
     expect(getMobileDockModel("client", false)).toEqual({
@@ -40,7 +40,7 @@ describe("mobileJourney", () => {
       hint: "1. diagnóstico · 2. briefing · 3. contato",
     });
 
-    expect(getMobileDockModel("explorer", false).secondary).toEqual({ href: "#pg-lab", label: "PG Arcade" });
+    expect(getMobileDockModel("explorer", false).secondary).toEqual({ href: "https://pabloguilherme1121.github.io/PG-Arcade/", label: "PG Arcade" });
     expect(getMobileDockModel("recruiter", true).primary).toEqual({
       href: "#contato-briefing",
       label: "retomar",
