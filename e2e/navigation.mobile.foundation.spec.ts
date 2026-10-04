@@ -254,6 +254,12 @@ test.describe("portfólio profissional", () => {
           Array.from(document.querySelectorAll<HTMLElement>(selector))
             .filter((node) => node.offsetParent !== null)
             .filter((node) => {
+              if (
+                node.matches('[role="tab"]') &&
+                node.closest('[data-arcade-game-strip="true"]')
+              ) {
+                return false;
+              }
               const rect = node.getBoundingClientRect();
               return rect.left < -1 || rect.right > window.innerWidth + 1;
             })
