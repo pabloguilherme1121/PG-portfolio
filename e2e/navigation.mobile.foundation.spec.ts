@@ -254,9 +254,12 @@ test.describe("portfólio profissional", () => {
           Array.from(document.querySelectorAll<HTMLElement>(selector))
             .filter((node) => node.offsetParent !== null)
             .filter((node) => {
-              const horizontalRail = node.closest<HTMLElement>('[data-arcade-game-tabs="true"]');
-              if (horizontalRail && horizontalRail !== node) return false;
-
+              if (
+                node.matches('[role="tab"]') &&
+                node.closest('[data-arcade-game-strip="true"]')
+              ) {
+                return false;
+              }
               const rect = node.getBoundingClientRect();
               return rect.left < -1 || rect.right > window.innerWidth + 1;
             })
@@ -277,6 +280,7 @@ test.describe("portfólio profissional", () => {
           '[data-arcade-hub="true"] p, [data-arcade-hub="true"] span, [data-arcade-hub="true"] button'
         ))
           .filter((node) => node.offsetParent !== null)
+          .filter((node) => Boolean(node.textContent?.trim()))
           .filter((node) => node.scrollWidth > node.clientWidth + 1)
           .map((node) => ({
             tag: node.tagName,

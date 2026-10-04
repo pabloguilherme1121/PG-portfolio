@@ -54,18 +54,27 @@ test("PG Arcade mobile expõe cinco jogos, preserva modos e permite zerar progre
   await expect(arcade).toBeVisible({ timeout: 15_000 });
   await expect(arcade.getByRole("tab")).toHaveCount(5);
 
-  const gameRail = arcade.locator('[data-arcade-game-tabs="true"]');
-  await expect(gameRail).toHaveCSS("overflow-x", "auto");
-  const railMetrics = await gameRail.evaluate((element) => ({
-    clientWidth: element.clientWidth,
-    scrollWidth: element.scrollWidth,
-  }));
-  expect(railMetrics.scrollWidth).toBeGreaterThan(railMetrics.clientWidth);
-
-  const tabRows = await arcade.getByRole("tab").evaluateAll((tabs) =>
+  const gameTabs = arcade.getByRole("tablist", { name: "Jogos do PG Arcade" });
+  await expect(gameTabs).toHaveCSS("overflow-x", "auto");
+  const tabRows = await gameTabs.getByRole("tab").evaluateAll((tabs) =>
     tabs.map((tab) => Math.round(tab.getBoundingClientRect().top)),
   );
   expect(new Set(tabRows).size).toBe(1);
+  const tabStripBox = await gameTabs.boundingBox();
+  expect(tabStripBox?.height ?? 999).toBeLessThan(110);
+  expect(
+    await gameTabs.evaluate(
+      element => element.scrollWidth > element.clientWidth
+    )
+  ).toBe(true);
+
+  const focusToggle = arcade.locator('[data-arcade-focus-toggle="true"]');
+  await expect(focusToggle).toHaveText(/modo foco/i);
+  await expect(focusToggle).toHaveAttribute("aria-pressed", "false");
+  await focusToggle.click();
+  await expect(focusToggle).toHaveText(/sair do foco/i);
+  await expect(focusToggle).toHaveAttribute("aria-pressed", "true");
+  await focusToggle.click();
 
   await arcade.getByRole("tab", { name: /dominó/i }).click();
   const domino = arcade.locator('[data-domino-game="true"]');
