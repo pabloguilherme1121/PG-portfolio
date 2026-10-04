@@ -11,6 +11,7 @@ export const portfolioPortraitResponsive = {
 export const portfolioWhatsAppNumber = "5561992903029";
 export const portfolioWhatsAppUrl = `https://wa.me/${portfolioWhatsAppNumber}?text=Ol%C3%A1%2C%20Pablo%21%20Vim%20pelo%20portf%C3%B3lio%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento.`;
 export const portfolioTelegramUrl = "https://t.me/mpjmarketing";
+export const portfolioArcadeUrl = "https://pabloguilherme1121.github.io/PG-Arcade/";
 
 export const portfolioNavigationItems = [
   ["sobre", "#sobre", "sobre"],

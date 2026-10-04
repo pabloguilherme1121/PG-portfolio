@@ -1,6 +1,5 @@
-// WebDev Auth TypeScript types
-// Auto-generated from protobuf definitions
-// Generated on: 2025-09-24T05:57:57.338Z
+// OAuth service transport types.
+// Kept local to avoid coupling the optional API to a provider-specific SDK.
 
 export interface AuthorizeRequest {
   redirectUri: string;
@@ -69,3 +68,4 @@ export interface GetUserInfoWithJwtResponse {
   /** Cron-only; references `schedule_task.uid`. */
   taskUid?: string | null;
 }
+

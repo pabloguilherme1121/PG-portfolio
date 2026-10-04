@@ -22,7 +22,7 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 - **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
 - **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
 - **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
-- **Pausa interativa opcional:** PG Arcade com jogos locais, modos contra IA e controles acessíveis, sem bloquear a jornada de conversão.
+- **PG Arcade dedicado:** a experiência jogável vive em um produto próprio; o portfólio mantém somente a vitrine, o acesso direto e a rota de retorno, evitando duas fontes de verdade.
 - **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
 
 ## Jornada principal
@@ -72,10 +72,10 @@ O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, My
 | --- | --- |
 | Interface | React 19, TypeScript, Vite, Tailwind CSS, shadcn/ui |
 | Navegação e dados | Wouter, TanStack Query, tRPC na versão com servidor |
-| Interação | Project Lens, PG Arcade, Briefing Studio |
+| Interação | Project Lens, integração com PG Arcade dedicado, Briefing Studio |
 | Testes | Vitest, Playwright, axe-core |
 | Publicação | GitHub Actions, GitHub Pages |
-| Qualidade | Typecheck, testes de navegador, auditoria de assets e validação de rotas |
+| Qualidade | Oxlint, TypeScript, Vitest, Playwright, axe, auditoria de assets e validação de rotas |
 
 ## Qualidade, performance e CI
 
@@ -83,16 +83,18 @@ O workflow de publicação só entrega o build depois das verificações de qual
 
 ```bash
 pnpm audit --audit-level=low
-pnpm check
-pnpm test
-pnpm test:e2e
+pnpm lint
+pnpm check:portfolio
+pnpm test:portfolio
 pnpm build:static
+pnpm test:e2e:static
+pnpm test:e2e
 pnpm audit:bundle
 ```
 
 A vitrine completa de projetos é carregada sob demanda quando `#projetos` se aproxima da viewport, enquanto links diretos para projetos e Observatório continuam carregando o conteúdo imediatamente. A CI também aplica um orçamento de regressão: cada chunk JavaScript deve permanecer abaixo de **225 kB** e o CSS compilado abaixo de **220 kB**.
 
-A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages. Os fluxos críticos passam pela suíte principal em Chromium, smoke mobile em Pixel 5 e smoke de compatibilidade em Firefox e WebKit. Dependabot acompanha atualizações de npm e GitHub Actions semanalmente.
+A pipeline verifica ainda o inventário de mídia e as rotas públicas antes do deploy para GitHub Pages. Os fluxos críticos passam pela suíte principal em Chromium, smoke mobile em Pixel 5 e smoke de compatibilidade em Firefox e WebKit. Dependabot acompanha atualizações de npm e GitHub Actions semanalmente. A variante opcional com API é validada em um workflow separado e acionado apenas quando API, contratos ou infraestrutura associada mudam.
 
 ## Desenvolvimento local
 
@@ -111,16 +113,20 @@ pnpm build:static
 node scripts/prepare-github-pages.mjs
 ```
 
-O frontend é estático por padrão. Os comandos de build e desenvolvimento funcionam em Windows e Linux. Para a variante com API, execute `pnpm build:server` e depois `pnpm start`; `pnpm build` gera apenas o site estático. Use `pnpm dev:server` para desenvolver a API. A arquitetura vigente está em [docs/current/architecture.md](docs/current/architecture.md).
+O frontend é estático por padrão. Os comandos de build e desenvolvimento funcionam em Windows e Linux. Para a variante com API, execute `pnpm build:server` e depois `pnpm start`; `pnpm build` gera apenas o site estático. Use `pnpm dev:server` para desenvolver a API. A CI da API é independente do deploy público para que a variante opcional não aumente o caminho crítico do GitHub Pages. A arquitetura vigente está em [docs/current/architecture.md](docs/current/architecture.md).
 
 Na publicação estática, o briefing prepara a mensagem para o WhatsApp e mantém a confirmação de envio sob controle do visitante.
+
+### PWA e uso offline
+
+O portfólio é instalável por manifest, mas a estratégia atual é deliberadamente **network-only**. O `sw.js` remove caches de versões antigas e não promete funcionamento offline; isso evita reintroduzir os service workers persistentes que já causaram regressões de runtime. Uma camada offline só deve voltar com versionamento explícito de cache e cobertura E2E específica.
 
 ## Estrutura
 
 | Diretório | Conteúdo |
 | --- | --- |
 | `apps/portfolio/` | Experiência pública, componentes e mídia |
-| `apps/portfolio/src/features/portfolio/` | Hero, projetos, PG Arcade, Project Lens, cases, briefing e analytics |
+| `apps/portfolio/src/features/portfolio/` | Hero, projetos, integração com PG Arcade dedicado, Project Lens, cases, briefing e analytics |
 | `apps/api/` e `packages/contracts/` | API e contratos da versão com servidor; não são enviados ao GitHub Pages |
 | `scripts/` | Preparação, auditoria e validação do build |
 | `e2e/` | Testes de navegador, mobile, SEO e acessibilidade |

@@ -1,0 +1,68 @@
+name: Validate optional API
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "packages/contracts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "drizzle.config.ts"
+      - "vite.config.ts"
+      - "scripts/build-api.mjs"
+      - "scripts/run-workspace.mjs"
+      - "scripts/smoke-api.mjs"
+      - ".github/workflows/api.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "packages/contracts/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "drizzle.config.ts"
+      - "vite.config.ts"
+      - "scripts/build-api.mjs"
+      - "scripts/run-workspace.mjs"
+      - "scripts/smoke-api.mjs"
+      - ".github/workflows/api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Enable Corepack
+        run: corepack enable
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=low
+      - name: Lint API
+        run: pnpm dlx oxlint@1.86.0 apps/api/src packages/contracts scripts/build-api.mjs scripts/smoke-api.mjs
+      - name: Typecheck API
+        run: pnpm check:api
+      - name: API unit tests
+        run: pnpm test:api
+      - name: Build optional API variant
+        run: pnpm build:server
+      - name: Smoke optional API variant
+        run: node scripts/smoke-api.mjs

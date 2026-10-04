@@ -1,3 +1,5 @@
+import { portfolioArcadeUrl } from "@/features/portfolio/portfolioConfig";
+
 export type MobileExperienceRoute = "client" | "recruiter" | "explorer";
 
 export const experienceRouteStorageKey = "pablo-portfolio-experience-route";
@@ -77,7 +79,7 @@ export function getMobileJourneyHint(route: MobileExperienceRoute, hasBriefingDr
 
 export function getMobileSecondaryShortcut(route: MobileExperienceRoute) {
   if (route === "recruiter") return { href: "#curriculo-web", label: "currículo" } as const;
-  if (route === "explorer") return { href: "#pg-lab", label: "PG Arcade" } as const;
+  if (route === "explorer") return { href: portfolioArcadeUrl, label: "PG Arcade" } as const;
   return { href: "#servicos", label: "serviços" } as const;
 }
 

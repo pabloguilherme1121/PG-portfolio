@@ -58,16 +58,14 @@ jobs:
         run: pnpm audit:assets --strict-if-present
       - name: Audit source escapes
         run: pnpm audit:source
-      - name: Typecheck
-        run: pnpm check
-      - name: Unit tests
-        run: pnpm test
+      - name: Lint source
+        run: pnpm lint
+      - name: Typecheck public app
+        run: pnpm check:portfolio
+      - name: Portfolio unit tests
+        run: pnpm test:portfolio
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium firefox webkit
-      - name: Build optional API variant
-        run: pnpm build:server
-      - name: Smoke optional API variant
-        run: node scripts/smoke-api.mjs
       - name: Build static portfolio
         run: pnpm build:static
       - name: Browser smoke on static bundle

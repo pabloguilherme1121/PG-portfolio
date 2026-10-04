@@ -1,6 +1,5 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
-import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin } from "vite";
 
@@ -43,26 +42,7 @@ export default defineConfig({
     process.env.VITE_DEPLOY_TARGET === "github-pages" ? "/PG-portfolio/" : "/",
   plugins: [react(), tailwindcss(), staticRuntimeGuard()],
   define: {
-    "import.meta.env.VITE_STATIC_DEPLOY": JSON.stringify(
-      String(isStaticDeploy)
-    ),
-    __PORTFOLIO_RESUME_AVAILABLE__: JSON.stringify(
-      process.env.E2E_FORCE_RESUME_AVAILABLE === "true" ||
-        fs.existsSync(
-          path.join(
-            portfolioRoot,
-            "public/manus-storage/curriculo-pablo-guilherme-profissional_1b06376f.pdf"
-          )
-        )
-    ),
-    __PORTFOLIO_HERO_AVAILABLE__: JSON.stringify(
-      fs.existsSync(
-        path.join(
-          portfolioRoot,
-          "public/manus-storage/pablo-hero-archive_fbc55c04.png"
-        )
-      )
-    ),
+    "import.meta.env.VITE_STATIC_DEPLOY": JSON.stringify(String(isStaticDeploy)),
   },
   resolve: {
     alias: [

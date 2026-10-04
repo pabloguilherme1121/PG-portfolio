@@ -20,7 +20,10 @@
     "dev:server": "node scripts/run-workspace.mjs api-dev",
     "check:portfolio": "tsc --noEmit -p apps/portfolio/tsconfig.json",
     "check:api": "tsc --noEmit -p apps/api/tsconfig.json",
-    "audit:source": "node scripts/check-source-escapes.mjs"
+    "audit:source": "node scripts/check-source-escapes.mjs",
+    "lint": "pnpm dlx oxlint@1.86.0 apps/portfolio/src apps/api/src scripts vite.config.ts playwright.config.ts playwright.static.config.ts",
+    "test:portfolio": "vitest run apps/portfolio/src",
+    "test:api": "vitest run apps/api/src"
   },
   "dependencies": {},
   "devDependencies": {
