@@ -27,7 +27,7 @@ const games = [
   { id: "domino", label: "Dominó", meta: "compra + bloqueio", icon: CircleDot },
   { id: "futebol", label: "Futebol", meta: "pênaltis + faltas", icon: Goal },
   { id: "damas", label: "Damas", meta: "captura + séries", icon: Crown },
-  { id: "xadrez", label: "Xadrez", meta: "xeque + quatro níveis", icon: Castle },
+  { id: "xadrez", label: "Xadrez", meta: "xeque + cinco níveis", icon: Castle },
 ] as const;
 
 const gameHelp: Record<ArcadeGame, string> = {
@@ -151,8 +151,15 @@ export default function PortfolioArcade() {
               </p>
             </div>
             <div className="flex min-w-0 max-w-full flex-wrap justify-start gap-2 sm:justify-end">
-              <button type="button" aria-pressed={focusMode} onClick={() => setFocusMode((current) => !current)} className="min-h-11 rounded-xl border border-[#67e8f9]/40 bg-[#08203b] px-3 text-sm text-[#cffafe] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
-                Modo de jogo
+              <button
+                type="button"
+                data-arcade-focus-toggle="true"
+                aria-label="Modo de jogo"
+                aria-pressed={focusMode}
+                onClick={() => setFocusMode((current) => !current)}
+                className="min-h-11 rounded-xl border border-[#67e8f9]/40 bg-[#08203b] px-3 text-sm text-[#cffafe] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+              >
+                {focusMode ? "Sair do foco" : "Modo foco"}
               </button>
               <span data-arcade-overview="true" className="max-w-full rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#8fa8c7] [overflow-wrap:anywhere]">
                 sem cadastro · progresso local
@@ -174,7 +181,8 @@ export default function PortfolioArcade() {
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
             onKeyDown={handleTabKeyDown}
-            className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5"
+            data-arcade-game-strip="true"
+            className="mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-5"
           >
             {games.map((item) => {
               const Icon = item.icon;
@@ -197,7 +205,7 @@ export default function PortfolioArcade() {
                   mostVisitedGame === item.id ? "true" : undefined
                 }
                 onClick={() => selectGame(item.id)}
-                className={`group relative min-h-[82px] min-w-0 max-w-full overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
+                className={`group relative min-h-[74px] min-w-[142px] max-w-[172px] snap-start overflow-hidden rounded-[15px] border px-3 py-3 text-left transition-[border-color,background-color,transform] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-safe:hover:-translate-y-0.5 sm:min-w-0 sm:max-w-full ${isActive ? "border-[#67e8f9]/80 bg-[#0c3150] text-white shadow-[inset_0_1px_rgba(255,255,255,0.08),0_12px_30px_rgba(8,145,178,0.12)]" : "border-white/10 bg-[#071326]/90 text-[#9bb4c7] hover:border-[#67e8f9]/40 hover:bg-[#0a1c32]"}`}
               >
                 <span className="flex items-center justify-between gap-2">
                   <span className={`grid h-8 w-8 place-items-center rounded-[10px] border ${isActive ? "border-[#67e8f9]/40 bg-[#67e8f9]/10 text-[#a5f3fc]" : "border-white/10 bg-white/[0.03] text-[#7894ae] group-hover:text-[#a5f3fc]"}`}>
@@ -210,7 +218,7 @@ export default function PortfolioArcade() {
                   ) : null}
                 </span>
                 <span className="mt-2 block max-w-full font-mono text-xs font-semibold leading-4 [overflow-wrap:anywhere]">{item.label}</span>
-                <span className="mt-0.5 hidden max-w-full font-body text-[11px] leading-4 text-[#9fb7d1] [overflow-wrap:anywhere] min-[390px]:block">
+                <span className="mt-0.5 hidden max-w-full font-body text-[11px] leading-4 text-[#9fb7d1] [overflow-wrap:anywhere] sm:block">
                   {item.meta}
 
                 </span>
