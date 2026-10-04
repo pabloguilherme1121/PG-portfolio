@@ -79,6 +79,27 @@ export default function PortfolioArcade() {
   );
 
   useEffect(() => {
+    const strip = tabsRef.current;
+    const selected = strip?.querySelector<HTMLButtonElement>(
+      '[aria-selected="true"]',
+    );
+    if (!strip || !selected || strip.scrollWidth <= strip.clientWidth) return;
+    const stripBounds = strip.getBoundingClientRect();
+    const tabBounds = selected.getBoundingClientRect();
+    strip.scrollTo({
+      left: strip.scrollLeft + tabBounds.left - stripBounds.left
+        - (strip.clientWidth - tabBounds.width) / 2,
+      behavior: "instant",
+    });
+  }, [game, focusMode]);
+
+  const focusGameTab = (selectedGame: ArcadeGame) => {
+    tabsRef.current?.querySelector<HTMLButtonElement>(
+      `[data-arcade-game-tab="${selectedGame}"]`,
+    )?.focus({ preventScroll: true });
+  };
+
+  useEffect(() => {
     setSession((current) => markArcadeGameExplored(current, game));
   }, [game]);
 
@@ -105,6 +126,7 @@ export default function PortfolioArcade() {
   };
 
   const resetProgress = () => {
+    focusGameTab(game);
     setSession((current) => resetArcadeSessionProgress(current, game));
     trackPortfolioEvent("arcade_progress_reset", { arcadeGame: game });
   };
@@ -162,7 +184,7 @@ export default function PortfolioArcade() {
                 {focusMode ? "Sair do foco" : "Modo foco"}
               </button>
               <span data-arcade-overview="true" className="max-w-full rounded-full border border-white/10 px-2.5 py-1 font-mono text-[10px] uppercase leading-4 tracking-[0.07em] text-[#8fa8c7] [overflow-wrap:anywhere]">
-                sem cadastro · progresso local
+                sem cadastro · histórico local
               </span>
               <span
                 data-arcade-session-summary="true"
@@ -180,6 +202,7 @@ export default function PortfolioArcade() {
             role="tablist"
             aria-label="Jogos do PG Arcade"
             aria-orientation="horizontal"
+            aria-describedby="arcade-navigation-help"
             onKeyDown={handleTabKeyDown}
             data-arcade-game-strip="true"
             className="mt-5 flex snap-x snap-mandatory gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:grid sm:grid-cols-3 sm:overflow-visible sm:pb-0 lg:grid-cols-5"
@@ -227,6 +250,11 @@ export default function PortfolioArcade() {
             })}
           </div>
 
+          <p id="arcade-navigation-help" className="mt-2 text-xs leading-5 text-[#a9bfd8]">
+            <span className="sm:hidden">Deslize para ver os cinco jogos. </span>
+            Use ← e → para trocar de jogo pelo teclado. Suas partidas continuam ao trocar de aba.
+          </p>
+
           <div
             data-arcade-exploration="true"
             className="mt-3 min-w-0 max-w-full flex-col gap-3 rounded-[15px] flex border border-white/8 bg-black/15 p-3.5 sm:flex-row sm:items-center sm:justify-between"
@@ -261,13 +289,16 @@ export default function PortfolioArcade() {
                   onClick={resetProgress}
                   className="min-h-11 rounded-[10px] border border-white/12 px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#a9bfd8] transition-colors hover:border-white/25 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
                 >
-                  Zerar progresso
+                  Zerar histórico
                 </button>
               ) : null}
               <button
                 type="button"
                 data-arcade-suggestion="true"
-                onClick={() => selectGame(suggestedGame)}
+                onClick={() => {
+                  selectGame(suggestedGame);
+                  focusGameTab(suggestedGame);
+                }}
                 className="min-h-11 rounded-[10px] border border-[#67e8f9]/35 bg-[#08203b] px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#cffafe] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
               >
                 Experimentar {suggestedGameLabel}
