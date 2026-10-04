@@ -74,7 +74,13 @@ test("quatro jogos oferecem especialista no controle de dificuldade", async ({
     await page.getByRole("tab", { name: new RegExp(tab, "i") }).click();
     const game = page.locator(`[data-${selector}-game]`);
     if (selector === "domino") {
-      await game.locator("[data-domino-settings] summary").click();
+      const settingsControl = game.locator(
+        '[data-arcade-settings-control="domino"]'
+      );
+      await expect(settingsControl).toContainText(
+        /rápida.*comprar.*normal.*MD3/i
+      );
+      await settingsControl.click();
     }
     const expert = game.getByRole("button", {
       name: /^especialista$/i,
@@ -85,5 +91,10 @@ test("quatro jogos oferecem especialista no controle de dificuldade", async ({
     await expect(game.locator("[data-arcade-difficulty]")).toContainText(
       "Especialista"
     );
+    if (selector === "domino") {
+      await expect(
+        game.locator('[data-arcade-settings-control="domino"]')
+      ).toContainText(/especialista/i);
+    }
   }
 });

@@ -1,3 +1,25 @@
+
+@media (max-width: 639px) {
+  .arcade-hub [data-arcade-game-strip="true"] {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 4px;
+  }
+
+  .arcade-hub [data-arcade-game-strip="true"] > [role="tab"] {
+    flex: 0 0 clamp(144px, 44vw, 164px);
+    width: clamp(144px, 44vw, 164px);
+    min-width: clamp(144px, 44vw, 164px);
+    max-width: 164px;
+    scroll-snap-align: start;
+  }
+}
+
 .arcade-hub[data-arcade-focus="true"] [data-arcade-overview],
 .arcade-hub[data-arcade-focus="true"] [data-arcade-session-summary],
 .arcade-hub[data-arcade-focus="true"] [data-arcade-exploration],
