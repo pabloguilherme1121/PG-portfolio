@@ -51,58 +51,20 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator("#conteudo-principal")).toBeFocused();
   });
 
-  test("mantém briefing e PG Arcade confortáveis entre 320 e 430px", async ({ page }) => {
+  test("mantém briefing e vitrine do PG Arcade confortáveis entre 320 e 430px", async ({ page }) => {
     await useDataSavingConnection(page);
     for (const width of [320, 360, 390, 430]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
-
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
 
       const form = await openContactBriefing(page);
       await expect(form.locator('[data-briefing-studio="true"]')).toBeVisible();
-      const briefingOverflow = await form.evaluate((element) =>
-        Array.from(element.querySelectorAll<HTMLElement>("*"))
-          .filter((node) => node.offsetParent !== null && node.getAttribute("aria-hidden") !== "true" && node.scrollWidth > node.clientWidth + 1)
-          .slice(0, 12)
-          .map((node) => ({
-            tag: node.tagName,
-            className: node.className,
-            scrollWidth: node.scrollWidth,
-            clientWidth: node.clientWidth,
-            text: node.textContent?.trim().slice(0, 80),
-          })),
-      );
-      expect(briefingOverflow).toEqual([]);
-
-      const briefingButtons = form.getByRole("button");
-      const briefingCount = await briefingButtons.count();
-      for (let index = 0; index < Math.min(briefingCount, 8); index += 1) {
-        const box = await briefingButtons.nth(index).boundingBox();
-        if (box) expect(box.height).toBeGreaterThanOrEqual(44);
-      }
-
-      await page.locator('[data-arcade-open-control="true"]').click();
-      const game = page.locator('[data-tic-tac-toe="true"]');
-      await game.scrollIntoViewIfNeeded();
-      await expect.poll(() => game.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
-
-      await expect(game.locator('[data-arcade-presets="true"]').getByRole("button")).toHaveCount(4);
-      const presetColumns = await game.locator('[data-arcade-preset-grid="true"]').evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
-      expect(presetColumns).toBe(2);
-      await game.locator('[data-arcade-advanced="true"] summary').click();
-
-      for (const name of [/contra (o )?bot/i, /duas pessoas/i, /fácil/i, /normal/i, /impossível/i, /reiniciar partida/i]) {
-        const button = game.getByRole("button", { name }).first();
-        await expect(button).toBeVisible();
-        const box = await button.boundingBox();
-        expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
-      }
-
-      const board = game.locator('[data-game-cell="true"]').first();
-      const boardBox = await board.boundingBox();
-      expect(boardBox?.width ?? 0).toBeGreaterThanOrEqual(72);
-      expect(boardBox?.height ?? 0).toBeGreaterThanOrEqual(72);
+      const showcase = page.locator('#pg-lab[data-arcade-showcase="true"]');
+      await showcase.scrollIntoViewIfNeeded();
+      await expect(showcase).toBeVisible();
+      await expect(showcase.locator('[data-arcade-full-site="true"]')).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
+      await expect.poll(() => showcase.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
     }
   });
 
@@ -177,40 +139,29 @@ test.describe("portfólio profissional", () => {
     await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(0);
     await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
 
-    await page.locator('[data-arcade-open-control="true"]').click();
-    await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "true");
-    const game = page.locator('[data-tic-tac-toe="true"]');
-    await expect(game.locator('[data-arcade-preset-card="true"]')).toHaveCount(4);
-    await expect(game.locator('[data-arcade-preset-card="true"]').nth(0)).toContainText(/contra.*bot|contra.*ia/i);
-    await expect(game.locator('[data-arcade-preset-card="true"]').nth(1)).toContainText(/impossível|estratégia/i);
-    await expect(game.locator('[data-arcade-preset-card="true"]').nth(2)).toContainText(/local|1.*1/i);
-    await expect(game.locator('[data-arcade-preset-card="true"]').nth(3)).toContainText(/sobrevivência|MD5/i);
+    const showcase = page.locator('#pg-lab[data-arcade-showcase="true"]');
+    await showcase.scrollIntoViewIfNeeded();
+    await expect(showcase).toBeVisible();
+    await expect(showcase.locator('[data-arcade-full-site="true"]')).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
+    await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
   });
 
-  test("economia de dados evita preload especulativo mas mantém Arcade funcional no toque", async ({ page }) => {
+  test("economia de dados não carrega motores locais do Arcade", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(navigator, "connection", {
         configurable: true,
         value: { saveData: true, effectiveType: "2g" },
       });
     });
-
-    const optionalRequests: string[] = [];
+    const arcadeRequests: string[] = [];
     page.on("request", (request) => {
-      if (/Portfolio(TicTacToe|ResumePreview)/i.test(request.url())) optionalRequests.push(request.url());
+      if (/Portfolio(TicTacToe|Chess|Checkers|Domino|Football)/i.test(request.url())) arcadeRequests.push(request.url());
     });
-
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-
-    const arcadeControl = page.locator('[data-arcade-open-control="true"]');
-    await arcadeControl.hover();
-    expect(optionalRequests.filter((url) => /PortfolioTicTacToe/i.test(url))).toEqual([]);
-
-    await arcadeControl.click();
-    await expect(page.locator('[data-tic-tac-toe="true"]')).toBeVisible();
-    await expect.poll(() => optionalRequests.filter((url) => /PortfolioTicTacToe/i.test(url)).length).toBeGreaterThan(0);
+    expect(arcadeRequests).toEqual([]);
+    await expect(page.locator('#pg-lab[data-arcade-showcase="true"]')).toBeVisible();
   });
 
   test("nova leitura mobile preserva largura e ações entre 320 e 430px, landscape e zoom", async ({ page }) => {
@@ -236,15 +187,14 @@ test.describe("portfólio profissional", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
 
-      await page.locator('[data-arcade-open-control="true"]').click();
-      await expect(page.locator('[data-arcade-hub="true"]')).toBeVisible();
+      const showcase = page.locator('#pg-lab[data-arcade-showcase="true"]');
+      await showcase.scrollIntoViewIfNeeded();
+      await expect(showcase).toBeVisible();
 
       const overflow = await page.evaluate(() => {
         const selectors = [
-          '[data-arcade-hub="true"]',
-          '[data-arcade-hub="true"] [role="tab"]',
-          '[data-arcade-exploration="true"]',
-          '[data-arcade-preset-card="true"]',
+          '#pg-lab[data-arcade-showcase="true"]',
+          '#pg-lab[data-arcade-showcase="true"] a',
           '.featured-project-card',
           '.process-step-card',
           '.service-offer-panel[data-service-active="true"]',
