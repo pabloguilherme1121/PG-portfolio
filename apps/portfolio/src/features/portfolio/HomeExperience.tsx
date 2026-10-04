@@ -336,6 +336,10 @@ export default function Home() {
     });
   }
 
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("arcade") === "1") openPgArcade();
+  }, []);
+
   function togglePgArcade() {
     if (pgLabOpen) {
       setPgLabOpen(false);
@@ -675,6 +679,9 @@ export default function Home() {
               <h2 id="pg-lab-title" className="mt-3 max-w-3xl font-display text-[clamp(2rem,4vw,4.25rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white">Código que você pode jogar.</h2>
               <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">Cinco experiências jogáveis — Jogo da Velha, Dominó, Futebol, Damas e Xadrez — mostram lógica, estados, IA, responsividade e cuidado com interação sem tirar o foco dos projetos profissionais.</p>
             </div>
+            <div className="mt-6 flex flex-col gap-3 sm:mt-0">
+            <a href="https://pabloguilherme1121.github.io/PG-Arcade/" target="_blank" rel="noopener noreferrer" data-arcade-full-site="true" className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#67e8f9]/45 bg-[#0b2746] px-4 text-sm font-semibold text-[#bdf7ff] transition-colors hover:bg-[#103857] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">Jogar no PG Arcade completo <span aria-hidden="true">↗</span></a>
+            <p className="max-w-xs text-xs leading-5 text-[#a9bfd8]">Corrida, carros, tiro, lógica e casuais. Abre em outra aba.</p>
             <button
               type="button"
               data-arcade-open-control="true"
@@ -687,6 +694,7 @@ export default function Home() {
               aria-controls="pg-lab-game"
               className="mt-6 inline-flex min-h-12 w-full shrink-0 items-center justify-center border border-[#67e8f9]/45 px-4 font-mono text-[9px] uppercase tracking-[0.12em] text-[#bdf7ff] transition-colors hover:border-[#a5f3fc] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:mt-0 sm:w-auto"
             >{pgLabOpen ? "fechar PG Arcade" : "explorar PG Arcade"}</button>
+            </div>
           </div>
           <div id="pg-lab-game" hidden={!pgLabOpen} className="-mx-4 max-w-[1440px] min-[360px]:-mx-5 sm:mx-auto">
             {pgLabOpen && (
