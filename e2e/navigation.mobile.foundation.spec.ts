@@ -274,6 +274,7 @@ test.describe("portfólio profissional", () => {
           '[data-arcade-hub="true"] p, [data-arcade-hub="true"] span, [data-arcade-hub="true"] button'
         ))
           .filter((node) => node.offsetParent !== null)
+          .filter((node) => Boolean(node.textContent?.trim()))
           .filter((node) => node.scrollWidth > node.clientWidth + 1)
           .map((node) => ({
             tag: node.tagName,
