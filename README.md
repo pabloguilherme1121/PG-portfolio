@@ -6,7 +6,7 @@
 ![Vite](https://img.shields.io/badge/Vite-7-646cff)
 [![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-green)](LICENSE)
 
-**[Abrir o portfólio](https://pabloguilherme1121.github.io/PG-portfolio/)** · **[Abrir o Observatório](https://pabloguilherme01.github.io/observatorio/#dashboard)**
+**[Abrir o portfólio](https://pabloguilherme1121.github.io/PG-portfolio/)** · **[Observatório](https://pabloguilherme01.github.io/observatorio/#dashboard)** · **[PG Arcade](https://pabloguilherme1121.github.io/PG-Arcade/)**
 
 Portfólio profissional de Pablo Guilherme, estudante de Análise e Desenvolvimento de Sistemas, focado em transformar informação, dados e objetivos de negócio em produtos digitais claros, responsivos e publicáveis.
 
@@ -14,33 +14,26 @@ O projeto foi estruturado para mostrar **provas de trabalho**, e não apenas uma
 
 ## O que este portfólio demonstra
 
-- **Produto real em produção:** o Observatório pode ser aberto, navegado e avaliado fora do portfólio.
-- **Produto full-stack em evolução:** o Trajeto expõe arquitetura de produto, frontend, API, persistência, testes, CI e segurança em código público.
-- **Engenharia verificável:** React, TypeScript, Vite, testes unitários, Playwright e auditoria de assets fazem parte do fluxo.
-- **Project Lens:** diagnóstico interativo que transforma um problema inicial em uma rota de projeto e pré-preenche o briefing.
-- **Briefing Studio:** fluxo progressivo em cinco etapas, com autosave local, validação e resumo do contexto.
-- **Estudos de caso verificáveis:** cada case conecta contexto, decisão, aprendizado e evidência concreta.
-- **Leitura curta para recrutadores:** currículo web imprimível, GitHub, Observatório, Trajeto e qualidade reunidos em uma matriz única de provas.
-- **Currículo web verificável:** versão própria para impressão/salvar em PDF, construída somente com formação, stack, projetos e evidências já públicas no portfólio.
-- **PG Arcade dedicado:** a experiência jogável vive em um produto próprio; o portfólio mantém somente a vitrine, o acesso direto e a rota de retorno, evitando duas fontes de verdade.
-- **Experiência responsiva:** mobile, acessibilidade, foco, alvos de toque e preferência por movimento reduzido são cobertos pela suíte de qualidade.
+A apresentação principal gira em torno de três provas públicas:
+
+- **Observatório:** produto publicado para demonstrar organização de informação, dados, interface responsiva e entrega web.
+- **PG Arcade:** produto interativo dedicado que demonstra arquitetura de frontend, estados complexos, compatibilidade mobile e QA sem duplicar motores dentro do portfólio.
+- **Trajeto:** produto full-stack em evolução que demonstra frontend, API, persistência, contratos e decisões de arquitetura.
+
+Project Lens, Briefing Studio, currículo web e a matriz de qualidade continuam no projeto como **recursos auxiliares da jornada**, não como produtos concorrendo pela mesma atenção.
 
 ## Jornada principal
 
 ```text
 Posicionamento
     ↓
-Provas públicas e projetos
+3 projetos principais
     ↓
-Rotas do visitante e PG Arcade
+Processo e decisões técnicas
     ↓
-Project Lens
+Recursos auxiliares da jornada
     ↓
-Perfil profissional, serviços e processo
-    ↓
-Briefing Studio
-    ↓
-Contato / WhatsApp
+Contato / briefing
 ```
 
 A narrativa prioriza uma pergunta: **o que esta entrega resolve, como foi construída e onde pode ser verificada?**
