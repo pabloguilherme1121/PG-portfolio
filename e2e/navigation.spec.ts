@@ -357,6 +357,7 @@ test.describe("portfólio profissional", () => {
   });
 
   test("tema sincroniza a barra do navegador e controles nativos", async ({ page }) => {
+    await page.emulateMedia({ colorScheme: "dark" });
     await page.addInitScript(() => {
       window.localStorage.setItem("theme-preference", "light");
       window.localStorage.setItem("theme", "light");

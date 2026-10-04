@@ -1,6 +1,5 @@
 /** Design: Arquivo Profundo — a aplicação inicia no modo escuro para preservar o contraste do portfólio. */
 import { Toaster } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Router as WouterRouter, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -43,12 +42,10 @@ function App({ administrativeRoutes }: { administrativeRoutes?: ReactNode }) {
   return (
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark" switchable>
-        <TooltipProvider>
-          <Toaster />
-          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-            <AppRoutes administrativeRoutes={administrativeRoutes} />
-          </WouterRouter>
-        </TooltipProvider>
+        <Toaster />
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <AppRoutes administrativeRoutes={administrativeRoutes} />
+        </WouterRouter>
       </ThemeProvider>
     </ErrorBoundary>
   );
