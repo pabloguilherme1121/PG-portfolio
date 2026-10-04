@@ -55,6 +55,11 @@ test("PG Arcade mobile expõe cinco jogos, preserva modos e permite zerar progre
   await expect(arcade.getByRole("tab")).toHaveCount(5);
 
   const gameTabs = arcade.getByRole("tablist", { name: "Jogos do PG Arcade" });
+  await expect(gameTabs).toHaveCSS("overflow-x", "auto");
+  const tabRows = await gameTabs.getByRole("tab").evaluateAll((tabs) =>
+    tabs.map((tab) => Math.round(tab.getBoundingClientRect().top)),
+  );
+  expect(new Set(tabRows).size).toBe(1);
   const tabStripBox = await gameTabs.boundingBox();
   expect(tabStripBox?.height ?? 999).toBeLessThan(110);
   expect(
