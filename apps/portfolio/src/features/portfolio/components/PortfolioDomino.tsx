@@ -302,6 +302,8 @@ export default function PortfolioDomino() {
     winner,
   ]);
 
+  const settingsSummary = `${variant === "quick" ? "rápida" : "clássica"} · ${rules === "draw" ? "comprar" : "bloqueio"} · ${mode === "bot" ? difficultyLabel[difficulty] : "1 × 1 local"} · ${targetLabel[matchTarget]}`;
+
   const status = useMemo(() => {
     if (matchWinner === "player")
       return mode === "bot"
@@ -606,8 +608,19 @@ export default function PortfolioDomino() {
               data-domino-settings
               className="rounded-xl border border-white/10 p-3"
             >
-              <summary className="min-h-11 cursor-pointer py-3 text-sm text-[#d8e7f0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200">
-                Ajustar regras, dificuldade e série
+              <summary
+                data-arcade-settings-control="domino"
+                className="min-h-11 cursor-pointer py-3 text-sm text-[#d8e7f0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+              >
+                <span className="flex flex-col gap-1 pr-4">
+                  <span>Ajustar regras, dificuldade e série</span>
+                  <span
+                    data-domino-settings-summary="true"
+                    className="font-body text-[11px] uppercase tracking-[0.08em] text-[#7191a8]"
+                  >
+                    {settingsSummary}
+                  </span>
+                </span>
               </summary>
               <div className="space-y-4 pt-3">
                 <div>
