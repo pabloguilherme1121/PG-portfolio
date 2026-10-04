@@ -5,29 +5,26 @@ test.beforeEach(async ({ page }) => {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({ contentType: "text/css", body: "" }));
 });
 
-test("Arcade troca jogos sem buscar mais código depois de abrir", async ({ page, isMobile }) => {
-  await page.goto("./");
-  const opener = page.locator('[data-arcade-open-control="true"]');
-  if (isMobile) await opener.tap();
-  else await opener.click();
-  await expect(opener).toHaveAttribute("aria-expanded", "true");
-  const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade).toBeVisible({ timeout: 15_000 });
-  const requests: string[] = [];
-  await page.route(/\/assets\/.*\.js$/, (route) => {
-    const url = route.request().url();
-    // Scrolling tabs can mount unrelated deferred sections; only game code is forbidden.
-    if (/Portfolio(?:Arcade|Checkers|Domino|TicTacToe|Football|Chess)-/.test(url)) {
-      requests.push(url);
-      return route.abort();
+test("Arcade dedicado não injeta módulos de jogos no bundle estático", async ({ page }) => {
+  const gameRequests: string[] = [];
+  page.on("request", (request) => {
+    if (/Portfolio(?:Arcade|Checkers|Domino|TicTacToe|Football|Chess)-/.test(request.url())) {
+      gameRequests.push(request.url());
     }
-    return route.continue();
   });
-  await arcade.getByRole("tab", { name: /dominó/i }).click();
-  await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible();
-  await arcade.getByRole("tab", { name: /damas/i }).click();
-  await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible();
-  expect(requests).toEqual([]);
+
+  await page.goto("./");
+  const showcase = page.locator("#pg-lab");
+  await showcase.scrollIntoViewIfNeeded();
+  const link = showcase.locator('[data-arcade-full-site="true"]');
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://pabloguilherme1121.github.io/PG-Arcade/",
+  );
+  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-arcade-hub="true"]')).toHaveCount(0);
+  expect(gameRequests).toEqual([]);
 });
 
 for (const file of ["bootstrapStatic", "index"]) {
@@ -123,13 +120,16 @@ test("mobile continua utilizável com armazenamento bloqueado em 320px", async (
   await page.locator('[data-mobile-menu-toggle="true"]').click();
   await expect(page.getByRole("dialog", { name: "Menu de navegação móvel" })).toBeVisible();
   await page.keyboard.press("Escape");
-  await page.locator('[data-arcade-open-control="true"]').click();
-  const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade, JSON.stringify(errors)).toBeVisible({ timeout: 15_000 });
-  for (const game of [/dominó/i, /damas/i]) {
-    await arcade.getByRole("tab", { name: game }).click();
-    await expect(arcade.getByRole("tabpanel")).toBeVisible();
-    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
-  }
+  const arcadeLink = page.locator('#pg-lab [data-arcade-full-site="true"]');
+  await arcadeLink.scrollIntoViewIfNeeded();
+  await expect(arcadeLink).toBeVisible();
+  await expect(arcadeLink).toHaveAttribute(
+    "href",
+    "https://pabloguilherme1121.github.io/PG-Arcade/",
+  );
+  await expect(page.locator('[data-arcade-hub="true"]')).toHaveCount(0);
+  await expect.poll(
+    () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBeTruthy();
   expect(errors).toEqual([]);
 });

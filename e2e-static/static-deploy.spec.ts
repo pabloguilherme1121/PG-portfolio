@@ -72,34 +72,31 @@ test("bundle estático resolve briefing por âncora direta", async ({ page }) =>
   expect(pageErrors).toEqual([]);
 });
 
-test("bundle estático carrega PG Arcade e troca jogos sem novos módulos", async ({ page, isMobile }) => {
+test("bundle estático carrega PG Arcade dedicado sem módulos de jogos", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
+  const gameRequests: string[] = [];
+  page.on("request", (request) => {
+    if (/Portfolio(?:Arcade|Checkers|Domino|TicTacToe|Football|Chess)-/.test(request.url())) {
+      gameRequests.push(request.url());
+    }
+  });
 
   await page.goto("./");
-  const openArcade = page.locator('[data-arcade-open-control="true"]');
-  if (isMobile) await openArcade.tap();
-  else await openArcade.click();
-  await expect(openArcade).toHaveAttribute("aria-expanded", "true");
-
-  const arcade = page.locator('[data-arcade-hub="true"]');
-  await expect(arcade).toBeVisible({ timeout: 15_000 });
-  await expect(arcade.getByRole("tab")).toHaveCount(5);
-
-  await arcade.getByRole("tab", { name: /dominó/i }).click();
-  await expect(arcade.locator('[data-domino-game="true"]')).toBeVisible({ timeout: 15_000 });
-
-  await arcade.getByRole("tab", { name: /futebol/i }).click();
-  await expect(arcade.locator("[data-football-game]")).toBeVisible();
-  await arcade.getByRole("button", { name: "Chutar", exact: true }).click();
-  await expect(arcade.getByRole("status")).toContainText(/Gol|Defesa|Fora/);
-
-  const checkersTab = arcade.getByRole("tab", { name: /damas/i });
-  await checkersTab.click();
-  await expect(checkersTab).toHaveAttribute("aria-selected", "true");
-  await expect(arcade.locator('[data-checkers-board="true"]')).toBeVisible({ timeout: 15_000 });
-
+  const showcase = page.locator("#pg-lab");
+  await showcase.scrollIntoViewIfNeeded();
+  const link = showcase.locator('[data-arcade-full-site="true"]');
+  await expect(link).toBeVisible();
+  await expect(link).toHaveAttribute(
+    "href",
+    "https://pabloguilherme1121.github.io/PG-Arcade/",
+  );
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
+  await expect(page.locator('[data-arcade-hub="true"]')).toHaveCount(0);
+  expect(gameRequests).toEqual([]);
   expect(pageErrors).toEqual([]);
 });
+
 
 test("bundle estático mostra curadoria social sem depender da API", async ({ page }) => {
   const pageErrors = collectPageErrors(page);
