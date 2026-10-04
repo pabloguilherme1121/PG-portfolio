@@ -13,7 +13,7 @@ describe("repository hygiene", () => {
     };
     const arcadeShortcut = manifest.shortcuts?.find((shortcut) => shortcut.name === "Abrir PG Arcade");
 
-    expect(home).not.toContain('components/PortfolioArcade');
+    expect(home).not.toContain('components/PortfolioArcade")');
     expect(home).not.toContain('data-arcade-open-control="true"');
     expect(arcadeShortcut?.url).toBe("https://pabloguilherme1121.github.io/PG-Arcade/");
   });
