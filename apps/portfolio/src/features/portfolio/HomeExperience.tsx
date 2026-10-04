@@ -4,7 +4,6 @@
  * metadados, linha de progresso e linguagem visual de arquivo em evolução.
  */
 import {
-  ArrowDown,
   ArrowUp,
   ArrowUpRight,
   Menu,
