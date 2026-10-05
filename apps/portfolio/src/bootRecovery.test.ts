@@ -136,6 +136,17 @@ describe("pre-React legacy runtime cleanup", () => {
     expect(second.isFallbackVisible()).toBe(true);
   });
 
+  it("treats the React runtime recovery marker as an exhausted retry", async () => {
+    const runtime = boot(
+      "https://example.com/PG-portfolio/?pg_recover=runtime-hardening-v10-preload-error-demo",
+    );
+    await flushPromises();
+
+    expect(await runtime.runtime.rescue("window-error")).toBe(false);
+    expect(runtime.navigations).toEqual([]);
+    expect(runtime.isFallbackVisible()).toBe(true);
+  });
+
   it("ignores ordinary promise rejections and recovers stale chunk failures", async () => {
     const runtime = boot();
     await flushPromises();
