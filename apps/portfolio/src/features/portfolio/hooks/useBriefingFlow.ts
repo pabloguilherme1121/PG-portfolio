@@ -31,6 +31,23 @@ function readBriefingDraft(): BriefingDraft {
   }
 }
 
+function applyBriefingDraftToForm(
+  form: HTMLFormElement,
+  draft: BriefingDraft,
+) {
+  for (const fieldName of briefingFieldNames) {
+    const field = form.elements.namedItem(fieldName);
+    const value = draft[fieldName] ?? "";
+    if (
+      field instanceof HTMLInputElement ||
+      field instanceof HTMLTextAreaElement ||
+      field instanceof HTMLSelectElement
+    ) {
+      field.value = value;
+    }
+  }
+}
+
 export function useBriefingFlow({
   initialBriefingSeed = null,
   setFormSent,
@@ -48,17 +65,7 @@ export function useBriefingFlow({
     const form = briefingFormRef.current;
     if (!form) return;
 
-    for (const fieldName of briefingFieldNames) {
-      const field = form.elements.namedItem(fieldName);
-      const value = briefingDraft[fieldName] ?? "";
-      if (
-        field instanceof HTMLInputElement ||
-        field instanceof HTMLTextAreaElement ||
-        field instanceof HTMLSelectElement
-      ) {
-        field.value = value;
-      }
-    }
+    applyBriefingDraftToForm(form, briefingDraft);
   }, [briefingDraft, briefingRevision]);
 
   function notifyBriefingProgress(nextDraft: BriefingDraft) {
@@ -142,6 +149,8 @@ export function useBriefingFlow({
     }
 
     const resetDraft = { ...briefingDefaultValues };
+    const form = briefingFormRef.current;
+    if (form) applyBriefingDraftToForm(form, resetDraft);
     flushSync(() => {
       briefingDraftRef.current = resetDraft;
       setBriefingDraft(resetDraft);
