@@ -13,16 +13,6 @@ function boot() {
   const unregisteredScopes: string[] = [];
   const reload = vi.fn();
 
-  const window = {
-    location: {
-      href: "https://example.com/PG-portfolio/",
-      reload,
-    },
-    addEventListener(type: string, handler: (event: unknown) => void) {
-      listeners.set(type, handler);
-    },
-  };
-
   const navigator = {
     onLine: true,
     serviceWorker: {
@@ -53,6 +43,17 @@ function boot() {
     },
   };
 
+  const window = {
+    location: {
+      href: "https://example.com/PG-portfolio/",
+      reload,
+    },
+    caches,
+    addEventListener(type: string, handler: (event: unknown) => void) {
+      listeners.set(type, handler);
+    },
+  };
+
   runInNewContext(script.replaceAll("%BASE_URL%", "/PG-portfolio/"), {
     window,
     navigator,
@@ -66,9 +67,7 @@ function boot() {
 }
 
 async function flushPromises() {
-  await Promise.resolve();
-  await Promise.resolve();
-  await Promise.resolve();
+  await new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe("pre-React legacy runtime cleanup", () => {
