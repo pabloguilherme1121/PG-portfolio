@@ -10,6 +10,7 @@ const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
 type RescueRuntime = {
   version: string;
   mode: string;
+  reserveRecovery: () => boolean;
   rescue: (reason: string) => Promise<boolean>;
 };
 
@@ -145,6 +146,21 @@ describe("pre-React legacy runtime cleanup", () => {
     expect(await runtime.runtime.rescue("window-error")).toBe(false);
     expect(runtime.navigations).toEqual([]);
     expect(runtime.isFallbackVisible()).toBe(true);
+  });
+
+  it("shares the one-shot recovery reservation with the React runtime", async () => {
+    const fresh = boot();
+    await flushPromises();
+
+    expect(fresh.runtime.reserveRecovery()).toBe(true);
+    expect(fresh.runtime.reserveRecovery()).toBe(false);
+
+    const recovered = boot(
+      "https://example.com/PG-portfolio/?pg_recover=runtime-hardening-v10-preload-error-demo",
+    );
+    await flushPromises();
+
+    expect(recovered.runtime.reserveRecovery()).toBe(false);
   });
 
   it("ignores ordinary promise rejections and recovers stale chunk failures", async () => {
