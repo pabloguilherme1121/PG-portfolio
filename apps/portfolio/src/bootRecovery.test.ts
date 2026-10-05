@@ -59,6 +59,14 @@ function boot(\n  href = "https://example.com/PG-portfolio/",\n  sessionValues =
       },
     },
     caches,
+    sessionStorage: {
+      getItem(key: string) {
+        return sessionValues.get(key) ?? null;
+      },
+      setItem(key: string, value: string) {
+        sessionValues.set(key, value);
+      },
+    },
     addEventListener(type: string, handler: (event: unknown) => void) {
       listeners.set(type, handler);
     },
