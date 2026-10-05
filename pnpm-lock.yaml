@@ -59,9 +59,6 @@ importers:
       esbuild:
         specifier: ^0.25.0
         version: 0.25.10
-      playwright:
-        specifier: ^1.62.1
-        version: 1.62.1
       postcss:
         specifier: ^8.5.18
         version: 8.5.28
