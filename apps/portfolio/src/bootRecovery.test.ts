@@ -1,17 +1,24 @@
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
 const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)]
   .map((match) => match[1])
-  .find((source) => source.includes('var cachePrefix = "pg-portfolio-pwa-"'))!;
+  .find((source) => source.includes('var rescueVersion = "v10"'))!;
 
-function boot() {
+type RescueRuntime = {
+  version: string;
+  mode: string;
+  rescue: (reason: string) => Promise<boolean>;
+};
+
+function boot(href = "https://example.com/PG-portfolio/") {
   const listeners = new Map<string, (event: unknown) => void>();
   const deletedCaches: string[] = [];
   const unregisteredScopes: string[] = [];
-  const reload = vi.fn();
+  const navigations: string[] = [];
+  let fallbackVisible = false;
 
   const navigator = {
     onLine: true,
@@ -45,12 +52,29 @@ function boot() {
 
   const window = {
     location: {
-      href: "https://example.com/PG-portfolio/",
-      reload,
+      href,
+      replace(url: string) {
+        navigations.push(url);
+      },
     },
     caches,
     addEventListener(type: string, handler: (event: unknown) => void) {
       listeners.set(type, handler);
+    },
+    __pgRuntimeRescue: undefined as RescueRuntime | undefined,
+  };
+
+  const document = {
+    getElementById(id: string) {
+      if (id !== "portfolio-startup-fallback") return null;
+      return {
+        get hidden() {
+          return !fallbackVisible;
+        },
+        set hidden(value: boolean) {
+          fallbackVisible = !value;
+        },
+      };
     },
   };
 
@@ -58,12 +82,20 @@ function boot() {
     window,
     navigator,
     caches,
+    document,
     URL,
     Promise,
     String,
   });
 
-  return { listeners, deletedCaches, unregisteredScopes, reload };
+  return {
+    listeners,
+    deletedCaches,
+    unregisteredScopes,
+    navigations,
+    runtime: window.__pgRuntimeRescue!,
+    isFallbackVisible: () => fallbackVisible,
+  };
 }
 
 async function flushPromises() {
@@ -79,31 +111,29 @@ describe("pre-React legacy runtime cleanup", () => {
     expect(runtime.unregisteredScopes).toEqual([
       "https://example.com/PG-portfolio/",
     ]);
-    expect(runtime.reload).not.toHaveBeenCalled();
+    expect(runtime.navigations).toEqual([]);
+    expect(runtime.runtime).toMatchObject({
+      version: "v10",
+      mode: "network-only",
+    });
   });
 
-  it("reloads at most once when a stale module failure is observed", async () => {
-    const runtime = boot();
+  it("performs one recovery navigation and then exposes the fallback", async () => {
+    const first = boot();
     await flushPromises();
 
-    const errorHandler = runtime.listeners.get("error");
-    expect(errorHandler).toBeTypeOf("function");
+    expect(await first.runtime.rescue("window-error")).toBe(true);
+    expect(first.navigations).toHaveLength(1);
+    expect(new URL(first.navigations[0]).searchParams.get("pg_boot_rescue")).toBe(
+      "v10-window-error",
+    );
 
-    errorHandler?.({
-      target: {
-        tagName: "SCRIPT",
-        type: "module",
-        src: "https://example.com/PG-portfolio/assets/app-old.js",
-      },
-      message: "Failed to load module script",
-    });
-    errorHandler?.({
-      target: null,
-      message: "ChunkLoadError: Loading chunk PortfolioContact failed",
-    });
+    const second = boot(first.navigations[0]);
     await flushPromises();
 
-    expect(runtime.reload).toHaveBeenCalledTimes(1);
+    expect(await second.runtime.rescue("window-error")).toBe(false);
+    expect(second.navigations).toEqual([]);
+    expect(second.isFallbackVisible()).toBe(true);
   });
 
   it("ignores ordinary promise rejections and recovers stale chunk failures", async () => {
@@ -115,7 +145,7 @@ describe("pre-React legacy runtime cleanup", () => {
 
     rejectionHandler?.({ reason: new Error("Cannot read properties of undefined") });
     await flushPromises();
-    expect(runtime.reload).not.toHaveBeenCalled();
+    expect(runtime.navigations).toEqual([]);
 
     rejectionHandler?.({
       reason: new Error(
@@ -124,6 +154,6 @@ describe("pre-React legacy runtime cleanup", () => {
     });
     await flushPromises();
 
-    expect(runtime.reload).toHaveBeenCalledTimes(1);
+    expect(runtime.navigations).toHaveLength(1);
   });
 });
