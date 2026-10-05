@@ -62,11 +62,15 @@
     </script>
     <script>
       (function () {
+        var rescueVersion = "v10";
+        var rescueMode = "network-only";
+        var rescueParam = "pg_boot_rescue";
         var baseUrl = "%BASE_URL%";
         var scopeUrl = new URL(baseUrl, window.location.href).href;
         var cachePrefix = "pg-portfolio-pwa-";
         var staleRuntimePattern = /(failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to load module script|chunkloaderror|loading chunk .+ failed|unable to preload css)/i;
         var recoveryStarted = false;
+        var arrivedAfterRecovery = new URL(window.location.href).searchParams.has(rescueParam);
 
         function clearLegacyRuntime() {
           var cacheCleanup = "caches" in window
@@ -96,12 +100,31 @@
           return Promise.all([cacheCleanup, workerCleanup]);
         }
 
-        function recoverOnce() {
-          if (recoveryStarted || navigator.onLine === false) return;
+        function showLoadFailure() {
+          var fallback = document.getElementById("portfolio-startup-fallback");
+          if (fallback) fallback.hidden = false;
+        }
+
+        function recoverOnce(reason) {
+          if (recoveryStarted || arrivedAfterRecovery || navigator.onLine === false) {
+            showLoadFailure();
+            return Promise.resolve(false);
+          }
+
           recoveryStarted = true;
-          clearLegacyRuntime().finally(function () {
-            window.location.reload();
-          });
+          return clearLegacyRuntime()
+            .then(function () {
+              var nextUrl = new URL(window.location.href);
+              nextUrl.searchParams.set(rescueParam, rescueVersion + "-" + reason);
+              window.location.replace(nextUrl.toString());
+              return true;
+            })
+            .catch(function () {
+              var nextUrl = new URL(window.location.href);
+              nextUrl.searchParams.set(rescueParam, rescueVersion + "-" + reason);
+              window.location.replace(nextUrl.toString());
+              return true;
+            });
         }
 
         clearLegacyRuntime();
@@ -118,7 +141,7 @@
             event.message ||
             "";
           if (entryFailed || staleRuntimePattern.test(String(message))) {
-            recoverOnce();
+            void recoverOnce("window-error");
           }
         }, true);
 
@@ -127,8 +150,16 @@
             event.reason && event.reason.message
               ? event.reason.message
               : String(event.reason || "");
-          if (staleRuntimePattern.test(message)) recoverOnce();
+          if (staleRuntimePattern.test(message)) {
+            void recoverOnce("promise-rejection");
+          }
         });
+
+        window.__pgRuntimeRescue = {
+          version: rescueVersion,
+          mode: rescueMode,
+          rescue: recoverOnce,
+        };
       })();
     </script>
     <script type="application/ld+json">
