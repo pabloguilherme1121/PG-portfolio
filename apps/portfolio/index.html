@@ -108,13 +108,20 @@
           if (fallback) fallback.hidden = false;
         }
 
-        function recoverOnce(reason) {
+        function reserveRecovery() {
           if (recoveryStarted || arrivedAfterRecovery || navigator.onLine === false) {
+            return false;
+          }
+          recoveryStarted = true;
+          return true;
+        }
+
+        function recoverOnce(reason) {
+          if (!reserveRecovery()) {
             showLoadFailure();
             return Promise.resolve(false);
           }
 
-          recoveryStarted = true;
           return clearLegacyRuntime()
             .then(function () {
               var nextUrl = new URL(window.location.href);
@@ -161,6 +168,7 @@
         window.__pgRuntimeRescue = {
           version: rescueVersion,
           mode: rescueMode,
+          reserveRecovery: reserveRecovery,
           rescue: recoverOnce,
         };
       })();
