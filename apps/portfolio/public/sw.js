@@ -1,9 +1,6 @@
-const RETIRE_VERSION = "v10";
 const CACHE_PREFIX = "pg-portfolio-pwa-";
-const SCOPE_URL = new URL(self.registration.scope);
-const RETIRE_PARAM = "pg_sw_retired";
 
-async function clearPortfolioCaches() {
+async function retireLegacyRuntime() {
   try {
     const keys = await caches.keys();
     await Promise.all(
@@ -12,32 +9,8 @@ async function clearPortfolioCaches() {
         .map((key) => caches.delete(key)),
     );
   } catch {
-    // Cache cleanup is best-effort. This worker intentionally stays network-pass-through.
+    // Best-effort cleanup for caches created by older PWA versions.
   }
-}
-
-async function refreshPortfolioClients() {
-  const clients = await self.clients.matchAll({
-    type: "window",
-    includeUncontrolled: true,
-  });
-
-  await Promise.all(
-    clients.map(async (client) => {
-      try {
-        const url = new URL(client.url);
-        if (url.origin !== SCOPE_URL.origin || !url.pathname.startsWith(SCOPE_URL.pathname)) return;
-        url.searchParams.set(RETIRE_PARAM, `${RETIRE_VERSION}-${Date.now().toString(36)}`);
-        await client.navigate(url.toString());
-      } catch {
-        // Closing/background clients may reject navigation.
-      }
-    }),
-  );
-}
-
-async function retirePortfolioWorker() {
-  await clearPortfolioCaches();
 
   try {
     await self.clients.claim();
@@ -45,12 +18,10 @@ async function retirePortfolioWorker() {
     // A client can disappear while the worker is activating.
   }
 
-  await refreshPortfolioClients();
-
   try {
     await self.registration.unregister();
   } catch {
-    // If unregister fails, this worker still has no fetch handler and cannot serve stale assets.
+    // This worker has no fetch handler, so requests still pass through to the network.
   }
 }
 
@@ -59,13 +30,12 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(retirePortfolioWorker());
+  event.waitUntil(retireLegacyRuntime());
 });
 
 self.addEventListener("message", (event) => {
   if (!event.data || event.data.type !== "PG_RETIRE_RUNTIME") return;
-  event.waitUntil(retirePortfolioWorker());
+  event.waitUntil(retireLegacyRuntime());
 });
 
-// Deliberately no fetch handler.
-// Any legacy client that updates to this worker immediately falls back to the network.
+// Deliberately no fetch handler: the portfolio is installable but network-only.

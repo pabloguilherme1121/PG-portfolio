@@ -64,174 +64,125 @@
       (function () {
         var rescueVersion = "v10";
         var rescueMode = "network-only";
-        var baseUrl = "%BASE_URL%";
         var rescueParam = "pg_boot_rescue";
-        var staleRuntimePattern = /(failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to load module script|chunkloaderror|loading chunk .+ failed|unable to preload css)/i;
-        var rescueStarted = false;
-        var currentUrl = new URL(window.location.href);
-        var previousRescue = currentUrl.searchParams.get(rescueParam);
-        var arrivedAfterRecovery = !!(previousRescue || currentUrl.searchParams.get("pg_recover"));
-        var recoveryMarkerKey = "pg-portfolio-runtime-recovery-at";
+        var baseUrl = "%BASE_URL%";
         var scopeUrl = new URL(baseUrl, window.location.href).href;
-        var hadController = "serviceWorker" in navigator && !!navigator.serviceWorker.controller;
+        var cachePrefix = "pg-portfolio-pwa-";
+        var staleRuntimePattern = /(failed to fetch dynamically imported module|error loading dynamically imported module|importing a module script failed|failed to load module script|chunkloaderror|loading chunk .+ failed|unable to preload css)/i;
+        var recoveryStarted = false;
+        var recoveryMarkerKey = "pg-portfolio-runtime-recovery-at";
+        var recoveryCooldownMs = 45000;
+        var recoveryUrl = new URL(window.location.href);
+        var arrivedAfterRecovery =
+          recoveryUrl.searchParams.has(rescueParam) ||
+          recoveryUrl.searchParams.has("pg_recover");
 
-        if (previousRescue) {
-          currentUrl.searchParams.delete(rescueParam);
-          window.history.replaceState(window.history.state, "", currentUrl.toString());
+        function clearLegacyRuntime() {
+          var cacheCleanup = "caches" in window
+            ? caches.keys()
+                .then(function (keys) {
+                  return Promise.all(
+                    keys
+                      .filter(function (key) { return key.indexOf(cachePrefix) === 0; })
+                      .map(function (key) { return caches.delete(key); }),
+                  );
+                })
+                .catch(function () { return undefined; })
+            : Promise.resolve();
+
+          var workerCleanup = "serviceWorker" in navigator
+            ? navigator.serviceWorker.getRegistrations()
+                .then(function (registrations) {
+                  return Promise.all(
+                    registrations
+                      .filter(function (registration) { return registration.scope === scopeUrl; })
+                      .map(function (registration) { return registration.unregister(); }),
+                  );
+                })
+                .catch(function () { return undefined; })
+            : Promise.resolve();
+
+          return Promise.all([cacheCleanup, workerCleanup]);
         }
-
-        function getMessage(value) {
-          if (typeof value === "string") return value;
-          if (value && typeof value === "object" && "message" in value) return String(value.message || "");
-          return "";
-        }
-
-        function clearPortfolioCaches() {
-          if (!("caches" in window)) return Promise.resolve();
-          return caches.keys()
-            .then(function (keys) {
-              return Promise.all(
-                keys
-                  .filter(function (key) { return key.indexOf("pg-portfolio-pwa-") === 0; })
-                  .map(function (key) { return caches.delete(key); }),
-              );
-            })
-            .catch(function () {
-              return undefined;
-            });
-        }
-
-        function retirePortfolioWorkers() {
-          if (!("serviceWorker" in navigator)) return Promise.resolve();
-          return navigator.serviceWorker.getRegistrations()
-            .then(function (registrations) {
-              return Promise.all(
-                registrations
-                  .filter(function (registration) {
-                    return registration.scope === scopeUrl;
-                  })
-                  .map(function (registration) {
-                    try {
-                      if (registration.active) {
-                        registration.active.postMessage({ type: "PG_RETIRE_RUNTIME", version: rescueVersion });
-                      }
-                    } catch (_) {
-                      // The old worker may already be stopping.
-                    }
-                    return registration.unregister().catch(function () { return false; });
-                  }),
-              );
-            })
-            .catch(function () {
-              return undefined;
-            });
-        }
-
-        function navigateFresh(reason) {
-          var nextUrl = new URL(window.location.href);
-          nextUrl.searchParams.set(
-            rescueParam,
-            rescueVersion + "-" + reason + "-" + Date.now().toString(36),
-          );
-          window.location.replace(nextUrl.toString());
-        }
-
-        function reserveRecovery() {
-          if (rescueStarted || arrivedAfterRecovery || navigator.onLine === false) return false;
-          var now = Date.now();
-          try {
-            var previous = Number(window.sessionStorage.getItem(recoveryMarkerKey) || 0);
-            if (previous > 0 && now - previous < 45000) return false;
-            window.sessionStorage.setItem(recoveryMarkerKey, String(now));
-          } catch (_) {
-            // The URL marker still stops retries when private browsing blocks storage.
-          }
-          rescueStarted = true;
-          return true;
-        }
-
-        function rescueRuntime(reason) {
-          if (!reserveRecovery()) {
-            showLoadFailure();
-            return Promise.resolve(false);
-          }
-
-          return Promise.all([clearPortfolioCaches(), retirePortfolioWorkers()])
-            .then(function () {
-              navigateFresh(reason);
-              return true;
-            })
-            .catch(function () {
-              navigateFresh(reason);
-              return true;
-            });
-        }
-
-        Promise.all([clearPortfolioCaches(), retirePortfolioWorkers()])
-          .then(function () {
-            if (
-              hadController &&
-              !(previousRescue && previousRescue.indexOf(rescueVersion) === 0)
-            ) {
-              return rescueRuntime("controlled-client");
-            }
-            return false;
-          })
-          .catch(function () {
-            return undefined;
-          });
-
-        window.addEventListener(
-          "error",
-          function (event) {
-            var target = event.target;
-            var entryFailed = target && target.tagName === "SCRIPT" && target.type === "module" && target.src;
-            if (entryFailed || staleRuntimePattern.test(getMessage(event.error) || event.message || "")) {
-              void rescueRuntime("window-error");
-            }
-          },
-          true,
-        );
-
-        window.addEventListener("unhandledrejection", function (event) {
-          if (staleRuntimePattern.test(getMessage(event.reason))) {
-            void rescueRuntime("promise-rejection");
-          }
-        });
-
-        window.addEventListener("DOMContentLoaded", function () {
-          var root = document.getElementById("root");
-          if (!root || typeof MutationObserver === "undefined") return;
-
-          function inspectLegacyBoundary() {
-            var text = root.textContent || "";
-            if (
-              text.indexOf("Algo saiu do percurso.") >= 0 &&
-              (text.indexOf("Tentar novamente") >= 0 || text.indexOf("ERRO 500") >= 0)
-            ) {
-              void rescueRuntime("legacy-boundary");
-            }
-          }
-
-          var observer = new MutationObserver(inspectLegacyBoundary);
-          observer.observe(root, { childList: true, subtree: true, characterData: true });
-          inspectLegacyBoundary();
-          window.setTimeout(function () { observer.disconnect(); }, 20000);
-        });
-
-        window.__pgRuntimeRescue = {
-          version: rescueVersion,
-          mode: rescueMode,
-          scope: scopeUrl,
-          rescue: rescueRuntime,
-          reserveRecovery: reserveRecovery,
-          showLoadFailure: showLoadFailure,
-        };
 
         function showLoadFailure() {
           var fallback = document.getElementById("portfolio-startup-fallback");
           if (fallback) fallback.hidden = false;
         }
+
+        function reserveRecovery() {
+          if (recoveryStarted || arrivedAfterRecovery || navigator.onLine === false) {
+            return false;
+          }
+
+          var now = Date.now();
+          try {
+            var previous = Number(window.sessionStorage.getItem(recoveryMarkerKey) || 0);
+            if (previous > 0 && now - previous < recoveryCooldownMs) return false;
+            window.sessionStorage.setItem(recoveryMarkerKey, String(now));
+          } catch (_) {
+            // URL markers still stop retries when session storage is unavailable.
+          }
+
+          recoveryStarted = true;
+          return true;
+        }
+
+        function recoverOnce(reason) {
+          if (!reserveRecovery()) {
+            showLoadFailure();
+            return Promise.resolve(false);
+          }
+
+          return clearLegacyRuntime()
+            .then(function () {
+              var nextUrl = new URL(window.location.href);
+              nextUrl.searchParams.set(rescueParam, rescueVersion + "-" + reason);
+              window.location.replace(nextUrl.toString());
+              return true;
+            })
+            .catch(function () {
+              var nextUrl = new URL(window.location.href);
+              nextUrl.searchParams.set(rescueParam, rescueVersion + "-" + reason);
+              window.location.replace(nextUrl.toString());
+              return true;
+            });
+        }
+
+        clearLegacyRuntime();
+
+        window.addEventListener("error", function (event) {
+          var target = event.target;
+          var entryFailed =
+            target &&
+            target.tagName === "SCRIPT" &&
+            target.type === "module" &&
+            target.src;
+          var message =
+            (event.error && event.error.message) ||
+            event.message ||
+            "";
+          if (entryFailed || staleRuntimePattern.test(String(message))) {
+            void recoverOnce("window-error");
+          }
+        }, true);
+
+        window.addEventListener("unhandledrejection", function (event) {
+          var message =
+            event.reason && event.reason.message
+              ? event.reason.message
+              : String(event.reason || "");
+          if (staleRuntimePattern.test(message)) {
+            void recoverOnce("promise-rejection");
+          }
+        });
+
+        window.__pgRuntimeRescue = {
+          version: rescueVersion,
+          mode: rescueMode,
+          reserveRecovery: reserveRecovery,
+          rescue: recoverOnce,
+        };
       })();
     </script>
     <script type="application/ld+json">
