@@ -16,7 +16,6 @@ overrides:
   express>path-to-regexp: 0.1.13
   vitest>picomatch: 4.0.4
   lodash-es: 4.17.23
-  autoprefixer>browserslist: 4.28.7
   lodash: 4.17.21
   qs: 6.16.0
   express>body-parser: 1.20.6
@@ -53,24 +52,15 @@ importers:
       '@vitejs/plugin-react':
         specifier: ^5.0.4
         version: 5.0.4(vite@7.3.6(@types/node@24.7.0)(jiti@2.6.1)(lightningcss@1.30.1)(tsx@4.23.12))
-      autoprefixer:
-        specifier: ^10.6.1
-        version: 10.6.1(postcss@8.5.28)
       esbuild:
         specifier: ^0.25.0
         version: 0.25.10
-      postcss:
-        specifier: ^8.5.18
-        version: 8.5.28
       prettier:
         specifier: ^3.6.2
         version: 3.6.2
       tailwindcss:
         specifier: ^4.1.14
         version: 4.1.14
-      tw-animate-css:
-        specifier: ^1.4.0
-        version: 1.4.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
