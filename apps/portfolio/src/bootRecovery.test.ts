@@ -14,7 +14,10 @@ type RescueRuntime = {
   rescue: (reason: string) => Promise<boolean>;
 };
 
-function boot(\n  href = "https://example.com/PG-portfolio/",\n  sessionValues = new Map<string, string>(),\n) {
+function boot(
+  href = "https://example.com/PG-portfolio/",
+  sessionValues = new Map<string, string>(),
+) {
   const listeners = new Map<string, (event: unknown) => void>();
   const deletedCaches: string[] = [];
   const unregisteredScopes: string[] = [];
@@ -171,7 +174,20 @@ describe("pre-React legacy runtime cleanup", () => {
     expect(recovered.runtime.reserveRecovery()).toBe(false);
   });
 
-  it("keeps the recovery reservation across reloads in the same tab", async () => {\n    const sessionValues = new Map<string, string>();\n    const first = boot("https://example.com/PG-portfolio/", sessionValues);\n    await flushPromises();\n\n    expect(first.runtime.reserveRecovery()).toBe(true);\n\n    const reloaded = boot("https://example.com/PG-portfolio/", sessionValues);\n    await flushPromises();\n\n    expect(reloaded.runtime.reserveRecovery()).toBe(false);\n  });\n\n  it("ignores ordinary promise rejections and recovers stale chunk failures", async () => {
+  it("keeps the recovery reservation across reloads in the same tab", async () => {
+    const sessionValues = new Map<string, string>();
+    const first = boot("https://example.com/PG-portfolio/", sessionValues);
+    await flushPromises();
+
+    expect(first.runtime.reserveRecovery()).toBe(true);
+
+    const reloaded = boot("https://example.com/PG-portfolio/", sessionValues);
+    await flushPromises();
+
+    expect(reloaded.runtime.reserveRecovery()).toBe(false);
+  });
+
+  it("ignores ordinary promise rejections and recovers stale chunk failures", async () => {
     const runtime = boot();
     await flushPromises();
 
