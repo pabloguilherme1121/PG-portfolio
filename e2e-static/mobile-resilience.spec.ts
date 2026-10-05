@@ -1,11 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   // Use system fonts so external font availability cannot mask runtime regressions.
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({ contentType: "text/css", body: "" }));
 });
 
-async function gotoStaticPageAllowingRuntimeRecovery(page: Parameters<Parameters<typeof test>[1]>[0]["page"]) {
+async function gotoStaticPageAllowingRuntimeRecovery(page: Page) {
   try {
     await page.goto("./");
   } catch (error) {
