@@ -5,6 +5,18 @@ test.beforeEach(async ({ page }) => {
   await page.route("https://fonts.googleapis.com/**", (route) => route.fulfill({ contentType: "text/css", body: "" }));
 });
 
+async function gotoStaticPageAllowingRuntimeRecovery(page: Parameters<Parameters<typeof test>[1]>[0]["page"]) {
+  try {
+    await page.goto("./");
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (!message.includes("interrupted by another navigation") || !message.includes("pg_recover=")) {
+      throw error;
+    }
+    await page.waitForLoadState("domcontentloaded");
+  }
+}
+
 test("Arcade dedicado não injeta módulos de jogos no bundle estático", async ({ page }) => {
   const gameRequests: string[] = [];
   page.on("request", (request) => {
@@ -62,7 +74,7 @@ test("página inteira e repertório social funcionam em telas pequenas", async (
   page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 844 });
-    await page.goto("./");
+    await gotoStaticPageAllowingRuntimeRecovery(page);
     for (const id of ["projetos", "social", "contato-briefing", "pg-lab"]) {
       const section = page.locator(`#${id}`);
       // Deferred placeholders are replaced during scrolling; reacquire by ID afterwards.
