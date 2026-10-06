@@ -39,6 +39,10 @@ describe("repository hygiene", () => {
   it("does not retain compatibility-only frontend aliases without consumers", () => {
     expect(existsSync(join(root, "apps/portfolio/src/pages/InstagramRepertoire.tsx"))).toBe(false);
     expect(existsSync(join(root, "apps/portfolio/src/lib/portfolioCatalog.ts"))).toBe(false);
+
+    const favoritesManagement = read("apps/api/client/pages/FavoritesManagement.tsx");
+    expect(favoritesManagement).not.toContain("@/lib/portfolioCatalog");
+    expect(favoritesManagement).toContain("@/features/portfolio/utils/projectCatalog");
   });
 
   it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
