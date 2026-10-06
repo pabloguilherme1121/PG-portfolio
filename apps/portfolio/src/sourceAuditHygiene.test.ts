@@ -8,5 +8,15 @@ describe("source escape audit coverage", () => {
 
     expect(script).toContain('"apps/api/src"');
     expect(script).toContain('"apps/api/client"');
+    it("lints both API server and API client source trees", () => {
+    const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+    const apiWorkflow = readFileSync(join(process.cwd(), ".github/workflows/api.yml"), "utf8");
+
+    expect(packageJson.scripts?.lint).toContain("apps/api/src");
+    expect(packageJson.scripts?.lint).toContain("apps/api/client");
+    expect(apiWorkflow).toContain("apps/api/src apps/api/client packages/contracts");
   });
+});
 });
