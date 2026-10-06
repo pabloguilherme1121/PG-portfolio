@@ -118,4 +118,10 @@ describe("repository hygiene", () => {
     }
   });
 
+
+  it("does not allow obsolete external script origins in the API CSP", () => {
+    const apiEntry = read("apps/api/src/_core/index.ts");
+    expect(apiEntry).not.toContain("https://files.manuscdn.com");
+  });
+
 });
