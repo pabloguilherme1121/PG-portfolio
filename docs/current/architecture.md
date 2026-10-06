@@ -50,4 +50,4 @@ O PG Arcade é um projeto dedicado e externo ao portfólio. O portfólio apenas 
 
 ## Documentação
 
-`README.md` descreve a proposta pública. Este arquivo registra a arquitetura vigente. Relatórios e auditorias históricas devem permanecer em `docs/archive` ou ser tratados como referência, não como especificação atual. Decisões visuais continuam em `DESIGN.md`.
+`README.md` descreve a proposta pública. Este arquivo registra a arquitetura vigente. Documentos operacionais atuais permanecem diretamente em `docs/` ou em `docs/current/`; relatórios pontuais de auditoria, correções encerradas e referências de versões antigas ficam em `docs/archive/`, com auditorias históricas agrupadas em `docs/archive/audits/`. Decisões visuais continuam em `DESIGN.md`.
