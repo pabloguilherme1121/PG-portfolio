@@ -1,18 +1,14 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { usePersistFn } from "./usePersistFn";
 
-export interface UseCompositionReturn<
-  T extends HTMLInputElement | HTMLTextAreaElement,
-> {
+export interface UseCompositionReturn<T extends HTMLInputElement | HTMLTextAreaElement> {
   onCompositionStart: React.CompositionEventHandler<T>;
   onCompositionEnd: React.CompositionEventHandler<T>;
   onKeyDown: React.KeyboardEventHandler<T>;
   isComposing: () => boolean;
 }
 
-export interface UseCompositionOptions<
-  T extends HTMLInputElement | HTMLTextAreaElement,
-> {
+export interface UseCompositionOptions<T extends HTMLInputElement | HTMLTextAreaElement> {
   onKeyDown?: React.KeyboardEventHandler<T>;
   onCompositionStart?: React.CompositionEventHandler<T>;
   onCompositionEnd?: React.CompositionEventHandler<T>;
@@ -20,62 +16,48 @@ export interface UseCompositionOptions<
 
 type TimerResponse = ReturnType<typeof setTimeout>;
 
-export function useComposition<
-  T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement,
->(options: UseCompositionOptions<T> = {}): UseCompositionReturn<T> {
-  const {
-    onKeyDown: originalOnKeyDown,
-    onCompositionStart: originalOnCompositionStart,
-    onCompositionEnd: originalOnCompositionEnd,
-  } = options;
-
-  const c = useRef(false);
+export function useComposition<T extends HTMLInputElement | HTMLTextAreaElement = HTMLInputElement>(options: UseCompositionOptions<T> = {}): UseCompositionReturn<T> {
+  const { onKeyDown: originalOnKeyDown, onCompositionStart: originalOnCompositionStart, onCompositionEnd: originalOnCompositionEnd } = options;
+  const composing = useRef(false);
   const timer = useRef<TimerResponse | null>(null);
   const timer2 = useRef<TimerResponse | null>(null);
 
-  const onCompositionStart = usePersistFn((e: React.CompositionEvent<T>) => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-      timer.current = null;
-    }
-    if (timer2.current) {
-      clearTimeout(timer2.current);
-      timer2.current = null;
-    }
-    c.current = true;
-    originalOnCompositionStart?.(e);
+  const clearTimers = usePersistFn(() => {
+    if (timer.current) clearTimeout(timer.current);
+    if (timer2.current) clearTimeout(timer2.current);
+    timer.current = null;
+    timer2.current = null;
   });
 
-  const onCompositionEnd = usePersistFn((e: React.CompositionEvent<T>) => {
-    // 使用两层 setTimeout 来处理 Safari 浏览器中 compositionEnd 先于 onKeyDown 触发的问题
+  useEffect(() => clearTimers, [clearTimers]);
+
+  const onCompositionStart = usePersistFn((event: React.CompositionEvent<T>) => {
+    clearTimers();
+    composing.current = true;
+    originalOnCompositionStart?.(event);
+  });
+
+  const onCompositionEnd = usePersistFn((event: React.CompositionEvent<T>) => {
+    clearTimers();
+    // Safari can dispatch keydown immediately after compositionend; defer clearing two tasks.
     timer.current = setTimeout(() => {
       timer2.current = setTimeout(() => {
-        c.current = false;
+        composing.current = false;
+        timer2.current = null;
       });
+      timer.current = null;
     });
-    originalOnCompositionEnd?.(e);
+    originalOnCompositionEnd?.(event);
   });
 
-  const onKeyDown = usePersistFn((e: React.KeyboardEvent<T>) => {
-    // 在 composition 状态下，阻止 ESC 和 Enter（非 shift+Enter）事件的冒泡
-    if (
-      c.current &&
-      (e.key === "Escape" || (e.key === "Enter" && !e.shiftKey))
-    ) {
-      e.stopPropagation();
+  const onKeyDown = usePersistFn((event: React.KeyboardEvent<T>) => {
+    if (composing.current && (event.key === "Escape" || (event.key === "Enter" && !event.shiftKey))) {
+      event.stopPropagation();
       return;
     }
-    originalOnKeyDown?.(e);
+    originalOnKeyDown?.(event);
   });
 
-  const isComposing = usePersistFn(() => {
-    return c.current;
-  });
-
-  return {
-    onCompositionStart,
-    onCompositionEnd,
-    onKeyDown,
-    isComposing,
-  };
+  const isComposing = usePersistFn(() => composing.current);
+  return { onCompositionStart, onCompositionEnd, onKeyDown, isComposing };
 }
