@@ -9,7 +9,6 @@ export default defineConfig({
     alias: {
       "@": path.resolve(templateRoot, "apps", "portfolio", "src"),
       "@shared": path.resolve(templateRoot, "packages", "contracts"),
-      "@assets": path.resolve(templateRoot, "attached_assets"),
     },
   },
   test: {
