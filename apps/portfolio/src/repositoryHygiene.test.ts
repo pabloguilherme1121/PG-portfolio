@@ -39,6 +39,13 @@ describe("repository hygiene", () => {
   it("does not retain compatibility-only frontend aliases without consumers", () => {
     expect(existsSync(join(root, "apps/portfolio/src/pages/InstagramRepertoire.tsx"))).toBe(false);
     expect(existsSync(join(root, "apps/portfolio/src/lib/portfolioCatalog.ts"))).toBe(false);
+
+    const favoritesManagement = read("apps/api/client/pages/FavoritesManagement.tsx");
+    const portfolioContract = read("apps/api/src/portfolioData.contract.test.ts");
+    expect(favoritesManagement).not.toContain("@/lib/portfolioCatalog");
+    expect(portfolioContract).not.toContain("@/lib/portfolioCatalog");
+    expect(favoritesManagement).toContain("@/features/portfolio/utils/projectCatalog");
+    expect(portfolioContract).toContain("@/features/portfolio/utils/projectCatalog");
   });
 
   it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
@@ -128,12 +135,10 @@ describe("repository hygiene", () => {
     }
   });
 
-
   it("does not allow obsolete external script origins in the API CSP", () => {
     const apiEntry = read("apps/api/src/_core/index.ts");
     expect(apiEntry).not.toContain("https://files.manuscdn.com");
   });
-
 
   it("does not retain the unused Manus storage proxy route", () => {
     expect(existsSync(join(root, "apps/api/src/_core/storageProxy.ts"))).toBe(false);
@@ -142,4 +147,14 @@ describe("repository hygiene", () => {
     expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
   });
 
+  it("does not retain placeholder files without a directory-preservation purpose", () => {
+    expect(existsSync(join(root, "apps/portfolio/public/.gitkeep"))).toBe(false);
+    expect(existsSync(join(root, "apps/api/drizzle/migrations/.gitkeep"))).toBe(false);
+  });
+
+  it("keeps the design contract aligned with the dedicated PG Arcade", () => {
+    const design = read("DESIGN.md");
+    expect(design).not.toContain("cinco jogos");
+    expect(design).toContain("PG Arcade dedicado");
+  });
 });

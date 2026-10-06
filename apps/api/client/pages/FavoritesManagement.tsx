@@ -2,7 +2,7 @@ import { useAuth } from "@api/hooks/useAuth";
 import DashboardLayout, { type DashboardNavigationItem } from "@api/components/DashboardLayout";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { trpc } from "@/lib/portfolioApi";
-import { portfolioCatalogById } from "@/lib/portfolioCatalog";
+import { portfolioCatalogById } from "@/features/portfolio/utils/projectCatalog";
 import { buildFavoriteExportRows, estimateFavoriteExportBreakdown, favoriteCsvEscape, favoriteExportValue, FAVORITE_EXPORT_FIELDS, formatFavoriteBytes, moveFavoriteId } from "@/features/portfolio/utils/favoritesManagement";
 import {
   parseExportPreferences,
