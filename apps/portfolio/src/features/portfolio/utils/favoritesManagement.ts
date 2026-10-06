@@ -1,6 +1,6 @@
 import type { ExportField } from "@/lib/favoritesManagementState";
 
-export type FavoriteExportField = ExportField;
+type FavoriteExportField = ExportField;
 
 export type FavoriteExportEntry = {
   id: string;
