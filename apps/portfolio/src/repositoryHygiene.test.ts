@@ -41,8 +41,11 @@ describe("repository hygiene", () => {
     expect(existsSync(join(root, "apps/portfolio/src/lib/portfolioCatalog.ts"))).toBe(false);
 
     const favoritesManagement = read("apps/api/client/pages/FavoritesManagement.tsx");
+    const portfolioContract = read("apps/api/src/portfolioData.contract.test.ts");
     expect(favoritesManagement).not.toContain("@/lib/portfolioCatalog");
+    expect(portfolioContract).not.toContain("@/lib/portfolioCatalog");
     expect(favoritesManagement).toContain("@/features/portfolio/utils/projectCatalog");
+    expect(portfolioContract).toContain("@/features/portfolio/utils/projectCatalog");
   });
 
   it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
