@@ -4,6 +4,7 @@ import path from "node:path";
 const sourceDir = path.resolve("apps/portfolio");
 const publicDir = path.resolve("apps/portfolio/public");
 const validExtensions = new Set([".tsx", ".ts", ".html", ".css"]);
+const ignoredDirectories = new Set(["node_modules", "dist", "public"]);
 const requiredAssets = new Set();
 const optionalAssets = new Set();
 
@@ -11,6 +12,7 @@ async function inspect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const file = path.join(directory, entry.name);
     if (entry.isDirectory()) {
+      if (ignoredDirectories.has(entry.name)) continue;
       await inspect(file);
       continue;
     }
