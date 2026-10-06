@@ -37,6 +37,22 @@ describe("exportFavoriteProjects", () => {
     await expect(getExportedBlob()?.text()).resolves.toContain(project.name);
   });
 
+
+  it("preserva um PDF válido ao converter os bytes tipados", async () => {
+    const { anchor, getExportedBlob } = setupDownloadEnvironment();
+    const project = repositories[0]!;
+
+    await exportFavoriteProjects("pdf", [project], () => new Set(["Produto digital"]));
+
+    const blob = getExportedBlob();
+    expect(anchor.download).toBe("pablo-guilherme-favoritos.pdf");
+    expect(anchor.click).toHaveBeenCalledOnce();
+    expect(blob?.type).toBe("application/pdf");
+
+    const bytes = new Uint8Array(await blob!.arrayBuffer());
+    expect(new TextDecoder().decode(bytes.slice(0, 5))).toBe("%PDF-");
+  });
+
   it("preserva o formato JSON e as categorias derivadas", async () => {
     const { anchor, getExportedBlob } = setupDownloadEnvironment();
     const project = repositories[0]!;
