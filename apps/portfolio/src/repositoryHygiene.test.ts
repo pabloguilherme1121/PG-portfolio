@@ -31,6 +31,16 @@ describe("repository hygiene", () => {
     expect(existsSync(join(root, "docs/archive/architecture-legacy.md"))).toBe(true);
   });
 
+  it("keeps one canonical Instagram integration note without an exact archive duplicate", () => {
+    expect(existsSync(join(root, "docs/integrations/instagram-integration-notes.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/archive/instagram-integration-notes.md"))).toBe(false);
+  });
+
+  it("does not retain compatibility-only frontend aliases without consumers", () => {
+    expect(existsSync(join(root, "apps/portfolio/src/pages/InstagramRepertoire.tsx"))).toBe(false);
+    expect(existsSync(join(root, "apps/portfolio/src/lib/portfolioCatalog.ts"))).toBe(false);
+  });
+
   it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
     const scripts = readdirSync(join(root, "scripts"))
       .filter((file) => file.endsWith(".mjs"))
