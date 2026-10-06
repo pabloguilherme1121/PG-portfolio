@@ -31,7 +31,20 @@ describe("repository hygiene", () => {
       .filter((file) => file.endsWith(".tsx"))
       .sort();
 
-    expect(uiFiles).toEqual(["button.tsx", "dialog.tsx", "sonner.tsx"]);
+    expect(uiFiles).toEqual([
+      "alert-dialog.tsx",
+      "avatar.tsx",
+      "button.tsx",
+      "dialog.tsx",
+      "dropdown-menu.tsx",
+      "input.tsx",
+      "separator.tsx",
+      "sheet.tsx",
+      "sidebar.tsx",
+      "skeleton.tsx",
+      "sonner.tsx",
+      "tooltip.tsx",
+    ]);
 
     const portfolioPackage = JSON.parse(read("apps/portfolio/package.json")) as {
       dependencies?: Record<string, string>;
@@ -39,12 +52,9 @@ describe("repository hygiene", () => {
     const dependencies = portfolioPackage.dependencies ?? {};
     const legacyUiDependencies = [
       "@radix-ui/react-accordion",
-      "@radix-ui/react-alert-dialog",
       "@radix-ui/react-aspect-ratio",
-      "@radix-ui/react-avatar",
       "@radix-ui/react-checkbox",
       "@radix-ui/react-collapsible",
-      "@radix-ui/react-dropdown-menu",
       "@radix-ui/react-hover-card",
       "@radix-ui/react-label",
       "@radix-ui/react-popover",
@@ -52,13 +62,11 @@ describe("repository hygiene", () => {
       "@radix-ui/react-radio-group",
       "@radix-ui/react-scroll-area",
       "@radix-ui/react-select",
-      "@radix-ui/react-separator",
       "@radix-ui/react-slider",
       "@radix-ui/react-switch",
       "@radix-ui/react-tabs",
       "@radix-ui/react-toggle",
       "@radix-ui/react-toggle-group",
-      "@radix-ui/react-tooltip",
       "framer-motion",
       "input-otp",
       "jszip",
