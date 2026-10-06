@@ -1,42 +1,71 @@
 # Implantação e operação
 
-## Instalação
+## Requisitos
 
-Use a versão de Node e pnpm compatível com o projeto e instale as dependências a partir do lockfile:
+O projeto usa Node.js 22 e pnpm 10.34.5 via Corepack.
 
 ```bash
+corepack enable
 pnpm install --frozen-lockfile
 ```
 
+## Portfólio estático
+
+O destino público principal é GitHub Pages, com base `/PG-portfolio/`. A variante estática não depende de Express, banco ou tRPC em runtime.
+
+```bash
+pnpm dev
+pnpm build:static
+node scripts/prepare-github-pages.mjs
+```
+
+`pnpm build` é um alias para o build estático. O site permanece instalável como PWA, mas a estratégia vigente é `network-only`; o service worker atual serve para retirar caches/workers legados, não para prometer uso offline.
+
+O workflow `.github/workflows/pages.yml` é a referência de publicação. Antes do deploy ele valida isolamento da API, dependências, mídia, source audit, lint, TypeScript, unitários, build real, Playwright cross-browser/mobile, budget de bundle e rotas públicas.
+
+## Variante opcional com API
+
+A variante servidor é independente do Pages:
+
+```bash
+pnpm dev:server
+pnpm build:server
+pnpm start
+```
+
+`pnpm start` inicia o artefato já compilado em `apps/api/dist/index.js`; portanto, em produção, execute o build servidor antes do start.
+
+As rotas administrativas só existem nessa variante:
+
+| Rota | Função |
+|---|---|
+| `/agenda` | gestão de disponibilidade |
+| `/favoritos` | curadoria, metadados e exportações |
+| `/curadoria` | alias do painel de favoritos |
+
+O workflow `.github/workflows/api.yml` roda somente quando paths da API, contratos ou infraestrutura relacionada mudam. Ele valida audit, lint, TypeScript, unitários, build servidor e smoke HTTP.
+
 ## Variáveis de ambiente
 
-As variáveis de backend devem ser fornecidas pelo ambiente de implantação e nunca publicadas no frontend. A integração SimilarWeb utiliza a infraestrutura de Data API já disponível no template e depende de `BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY` no servidor.
+Valores de backend devem ficar no secret manager do ambiente e nunca no bundle público. O arquivo `env.example` documenta os nomes esperados:
 
-Variáveis com prefixo `VITE_` são públicas por natureza. Use-as apenas para configurações que podem ser expostas ao navegador, como identificadores de analytics de frontend.
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `VITE_APP_ID`
+- `OAUTH_SERVER_URL`
+- `VITE_OAUTH_PORTAL_URL`
+- `OWNER_OPEN_ID`
+- `BUILT_IN_FORGE_API_URL`
+- `BUILT_IN_FORGE_API_KEY`
+- `VITE_ANALYTICS_ENDPOINT`
+- `VITE_ANALYTICS_WEBSITE_ID`
 
-## Scripts de operação
+As chaves `BUILT_IN_FORGE_API_*` têm nome legado, mas continuam sendo consumidas pelo serviço backend de notificação ao proprietário. Não removê-las isoladamente enquanto `notifyOwner` continuar ativo. Variáveis com prefixo `VITE_` podem chegar ao cliente e não devem conter segredos.
 
-| Comando | Finalidade |
-|---|---|
-| `pnpm dev` | Desenvolvimento local |
-| `pnpm check` | Verificação TypeScript |
-| `pnpm test` | Testes unitários |
-| `pnpm test:e2e` | Testes end-to-end |
-| `pnpm build` | Build de frontend e backend |
-| `pnpm start` | Execução do build de produção |
-| `pnpm db:push` | Geração e aplicação de migrations quando necessário |
+## Banco
 
-## Rotas relevantes
+`pnpm db:push` gera e aplica migrations usando `drizzle.config.ts`. O comando exige `DATABASE_URL` válida e não faz parte do deploy estático.
 
-| Rota | Jornada | Acesso |
-|---|---|---|
-| `/` | Portfólio público | Público |
-| `/agenda` | Gestão de disponibilidade | Administrador |
-| `/favoritos` | Curadoria e exportação | Administrador |
-| `/curadoria` | Alias da curadoria | Administrador |
+## Critério de release
 
-## Checklist de release
-
-Antes de publicar, execute `pnpm install --frozen-lockfile`, `pnpm check`, `pnpm test`, `pnpm build` e, quando houver alterações de navegação ou interação, `pnpm test:e2e`. Verifique também as auditorias específicas em `scripts/audit/`, `scripts/validate/` e `scripts/performance/`.
-
-O build pode emitir avisos sobre placeholders de analytics do template quando as variáveis `VITE_ANALYTICS_ENDPOINT` e `VITE_ANALYTICS_WEBSITE_ID` não estão definidas. Esses avisos são independentes do módulo SimilarWeb, que usa chamadas server-side.
+A evidência autoritativa é a CI do SHA que será publicado. Para a `main`, o deploy do Pages só deve ocorrer depois de `quality` e `static-isolation` verdes. Alterações da variante servidor devem ter também o job `api` verde quando o workflow for acionado.
