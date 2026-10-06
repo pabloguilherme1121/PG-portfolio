@@ -16,7 +16,7 @@
     "jose": "6.1.0",
     "mysql2": "^3.24.5",
     "nanoid": "^5.1.16",
-    "superjson": "^1.13.3",
+    "superjson": "^2.2.6",
     "@pg/contracts": "workspace:*",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
