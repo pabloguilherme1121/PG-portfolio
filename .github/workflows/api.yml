@@ -57,7 +57,7 @@ jobs:
       - name: Audit dependencies
         run: pnpm audit --audit-level=low
       - name: Lint API
-        run: pnpm dlx oxlint@1.86.0 apps/api/src packages/contracts scripts/build-api.mjs scripts/smoke-api.mjs
+        run: pnpm dlx oxlint@1.86.0 apps/api/src apps/api/client packages/contracts scripts/build-api.mjs scripts/smoke-api.mjs
       - name: Typecheck API
         run: pnpm check:api
       - name: API unit tests
