@@ -19,6 +19,8 @@ Marque apenas o que realmente foi executado:
 - [ ] `pnpm test:e2e:static` quando a mudança afeta navegação, UI, PWA ou bundle estático
 - [ ] `pnpm audit:assets --strict-if-present` quando há mudança de mídia/assets
 - [ ] `pnpm audit:source` quando há mudança em scripts, API ou limites de isolamento
+- [ ] `pnpm check:api` e `pnpm test:api` quando a mudança toca a API ou contratos compartilhados
+- [ ] `pnpm build:server` + `node scripts/smoke-api.mjs` quando a variante servidor é afetada
 
 ## Gates do GitHub Actions
 
