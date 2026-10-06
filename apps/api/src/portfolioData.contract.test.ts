@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { repositories } from "@/features/portfolio/portfolioData";
-import { portfolioCatalog } from "@/lib/portfolioCatalog";
+import { portfolioCatalog } from "@/features/portfolio/utils/projectCatalog";
 
 describe("portfolio data canonical contract", () => {
   it("keeps public repository identifiers unique", () => {
