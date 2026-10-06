@@ -25,6 +25,24 @@ describe("repository hygiene", () => {
     expect(read("apps/api/src/_core/sdk.ts")).not.toContain("Manus Scheduled Task");
   });
 
+  it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
+    const scripts = readdirSync(join(root, "scripts"))
+      .filter((file) => file.endsWith(".mjs"))
+      .sort();
+
+    expect(scripts).toEqual([
+      "audit-public-assets.mjs",
+      "build-api.mjs",
+      "check-bundle-budget.mjs",
+      "check-source-escapes.mjs",
+      "prepare-github-pages.mjs",
+      "run-workspace.mjs",
+      "smoke-api.mjs",
+      "validate-pages-bundle.mjs",
+      "verify-static-isolation.mjs",
+    ]);
+  });
+
   it("keeps the public UI layer limited to primitives that have consumers", () => {
     const uiDirectory = join(root, "apps/portfolio/src/components/ui");
     const uiFiles = readdirSync(uiDirectory)
