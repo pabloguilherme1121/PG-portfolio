@@ -128,12 +128,10 @@ describe("repository hygiene", () => {
     }
   });
 
-
   it("does not allow obsolete external script origins in the API CSP", () => {
     const apiEntry = read("apps/api/src/_core/index.ts");
     expect(apiEntry).not.toContain("https://files.manuscdn.com");
   });
-
 
   it("does not retain the unused Manus storage proxy route", () => {
     expect(existsSync(join(root, "apps/api/src/_core/storageProxy.ts"))).toBe(false);
@@ -141,7 +139,6 @@ describe("repository hygiene", () => {
     expect(read("apps/api/src/_core/index.ts")).not.toContain("registerStorageProxy");
     expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
   });
-
 
   it("does not retain placeholder files without a directory-preservation purpose", () => {
     expect(existsSync(join(root, "apps/portfolio/public/.gitkeep"))).toBe(false);
