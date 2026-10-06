@@ -1,4 +1,6 @@
-# Arquitetura do projeto
+# Arquitetura histórica (pré-workspaces)
+
+> Documento preservado apenas como registro histórico. Ele descreve a estrutura antiga `client/` + `server/` e **não** representa a arquitetura vigente. Consulte [`docs/current/architecture.md`](../current/architecture.md) para a especificação atual.
 
 ## Visão geral
 

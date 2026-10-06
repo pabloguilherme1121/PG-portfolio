@@ -25,6 +25,12 @@ describe("repository hygiene", () => {
     expect(read("apps/api/src/_core/sdk.ts")).not.toContain("Manus Scheduled Task");
   });
 
+  it("keeps one current architecture source and archives the obsolete layout", () => {
+    expect(existsSync(join(root, "docs/architecture.md"))).toBe(false);
+    expect(existsSync(join(root, "docs/current/architecture.md"))).toBe(true);
+    expect(existsSync(join(root, "docs/archive/architecture-legacy.md"))).toBe(true);
+  });
+
   it("keeps tracked scripts limited to CI and supported workspace tooling", () => {
     const scripts = readdirSync(join(root, "scripts"))
       .filter((file) => file.endsWith(".mjs"))

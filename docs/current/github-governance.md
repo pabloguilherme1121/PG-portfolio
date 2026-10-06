@@ -4,12 +4,16 @@ Base: https://github.com/pabloguilherme1121/PG-portfolio/issues/182
 
 ## Evidência consultada
 
-Na consulta desta execução, main = dd044d109b70a57e06419546280d46e52479adef;
-GET branches/main informou protected=false e GET rulesets retornou [].
-GET pulls?state=open retornou [] no portfólio. A descrição ainda menciona Manus;
-homepage=null e topics=[]. O merge dd044d1 tem verification.verified=true, assinado
-pelo GitHub; isso não comprova assinatura configurada no computador do proprietário.
-Nenhum item administrativo abaixo foi aplicado nesta execução.
+Na auditoria de 2026-10-06, a `main` continuava sem proteção administrativa
+(`protected=false`) e sem ruleset ativo. A descrição pública ainda mencionava Manus,
+`homepage=null` e `topics=[]`. A exclusão automática de branches após merge estava
+desativada e a API retornou 204 branches no repositório. Esses dados administrativos
+não são corrigidos por CI verde nem por mudanças no README.
+
+Commits de merge produzidos pelo GitHub podem aparecer como `Verified`; isso não
+comprova assinatura configurada no computador do proprietário. Nenhum item
+administrativo abaixo deve ser marcado como aplicado sem evidência posterior à
+configuração no GitHub.
 
 ## GitHub: configurar e verificar
 
@@ -54,6 +58,21 @@ sempre um job api em pull_request, com detecção de mudanças e etapas condicio
 mudança relevante roda validação; demais mudanças terminam com sucesso documentado.
 Só após testar ambos os tipos de PR tornar api obrigatório globalmente. Isso exige
 alteração de código/workflow; não foi aplicado aqui.
+
+### Higiene de branches após merge
+
+Em Settings → General → Pull Requests, ativar **Automatically delete head branches**.
+Isso evita que novas branches de PR integrado continuem se acumulando.
+
+Para as branches históricas já existentes, revisar antes de excluir: manter somente
+branches ainda ligadas a trabalho ativo ou a um motivo histórico explicitamente
+documentado. Branch integrada, substituída ou abandonada pode ser removida depois de
+confirmar que o commit relevante já está alcançável pela `main` ou por uma tag.
+
+Validar a configuração abrindo uma PR descartável, integrando-a e confirmando que a
+head branch foi removida automaticamente. Depois da limpeza histórica, registrar a
+nova contagem de branches na issue #182. Não usar force-push nem reescrever a `main`
+como mecanismo de limpeza.
 
 ### Metadados públicos
 
