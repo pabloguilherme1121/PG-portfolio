@@ -197,6 +197,13 @@ describe("repository hygiene", () => {
     expect(exportFavorites).not.toContain("as unknown as ArrayBuffer");
   });
 
+  it("reuses the canonical briefing seed contract", () => {
+    const home = read("apps/portfolio/src/features/portfolio/HomeExperience.tsx");
+
+    expect(home).toContain('import type { BriefingSeed } from "@/features/portfolio/utils/briefingFlow"');
+    expect(home).not.toContain("type BriefingSeed =");
+  });
+
   it("keeps the design contract aligned with the dedicated PG Arcade", () => {
     const design = read("DESIGN.md");
     expect(design).not.toContain("cinco jogos");
