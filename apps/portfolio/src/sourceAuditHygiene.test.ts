@@ -8,6 +8,7 @@ describe("source escape audit coverage", () => {
 
     expect(script).toContain('"apps/api/src"');
     expect(script).toContain('"apps/api/client"');
+    expect(script).toContain('"apps/api/drizzle"');
   });
 
   it("lints API runtime, client, and Drizzle sources", () => {
