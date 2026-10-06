@@ -1,6 +1,19 @@
 import type { Express } from "express";
 import { ENV } from "./env";
 
+export function isValidStorageKey(key: string) {
+  if (!key || key.length > 512 || key.includes("..") || key.includes("\\") || key.startsWith("/")) {
+    return false;
+  }
+
+  for (const character of key) {
+    const codePoint = character.charCodeAt(0);
+    if (codePoint <= 0x1f || codePoint === 0x7f) return false;
+  }
+
+  return true;
+}
+
 export function registerStorageProxy(app: Express) {
   app.get(/^\/manus-storage\/(.+)$/, async (req, res) => {
     const key = req.params[0];
@@ -8,7 +21,7 @@ export function registerStorageProxy(app: Express) {
       res.status(400).send("Missing storage key");
       return;
     }
-    if (key.length > 512 || key.includes("..") || key.includes("\\") || key.startsWith("/") || /[\u0000-\u001f\u007f]/.test(key)) {
+    if (!isValidStorageKey(key)) {
       res.status(400).send("Invalid storage key");
       return;
     }
