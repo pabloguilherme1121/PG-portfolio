@@ -75,10 +75,7 @@ export default defineConfig({
           "vendor-react": ["react", "react-dom", "react-dom/client"],
           // API imports resolve from apps/api/client, so they are split automatically.
           "vendor-ui": ["lucide-react", "sonner", "wouter"],
-          "vendor-primitives": [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-tooltip",
-          ],
+          "vendor-primitives": ["@radix-ui/react-dialog"],
           "vendor-utils": [
             "tailwind-merge",
             "clsx",
