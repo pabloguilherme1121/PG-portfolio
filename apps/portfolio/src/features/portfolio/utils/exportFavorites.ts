@@ -73,7 +73,7 @@ export async function exportFavoriteProjects(
       y -= 8;
     });
     const bytes = await pdf.save();
-    downloadBlob(bytes as unknown as ArrayBuffer, "pablo-guilherme-favoritos.pdf", "application/pdf");
+    downloadBlob(Uint8Array.from(bytes).buffer, "pablo-guilherme-favoritos.pdf", "application/pdf");
     return;
   }
 
