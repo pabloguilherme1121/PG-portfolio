@@ -3,7 +3,7 @@ import type { CookieOptions, Request } from "express";
 function isTrustedProxyAddress(value: string | undefined) {
   const address = (value || "").replace(/^::ffff:/, "").toLowerCase();
   return address === "127.0.0.1" || address === "::1" ||
-    /^10\./.test(address) || /^192\.168\./.test(address) ||
+    address.startsWith("10.") || address.startsWith("192.168.") ||
     /^172\.(1[6-9]|2\d|3[01])\./.test(address) ||
     /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(address) ||
     address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:");
