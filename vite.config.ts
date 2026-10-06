@@ -61,7 +61,6 @@ export default defineConfig({
       { find: "@api", replacement: path.join(root, "apps/api/client") },
       { find: "@", replacement: path.join(portfolioRoot, "src") },
       { find: "@shared", replacement: path.join(root, "packages/contracts") },
-      { find: "@assets", replacement: path.join(root, "attached_assets") },
     ],
   },
   envDir: root,
