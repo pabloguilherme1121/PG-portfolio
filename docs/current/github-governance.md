@@ -4,11 +4,13 @@ Base: https://github.com/pabloguilherme1121/PG-portfolio/issues/182
 
 ## Evidência consultada
 
-Na auditoria de 2026-10-06, a `main` continuava sem proteção administrativa
+Na revalidação de 2026-10-06, a `main` continuava sem proteção administrativa
 (`protected=false`) e sem ruleset ativo. A descrição pública ainda mencionava Manus,
-`homepage=null` e `topics=[]`. A exclusão automática de branches após merge estava
-desativada e a API retornou 204 branches no repositório. Esses dados administrativos
-não são corrigidos por CI verde nem por mudanças no README.
+`homepage=null` e `topics=[]`. A exclusão automática de branches após merge permanecia
+desativada e o repositório já acumulava mais de 200 branches. A contagem exata muda a
+cada PR enquanto a exclusão automática estiver desligada; registre o número atualizado
+na issue #182 no momento da limpeza. Esses dados administrativos não são corrigidos por
+CI verde nem por mudanças no README.
 
 Commits de merge produzidos pelo GitHub podem aparecer como `Verified`; isso não
 comprova assinatura configurada no computador do proprietário. Nenhum item
