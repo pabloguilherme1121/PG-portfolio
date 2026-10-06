@@ -155,7 +155,6 @@ export function useBriefingFlow({
       briefingDraftRef.current = resetDraft;
       setBriefingDraft(resetDraft);
       setBriefingStep(0);
-      setBriefingRevision((value) => value + 1);
     });
     notifyBriefingProgress(resetDraft);
     setFormSent(false);
