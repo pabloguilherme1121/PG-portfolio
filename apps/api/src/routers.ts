@@ -42,12 +42,23 @@ export function isTrustedProxyAddress(address: string | undefined) {
 
 export function getRequestIdentifier(req: Pick<Request, "headers" | "socket">) {
   const peerAddress = normalizeNetworkAddress(req.socket.remoteAddress);
-  // O cabeçalho forwarded só é aceito quando a conexão chega de uma faixa local/privada
-  // típica de proxy gerenciado. Conexões diretas não podem escolher o próprio identificador.
+  // Forwarded addresses are only trusted when the immediate peer is a managed/private proxy.
+  // Walk the chain from right to left and select the first untrusted hop so a client cannot
+  // choose its own rate-limit bucket by prefixing a forged address.
   if (!isTrustedProxyAddress(peerAddress)) return peerAddress;
+
   const forwarded = req.headers["x-forwarded-for"];
-  const forwardedAddress = Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0];
-  return normalizeNetworkAddress(forwardedAddress || peerAddress);
+  const forwardedChain = (Array.isArray(forwarded) ? forwarded.join(",") : forwarded || "")
+    .split(",")
+    .map((address) => normalizeNetworkAddress(address))
+    .filter((address) => address !== "unknown");
+
+  for (let index = forwardedChain.length - 1; index >= 0; index -= 1) {
+    const candidate = forwardedChain[index]!;
+    if (!isTrustedProxyAddress(candidate)) return candidate;
+  }
+
+  return peerAddress;
 }
 
 export function isValidDateKey(value: string) {
@@ -75,7 +86,6 @@ export type InstagramFeedResponse =
   | { status: "empty" | "credentials_required" | "error"; items: []; message: string };
 
 export const appRouter = router({
-    // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
