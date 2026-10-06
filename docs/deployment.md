@@ -55,7 +55,6 @@ Valores de backend devem ficar no secret manager do ambiente e nunca no bundle p
 - `OAUTH_SERVER_URL`
 - `VITE_OAUTH_PORTAL_URL`
 - `OWNER_OPEN_ID`
-- `OWNER_NAME`
 - `BUILT_IN_FORGE_API_URL`
 - `BUILT_IN_FORGE_API_KEY`
 - `VITE_ANALYTICS_ENDPOINT`
