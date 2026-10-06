@@ -7,27 +7,24 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
+import { FixedWindowRateLimiter } from "./quoteRateLimit";
 
 import { quoteRequestInputSchema } from "@shared/quoteRequest";
 export { quoteRequestInputSchema } from "@shared/quoteRequest";
 
-const quoteRateLimitBuckets = new Map<string, { startedAt: number; count: number }>();
 const QUOTE_RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const QUOTE_RATE_LIMIT_MAX = 5;
+const quoteRequestRateLimiter = new FixedWindowRateLimiter(
+  QUOTE_RATE_LIMIT_WINDOW_MS,
+  QUOTE_RATE_LIMIT_MAX,
+);
 
 export function isQuoteRequestHoneypotFilled(value: string | undefined) {
   return Boolean(value?.trim());
 }
 
 export function consumeQuoteRequestRateLimit(identifier: string, now = Date.now()) {
-  const current = quoteRateLimitBuckets.get(identifier);
-  if (!current || now - current.startedAt >= QUOTE_RATE_LIMIT_WINDOW_MS) {
-    quoteRateLimitBuckets.set(identifier, { startedAt: now, count: 1 });
-    return true;
-  }
-  if (current.count >= QUOTE_RATE_LIMIT_MAX) return false;
-  current.count += 1;
-  return true;
+  return quoteRequestRateLimiter.consume(identifier, now);
 }
 
 function normalizeNetworkAddress(value: string | undefined) {
