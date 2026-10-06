@@ -1,6 +1,5 @@
 import { repositories, type Repository } from "../portfolioData";
 
-
 export type PortfolioCatalogItem = {
   id: string;
   name: string;
