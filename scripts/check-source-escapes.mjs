@@ -1,7 +1,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import { extname, join } from "node:path";
 
-const roots = ["apps/portfolio/src", "apps/api/src", "apps/api/client", "packages/contracts", "e2e", "e2e-static"];
+const roots = ["apps/portfolio/src", "apps/api/src", "apps/api/client", "apps/api/drizzle", "packages/contracts", "e2e", "e2e-static"];
 const extensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs"]);
 const offenders = [];
 
