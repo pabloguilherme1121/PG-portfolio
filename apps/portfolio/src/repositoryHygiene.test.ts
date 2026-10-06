@@ -33,26 +33,26 @@ describe("repository hygiene", () => {
 
   it("keeps point-in-time audits out of the current docs root", () => {
     const historicalReports = [
-    "final-audit-live-baseline.md",
-    "final-audit-references.md",
-    "final-excellence-audit-2026-08-18.md",
-    "final-hardening-followup.md",
-    "hardening-audit.md",
-    "integrity-audit.md",
-    "manual-assistive-audit-2026-08-19.md",
-    "mobile-experience-audit-2026-08-18.md",
-    "mobile-lightbox-fix.md",
-    "mobile-optimization-followup.md",
-    "mobile-performance-audit.md",
-    "mobile-vitals-4g.md",
-    "performance-seo-report.md",
-    "pr-consolidation.md",
-    "refactoring-report.md",
-    "report-improvements.md",
-    "security-production-audit.md",
-    "syntax-error-fix.md",
-    "uiux-recommendations.md"
-];
+      "final-audit-live-baseline.md",
+      "final-audit-references.md",
+      "final-excellence-audit-2026-08-18.md",
+      "final-hardening-followup.md",
+      "hardening-audit.md",
+      "integrity-audit.md",
+      "manual-assistive-audit-2026-08-19.md",
+      "mobile-experience-audit-2026-08-18.md",
+      "mobile-lightbox-fix.md",
+      "mobile-optimization-followup.md",
+      "mobile-performance-audit.md",
+      "mobile-vitals-4g.md",
+      "performance-seo-report.md",
+      "pr-consolidation.md",
+      "refactoring-report.md",
+      "report-improvements.md",
+      "security-production-audit.md",
+      "syntax-error-fix.md",
+      "uiux-recommendations.md"
+    ];
 
     for (const file of historicalReports) {
       expect(existsSync(join(root, "docs", file))).toBe(false);
