@@ -32,7 +32,7 @@ describe("quoteRequestInputSchema", () => {
   });
 
   it("limita pedidos repetidos por identificador e libera uma nova janela", () => {
-    const identifier = `test-${Date.now()}-${Math.random()}`;
+    const identifier = "quote-window-reset-test";
     const now = 1_700_000_000_000;
     expect(Array.from({ length: 5 }, () => consumeQuoteRequestRateLimit(identifier, now))).toEqual([true, true, true, true, true]);
     expect(consumeQuoteRequestRateLimit(identifier, now)).toBe(false);
