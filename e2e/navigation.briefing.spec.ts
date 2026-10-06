@@ -85,7 +85,11 @@ test.describe("portfólio profissional", () => {
     await expect(restoredForm.locator('input[name="audience"]')).toHaveValue("Equipe interna");
     await expect(restoredForm.locator('[data-briefing-summary="true"]')).toContainText("Dashboard ou produto digital");
 
+    await restoredForm.evaluate((form) => {
+      form.setAttribute("data-briefing-reset-instance", "preserved");
+    });
     await restoredForm.getByRole("button", { name: /limpar rascunho/i }).click();
+    await expect(restoredForm).toHaveAttribute("data-briefing-reset-instance", "preserved");
     await expect(restoredForm.locator('input[name="name"]')).toHaveValue("");
   });
 
