@@ -22,7 +22,7 @@ O `index.css` ainda concentra o sistema visual porque possui regras de tema, ace
 
 ## Não adicionar novas funcionalidades ao caminho público
 
-O painel SimilarWeb existente foi mantido como ferramenta administrativa. A refatoração atual não adiciona novos botões, integrações ou etapas à Home; seu objetivo é reduzir acoplamento, melhorar localização do código e preservar o foco comercial do portfólio.
+Ferramentas administrativas de agenda, favoritos, curadoria e analytics permanecem na variante opcional com API e não devem vazar para o bundle estático. Refatorações da Home devem evitar adicionar etapas ou integrações que desviem do objetivo comercial do portfólio; o foco é reduzir acoplamento, melhorar localização do código e preservar a jornada pública.
 
 ## Componentes por responsabilidade
 

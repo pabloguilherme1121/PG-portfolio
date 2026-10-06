@@ -181,6 +181,17 @@ describe("repository hygiene", () => {
     expect(existsSync(join(root, "apps/api/drizzle/migrations/.gitkeep"))).toBe(false);
   });
 
+  it("keeps current operational docs free of retired layout references", () => {
+    const accessibility = read("docs/accessibility.md");
+    const media = read("docs/media-integration.md");
+    const decisions = read("docs/decisions.md");
+
+    expect(accessibility).not.toContain("scripts/validate/");
+    expect(media).not.toContain("client/public/portfolio-media/");
+    expect(media).toContain("apps/portfolio/public/portfolio-media/");
+    expect(decisions).not.toContain("SimilarWeb");
+  });
+
   it("keeps the design contract aligned with the dedicated PG Arcade", () => {
     const design = read("DESIGN.md");
     expect(design).not.toContain("cinco jogos");

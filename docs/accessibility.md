@@ -6,7 +6,7 @@ A interface mantém navegação por teclado, anéis de foco visíveis, rótulos 
 
 ## Responsividade
 
-A Home mantém comportamento mobile-first, incluindo menu móvel, vídeo vertical em viewport estreita, galeria compacta, controles de lightbox e calendário adaptável. As validações específicas ficam em `scripts/validate/validate-responsive.mjs` e nos demais scripts da pasta de validação.
+A Home mantém comportamento mobile-first, incluindo menu móvel, vídeo vertical em viewport estreita, galeria compacta, controles de lightbox e calendário adaptável. A cobertura automatizada correspondente vive nas suítes Playwright em `e2e/` e `e2e-static/`, com casos específicos para navegação mobile, acessibilidade, WebKit e resiliência do bundle estático.
 
 ## Motion e interação
 
@@ -14,6 +14,6 @@ Animações devem permanecer curtas e funcionais. Estados de carregamento, erro,
 
 ## Regressão mínima antes de publicar
 
-A cada mudança estrutural, execute os testes unitários e o build. Para alterações da Home, rode também as validações de galeria, lightbox, responsividade, showreel, social e currículo quando o comportamento correspondente for afetado.
+A cada mudança estrutural, execute os testes unitários e o build estático. Para alterações de interação ou layout da Home, valide também `pnpm test:e2e:static` e `pnpm test:e2e`. A CI do Pages acrescenta regressões específicas de WebKit mobile, budget de bundle, isolamento estático e validação das rotas públicas.
 
 A acessibilidade não é tratada como uma etapa posterior: qualquer novo componente deve nascer com nome acessível, foco visível, estado anunciado quando necessário e uma alternativa funcional para usuários que não usam ponteiro ou movimento.
