@@ -9,3 +9,5 @@ Esta pasta preserva contexto histórico sem tratá-lo como especificação atual
 Para o estado vigente, use `../current/architecture.md`, `../current/github-governance.md`, o `README.md` da raiz e `DESIGN.md`.
 
 Arquivos históricos podem conter caminhos, números de testes, decisões e funcionalidades que já foram substituídos; não devem ser usados como contrato de implementação sem revalidação contra a `main`.
+
+Novos relatórios pontuais devem ir diretamente para `audits/`, em vez de voltar à raiz de `docs/`.
