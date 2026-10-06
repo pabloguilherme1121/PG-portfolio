@@ -400,10 +400,6 @@ html {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   .skip-link,
   .scroll-progress-bar {
     transition: none;
@@ -505,11 +501,6 @@ html.theme-transitioning .arquivo-page * {
 .arquivo-page[data-theme="light"] [class*="bg-[#0b2746"] {
   background-color: #e4f3ff !important;
 }
-
-.arquivo-page[data-theme="light"] .project-gallery-card:hover {
-  background-color: #edf7ff !important;
-}
-
 
 .arquivo-page[data-theme="light"] .appearance-panel {
   background-color: #ffffff !important;
