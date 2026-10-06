@@ -1,4 +1,5 @@
 import type { Repository } from "../portfolioData";
+import { favoriteCsvEscape } from "./favoritesManagement";
 
 export type FavoriteExportFormat = "csv" | "json" | "pdf";
 
@@ -44,7 +45,6 @@ export async function exportFavoriteProjects(
   const exportRows = buildRows(repositories, getCategories);
   if (!exportRows.length) return;
 
-  const csvEscape = (value: string) => `"${value.replaceAll("\"", "\"\"")}"`;
   if (format === "pdf") {
     const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
     const pdf = await PDFDocument.create();
@@ -81,7 +81,7 @@ export async function exportFavoriteProjects(
     ? JSON.stringify(exportRows, null, 2)
     : [
         "id,nome,resumo,tecnologias,categorias,tipo,link",
-        ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(csvEscape).join(",")),
+        ...exportRows.map((row) => [row.id, row.nome, row.resumo, row.tecnologias.join(" | "), row.categorias.join(" | "), row.tipo, row.link].map(favoriteCsvEscape).join(",")),
       ].join("\n");
   downloadBlob(format === "csv" ? `\uFEFF${content}` : content, `pablo-guilherme-favoritos.${format}`, format === "csv" ? "text/csv;charset=utf-8" : "application/json;charset=utf-8");
 }

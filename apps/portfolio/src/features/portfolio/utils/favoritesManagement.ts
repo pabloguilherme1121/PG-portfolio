@@ -1,10 +1,6 @@
-export type FavoriteExportField =
-  | "position"
-  | "id"
-  | "name"
-  | "description"
-  | "tags"
-  | "updatedAt";
+import type { ExportField } from "@/lib/favoritesManagementState";
+
+export type FavoriteExportField = ExportField;
 
 export type FavoriteExportEntry = {
   id: string;
