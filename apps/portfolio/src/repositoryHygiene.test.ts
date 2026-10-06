@@ -124,4 +124,12 @@ describe("repository hygiene", () => {
     expect(apiEntry).not.toContain("https://files.manuscdn.com");
   });
 
+
+  it("does not retain the unused Manus storage proxy route", () => {
+    expect(existsSync(join(root, "apps/api/src/_core/storageProxy.ts"))).toBe(false);
+    expect(existsSync(join(root, "apps/api/src/_core/storageProxy.test.ts"))).toBe(false);
+    expect(read("apps/api/src/_core/index.ts")).not.toContain("registerStorageProxy");
+    expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
+  });
+
 });
