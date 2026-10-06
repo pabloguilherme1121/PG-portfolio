@@ -157,5 +157,4 @@ describe("repository hygiene", () => {
     expect(design).not.toContain("cinco jogos");
     expect(design).toContain("PG Arcade dedicado");
   });
-
 });
