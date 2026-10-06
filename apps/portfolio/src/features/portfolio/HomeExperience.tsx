@@ -64,8 +64,6 @@ const PortfolioContact = lazy(() =>
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
 
-type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
-
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
   const {
