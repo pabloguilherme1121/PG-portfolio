@@ -60,7 +60,8 @@
       "lodash": "4.17.21",
       "qs": "6.16.0",
       "@esbuild-kit/core-utils>esbuild": "0.25.10",
-      "@babel/core": "7.29.6"
+      "@babel/core": "7.29.6",
+      "source-map-js": "1.2.2"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
