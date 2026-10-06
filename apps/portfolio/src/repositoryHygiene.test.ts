@@ -101,4 +101,35 @@ describe("repository hygiene", () => {
 
     expect(legacyUiDependencies).toEqual([]);
   });
+
+  it("does not retain unused template service helpers in the optional API", () => {
+    const unusedApiHelpers = [
+      "apps/api/src/_core/dataApi.ts",
+      "apps/api/src/_core/heartbeat.ts",
+      "apps/api/src/_core/imageGeneration.ts",
+      "apps/api/src/_core/llm.ts",
+      "apps/api/src/_core/map.ts",
+      "apps/api/src/_core/voiceTranscription.ts",
+      "apps/api/src/storage.ts",
+    ];
+
+    for (const path of unusedApiHelpers) {
+      expect(existsSync(join(root, path))).toBe(false);
+    }
+  });
+
+
+  it("does not allow obsolete external script origins in the API CSP", () => {
+    const apiEntry = read("apps/api/src/_core/index.ts");
+    expect(apiEntry).not.toContain("https://files.manuscdn.com");
+  });
+
+
+  it("does not retain the unused Manus storage proxy route", () => {
+    expect(existsSync(join(root, "apps/api/src/_core/storageProxy.ts"))).toBe(false);
+    expect(existsSync(join(root, "apps/api/src/_core/storageProxy.test.ts"))).toBe(false);
+    expect(read("apps/api/src/_core/index.ts")).not.toContain("registerStorageProxy");
+    expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
+  });
+
 });

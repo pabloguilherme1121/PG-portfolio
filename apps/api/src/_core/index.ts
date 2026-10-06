@@ -4,7 +4,6 @@ import { createServer } from "http";
 import net from "net";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
-import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -24,7 +23,7 @@ function getCspOrigin(value: string | undefined) {
 
 function getReportOnlyCsp() {
   const analyticsOrigin = getCspOrigin(process.env.VITE_ANALYTICS_ENDPOINT);
-  const scriptSources = ["'self'", "'unsafe-inline'", "https://files.manuscdn.com"];
+  const scriptSources = ["'self'", "'unsafe-inline'"];
   const connectSources = ["'self'"];
   if (analyticsOrigin) {
     scriptSources.push(analyticsOrigin);
@@ -88,7 +87,6 @@ async function startServer() {
     res.setHeader("Pragma", "no-cache");
     next();
   });
-  registerStorageProxy(app);
   registerOAuthRoutes(app);
   registerSeoRoutes(app);
   // tRPC API
