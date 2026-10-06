@@ -101,4 +101,21 @@ describe("repository hygiene", () => {
 
     expect(legacyUiDependencies).toEqual([]);
   });
+
+  it("does not retain unused template service helpers in the optional API", () => {
+    const unusedApiHelpers = [
+      "apps/api/src/_core/dataApi.ts",
+      "apps/api/src/_core/heartbeat.ts",
+      "apps/api/src/_core/imageGeneration.ts",
+      "apps/api/src/_core/llm.ts",
+      "apps/api/src/_core/map.ts",
+      "apps/api/src/_core/voiceTranscription.ts",
+      "apps/api/src/storage.ts",
+    ];
+
+    for (const path of unusedApiHelpers) {
+      expect(existsSync(join(root, path))).toBe(false);
+    }
+  });
+
 });
