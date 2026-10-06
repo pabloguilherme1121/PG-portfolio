@@ -10,7 +10,7 @@ describe("source escape audit coverage", () => {
     expect(script).toContain('"apps/api/client"');
   });
 
-  it("lints both API server and API client source trees", () => {
+  it("lints API runtime, client, and Drizzle sources", () => {
     const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
       scripts?: Record<string, string>;
     };
