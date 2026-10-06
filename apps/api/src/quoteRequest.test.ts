@@ -53,5 +53,12 @@ describe("quoteRequestInputSchema", () => {
     expect(isTrustedProxyAddress("198.51.100.18")).toBe(false);
     expect(getRequestIdentifier(directRequest)).toBe("198.51.100.18");
     expect(getRequestIdentifier(proxiedRequest)).toBe("203.0.113.50");
+
+    const spoofedForwardedChain = {
+      headers: { "x-forwarded-for": "198.51.100.99, 203.0.113.50, 10.0.0.5" },
+      socket: { remoteAddress: "10.0.0.4" },
+    } as unknown as Pick<Request, "headers" | "socket">;
+
+    expect(getRequestIdentifier(spoofedForwardedChain)).toBe("203.0.113.50");
   });
 });
