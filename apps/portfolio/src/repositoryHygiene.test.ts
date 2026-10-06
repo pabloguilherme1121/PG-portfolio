@@ -192,6 +192,11 @@ describe("repository hygiene", () => {
     expect(decisions).not.toContain("SimilarWeb");
   });
 
+  it("does not rely on unsafe double casts for PDF export bytes", () => {
+    const exportFavorites = read("apps/portfolio/src/features/portfolio/utils/exportFavorites.ts");
+    expect(exportFavorites).not.toContain("as unknown as ArrayBuffer");
+  });
+
   it("keeps the design contract aligned with the dedicated PG Arcade", () => {
     const design = read("DESIGN.md");
     expect(design).not.toContain("cinco jogos");
