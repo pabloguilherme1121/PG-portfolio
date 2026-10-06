@@ -142,4 +142,16 @@ describe("repository hygiene", () => {
     expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
   });
 
+
+  it("does not retain placeholder files without a directory-preservation purpose", () => {
+    expect(existsSync(join(root, "apps/portfolio/public/.gitkeep"))).toBe(false);
+    expect(existsSync(join(root, "apps/api/drizzle/migrations/.gitkeep"))).toBe(false);
+  });
+
+  it("keeps the design contract aligned with the dedicated PG Arcade", () => {
+    const design = read("DESIGN.md");
+    expect(design).not.toContain("cinco jogos");
+    expect(design).toContain("PG Arcade dedicado");
+  });
+
 });
