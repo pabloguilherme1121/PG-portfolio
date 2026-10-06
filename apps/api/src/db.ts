@@ -89,6 +89,12 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+type MySqlInsertResult = readonly [{ insertId: number }, ...unknown[]];
+
+export function extractInsertId(result: MySqlInsertResult): number {
+  return result[0].insertId;
+}
+
 export async function createQuoteRequest(request: InsertQuoteRequest) {
   const db = await getDb();
   if (!db) {
@@ -97,7 +103,7 @@ export async function createQuoteRequest(request: InsertQuoteRequest) {
 
   try {
     const result = await db.insert(quoteRequests).values(request);
-    return { id: Number((result as unknown as { insertId: number }).insertId) };
+    return { id: extractInsertId(result) };
   } catch (error) {
     console.error("[QuoteRequest] Failed to persist request:", error);
     throw error;
