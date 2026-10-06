@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   buildFavoriteExportRows,
   estimateFavoriteExportBreakdown,
+  favoriteCsvEscape,
   moveFavoriteId,
 } from "./favoritesManagement";
 
@@ -44,6 +45,10 @@ describe("favoritesManagement utilities", () => {
     const result = estimateFavoriteExportBreakdown(rows, entries, true);
 
     expect(result.thumbnails).toBe(180 * 1024);
+  });
+
+  it("escapa aspas e preserva delimitadores dentro de uma célula CSV", () => {
+    expect(favoriteCsvEscape('Projeto, "Arquivo"')).toBe('"Projeto, ""Arquivo"""');
   });
 
   it("insere o favorito imediatamente antes do destino sem perder ids", () => {
