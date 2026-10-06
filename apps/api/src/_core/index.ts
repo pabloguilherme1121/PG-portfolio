@@ -24,7 +24,7 @@ function getCspOrigin(value: string | undefined) {
 
 function getReportOnlyCsp() {
   const analyticsOrigin = getCspOrigin(process.env.VITE_ANALYTICS_ENDPOINT);
-  const scriptSources = ["'self'", "'unsafe-inline'", "https://files.manuscdn.com"];
+  const scriptSources = ["'self'", "'unsafe-inline'"];
   const connectSources = ["'self'"];
   if (analyticsOrigin) {
     scriptSources.push(analyticsOrigin);
