@@ -1,6 +1,5 @@
 import type { ExportField } from "@/lib/favoritesManagementState";
 
-
 export type FavoriteExportEntry = {
   id: string;
   position: number;
