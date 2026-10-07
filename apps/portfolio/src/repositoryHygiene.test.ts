@@ -197,6 +197,13 @@ describe("repository hygiene", () => {
     expect(exportFavorites).not.toContain("as unknown as ArrayBuffer");
   });
 
+  it("reuses the canonical briefing seed contract", () => {
+    const home = read("apps/portfolio/src/features/portfolio/HomeExperience.tsx");
+
+    expect(home).toContain('import type { BriefingSeed } from "@/features/portfolio/utils/briefingFlow"');
+    expect(home).not.toContain("type BriefingSeed =");
+  });
+
   it("does not retain the retired SimilarWeb integration note", () => {
     expect(existsSync(join(root, "docs/integrations/INTEGRACAO-SIMILARWEB.md"))).toBe(false);
   });
