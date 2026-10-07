@@ -423,8 +423,8 @@ export default function Home() {
       },
       {
         onSuccess: () => {
-          completeBriefingSubmission();
           form.reset();
+          completeBriefingSubmission();
         },
       },
     );
