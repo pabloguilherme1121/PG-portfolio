@@ -78,8 +78,7 @@ async function startServer() {
     next();
   });
   const server = createServer(app);
-  // Os endpoints públicos atuais recebem somente payloads textuais validados por Zod;
-  // uploads usam storage assinado e não passam por este parser global.
+  // Os endpoints públicos atuais recebem somente payloads textuais validados por Zod.
   app.use(express.json({ limit: PUBLIC_BODY_LIMIT }));
   app.use(express.urlencoded({ limit: PUBLIC_BODY_LIMIT, extended: true }));
   app.use("/api", (_req, res, next) => {

@@ -26,6 +26,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "@/components/ui/button";
+import { MAX_SIDEBAR_WIDTH, MIN_SIDEBAR_WIDTH, parseStoredSidebarWidth } from "../sidebarWidth";
 
 const defaultMenuItems: DashboardNavigationItem[] = [];
 
@@ -36,9 +37,6 @@ export type DashboardNavigationItem = {
 };
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
-const DEFAULT_WIDTH = 280;
-const MIN_WIDTH = 200;
-const MAX_WIDTH = 480;
 
 export default function DashboardLayout({
   children,
@@ -47,10 +45,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
   navigation?: DashboardNavigationItem[];
 }) {
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
-    return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
-  });
+  const [sidebarWidth, setSidebarWidth] = useState(() =>
+    parseStoredSidebarWidth(localStorage.getItem(SIDEBAR_WIDTH_KEY))
+  );
   const { loading, user } = useAuth();
 
   useEffect(() => {
@@ -132,7 +129,7 @@ function DashboardLayoutContent({
 
       const sidebarLeft = sidebarRef.current?.getBoundingClientRect().left ?? 0;
       const newWidth = e.clientX - sidebarLeft;
-      if (newWidth >= MIN_WIDTH && newWidth <= MAX_WIDTH) {
+      if (newWidth >= MIN_SIDEBAR_WIDTH && newWidth <= MAX_SIDEBAR_WIDTH) {
         setSidebarWidth(newWidth);
       }
     };

@@ -13,7 +13,11 @@ export class FixedWindowRateLimiter {
     private readonly windowMs: number,
     private readonly maxRequests: number,
     private readonly maxIdentifiers = DEFAULT_RATE_LIMIT_BUCKET_CAP,
-  ) {}
+  ) {
+    if (!Number.isSafeInteger(maxIdentifiers) || maxIdentifiers <= 0) {
+      throw new RangeError("maxIdentifiers must be a positive safe integer");
+    }
+  }
 
   private pruneExpired(now: number, force = false) {
     if (!force && now < this.nextPruneAt) return;

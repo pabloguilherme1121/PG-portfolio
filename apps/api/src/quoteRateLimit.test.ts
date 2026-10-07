@@ -2,6 +2,27 @@ import { describe, expect, it } from "vitest";
 import { FixedWindowRateLimiter } from "./quoteRateLimit";
 
 describe("FixedWindowRateLimiter", () => {
+  it.each([NaN, Infinity, -Infinity, 0, -1, 1.5, Number.MAX_SAFE_INTEGER + 1])(
+    "rejects an invalid identifier capacity: %s",
+    (capacity) => {
+      expect(() => new FixedWindowRateLimiter(1_000, 2, capacity)).toThrow(RangeError);
+    },
+  );
+
+  it("preserves existing fixed windows when the configured capacity is full", () => {
+    const limiter = new FixedWindowRateLimiter(1_000, 2, 1);
+
+    expect(limiter.consume("client-a", 0)).toBe(true);
+    expect(limiter.consume("client-b", 100)).toBe(false);
+    expect(limiter.consume("client-a", 200)).toBe(true);
+    expect(limiter.consume("client-a", 999)).toBe(false);
+    expect(limiter.consume("client-a", 1_000)).toBe(true);
+    expect(limiter.consume("client-b", 1_001)).toBe(false);
+    expect(limiter.size).toBe(1);
+    expect(limiter.consume("client-b", 2_000)).toBe(true);
+    expect(limiter.size).toBe(1);
+  });
+
   it("blocks requests after the configured limit and resets at the window boundary", () => {
     const limiter = new FixedWindowRateLimiter(1_000, 2);
 
