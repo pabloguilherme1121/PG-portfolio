@@ -25,11 +25,12 @@ describe("FixedWindowRateLimiter", () => {
   it("caps active identifier buckets even before the window expires", () => {
     const limiter = new FixedWindowRateLimiter(60_000, 2);
 
-    for (let index = 0; index < 2_100; index += 1) {
+    for (let index = 0; index < 2_048; index += 1) {
       expect(limiter.consume(`client-${index}`, index)).toBe(true);
     }
 
-    expect(limiter.size).toBeLessThanOrEqual(2_048);
+    expect(limiter.consume("overflow-client", 2_049)).toBe(false);
+    expect(limiter.size).toBe(2_048);
   });
 
 });
