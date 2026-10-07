@@ -15,8 +15,8 @@ export class FixedWindowRateLimiter {
     private readonly maxIdentifiers = DEFAULT_RATE_LIMIT_BUCKET_CAP,
   ) {}
 
-  private pruneExpired(now: number) {
-    if (now < this.nextPruneAt) return;
+  private pruneExpired(now: number, force = false) {
+    if (!force && now < this.nextPruneAt) return;
 
     for (const [identifier, bucket] of this.buckets) {
       if (now - bucket.startedAt >= this.windowMs) {
@@ -31,7 +31,10 @@ export class FixedWindowRateLimiter {
     const current = this.buckets.get(identifier);
     if (!current || now - current.startedAt >= this.windowMs) {
       if (!current && this.buckets.size >= this.maxIdentifiers) {
-        return false;
+        this.pruneExpired(now, true);
+        if (this.buckets.size >= this.maxIdentifiers) {
+          return false;
+        }
       }
       this.buckets.set(identifier, { startedAt: now, count: 1 });
       return true;
