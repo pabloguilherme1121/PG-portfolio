@@ -40,6 +40,13 @@ const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
 
+export function parseStoredSidebarWidth(value: string | null): number {
+  if (value === null) return DEFAULT_WIDTH;
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed)) return DEFAULT_WIDTH;
+  return Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, parsed));
+}
+
 export default function DashboardLayout({
   children,
   navigation = defaultMenuItems,
@@ -47,10 +54,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
   navigation?: DashboardNavigationItem[];
 }) {
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
-    return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
-  });
+  const [sidebarWidth, setSidebarWidth] = useState(() =>
+    parseStoredSidebarWidth(localStorage.getItem(SIDEBAR_WIDTH_KEY))
+  );
   const { loading, user } = useAuth();
 
   useEffect(() => {
