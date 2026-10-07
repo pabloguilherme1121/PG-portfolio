@@ -2,6 +2,11 @@ import { startLogin } from "@api/const";
 import { trpc } from "@/lib/portfolioApi";
 import { TRPCClientError } from "@trpc/client";
 import { useCallback, useEffect, useMemo } from "react";
+import {
+  getSafeStorage,
+  removeStorage,
+  writeStorage,
+} from "@/lib/safeStorage";
 
 type UseAuthOptions = {
   redirectOnUnauthenticated?: boolean;
@@ -42,19 +47,13 @@ export function useAuth(options?: UseAuthOptions) {
       // Clear the Preview auto-login token mirrored into sessionStorage, so
       // header-based sessions (Safari ITP / WebView) are logged out too. The
       // backend cookie is cleared by the logout mutation.
-      try {
-        sessionStorage.removeItem("manus-cookie");
-      } catch {}
+      removeStorage(getSafeStorage("session"), "manus-cookie");
       utils.auth.me.setData(undefined, null);
       await utils.auth.me.invalidate();
     }
   }, [logoutMutation, utils]);
 
   const state = useMemo(() => {
-    localStorage.setItem(
-      "manus-runtime-user-info",
-      JSON.stringify(meQuery.data)
-    );
     return {
       user: meQuery.data ?? null,
       loading: meQuery.isLoading || logoutMutation.isPending,
@@ -68,6 +67,14 @@ export function useAuth(options?: UseAuthOptions) {
     logoutMutation.error,
     logoutMutation.isPending,
   ]);
+
+  useEffect(() => {
+    writeStorage(
+      getSafeStorage("local"),
+      "manus-runtime-user-info",
+      JSON.stringify(meQuery.data ?? null),
+    );
+  }, [meQuery.data]);
 
   useEffect(() => {
     if (!redirectOnUnauthenticated) return;
