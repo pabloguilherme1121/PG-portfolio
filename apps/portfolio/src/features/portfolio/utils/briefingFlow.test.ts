@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  briefingDefaultValues,
+  clearPersistedBriefingDraft,
   getBriefingProgress,
   normalizeBriefingDraft,
 } from "@/features/portfolio/utils/briefingFlow";
@@ -30,6 +32,33 @@ describe("briefingFlow", () => {
       location: "Remoto / online",
       budget: "Preciso de orientação",
     });
+  });
+
+  it("remove o rascunho persistido após um envio aceito pela API", () => {
+    const removedKeys: string[] = [];
+    const storage = {
+      removeItem(key: string) {
+        removedKeys.push(key);
+      },
+    };
+
+    const nextDraft = clearPersistedBriefingDraft(storage, "portfolio-briefing");
+
+    expect(removedKeys).toEqual(["portfolio-briefing"]);
+    expect(nextDraft).toEqual(briefingDefaultValues);
+    expect(nextDraft).not.toBe(briefingDefaultValues);
+  });
+
+  it("tolera storage indisponível e ainda devolve um rascunho limpo", () => {
+    const storage = {
+      removeItem() {
+        throw new Error("storage indisponível");
+      },
+    };
+
+    expect(clearPersistedBriefingDraft(storage, "portfolio-briefing")).toEqual(
+      briefingDefaultValues,
+    );
   });
 
   it("calcula progresso e status com os mesmos limiares da experiência atual", () => {
