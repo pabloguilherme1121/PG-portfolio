@@ -23,10 +23,16 @@ import { startLogin } from "@api/const";
 import { useIsMobile } from "@/hooks/useMobile";
 import { LogOut, PanelLeft, type LucideIcon } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
+import { getSafeStorage } from "@/lib/safeStorage";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "@/components/ui/button";
-import { MAX_SIDEBAR_WIDTH, MIN_SIDEBAR_WIDTH, parseStoredSidebarWidth } from "../sidebarWidth";
+import {
+  MAX_SIDEBAR_WIDTH,
+  MIN_SIDEBAR_WIDTH,
+  persistSidebarWidth,
+  readStoredSidebarWidth,
+} from "../sidebarWidth";
 
 const defaultMenuItems: DashboardNavigationItem[] = [];
 
@@ -36,8 +42,6 @@ export type DashboardNavigationItem = {
   path: string;
 };
 
-const SIDEBAR_WIDTH_KEY = "sidebar-width";
-
 export default function DashboardLayout({
   children,
   navigation = defaultMenuItems,
@@ -46,12 +50,12 @@ export default function DashboardLayout({
   navigation?: DashboardNavigationItem[];
 }) {
   const [sidebarWidth, setSidebarWidth] = useState(() =>
-    parseStoredSidebarWidth(localStorage.getItem(SIDEBAR_WIDTH_KEY))
+    readStoredSidebarWidth(getSafeStorage("local"))
   );
   const { loading, user } = useAuth();
 
   useEffect(() => {
-    localStorage.setItem(SIDEBAR_WIDTH_KEY, sidebarWidth.toString());
+    persistSidebarWidth(getSafeStorage("local"), sidebarWidth);
   }, [sidebarWidth]);
 
   if (loading) {
