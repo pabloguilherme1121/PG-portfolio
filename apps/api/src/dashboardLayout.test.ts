@@ -11,6 +11,8 @@ describe("parseStoredSidebarWidth", () => {
   it("clamps persisted widths to the supported range", () => {
     expect(parseStoredSidebarWidth("120")).toBe(200);
     expect(parseStoredSidebarWidth("900")).toBe(480);
+    expect(parseStoredSidebarWidth("200")).toBe(200);
     expect(parseStoredSidebarWidth("320")).toBe(320);
+    expect(parseStoredSidebarWidth("480")).toBe(480);
   });
 });
