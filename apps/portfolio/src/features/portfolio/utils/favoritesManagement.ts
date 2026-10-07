@@ -1,7 +1,5 @@
 import type { ExportField } from "@/lib/favoritesManagementState";
 
-type FavoriteExportField = ExportField;
-
 export type FavoriteExportEntry = {
   id: string;
   position: number;
@@ -12,7 +10,7 @@ export type FavoriteExportEntry = {
   cover?: string | null;
 };
 
-export const FAVORITE_EXPORT_FIELDS: { value: FavoriteExportField; label: string }[] = [
+export const FAVORITE_EXPORT_FIELDS: { value: ExportField; label: string }[] = [
   { value: "position", label: "posição" },
   { value: "id", label: "identificador" },
   { value: "name", label: "nome" },
@@ -23,7 +21,7 @@ export const FAVORITE_EXPORT_FIELDS: { value: FavoriteExportField; label: string
 
 export function favoriteExportValue(
   entry: FavoriteExportEntry,
-  field: FavoriteExportField,
+  field: ExportField,
 ) {
   const value =
     field === "position"
@@ -39,7 +37,7 @@ export function favoriteExportValue(
 
 export function buildFavoriteExportRows(
   entries: FavoriteExportEntry[],
-  fields: FavoriteExportField[],
+  fields: ExportField[],
 ) {
   return entries.map((entry) =>
     Object.fromEntries(
