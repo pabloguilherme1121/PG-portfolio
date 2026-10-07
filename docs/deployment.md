@@ -55,12 +55,12 @@ Valores de backend devem ficar no secret manager do ambiente e nunca no bundle p
 - `OAUTH_SERVER_URL`
 - `VITE_OAUTH_PORTAL_URL`
 - `OWNER_OPEN_ID`
-- `BUILT_IN_FORGE_API_URL`
-- `BUILT_IN_FORGE_API_KEY`
+- `NOTIFICATION_SERVICE_URL`
+- `NOTIFICATION_SERVICE_API_KEY`
 - `VITE_ANALYTICS_ENDPOINT`
 - `VITE_ANALYTICS_WEBSITE_ID`
 
-As chaves `BUILT_IN_FORGE_API_*` têm nome legado, mas continuam sendo consumidas pelo serviço backend de notificação ao proprietário. Não removê-las isoladamente enquanto `notifyOwner` continuar ativo. Variáveis com prefixo `VITE_` podem chegar ao cliente e não devem conter segredos.
+Use `NOTIFICATION_SERVICE_URL` e `NOTIFICATION_SERVICE_API_KEY` como nomes preferenciais para o serviço backend de notificação ao proprietário. Para compatibilidade com ambientes existentes, `BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY` continuam aceitas como fallback legado quando as variáveis neutras não estiverem definidas. Variáveis com prefixo `VITE_` podem chegar ao cliente e não devem conter segredos.
 
 ## Banco
 
