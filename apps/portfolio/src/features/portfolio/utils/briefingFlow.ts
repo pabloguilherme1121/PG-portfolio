@@ -6,6 +6,23 @@ export const briefingDefaultValues: BriefingDraft = {
   budget: "Preciso de orientação",
 };
 
+export type BriefingDraftStorage = {
+  removeItem(key: string): void;
+};
+
+export function clearPersistedBriefingDraft(
+  storage: BriefingDraftStorage | null | undefined,
+  storageKey: string,
+): BriefingDraft {
+  try {
+    storage?.removeItem(storageKey);
+  } catch {
+    // O reset do fluxo continua mesmo quando o armazenamento local falha.
+  }
+
+  return { ...briefingDefaultValues };
+}
+
 export const briefingFieldNames = [
   "name",
   "email",
