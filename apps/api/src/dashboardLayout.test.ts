@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseStoredSidebarWidth } from "../client/components/DashboardLayout";
+import { parseStoredSidebarWidth } from "../client/sidebarWidth";
 
 describe("parseStoredSidebarWidth", () => {
   it("falls back when the stored width is invalid", () => {
