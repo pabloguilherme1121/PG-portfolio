@@ -5,6 +5,7 @@ import { TRPCError } from "@trpc/server";
 import { blockAvailabilityDate, createQuoteRequest, deleteFavoriteProjectMetadata, listBlockedDates, listFavoriteProjectMetadata, listFavoriteProjectOrder, replaceFavoriteProjectOrder, unblockAvailabilityDate, upsertFavoriteProjectMetadata } from "./db";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { isTrustedProxyAddress, normalizeNetworkAddress } from "./_core/networkAddress";
+export { isTrustedProxyAddress };
 import { notifyOwner } from "./_core/notification";
 import { systemRouter } from "./_core/systemRouter";
 import { adminProcedure, publicProcedure, router } from "./_core/trpc";
