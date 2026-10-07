@@ -204,6 +204,10 @@ describe("repository hygiene", () => {
     expect(home).not.toContain("type BriefingSeed =");
   });
 
+  it("does not retain the retired SimilarWeb integration note", () => {
+    expect(existsSync(join(root, "docs/integrations/INTEGRACAO-SIMILARWEB.md"))).toBe(false);
+  });
+
   it("keeps the design contract aligned with the dedicated PG Arcade", () => {
     const design = read("DESIGN.md");
     expect(design).not.toContain("cinco jogos");
