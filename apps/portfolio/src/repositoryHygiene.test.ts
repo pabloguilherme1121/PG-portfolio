@@ -176,6 +176,14 @@ describe("repository hygiene", () => {
     expect(read("scripts/smoke-api.mjs")).not.toContain("/manus-storage/");
   });
 
+  it("does not retain Forge credentials after removing Forge service helpers", () => {
+    const env = read("apps/api/src/_core/env.ts");
+    expect(env).not.toContain("BUILT_IN_FORGE_API_URL");
+    expect(env).not.toContain("BUILT_IN_FORGE_API_KEY");
+    expect(env).not.toContain("forgeApiUrl");
+    expect(env).not.toContain("forgeApiKey");
+  });
+
   it("does not retain placeholder files without a directory-preservation purpose", () => {
     expect(existsSync(join(root, "apps/portfolio/public/.gitkeep"))).toBe(false);
     expect(existsSync(join(root, "apps/api/drizzle/migrations/.gitkeep"))).toBe(false);
