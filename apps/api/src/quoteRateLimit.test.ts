@@ -21,4 +21,15 @@ describe("FixedWindowRateLimiter", () => {
     expect(limiter.consume("fresh", 1_000)).toBe(true);
     expect(limiter.size).toBe(1);
   });
+
+  it("caps active identifier buckets even before the window expires", () => {
+    const limiter = new FixedWindowRateLimiter(60_000, 2);
+
+    for (let index = 0; index < 2_100; index += 1) {
+      expect(limiter.consume(`client-${index}`, index)).toBe(true);
+    }
+
+    expect(limiter.size).toBeLessThanOrEqual(2_048);
+  });
+
 });
