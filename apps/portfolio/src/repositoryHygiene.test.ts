@@ -221,6 +221,7 @@ describe("repository hygiene", () => {
       read("apps/portfolio/src/features/portfolio/components/PortfolioFooter.tsx"),
       read("apps/portfolio/src/features/portfolio/components/PortfolioContactIntro.tsx"),
       read("apps/portfolio/src/features/portfolio/components/PortfolioQuickActionsDock.tsx"),
+      read("apps/portfolio/src/pages/Privacy.tsx"),
     ].join("\n");
 
     expect(config).toContain('export const portfolioContactEmail = "mpjcreator@gmail.com"');
