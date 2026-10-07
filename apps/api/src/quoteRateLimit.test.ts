@@ -33,4 +33,17 @@ describe("FixedWindowRateLimiter", () => {
     expect(limiter.size).toBe(2_048);
   });
 
+
+  it("reclaims expired buckets when capacity is full before the next scheduled prune", () => {
+    const limiter = new FixedWindowRateLimiter(1_000, 2, 2);
+
+    expect(limiter.consume("client-a", 0)).toBe(true);
+    expect(limiter.consume("client-b", 900)).toBe(true);
+    expect(limiter.consume("client-c", 1_000)).toBe(true);
+    expect(limiter.size).toBe(2);
+
+    expect(limiter.consume("client-d", 1_900)).toBe(true);
+    expect(limiter.size).toBe(2);
+  });
+
 });
