@@ -376,7 +376,10 @@ export default function Home() {
     });
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  function handleSubmit(
+    event: FormEvent<HTMLFormElement>,
+    completeBriefingSubmission: () => void,
+  ) {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
@@ -418,7 +421,12 @@ export default function Home() {
         briefing: enrichedBriefing,
         website: String(data.get("website") || ""),
       },
-      { onSuccess: () => form.reset() },
+      {
+        onSuccess: () => {
+          form.reset();
+          completeBriefingSubmission();
+        },
+      },
     );
   }
 
