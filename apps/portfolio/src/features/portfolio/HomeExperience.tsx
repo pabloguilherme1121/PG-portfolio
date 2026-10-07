@@ -38,6 +38,7 @@ import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppe
 import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
 import { useFavoriteProjects } from "@/features/portfolio/hooks/useFavoriteProjects";
 import {
+  portfolioContactEmail as contactEmail,
   portfolioMarkUrl as markUrl,
   portfolioMobileSectionLabels as mobileSectionLabels,
   portfolioNavigationItems as navigationItems,
@@ -311,7 +312,7 @@ export default function Home() {
   }
 
   async function copyContactEmail() {
-    await copyTextWithFeedback("mpjcreator@gmail.com", setEmailCopyStatus);
+    await copyTextWithFeedback(contactEmail, setEmailCopyStatus);
   }
 
   function toggleFavorite(projectId: string, event: React.MouseEvent | React.KeyboardEvent) {
