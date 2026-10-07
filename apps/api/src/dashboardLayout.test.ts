@@ -4,6 +4,7 @@ import { parseStoredSidebarWidth } from "../client/sidebarWidth";
 describe("parseStoredSidebarWidth", () => {
   it("falls back when the stored width is invalid", () => {
     expect(parseStoredSidebarWidth("abc")).toBe(280);
+    expect(parseStoredSidebarWidth("320px")).toBe(280);
     expect(parseStoredSidebarWidth(null)).toBe(280);
   });
 
