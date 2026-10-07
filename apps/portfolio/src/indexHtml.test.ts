@@ -3,6 +3,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 
 const indexHtmlPath = path.resolve(import.meta.dirname, "../index.html");
+const serverAppPath = path.resolve(
+  import.meta.dirname,
+  "../../api/client/ServerApp.tsx",
+);
 
 async function readIndexHtml() {
   return readFile(indexHtmlPath, "utf8");
@@ -39,5 +43,23 @@ describe("portfolio HTML shell", () => {
       'content="https://pabloguilherme1121.github.io/PG-portfolio/social-preview.png"',
     );
     expect(html).toContain('href="%BASE_URL%favicon.svg"');
+  });
+  it("marks every administrative server route as noindex in the HTML shell", async () => {
+    const [html, serverApp] = await Promise.all([
+      readIndexHtml(),
+      readFile(serverAppPath, "utf8"),
+    ]);
+    const adminRoutes = [...serverApp.matchAll(/path=["']\/([^"']+)["']/g)].map(
+      (match) => match[1],
+    );
+    const noindexScript = [...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/gi)]
+      .map(([, , body]) => body)
+      .find((body) => body.includes('"noindex, nofollow"'));
+
+    expect(adminRoutes).toEqual(expect.arrayContaining(["agenda", "favoritos", "curadoria"]));
+    expect(noindexScript).toBeTruthy();
+    for (const route of adminRoutes) {
+      expect(noindexScript).toContain(route);
+    }
   });
 });
