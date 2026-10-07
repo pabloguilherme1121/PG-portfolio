@@ -24,6 +24,7 @@ import { PortfolioQuickActionsDock } from "@/features/portfolio/components/Portf
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
+import type { BriefingSeed } from "@/features/portfolio/utils/briefingFlow";
 import { copyText, copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
 import { getMobileDockModel, isMobileExperienceRoute, readStoredBriefingProgress, readStoredExperienceRoute, type MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
 import { getNavigatorConnection, shouldAvoidSpeculativePreload } from "@/features/portfolio/utils/networkHints";
@@ -62,8 +63,6 @@ const PortfolioContact = lazy(() =>
 );
 
 const isStaticDeploy = import.meta.env.VITE_STATIC_DEPLOY === "true";
-
-type BriefingSeed = Partial<Record<"service" | "projectType" | "objective" | "audience" | "stage" | "delivery" | "success" | "briefing", string>>;
 
 export default function Home() {
   const { theme, preference, setPreference, toggleTheme } = useTheme();
