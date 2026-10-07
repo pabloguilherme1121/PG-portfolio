@@ -3,7 +3,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 describe("source escape audit coverage", () => {
-  it("includes both API server and API client source trees", () => {
+  it("includes API server, client, and Drizzle source trees", () => {
     const script = readFileSync(join(process.cwd(), "scripts/check-source-escapes.mjs"), "utf8");
 
     expect(script).toContain('"apps/api/src"');
@@ -11,21 +11,20 @@ describe("source escape audit coverage", () => {
     expect(script).toContain('"apps/api/drizzle"');
   });
 
-  it("lints API runtime, client, and Drizzle sources", () => {
+  it("keeps one canonical lint command for the optional API", () => {
     const packageJson = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
       scripts?: Record<string, string>;
     };
     const apiWorkflow = readFileSync(join(process.cwd(), ".github/workflows/api.yml"), "utf8");
+    const apiLint = packageJson.scripts?.["lint:api"] ?? "";
 
-    expect(packageJson.scripts?.lint).toContain("apps/api/src");
-    expect(packageJson.scripts?.lint).toContain("apps/api/client");
-    expect(packageJson.scripts?.lint).toContain("apps/api/drizzle");
-    expect(packageJson.scripts?.lint).toContain("packages/contracts");
-    expect(packageJson.scripts?.lint).toContain("drizzle.config.ts");
-    expect(apiWorkflow).toContain("apps/api/src");
-    expect(apiWorkflow).toContain("apps/api/client");
-    expect(apiWorkflow).toContain("apps/api/drizzle");
-    expect(apiWorkflow).toContain("packages/contracts");
-    expect(apiWorkflow).toContain("drizzle.config.ts");
+    expect(apiLint).toContain("apps/api/src");
+    expect(apiLint).toContain("apps/api/client");
+    expect(apiLint).toContain("apps/api/drizzle");
+    expect(apiLint).toContain("packages/contracts");
+    expect(apiLint).toContain("drizzle.config.ts");
+    expect(packageJson.scripts?.lint).toContain("pnpm lint:api");
+    expect(apiWorkflow).toContain("run: pnpm lint:api");
+    expect(apiWorkflow).not.toContain("pnpm dlx oxlint@");
   });
 });
