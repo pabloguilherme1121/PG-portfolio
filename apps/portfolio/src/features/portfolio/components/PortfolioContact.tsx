@@ -34,7 +34,10 @@ type PortfolioContactProps = {
   contextTransitionTarget: "saved" | "agenda" | null;
   navigateSavedAgendaContext: (target: "saved" | "agenda") => void;
   contextNavigationStatus: string;
-  handleSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  handleSubmit: (
+    event: FormEvent<HTMLFormElement>,
+    completeBriefingSubmission: () => void,
+  ) => void;
   isQuoteRequestPending: boolean;
   formError: string | null;
   formSent: boolean;
@@ -78,6 +81,7 @@ export function PortfolioContact({
     briefingStep,
     captureBriefingDraft,
     clearBriefingDraft,
+    completeBriefingSubmission,
     moveBriefingStep,
     trackBriefingStarted,
   } = useBriefingFlow({ initialBriefingSeed, setFormSent });
@@ -130,7 +134,9 @@ export function PortfolioContact({
             ref={briefingFormRef}
             id="contato-briefing"
             aria-busy={isQuoteRequestPending}
-            onSubmit={handleSubmit}
+            onSubmit={(event) =>
+              handleSubmit(event, completeBriefingSubmission)
+            }
             onChangeCapture={(event) => captureBriefingDraft(event.currentTarget)}
             onFocusCapture={() => { onBriefingFocusChange(true); trackBriefingStarted(); }}
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
