@@ -213,4 +213,25 @@ describe("repository hygiene", () => {
     expect(design).not.toContain("cinco jogos");
     expect(design).toContain("PG Arcade dedicado");
   });
+
+  it("centralizes public contact endpoints in the portfolio config", () => {
+    const config = read("apps/portfolio/src/features/portfolio/portfolioConfig.ts");
+    const consumers = [
+      read("apps/portfolio/src/features/portfolio/HomeExperience.tsx"),
+      read("apps/portfolio/src/features/portfolio/components/PortfolioFooter.tsx"),
+      read("apps/portfolio/src/features/portfolio/components/PortfolioContactIntro.tsx"),
+      read("apps/portfolio/src/features/portfolio/components/PortfolioQuickActionsDock.tsx"),
+      read("apps/portfolio/src/pages/Privacy.tsx"),
+    ].join("\n");
+
+    expect(config).toContain('export const portfolioContactEmail = "mpjcreator@gmail.com"');
+    expect(config).toContain('export const portfolioInstagramPersonalUrl = "https://www.instagram.com/pablogui000/"');
+    expect(config).toContain('export const portfolioInstagramWorkUrl = "https://www.instagram.com/mpjstoryworks/"');
+    expect(config).toContain('export const portfolioInstagramDmUrl = "https://ig.me/m/pablogui000"');
+
+    expect(consumers).not.toContain("mpjcreator@gmail.com");
+    expect(consumers).not.toContain("https://www.instagram.com/pablogui000/");
+    expect(consumers).not.toContain("https://www.instagram.com/mpjstoryworks/");
+    expect(consumers).not.toContain("https://ig.me/m/pablogui000");
+  });
 });

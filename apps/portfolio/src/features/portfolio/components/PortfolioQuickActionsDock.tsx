@@ -10,6 +10,10 @@ import {
 
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import type { MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import {
+  portfolioInstagramPersonalHandle,
+  portfolioInstagramPersonalUrl,
+} from "@/features/portfolio/portfolioConfig";
 
 type MobilePrimaryAction = {
   href: string;
@@ -128,10 +132,10 @@ export function PortfolioQuickActionsDock({
       </a>
 
       <a
-        href="https://www.instagram.com/pablogui000/"
+        href={portfolioInstagramPersonalUrl}
         target="_blank"
         rel="noreferrer"
-        aria-label="Abrir Instagram @pablogui000"
+        aria-label={`Abrir Instagram ${portfolioInstagramPersonalHandle}`}
         title="Instagram"
         className="contact-float-link contact-float-instagram group hidden sm:flex"
       >
