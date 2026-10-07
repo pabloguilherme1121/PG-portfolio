@@ -23,13 +23,6 @@ export const conversionEventNames = [
   "professional_resume_printed",
   "featured_project_evidence_opened",
   "briefing_preset_selected",
-  "tic_tac_toe_started",
-  "tic_tac_toe_completed",
-  "tic_tac_toe_restarted",
-  "tic_tac_toe_preset_selected",
-  "tic_tac_toe_hint_used",
-  "arcade_game_selected",
-  "arcade_progress_reset",
   "experience_route_selected",
   "experience_route_cta",
 ] as const;
@@ -50,9 +43,6 @@ type ConversionProperties = Partial<{
   serviceId: string;
   professionalEvidence: "resume" | "profile" | "github" | "product" | "fullstack" | "media" | "quality";
   briefingPreset: "site" | "dashboard" | "content";
-  gameResult: "player" | "bot" | "draw";
-  arcadePreset: "quick" | "competitive" | "local" | "survival";
-  arcadeGame: "velha" | "domino" | "futebol" | "damas" | "xadrez";
   experienceRoute: "client" | "recruiter" | "explorer";
 }>;
 
