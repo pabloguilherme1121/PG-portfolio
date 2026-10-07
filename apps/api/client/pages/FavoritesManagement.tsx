@@ -18,6 +18,11 @@ import { ArrowLeft, Check, Download, GripVertical, Search, ShieldCheck, Cloud, C
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import JSZip from "jszip";
+import {
+  getSafeStorage,
+  readStorage,
+  writeStorage,
+} from "@/lib/safeStorage";
 
 const FAVORITES_KEY = "pablo-portfolio-favorites";
 const ORDER_KEY = "pablo-portfolio-favorite-order";
@@ -28,19 +33,19 @@ const EXPORT_LAST_KEY = "pablo-portfolio-favorites-export-last";
 const navigation: DashboardNavigationItem[] = [{ icon: ShieldCheck, label: "Favoritos", path: "/favoritos" }];
 
 function readIds(key: string) {
-  return typeof window === "undefined" ? [] : parseFavoriteIds(window.localStorage.getItem(key));
+  return parseFavoriteIds(readStorage(getSafeStorage("local"), key));
 }
 function readSessionFilters() {
-  return parseSessionFilters(typeof window === "undefined" ? null : window.sessionStorage.getItem(FILTERS_KEY));
+  return parseSessionFilters(readStorage(getSafeStorage("session"), FILTERS_KEY));
 }
 function readLastExportPreferences() {
   return parseExportPreferences(
-    typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_PREFS_KEY),
-    typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_LAST_KEY),
+    readStorage(getSafeStorage("session"), EXPORT_PREFS_KEY),
+    readStorage(getSafeStorage("session"), EXPORT_LAST_KEY),
   );
 }
 function readExportSelection() {
-  return parseExportSelection(typeof window === "undefined" ? null : window.sessionStorage.getItem(EXPORT_SELECTION_KEY));
+  return parseExportSelection(readStorage(getSafeStorage("session"), EXPORT_SELECTION_KEY));
 }
 function downloadFile(filename: string, type: string, content: BlobPart) {
   const url = URL.createObjectURL(new Blob([content], { type })); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; document.body.appendChild(anchor); anchor.click(); anchor.remove(); window.setTimeout(() => URL.revokeObjectURL(url), 0);
@@ -93,21 +98,21 @@ function FavoritesManagementContent() {
   const isLoading = loading || orderLoading || metadataLoading;
 
   useEffect(() => {
-    window.sessionStorage.setItem(FILTERS_KEY, JSON.stringify({ query, tagFilter, editFilter, dateFilter, customStartDate, customEndDate }));
+    writeStorage(getSafeStorage("session"), FILTERS_KEY, JSON.stringify({ query, tagFilter, editFilter, dateFilter, customStartDate, customEndDate }));
   }, [customEndDate, customStartDate, dateFilter, editFilter, query, tagFilter]);
   useEffect(() => {
-    window.sessionStorage.setItem(EXPORT_PREFS_KEY, JSON.stringify({ fields: exportFields, thumbnails: exportWithThumbnails }));
+    writeStorage(getSafeStorage("session"), EXPORT_PREFS_KEY, JSON.stringify({ fields: exportFields, thumbnails: exportWithThumbnails }));
   }, [exportFields, exportWithThumbnails]);
   useEffect(() => {
-    window.sessionStorage.setItem(EXPORT_SELECTION_KEY, JSON.stringify(selectedExportIds));
+    writeStorage(getSafeStorage("session"), EXPORT_SELECTION_KEY, JSON.stringify(selectedExportIds));
   }, [selectedExportIds]);
   useEffect(() => {
-    window.sessionStorage.setItem(EXPORT_LAST_KEY, JSON.stringify({ format: exportFormat, estimate: lastExportEstimate }));
+    writeStorage(getSafeStorage("session"), EXPORT_LAST_KEY, JSON.stringify({ format: exportFormat, estimate: lastExportEstimate }));
   }, [exportFormat, lastExportEstimate]);
 
   function clearAllFilters() { setQuery(""); setTagFilter("all"); setEditFilter("all"); setDateFilter("all"); setCustomStartDate(""); setCustomEndDate(""); }
   function persist(nextIds: string[]) {
-    setFavoriteIds(nextIds); window.localStorage.setItem(ORDER_KEY, JSON.stringify(nextIds));
+    setFavoriteIds(nextIds); writeStorage(getSafeStorage("local"), ORDER_KEY, JSON.stringify(nextIds));
     if (user?.role === "admin") replaceOrder.mutate({ projectIds: nextIds }, { onSuccess: () => setFeedback("Ordem salva e sincronizada."), onError: () => setFeedback("A ordem foi atualizada localmente, mas a sincronização falhou.") });
   }
   function moveFavorite(sourceId: string, targetId: string) { persist(moveFavoriteId(favoriteIds, sourceId, targetId)); }
