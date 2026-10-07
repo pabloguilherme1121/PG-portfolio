@@ -11,8 +11,10 @@ describe("notification configuration contract", () => {
     const envExample = read("env.example");
     const deployment = read("docs/deployment.md");
 
-    expect(env).toContain("process.env.NOTIFICATION_SERVICE_URL ?? process.env.BUILT_IN_FORGE_API_URL");
-    expect(env).toContain("process.env.NOTIFICATION_SERVICE_API_KEY ?? process.env.BUILT_IN_FORGE_API_KEY");
+    expect(env).toContain("process.env.NOTIFICATION_SERVICE_URL");
+    expect(env).toContain("process.env.BUILT_IN_FORGE_API_URL");
+    expect(env).toContain("process.env.NOTIFICATION_SERVICE_API_KEY");
+    expect(env).toContain("process.env.BUILT_IN_FORGE_API_KEY");
     expect(env).not.toContain("forgeApiUrl:");
     expect(env).not.toContain("forgeApiKey:");
     expect(envExample).toContain("NOTIFICATION_SERVICE_URL=");
