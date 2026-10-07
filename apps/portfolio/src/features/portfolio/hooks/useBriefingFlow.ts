@@ -9,6 +9,7 @@ import {
 import {
   briefingDefaultValues,
   briefingFieldNames,
+  clearPersistedBriefingDraft,
   briefingSteps,
   getBriefingProgress,
   normalizeBriefingDraft,
@@ -141,14 +142,17 @@ export function useBriefingFlow({
     });
   }
 
-  function clearBriefingDraft() {
+  function resetBriefingDraftState() {
+    let resetDraft = { ...briefingDefaultValues };
     try {
-      window.localStorage.removeItem(briefingDraftStorageKey);
+      resetDraft = clearPersistedBriefingDraft(
+        window.localStorage,
+        briefingDraftStorageKey,
+      );
     } catch {
-      // O reset visual ainda funciona quando o armazenamento está indisponível.
+      // O reset visual continua mesmo quando o acesso ao armazenamento falha.
     }
 
-    const resetDraft = { ...briefingDefaultValues };
     const form = briefingFormRef.current;
     if (form) applyBriefingDraftToForm(form, resetDraft);
     flushSync(() => {
@@ -157,10 +161,18 @@ export function useBriefingFlow({
       setBriefingStep(0);
     });
     notifyBriefingProgress(resetDraft);
+  }
+
+  function clearBriefingDraft() {
+    resetBriefingDraftState();
     setFormSent(false);
     toast("Briefing limpo", {
       description: "O rascunho local foi removido deste dispositivo.",
     });
+  }
+
+  function completeBriefingSubmission() {
+    resetBriefingDraftState();
   }
 
   function applyBriefingSeed(detail: BriefingSeed, announce: boolean) {
@@ -226,6 +238,7 @@ export function useBriefingFlow({
     briefingStep,
     captureBriefingDraft,
     clearBriefingDraft,
+    completeBriefingSubmission,
     moveBriefingStep,
     trackBriefingStarted,
   };
