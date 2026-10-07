@@ -21,9 +21,10 @@
     "check:portfolio": "tsc --noEmit -p apps/portfolio/tsconfig.json",
     "check:api": "tsc --noEmit -p apps/api/tsconfig.json",
     "audit:source": "node scripts/check-source-escapes.mjs",
-    "lint": "pnpm dlx oxlint@1.86.0 apps/portfolio/src apps/api/src apps/api/client apps/api/drizzle packages/contracts scripts drizzle.config.ts vite.config.ts playwright.config.ts playwright.static.config.ts",
+    "lint": "pnpm dlx oxlint@1.86.0 apps/portfolio/src scripts/audit-public-assets.mjs scripts/check-bundle-budget.mjs scripts/check-source-escapes.mjs scripts/prepare-github-pages.mjs scripts/run-workspace.mjs scripts/validate-pages-bundle.mjs scripts/verify-static-isolation.mjs vite.config.ts playwright.config.ts playwright.static.config.ts && pnpm lint:api",
     "test:portfolio": "vitest run apps/portfolio/src",
-    "test:api": "vitest run apps/api/src"
+    "test:api": "vitest run apps/api/src",
+    "lint:api": "pnpm dlx oxlint@1.86.0 apps/api/src apps/api/client apps/api/drizzle packages/contracts drizzle.config.ts scripts/build-api.mjs scripts/smoke-api.mjs"
   },
   "dependencies": {},
   "devDependencies": {
