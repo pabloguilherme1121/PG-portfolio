@@ -20,6 +20,7 @@ describe("source escape audit coverage", () => {
     expect(packageJson.scripts?.lint).toContain("apps/api/src");
     expect(packageJson.scripts?.lint).toContain("apps/api/client");
     expect(packageJson.scripts?.lint).toContain("apps/api/drizzle");
+    expect(packageJson.scripts?.lint).toContain("packages/contracts");
     expect(packageJson.scripts?.lint).toContain("drizzle.config.ts");
     expect(apiWorkflow).toContain("apps/api/src");
     expect(apiWorkflow).toContain("apps/api/client");
