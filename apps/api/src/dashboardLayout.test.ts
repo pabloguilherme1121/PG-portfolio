@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
   parseStoredSidebarWidth,
@@ -39,5 +41,26 @@ describe("parseStoredSidebarWidth", () => {
 
     expect(persistSidebarWidth(storage, 320)).toBe(false);
     expect(persistSidebarWidth(null, 320)).toBe(false);
+  });
+  it("keeps dashboard client storage access behind the safe storage layer", () => {
+    const root = process.cwd();
+    const dashboard = readFileSync(
+      join(root, "apps/api/client/components/DashboardLayout.tsx"),
+      "utf8",
+    );
+    const auth = readFileSync(
+      join(root, "apps/api/client/hooks/useAuth.ts"),
+      "utf8",
+    );
+    const favorites = readFileSync(
+      join(root, "apps/api/client/pages/FavoritesManagement.tsx"),
+      "utf8",
+    );
+
+    for (const source of [dashboard, auth, favorites]) {
+      expect(source).not.toMatch(/\b(?:localStorage|sessionStorage)\./);
+    }
+    expect(auth).toContain('from "@/lib/safeStorage"');
+    expect(favorites).toContain('from "@/lib/safeStorage"');
   });
 });
