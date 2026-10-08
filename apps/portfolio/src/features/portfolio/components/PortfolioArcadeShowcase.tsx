@@ -1,49 +1,38 @@
-import { ArrowUpRight, Gamepad2 } from "lucide-react";
-
-import { portfolioArcadeUrl } from "@/features/portfolio/portfolioConfig";
+import { ArrowUpRight, Gamepad2, Github } from "lucide-react";
+import { portfolioArcadeUrl, portfolioMediaPath } from "@/features/portfolio/portfolioConfig";
 
 export default function PortfolioArcadeShowcase() {
   return (
-    <section
-      id="pg-lab"
-      data-arcade-showcase="true"
-      className="archive-chapter relative scroll-mt-24 overflow-hidden border-y border-[#67e8f9]/15 bg-[#040a13] px-4 py-10 min-[360px]:px-5 sm:px-8 sm:py-14 lg:px-12"
-      aria-labelledby="pg-lab-title"
-    >
-      <div className="relative mx-auto grid max-w-[1440px] gap-6 overflow-hidden border border-[#67e8f9]/25 bg-[linear-gradient(135deg,rgba(6,23,47,.96),rgba(5,13,24,.92))] p-5 shadow-[0_24px_80px_rgba(0,0,0,.24)] sm:grid-cols-[1fr_auto] sm:items-end sm:gap-10 sm:p-8">
-        <div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">
-            PG Arcade · produto dedicado
-          </p>
-          <h2
-            id="pg-lab-title"
-            className="mt-3 max-w-3xl font-display text-[clamp(2rem,4vw,4.25rem)] font-medium leading-[0.94] tracking-[-0.055em] text-white"
-          >
-            Código que você pode jogar.
-          </h2>
-          <p className="mt-3 max-w-2xl font-body text-sm leading-6 text-[#a9bfd8]">
-            O Arcade agora vive em uma aplicação própria. Assim, jogos, modos e evolução
-            técnica têm uma única fonte de verdade, enquanto o portfólio continua mostrando
-            o projeto sem duplicar runtime e manutenção.
-          </p>
+    <section id="pg-lab" data-arcade-showcase="true" className="mt-8 scroll-mt-24 border-t border-[#67e8f9]/25 pt-8" aria-labelledby="pg-lab-title">
+      <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+        <div className="min-w-0">
+          <p className="professional-eyebrow">PG Arcade · produto publicado</p>
+          <h2 id="pg-lab-title" className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium leading-tight tracking-[-0.035em] text-white">Escolha um jogo. Aprenda jogando.</h2>
+          <p className="mt-4 max-w-[60ch] font-body text-base leading-7 text-[#bed0ea]">Puzzles, jogos de tabuleiro e desafios de ação em um catálogo aberto, sem cadastro. Um produto para escolher uma mecânica, entender o objetivo e começar a partida.</p>
+          <dl className="mt-5 space-y-3 font-body text-sm leading-6 text-[#bed0ea]">
+            <div><dt className="font-semibold text-white">Meu papel</dt><dd>Produto, interface, implementação frontend e validação dos fluxos de jogo.</dd></div>
+            <div><dt className="font-semibold text-white">Decisões</dt><dd>Controles de toque e teclado, regras por mecânica e carregamento separado do portfólio. Favoritos e progresso ficam no dispositivo.</dd></div>
+            <div><dt className="font-semibold text-white">Resultado verificável</dt><dd>Catálogo e partidas disponíveis no produto publicado, com código público para examinar regras e estados.</dd></div>
+          </dl>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a href={portfolioArcadeUrl} target="_blank" rel="noopener noreferrer" data-arcade-full-site="true" className="professional-primary"><Gamepad2 className="h-4 w-4" aria-hidden="true" /> Jogar PG Arcade <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+            <a href="https://github.com/pabloguilherme1121/PG-Arcade" target="_blank" rel="noopener noreferrer" className="professional-secondary"><Github className="h-4 w-4" aria-hidden="true" /> Ver código</a>
+          </div>
+          <p className="mt-3 font-body text-sm leading-6 text-[#a9bfd8]">O jogo abre em outra aba. Sem ranking global ou multiplayer online.</p>
         </div>
-        <div className="flex flex-col gap-3 sm:items-end">
-          <a
-            href={portfolioArcadeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            data-arcade-full-site="true"
-            className="inline-flex min-h-12 items-center justify-center gap-2 border border-[#67e8f9]/45 bg-[#0b2746] px-4 font-mono text-[10px] font-semibold uppercase tracking-[0.1em] text-[#bdf7ff] transition-colors hover:bg-[#103857] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
-          >
-            <Gamepad2 className="h-4 w-4" aria-hidden="true" />
-            abrir PG Arcade
-            <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-          </a>
-          <p className="max-w-xs text-xs leading-5 text-[#a9bfd8] sm:text-right">
-            Experiência dedicada, aberta em outra aba para preservar a jornada do portfólio.
-          </p>
-        </div>
+        <figure className="min-w-0">
+          <img src={portfolioMediaPath("arcade-resta-um.png")} alt="Partida de Resta Um no PG Arcade, com tabuleiro, peças e controles" width="1440" height="1000" loading="lazy" decoding="async" className="h-auto w-full rounded-lg border border-white/15" />
+          <figcaption className="mt-3 font-body text-sm leading-6 text-[#a9bfd8]">Resta Um: selecionar uma peça, saltar sobre outra e buscar a última peça no tabuleiro. Captura real do produto em outubro de 2026.</figcaption>
+        </figure>
       </div>
+      <details className="professional-disclosure mt-6">
+        <summary>Estudo de caso · controles, progresso e limites</summary>
+        <div className="grid gap-5 pb-6 font-body text-sm leading-7 text-[#bed0ea] md:grid-cols-3">
+          <div><h3 className="font-semibold text-white">Problema e público</h3><p>Quem joga no celular precisa reconhecer o desafio e alcançar os controles sem atravessar uma sequência de painéis. A arena e o objetivo orientam o primeiro contato.</p></div>
+          <div><h3 className="font-semibold text-white">Construção e aprendizado</h3><p>Um shell comum organiza navegação e preferências; cada mecânica mantém regras e resultados próprios. A validação combina catálogo carregável, cenários por família, teclado e persistência local.</p></div>
+          <div><h3 className="font-semibold text-white">Limitações</h3><p>Dados locais não sincronizam entre aparelhos. Offline depende dos recursos preparados. Testes automatizados demonstram cenários específicos, sem prometer ausência de falhas ou acessibilidade certificada.</p></div>
+        </div>
+      </details>
     </section>
   );
 }

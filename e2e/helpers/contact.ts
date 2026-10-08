@@ -14,6 +14,7 @@ export async function openContactBriefing(page: Page) {
   // The section anchor exists before its lazy form. Scrolling the form first
   // would wait forever when background preloading is disabled.
   await page.locator("#contato").scrollIntoViewIfNeeded();
+  await page.locator("#contato").getByRole("link", { name: "Prefiro preparar um briefing" }).click();
   const form = page.locator('[data-briefing-form="true"]');
   await expect(form).toBeVisible();
   await form.scrollIntoViewIfNeeded();

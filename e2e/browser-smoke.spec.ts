@@ -6,7 +6,7 @@ test("carrega a jornada principal sem overflow horizontal", async ({ page }) => 
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i,
+      name: /Interfaces claras.*Produtos que você pode usar/i,
     }),
   ).toBeVisible();
 
@@ -41,7 +41,7 @@ test("continua navegável quando o navegador bloqueia storage", async ({ page })
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i,
+      name: /Interfaces claras.*Produtos que você pode usar/i,
     }),
   ).toBeVisible();
 

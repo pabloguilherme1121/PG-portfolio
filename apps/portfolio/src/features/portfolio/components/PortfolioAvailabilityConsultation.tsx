@@ -162,6 +162,7 @@ export function PortfolioAvailabilityConsultation({
 
   return (
     <div
+      id="agenda"
       ref={availabilitySectionRef}
       data-availability-context="true"
       tabIndex={-1}

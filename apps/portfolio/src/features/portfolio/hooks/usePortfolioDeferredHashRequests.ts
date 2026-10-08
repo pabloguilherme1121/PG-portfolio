@@ -9,7 +9,7 @@ export type PortfolioDeferredHashRequests = {
 
 export function getPortfolioDeferredHashRequests(hash: string): PortfolioDeferredHashRequests {
   return {
-    contact: hash === "#contato" || hash === "#contato-briefing",
+    contact: ["#contato", "#contato-briefing", "#agenda"].includes(hash),
     caseStudies: hash === "#estudos-de-caso",
     staticSections: ["#trilha", "#qualidade", "#servicos", "#processo"].includes(hash),
     profileSections: ["#sobre", "#perfil-profissional"].includes(hash),

@@ -33,9 +33,8 @@ test.describe("portfólio profissional", () => {
     const initialProgress = Number(await ring.getAttribute("data-progress"));
     expect(initialProgress).toBeGreaterThanOrEqual(0);
 
-    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await page.goto("/#projetos");
     await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
-    await page.locator("#projetos").scrollIntoViewIfNeeded();
     await expect.poll(async () => (await context.locator('[data-mobile-current-section="true"]').textContent()) ?? "")
       .toMatch(/projetos|observatório/i);
     await expect.poll(async () => Number(await ring.getAttribute("data-progress"))).toBeGreaterThan(initialProgress);
@@ -266,7 +265,7 @@ test.describe("portfólio profissional", () => {
 
     const form = await openContactBriefing(page);
     await form.locator('input[name="name"]').fill("Visitante mobile");
-    await page.locator("#contato").getByRole("heading", { name: /solução clara/i }).click();
+    await page.locator("#contato").getByRole("heading", { name: /Vamos conversar sobre seu projeto/i }).click();
 
     await expect(primaryAction).toHaveAttribute("href", "#contato-briefing");
     await expect(primaryAction).toContainText(/retomar/i);
@@ -390,4 +389,3 @@ test.describe("portfólio profissional", () => {
   });
 
 });
-

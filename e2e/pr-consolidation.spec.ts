@@ -8,6 +8,7 @@ test("cases preservam provas e explicam decisões sem overflow em 320 px", async
   const cases = page.locator('[data-case-study="true"]');
   await expect(cases).toHaveCount(2);
   for (const study of await cases.all()) {
+    await study.locator("summary").click();
     for (const detail of ["problema", "objetivo", "decisões", "resultado"]) {
       await expect(
         study.locator(`[data-case-detail="${detail}"]`)

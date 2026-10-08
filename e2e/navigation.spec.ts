@@ -12,7 +12,8 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator("#galeria-publica")).toHaveCount(0);
     await expect(page.locator("#favoritos-pessoais")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /CSV|JSON|projetos salvos|minhas imagens/i })).toHaveCount(0);
-    await expect(page.getByRole("link", { name: /observatório/i }).first()).toBeVisible();
+    await page.locator("#projetos").scrollIntoViewIfNeeded();
+    await expect(page.locator("#observatorio").getByRole("link", { name: /ver produto em produção/i })).toBeVisible();
   });
 
   test("oferece currículo web imprimível sem depender do PDF", async ({ page }) => {
@@ -158,7 +159,7 @@ test.describe("portfólio profissional", () => {
   test("usa o retrato profissional versionado", async ({ page, request }) => {
     await page.goto("/");
 
-    const portrait = page.locator(".hero-portrait-card img");
+    const portrait = page.locator(".professional-portrait img");
     await expect(portrait).toBeVisible();
     await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).currentSrc)).toMatch(/portfolio-media\/pablo-profile-2026\.(avif|webp)$/);
     await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(1);
@@ -215,7 +216,7 @@ test.describe("portfólio profissional", () => {
           .__portfolioAnalyticsEvents.map((event) => event.eventName),
       );
 
-    await page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i }).click();
+    await page.locator("#inicio").getByRole("link", { name: "Conversar sobre um projeto" }).click();
     await expect.poll(emittedEventNames).toContain("quote_cta");
 
     const form = await openContactBriefing(page);
@@ -392,7 +393,7 @@ test.describe("portfólio profissional", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i,
+        name: /Interfaces claras.*Produtos que você pode usar/i,
       }),
     ).toBeVisible();
     await expect(page.locator('[data-mobile-menu-toggle="true"]')).toBeVisible();

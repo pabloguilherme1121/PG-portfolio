@@ -18,7 +18,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 const BriefingProfessionalLayer = lazy(
   () => import("@/features/portfolio/components/BriefingProfessionalLayer"),
@@ -86,6 +86,18 @@ export function PortfolioContact({
     trackBriefingStarted,
   } = useBriefingFlow({ initialBriefingSeed, setFormSent });
 
+  const [agendaOpen, setAgendaOpen] = useState(() => window.location.hash === "#agenda");
+  const [briefingOpen, setBriefingOpen] = useState(() => Boolean(initialBriefingSeed) || window.location.hash === "#contato-briefing");
+  useEffect(() => {
+    const openRequestedBriefing = () => {
+      if (window.location.hash === "#contato-briefing") setBriefingOpen(true);
+      if (window.location.hash === "#agenda") setAgendaOpen(true);
+    };
+    window.addEventListener("hashchange", openRequestedBriefing);
+    return () => window.removeEventListener("hashchange", openRequestedBriefing);
+  }, []);
+  useEffect(() => { if (initialBriefingSeed) setBriefingOpen(true); }, [initialBriefingSeed]);
+
   const hasProfessionalBriefingDraft = [
     "contentStatus",
     "visualIdentity",
@@ -104,9 +116,10 @@ export function PortfolioContact({
   return (
     <section id={embedded ? undefined : "contato"} className="archive-chapter relative overflow-hidden bg-[#070a10]">
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
-      <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr]">
+      <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr] professional-contact-grid">
         <div className="min-w-0 border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
           <PortfolioContactIntro whatsAppUrl={whatsAppUrl} telegramUrl={telegramUrl} />
+          <details open={agendaOpen} onToggle={(event) => setAgendaOpen(event.currentTarget.open)} className="mt-8 professional-disclosure"><summary>Consultar uma data · confirmação humana</summary>
           <PortfolioAvailabilityConsultation
             blockedDates={blockedDates}
             isBlockedDatesError={isBlockedDatesError}
@@ -117,18 +130,22 @@ export function PortfolioContact({
             contextNavigationStatus={contextNavigationStatus}
             isStaticDeploy={isStaticDeploy}
           />
+          </details>
           <div className="mt-7 max-w-md border-l-2 border-[#38bdf8] bg-[#071a35]/70 px-5 py-5">
-            <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">depois do seu briefing</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">Próximo passo</p>
             <ol className="mt-4 space-y-3 font-body text-sm leading-6 text-[#cbe8f6]">
-              <li><span className="mr-2 font-mono text-[#67e8f9]">01</span>O contexto é organizado para definir o que realmente precisa ser produzido.</li>
+              <li><span className="mr-2 font-mono text-[#67e8f9]">01</span>Entendemos o problema e o público da solução.</li>
               <li><span className="mr-2 font-mono text-[#67e8f9]">02</span>Formato, data e detalhes são alinhados com transparência.</li>
-              <li><span className="mr-2 font-mono text-[#67e8f9]">03</span>A proposta chega com escopo, entrega e próximos passos claros.</li>
+              <li><span className="mr-2 font-mono text-[#67e8f9]">03</span>Combinamos o escopo e a forma de entrega antes de começar.</li>
             </ol>
           </div>
         </div>
 
-        <div className="min-w-0 px-4 py-14 sm:px-8 sm:py-24 lg:px-16 lg:py-28">
+        <div className="min-w-0 px-4 py-8 sm:px-8 sm:py-12 lg:px-12">
+          <button type="button" aria-expanded={briefingOpen} aria-controls="contato-briefing" onClick={() => setBriefingOpen(!briefingOpen)} className="professional-secondary w-full justify-between">Briefing opcional · organizar minha ideia <ChevronRight className={`h-4 w-4 ${briefingOpen ? "rotate-90" : ""}`} aria-hidden="true" /></button>
+          <p className="mt-3 font-body text-sm leading-6 text-[#a9bfd8]">Cinco etapas para quem prefere escrever antes da conversa. O rascunho fica neste dispositivo; você revisa tudo antes de enviar.</p>
           <form
+            hidden={!briefingOpen}
             data-briefing-form="true"
             key={briefingRevision}
             ref={briefingFormRef}
@@ -140,13 +157,13 @@ export function PortfolioContact({
             onChangeCapture={(event) => captureBriefingDraft(event.currentTarget)}
             onFocusCapture={() => { onBriefingFocusChange(true); trackBriefingStarted(); }}
             onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) onBriefingFocusChange(false); }}
-            className="w-full min-w-0 max-w-2xl scroll-mt-24"
+            className="mt-6 w-full min-w-0 max-w-2xl scroll-mt-24"
           >
             <div data-briefing-header="true" className="mb-6 min-w-0 border border-[#67e8f9]/20 bg-[#07182a]/80 p-3.5 sm:mb-8 sm:p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">briefing studio · contexto antes do orçamento</p>
-                  <h3 className="mt-2 font-display text-[1.35rem] font-medium leading-tight tracking-[-0.04em] text-white sm:text-2xl">Transforme contexto em um briefing pronto para avançar.</h3>
+                  <h3 className="mt-2 font-display text-[1.35rem] font-medium leading-tight tracking-[-0.04em] text-white sm:text-2xl">Prepare sua ideia para a conversa.</h3>
                 </div>
                 <div className="sm:text-right">
                   <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7892b8]">qualidade do contexto</p>

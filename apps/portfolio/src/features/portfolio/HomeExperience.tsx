@@ -18,7 +18,6 @@ import { trpc } from "@/lib/portfolioApi";
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
-import PortfolioTrustBar from "@/features/portfolio/components/PortfolioTrustBar";
 import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioArcadeShowcase";
 import { PortfolioQuickActionsDock } from "@/features/portfolio/components/PortfolioQuickActionsDock";
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
@@ -443,12 +442,11 @@ export default function Home() {
           </a>
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
-            {navigationItems.map(([label, href, id]) => (
+            {navigationItems.filter(([, , id]) => id !== "contato").map(([label, href, id]) => (
               <a key={label} href={href} aria-current={activeSection === id ? "location" : undefined} className={`nav-link text-[11px] font-mono uppercase tracking-[0.14em] transition-colors hover:text-white ${activeSection === id ? "text-[#67e8f9]" : "text-[#90a3c3]"}`}>
                 {label}
               </a>
             ))}
-            <a href={"https:" + "//pabloguilherme01.github.io/observatorio/"} target="_blank" rel="noreferrer" className="nav-link text-[11px] font-mono font-semibold uppercase tracking-[0.14em] text-[#a5f3fc] transition-colors hover:text-white">observatório <ArrowUpRight className="ml-1 inline h-3 w-3" /></a>
             <button type="button" data-theme-toggle="true" onClick={() => toggleTheme?.()} aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} aria-pressed={theme === "dark"} title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"} className="grid h-9 w-9 place-items-center border border-white/15 text-[#b7cdf1] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] hover:text-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{theme === "dark" ? <Sun className="h-4 w-4" aria-hidden="true" /> : <Moon className="h-4 w-4" aria-hidden="true" />}</button>
             <button
               type="button"
@@ -548,10 +546,10 @@ export default function Home() {
           heroCtaRef={heroCtaRef}
         />
 
-        <PortfolioTrustBar />
+
 
         <section id="projetos" ref={projectsSectionRef} tabIndex={-1} className="archive-chapter relative border-y border-white/[0.07] bg-[#0a0f18]">
-          <div className="mx-auto max-w-[1440px] px-4 py-14 min-[360px]:px-5 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
+          <div className="mx-auto max-w-[1440px] px-4 py-8 min-[360px]:px-5 sm:px-8 sm:py-12 lg:px-12 lg:py-14">
             {shouldRenderProjects ? (
               <Suspense
                 fallback={
@@ -582,6 +580,7 @@ export default function Home() {
               <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
             </div>
 
+            <PortfolioArcadeShowcase />
             <div
               id="estudos-de-caso"
               ref={caseStudiesSectionRef}
@@ -609,6 +608,19 @@ export default function Home() {
         </section>
 
 
+        <PortfolioDeferredContentSections
+          profileSectionsRef={profileSectionsRef}
+          shouldRenderProfileSections={shouldRenderProfileSections}
+          webResumeSectionRef={webResumeSectionRef}
+          shouldRenderWebResume={shouldRenderWebResume}
+          staticSectionsRef={staticSectionsRef}
+          shouldRenderStaticSections={shouldRenderStaticSections}
+          socialSectionRef={socialSectionRef}
+          shouldLoadSocial={shouldLoadSocial}
+        />
+
+
+
         <div ref={experienceHubRef} data-experience-hub-anchor="true" aria-busy={!shouldLoadExperienceHub} className="min-h-px">
           {shouldLoadExperienceHub ? (
             <Suspense
@@ -631,7 +643,7 @@ export default function Home() {
           )}
         </div>
 
-        <PortfolioArcadeShowcase />
+
 
         <div ref={diagnosticSectionRef} data-project-diagnostic-anchor="true" className="min-h-px">
           {shouldRenderDiagnostic ? (
@@ -666,16 +678,6 @@ export default function Home() {
           )}
         </div>
 
-        <PortfolioDeferredContentSections
-          profileSectionsRef={profileSectionsRef}
-          shouldRenderProfileSections={shouldRenderProfileSections}
-          webResumeSectionRef={webResumeSectionRef}
-          shouldRenderWebResume={shouldRenderWebResume}
-          staticSectionsRef={staticSectionsRef}
-          shouldRenderStaticSections={shouldRenderStaticSections}
-          socialSectionRef={socialSectionRef}
-          shouldLoadSocial={shouldLoadSocial}
-        />
 
         <div
           id="contato"
