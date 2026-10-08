@@ -9,7 +9,7 @@ test.describe("portfólio profissional", () => {
   test("apresenta posicionamento, prova pública e contato em uma jornada direta", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { level: 1, name: /Desenvolvo produtos digitais que tornam informação complexa simples de usar/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Interfaces claras.*Produtos que você pode usar/i })).toBeVisible();
     await page.locator("#projetos").scrollIntoViewIfNeeded();
     await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
     await expect(page.locator("#observatorio").getByRole("heading", { name: "Observatório" })).toBeVisible();
@@ -22,25 +22,20 @@ test.describe("portfólio profissional", () => {
     await expect(observatorioCode).toHaveAttribute("href", "https://github.com/Pabloguilherme01/observatorio");
     await expect(observatorioCode).toHaveAttribute("target", "_blank");
 
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
+    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toHaveCount(0);
 
     const projectCta = page.locator("#projetos").getByRole("link", { name: /falar sobre um projeto/i });
     await expect(projectCta).toHaveAttribute("href", "#contato");
 
     await projectCta.click();
-    await expect(page.getByRole("heading", { name: /Vamos definir uma solução clara para o seu projeto/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Vamos conversar sobre seu projeto/i })).toBeVisible();
   });
 
   test("hero apresenta provas reais sem redundância e o diagnóstico prepara um briefing profissional", async ({ page }) => {
     await page.goto("/");
 
     await expect(page.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await expect(trustBar).toBeVisible();
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    await expect(trustBar).toContainText(/Typecheck|Vitest|Playwright/i);
+    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toHaveCount(0);
 
     const diagnosticPlaceholder = page.locator('[data-project-diagnostic-placeholder="true"]');
     await diagnosticPlaceholder.scrollIntoViewIfNeeded();
@@ -186,7 +181,7 @@ test.describe("portfólio profissional", () => {
   test("oferece rota curta para recrutadores com provas e contato profissional", async ({ page }) => {
     await page.goto("/");
 
-    const heroProfileLink = page.locator("#inicio").getByRole("link", { name: /avaliar perfil/i });
+    const heroProfileLink = page.locator("#inicio").getByRole("link", { name: /Conhecer meu perfil/i });
     await expect(heroProfileLink).toHaveAttribute("href", "#perfil-profissional");
     await heroProfileLink.click();
 
@@ -285,6 +280,7 @@ test.describe("portfólio profissional", () => {
 
     const contact = page.locator("#contato");
     await expect(contact).toBeVisible();
+    await contact.locator("summary").filter({ hasText: "Consultar uma data" }).click();
 
     const projectsShortcut = contact.getByRole("button", { name: /ir para projetos/i });
     await expect(projectsShortcut).toBeVisible();
@@ -299,7 +295,8 @@ test.describe("portfólio profissional", () => {
 
     const contact = page.locator("#contato");
     await contact.scrollIntoViewIfNeeded();
-    await expect(contact.getByText(/agenda sob consulta para novos projetos e oportunidades/i)).toBeVisible();
+    await contact.locator("summary").filter({ hasText: "Consultar uma data" }).click();
+    await expect(contact.getByText(/confirmação humana/i).first()).toBeVisible();
     await expect(contact.getByText(/consulta de agenda/i)).toBeVisible();
 
     const footerPlaceholder = page.locator('[data-footer-placeholder="true"]');

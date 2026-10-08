@@ -39,7 +39,7 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator(".archive-chapter").first()).toHaveCSS("content-visibility", "visible");
     expect((await page.locator(".arquivo-page").evaluate((element) => getComputedStyle(element).textRendering)).toLowerCase()).toBe("optimizespeed");
 
-    const primaryCta = page.locator("#inicio").getByRole("link", { name: /começar diagnóstico/i });
+    const primaryCta = page.locator("#inicio").getByRole("link", { name: /Ver projetos/i });
     expect(await primaryCta.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
 
     const skipLink = page.locator(".skip-link");
@@ -66,84 +66,6 @@ test.describe("portfólio profissional", () => {
       await expect(showcase.locator('[data-arcade-full-site="true"]')).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
       await expect.poll(() => showcase.evaluate((element) => element.scrollWidth <= element.clientWidth + 1)).toBeTruthy();
     }
-  });
-
-  test("hero mobile evita provas duplicadas e a Trust Bar fica legível sem swipe obrigatório", async ({ page }) => {
-    await page.setViewportSize({ width: 320, height: 812 });
-    await page.goto("/");
-
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await trustBar.scrollIntoViewIfNeeded();
-    await expect(trustBar).toBeVisible();
-
-    const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
-    await expect(rail.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    const metrics = await rail.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        display: style.display,
-        overflowX: style.overflowX,
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-      };
-    });
-
-    expect(metrics.display).toBe("grid");
-    expect(["auto", "scroll"]).not.toContain(metrics.overflowX);
-    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
-  });
-
-  test("primeira dobra mobile mantém a ação legível e deixa provas detalhadas sob demanda", async ({ page }) => {
-    await page.setViewportSize({ width: 320, height: 812 });
-    await page.goto("/");
-    const hero = page.locator("#inicio");
-    const primaryAction = hero.getByRole("link", { name: /começar diagnóstico/i });
-    await expect(hero.locator('[data-attention-hook="proof-deck"]')).toHaveCount(0);
-    const firstFoldAction = await primaryAction.boundingBox();
-    expect((firstFoldAction?.y ?? 1000) + (firstFoldAction?.height ?? 0)).toBeLessThan(760);
-
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await expect(trustBar).toBeVisible();
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-
-    await page.setViewportSize({ width: 390, height: 844 });
-    const wideAction = await primaryAction.boundingBox();
-    expect(wideAction?.width ?? 0).toBeGreaterThanOrEqual(150);
-    expect(wideAction?.height ?? 1000).toBeLessThanOrEqual(62);
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  });
-
-  test("mobile incorpora hierarquia visual do mockup sem aumentar a carga de navegação", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
-
-    await page.locator('[data-mobile-menu-toggle="true"]').click();
-    const menu = page.locator("#mobile-navigation");
-    const profile = menu.locator('[data-mobile-menu-profile="true"]');
-    await expect(profile).toBeVisible();
-    await expect(profile).toContainText(/Pablo Guilherme/i);
-    await expect(profile).toContainText(/produtos digitais/i);
-    await expect(profile).toContainText(/agenda.*consulta|sob consulta/i);
-
-    await page.locator('[data-mobile-menu-toggle="true"]').click();
-    const dock = page.locator('[data-mobile-contact-bar="true"]');
-    await expect(dock).toHaveAttribute("data-mobile-dock", "true");
-    await expect(dock.locator('[data-mobile-primary-action="true"]')).toHaveAttribute("data-mobile-dock-primary", "true");
-    await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toBeVisible();
-    await expect(dock.locator('[data-mobile-dock-secondary="true"]')).toHaveAttribute("href", "#servicos");
-    await expect(dock.locator('[data-mobile-dock-progress="true"]')).toHaveCount(0);
-    await expect(dock.locator('[data-mobile-context-action="true"]')).toHaveCount(0);
-
-    const showcase = page.locator('#pg-lab[data-arcade-showcase="true"]');
-    await showcase.scrollIntoViewIfNeeded();
-    await expect(showcase).toBeVisible();
-    await expect(showcase.locator('[data-arcade-full-site="true"]')).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
-    await expect(page.locator('[data-arcade-open-control="true"]')).toHaveCount(0);
   });
 
   test("economia de dados não carrega motores locais do Arcade", async ({ page }) => {

@@ -131,3 +131,11 @@ A ordem padrão da home é:
 ## Contratos da simplificação
 
 Manter uma única faixa de provas verificáveis, descrições de pelo menos 14px e ações de pelo menos 44px. O menu e o Experience Hub compartilham o objetivo da visita, com sessionStorage e fallback para armazenamento bloqueado. Preservar lazy loading, retorno de foco, integração com o PG Arcade dedicado e as remoções de PDF e mídias ausentes da main.
+
+## Reformulação profissional — 8 de outubro de 2026
+
+Direção fixada pelo brief: editorial, autoral e centrada nas provas. A abertura usa grid com zonas independentes para título e retrato. Título máximo 4.75rem, line-height 1.06 e tracking -0.035em. Em mobile a foto vira assinatura de 64 × 80px após as ações; não há imagem fictícia ou sobreposição absoluta.
+
+Tokens publicados em `.impeccable/design.json` e em `index.css`: canvas #07111f, surface #0b1a2b, ink #e6f2ff, secondary #bed0ea, accent #38bdf8, focus #a5f3fc. Sora para títulos, DM Sans para corpo e ações, IBM Plex Mono somente metadados. Conteúdo até 1440px, corpo ideal até 65ch, seção clamp(2rem,5vw,4rem), raio 8px, ação 48px e salto de âncora 96px. Foco 3px com offset 4px, duração 180ms ease-out e redução de movimento. Azul claro também tem estados específicos na preferência de modo claro.
+
+A ordem vigente é a descrita em PRODUCT.md: abertura → projetos/case Arcade → aprofundamento → perfil/serviços → ferramentas opcionais → contato. Substitui a ordem antiga que colocava a faixa de provas e o seletor de intenção antes do perfil. Grade decorativa e espinha são retiradas. A introdução de projetos é curta; nenhum novo manifesto antes da captura. Acesso direto ao WhatsApp vem antes do formulário. Calendário é contextual e o briefing se expande apenas quando solicitado. Redes ficam no rodapé.

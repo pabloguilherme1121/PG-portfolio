@@ -77,7 +77,8 @@ export function usePortfolioShellState() {
 
       for (const section of sections) {
         const sectionTop = section.getBoundingClientRect().top + window.scrollY;
-        if (sectionTop <= readingLine + 1 && sectionTop >= nearestSectionTop) {
+        // Allow a small tolerance for subpixel/font layout shifts at anchor boundaries.
+        if (sectionTop <= readingLine + 8 && sectionTop >= nearestSectionTop) {
           nearestSectionTop = sectionTop;
           nextSection = section.id;
         }

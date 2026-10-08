@@ -1,28 +1,6 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("reconstrução profissional do portfólio", () => {
-  test("primeira jornada conecta proposta, provas e projetos verificáveis", async ({ page }) => {
-    await page.goto("/");
-
-    const root = page.locator('[data-portfolio-shell-version="2"]');
-    await expect(root).toBeVisible();
-
-    const hero = page.locator("#inicio");
-    await expect(hero.getByRole("heading", { level: 1 })).toContainText(/produtos digitais|interfaces|dados/i);
-    await expect(hero.getByRole("link", { name: /começar diagnóstico/i })).toHaveAttribute("href", "#diagnostico");
-
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    await expect(trustBar).toBeVisible();
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    await expect(trustBar.getByRole("link", { name: /observatório/i })).toHaveAttribute(
-      "href",
-      "https://pabloguilherme01.github.io/observatorio/#dashboard",
-    );
-    await expect(trustBar.getByRole("link", { name: /trajeto/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
-    );
-  });
 
 
   test("home prioriza trabalho verificável sem repetir Proof Deck no Hero", async ({ page }) => {
@@ -50,56 +28,17 @@ test.describe("reconstrução profissional do portfólio", () => {
     });
   });
 
-  test("primeira jornada mobile é compacta sem sacrificar provas verificáveis", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-
-    const hero = page.locator("#inicio");
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-
-    const heroBox = await hero.boundingBox();
-    const trustBox = await trustBar.boundingBox();
-
-    expect(heroBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(650);
-    await expect(hero.locator(".hero-portrait-card")).toBeHidden();
-    expect(trustBox?.height ?? Number.POSITIVE_INFINITY).toBeLessThanOrEqual(500);
-    await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-  });
-
   test("descrições das provas permanecem legíveis em telas estreitas", async ({ page }) => {
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
-      const descriptions = page.locator('[data-portfolio-proof="true"] .font-body');
-      await expect(descriptions).toHaveCount(3);
+      await page.locator("#projetos").scrollIntoViewIfNeeded();
+      const descriptions = page.locator("#observatorio > div > p.font-body");
+      await expect(descriptions).toHaveCount(1);
       const sizes = await descriptions.evaluateAll(nodes => nodes.map(node => parseFloat(getComputedStyle(node).fontSize)));
       expect(sizes.every(size => size >= 14)).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     }
-  });
-
-  test("provas verificáveis ficam legíveis no mobile sem exigir gesto horizontal", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-
-    const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-    const rail = trustBar.locator('[data-portfolio-proof-rail="true"]');
-
-    await expect(rail).toBeVisible();
-    await expect(rail.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-    const metrics = await rail.evaluate((element) => {
-      const style = getComputedStyle(element);
-      return {
-        display: style.display,
-        overflowX: style.overflowX,
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-      };
-    });
-
-    expect(metrics.display).toBe("grid");
-    expect(["auto", "scroll"]).not.toContain(metrics.overflowX);
-    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
   });
 
 
@@ -186,20 +125,5 @@ test.describe("reconstrução profissional do portfólio", () => {
 
     await expect(page.locator("#contato-rodape")).toBeVisible();
     await expect(placeholder).toHaveCount(0);
-  });
-
-  test("reconstrução mantém a primeira dobra mobile legível e sem overflow horizontal", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-
-    await expect(page.locator('[data-portfolio-shell-version="2"]')).toBeVisible();
-    await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-    await expect(page.locator('[data-portfolio-trust-bar="true"]')).toBeVisible();
-
-    const overflow = await page.evaluate(() => ({
-      viewport: document.documentElement.clientWidth,
-      scroll: document.documentElement.scrollWidth,
-    }));
-    expect(overflow.scroll).toBeLessThanOrEqual(overflow.viewport + 1);
   });
 });

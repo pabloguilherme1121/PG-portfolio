@@ -17,6 +17,8 @@ export default function PortfolioCaseStudies() {
           <article key={study.id} data-case-study="true" className="relative min-w-0 bg-[#071326] p-4 min-[360px]:p-5 sm:p-8">
             <div className="flex items-center justify-between gap-4"><span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#67e8f9]">{study.id}</span><span className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7899ae]" data-case-stage="true">{study.stage}</span></div>
             <h4 className="mt-5 font-display text-[1.65rem] leading-tight sm:mt-7 sm:text-3xl font-medium tracking-[-0.04em] text-white">{study.title}</h4>
+            <p className="mt-4 font-body text-sm leading-7 text-[#bcd9e7]">{study.result}</p>
+            <details className="professional-disclosure mt-5"><summary>Ler estudo · contexto, decisões e aprendizado</summary>
             <dl className="mt-5 grid gap-4 font-body sm:mt-6 sm:gap-5 text-sm leading-7 text-[#bcd9e7]">
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">contexto</dt><dd className="mt-1">{study.context}</dd></div>
               {([
@@ -32,6 +34,8 @@ export default function PortfolioCaseStudies() {
               ))}
               <div><dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#718ca4]">o que aprendi</dt><dd className="mt-1 text-[#d9f4ff]">{study.learning}</dd></div>
             </dl>
+            <p className="mt-4 pb-5 font-body text-sm leading-7 text-[#bcd9e7]">{study.id === "TEC.01" ? "Limites: consulte a fonte e a data dos indicadores no produto; capturas registram um momento específico, e não dados atuais." : "Limites: produto em evolução. Código e testes demonstram a implementação, sem provar disponibilidade em produção."}</p>
+            </details>
             <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">{study.tags.map((tag) => <span key={tag} className="border border-cyan-100/[0.16] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5dff4]">{tag}</span>)}</div>
             <div className="mt-6 border-t sm:mt-7 border-cyan-100/[0.12] pt-5">
               <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">evidência verificável</p>

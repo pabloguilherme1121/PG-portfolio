@@ -16,21 +16,6 @@ test("menu mobile abre, recebe foco e expõe atalhos principais", async ({ page 
   await expect(navigation.locator('[data-mobile-shortcuts="true"]')).toBeVisible();
 });
 
-test("hero mobile mantém CTA principal e concentra provas verificáveis na Trust Bar", async ({ page }) => {
-  await page.goto("/");
-
-  await expect(page.locator('[data-mobile-hero-proof-rail="true"]')).toHaveCount(0);
-
-  const diagnostic = page.locator('[data-hero-cta="true"]').getByRole("link", { name: /começar diagnóstico/i });
-  await expect(diagnostic).toBeVisible();
-  await expect(diagnostic).toHaveAttribute("href", "#diagnostico");
-
-  const trustBar = page.locator('[data-portfolio-trust-bar="true"]');
-  await trustBar.scrollIntoViewIfNeeded();
-  await expect(trustBar).toBeVisible();
-  await expect(trustBar.locator('[data-portfolio-proof="true"]')).toHaveCount(3);
-});
-
 
 test("PG Arcade mobile aponta para a experiência dedicada sem carregar jogos locais", async ({ page }) => {
   await page.goto("/");

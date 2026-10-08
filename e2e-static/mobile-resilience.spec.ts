@@ -76,6 +76,10 @@ test("página inteira e repertório social funcionam em telas pequenas", async (
     await page.setViewportSize({ width, height: 844 });
     await gotoStaticPageAllowingRuntimeRecovery(page);
     for (const id of ["projetos", "social", "contato-briefing", "pg-lab"]) {
+      if (id === "contato-briefing") {
+        await page.locator("#contato").scrollIntoViewIfNeeded();
+        await page.locator("#contato").getByRole("link", { name: "Prefiro preparar um briefing" }).click();
+      }
       const section = page.locator(`#${id}`);
       // Deferred placeholders are replaced during scrolling; reacquire by ID afterwards.
       await section.evaluate((element) => element.scrollIntoView({ behavior: "instant", block: "center" }));

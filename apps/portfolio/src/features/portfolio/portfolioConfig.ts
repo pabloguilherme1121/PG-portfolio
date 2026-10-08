@@ -20,11 +20,10 @@ export const portfolioInstagramDmUrl = "https://ig.me/m/pablogui000";
 export const portfolioArcadeUrl = "https://pabloguilherme1121.github.io/PG-Arcade/";
 
 export const portfolioNavigationItems = [
-  ["sobre", "#sobre", "sobre"],
-  ["competências", "#trilha", "trilha"],
-  ["serviços", "#servicos", "servicos"],
   ["projetos", "#projetos", "projetos"],
-  ["observatório", "#observatorio", "observatorio"],
+  ["perfil", "#sobre", "sobre"],
+  ["serviços", "#servicos", "servicos"],
+  ["contato", "#contato", "contato"],
 ] as const;
 
 export const portfolioMobileSectionLabels: Record<string, string> = {

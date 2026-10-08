@@ -18,12 +18,12 @@ for (const theme of ["dark", "light"]) {
   });
 }
 
-test("retrato oculto no celular não busca imagem até ficar visível", async ({ page }) => {
+test("retrato real mantém proporção no celular e desktop", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const portrait = page.locator(".hero-portrait-card img");
-  await expect(portrait).toBeHidden();
-  expect(await portrait.evaluate(img => (img as HTMLImageElement).currentSrc)).toMatch(/^data:image\/svg/);
+  const portrait = page.locator(".professional-portrait img");
+  await expect(portrait).toBeVisible();
+  await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(1);
   await page.setViewportSize({ width: 1024, height: 900 });
   await expect(portrait).toBeVisible();
   await expect.poll(() => portrait.evaluate(img => (img as HTMLImageElement).currentSrc)).not.toMatch(/^data:/);

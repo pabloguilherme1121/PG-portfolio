@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 test.describe("acessibilidade pública", () => {
   test("não possui violações graves ou críticas de WCAG A/AA", async ({ page }) => {
     await page.goto("/");
-    await expect(page.locator("main")).toBeVisible();
+    await expect(page.locator("#conteudo-principal")).toBeVisible();
 
     const violations = [];
     for (const selector of ["#inicio", "#diagnostico", "#sobre", "#atuacao", "#servicos", "#trabalhos", "#social", "#contato", "#contato-rodape"]) {
@@ -69,8 +69,9 @@ test.describe("acessibilidade pública", () => {
 
     expect(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior)).toBe("auto");
     expect(await page.locator(".scroll-progress-bar").evaluate((element) => getComputedStyle(element).transitionProperty)).toBe("none");
-    const revealDuration = await page.locator(".reveal").first().evaluate((element) => Number.parseFloat(getComputedStyle(element).animationDuration));
-    expect(revealDuration).toBeLessThan(0.01);
+    const motion = await page.locator(".professional-primary").first().evaluate((element) => ({ animation: getComputedStyle(element).animationDuration, transition: getComputedStyle(element).transitionDuration }));
+    expect(Number.parseFloat(motion.animation)).toBeLessThan(0.01);
+    expect(Number.parseFloat(motion.transition)).toBeLessThan(0.01);
   });
 
   test("expõe landmarks, nomes e controles na árvore de acessibilidade", async ({ page }) => {
