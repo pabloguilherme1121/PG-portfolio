@@ -56,7 +56,7 @@
       if (ogUrl) ogUrl.setAttribute("content", publicUrl);
       const baseUrl = "%BASE_URL%";
       const routePath = window.location.pathname.replace(baseUrl.replace(/\/$/, ""), "") || "/";
-      if (/^\/(favoritos|curadoria)(\/|$)/.test(routePath)) {
+      if (/^\/(agenda|favoritos|curadoria)(\/|$)/.test(routePath)) {
         document.querySelector('#robots-meta')?.setAttribute("content", "noindex, nofollow");
       }
     </script>
