@@ -26,7 +26,11 @@ function readAdministrativeRoutes(source: string): string[] {
   function visit(node: ts.Node) {
     if (
       ts.isJsxAttribute(node) &&
-      node.name.getText(file) === "administrativeRoutes"
+      node.name.getText(file) === "administrativeRoutes" &&
+      ts.isJsxAttributes(node.parent) &&
+      (ts.isJsxSelfClosingElement(node.parent.parent) ||
+        ts.isJsxOpeningElement(node.parent.parent)) &&
+      node.parent.parent.tagName.getText(file) === "PortfolioApp"
     ) {
       const initializer = node.initializer;
       if (
