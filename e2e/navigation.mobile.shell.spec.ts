@@ -127,6 +127,41 @@ test.describe("portfólio profissional", () => {
     await expect(action).toContainText(/compartilhado/i);
   });
 
+
+  test("dock em 320/390px tem texto legível e não recorta a página", async ({ page }) => {
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto("/");
+      await page.locator("#diagnostico").scrollIntoViewIfNeeded();
+      const dock = page.locator('[data-mobile-dock="true"]');
+      await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
+      const primary = dock.locator('[data-mobile-primary-action="true"] > span').first();
+      const secondary = dock.locator('[data-mobile-dock-secondary="true"] > span');
+      await expect(primary).toBeVisible();
+      await expect(secondary).toBeVisible();
+      const primarySize = await primary.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize));
+      const secondarySize = await secondary.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize));
+      expect(primarySize).toBeGreaterThanOrEqual(12);
+      expect(secondarySize).toBeGreaterThanOrEqual(12);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+      const hint = dock.locator('[data-mobile-journey-hint="true"]');
+      if (width === 320) await expect(hint).toBeHidden();
+      else {
+        await expect(hint).toBeVisible();
+        expect(await hint.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12);
+      }
+    }
+  });
+
+  test("menu mobile não esconde estado da agenda em microtipografia", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 844 });
+    await page.goto("/");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const status = page.getByText("agenda sob consulta", { exact: true });
+    await expect(status).toBeVisible();
+    expect(await status.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12);
+  });
+
   test("mobile oferece instalação PWA apenas quando o navegador disponibiliza", async ({ page }) => {
     await page.addInitScript(() => {
       Object.defineProperty(window, "__pwaPromptCalls", { value: 0, writable: true });
