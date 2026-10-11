@@ -53,13 +53,13 @@ export default function PortfolioProjectsOverview({
 
       <article id="observatorio" className="mt-7 scroll-mt-28 grid min-w-0 gap-6 overflow-hidden border border-[#67e8f9]/30 bg-[#081a2e] p-4 min-[360px]:p-5 sm:mt-8 sm:p-7 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-8">
         <div>
-          <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">case principal · produto em produção</p>
           <h3 className="mt-3 font-display text-[clamp(1.8rem,3vw,3rem)] font-medium tracking-[-0.05em] text-white">Observatório</h3>
           <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">Indicadores de Águas Lindas de Goiás em uma leitura clara: números com data, contexto e acesso à fonte. Da arquitetura da informação à publicação, a interface ajuda a comparar dados sem perder sua origem.</p>
           <div className="mt-5" aria-label="Leitura guiada do case Observatório">
             <div className="grid grid-cols-3 gap-2" role="group" aria-label="Etapas do case">
               {observatorioInsights.map(({ label }) => (
-                <button key={label} type="button" aria-pressed={activeInsight === label} onClick={() => setActiveInsight(label)} className="min-h-11 min-w-0 border border-[#67e8f9]/30 px-2 font-mono text-[10px] font-semibold uppercase text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                <button key={label} type="button" aria-pressed={activeInsight === label} onClick={() => setActiveInsight(label)} className="min-h-11 min-w-0 border border-[#67e8f9]/30 px-2 font-mono text-xs font-semibold uppercase text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
                   {label}
                 </button>
               ))}
@@ -68,7 +68,7 @@ export default function PortfolioProjectsOverview({
               {observatorioInsights.find(({ label }) => label === activeInsight)?.text}
             </p>
           </div>
-          <div className="mt-4 flex flex-wrap gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc4e8]">
+          <div className="mt-4 flex flex-wrap gap-2 font-mono text-xs uppercase tracking-[0.1em] text-[#9fc4e8]">
             <span className="border border-white/10 px-2 py-1">React</span>
             <span className="border border-white/10 px-2 py-1">TypeScript</span>
             <span className="border border-white/10 px-2 py-1">PWA</span>
@@ -79,7 +79,7 @@ export default function PortfolioProjectsOverview({
         <figure className="min-w-0 self-center">
           <div className="mb-3 flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="font-mono text-[9px] font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">dentro do produto</p>
+              <p className="font-mono text-xs font-semibold uppercase tracking-[0.15em] text-[#67e8f9]">dentro do produto</p>
               <p className="mt-1 font-body text-xs text-[#bdd5e8]">A mesma leitura de dados em duas telas.</p>
             </div>
             <div role="group" aria-label="Formato da captura do Observatório" className="flex gap-1 border border-[#67e8f9]/25 p-1">
@@ -89,7 +89,7 @@ export default function PortfolioProjectsOverview({
                   type="button"
                   aria-pressed={captureFormat === format}
                   onClick={() => setCaptureFormat(format)}
-                  className="min-h-11 px-3 font-mono text-[10px] font-semibold uppercase tracking-[0.08em] text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+                  className="min-h-11 px-3 font-mono text-xs font-semibold uppercase tracking-[0.08em] text-[#bdf7ff] transition-colors hover:bg-[#0b2746] aria-pressed:bg-[#38bdf8] aria-pressed:text-[#02111f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
                 >
                   {format === "desktop" ? "Desktop" : "Mobile"}
                 </button>
@@ -118,30 +118,30 @@ export default function PortfolioProjectsOverview({
               />
             </div>
           </div>
-          <figcaption className="mt-3 max-w-xl font-body text-[11px] leading-5 text-[#9fc4d8]">
+          <figcaption className="mt-3 max-w-xl font-body text-xs leading-5 text-[#9fc4d8]">
             Captura da interface publicada em setembro de 2026. Os números podem mudar; consulte o produto para dados e fontes atuais.
           </figcaption>
         </figure>
         <div className="flex flex-col gap-2 sm:flex-row lg:col-span-2 lg:justify-end">
-          <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
-          <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 min-[360px]:px-5 sm:w-auto font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
+          <a href={"https:" + "//pabloguilherme01.github.io/observatorio/#dashboard"} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 min-[360px]:px-5 sm:w-auto font-mono text-xs font-semibold uppercase tracking-[0.04em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">ver produto em produção <ArrowUpRight className="h-4 w-4" /></a>
+          <a href="https://github.com/Pabloguilherme01/observatorio" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 w-full items-center justify-center gap-2 border border-[#67e8f9]/35 px-4 min-[360px]:px-5 sm:w-auto font-mono text-xs font-semibold uppercase tracking-[0.04em] text-[#d8f7ff] transition-colors hover:border-[#67e8f9] hover:bg-[#0b2746] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><Github className="h-4 w-4" aria-hidden="true" /> ver código-fonte</a>
         </div>
       </article>
 
       <section aria-labelledby="trabalhos-destaque-title" className="mt-7 border-y border-[#3b82f6]/25 sm:mt-8 bg-[#06172f]/55 py-6 sm:py-8">
         <div className="flex flex-col gap-3 px-4 sm:flex-row sm:items-end sm:justify-between sm:px-6">
           <div>
-            <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-[#60a5fa]">destaques</p>
+            <p className="font-mono text-xs uppercase tracking-[0.15em] text-[#60a5fa]">destaques</p>
             <h3 id="trabalhos-destaque-title" className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white">Trajeto · arquitetura em evolução.</h3>
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">Frontend, API e persistência com origem dos dados explícita. Código público para examinar a implementação.</p>
         </div>
         <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">
-          <p data-featured-swipe-hint="true" className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8fb6c9]">
+          <p data-featured-swipe-hint="true" className="font-mono text-xs uppercase tracking-[0.04em] text-[#8fb6c9]">
             {hasMultipleFeaturedProjects ? "selecione um projeto para conhecer as decisões" : "toque para ver detalhes"}
           </p>
           {featuredCardsReady && hasMultipleFeaturedProjects && (
-            <span data-featured-active-label="true" className="shrink-0 font-mono text-[8px] font-semibold uppercase tracking-[0.1em] text-[#d9fbff]">
+            <span data-featured-active-label="true" className="shrink-0 font-mono text-xs font-semibold uppercase tracking-[0.04em] text-[#d9fbff]">
               {activeFeaturedIndex + 1} / {featuredCount}
             </span>
           )}
