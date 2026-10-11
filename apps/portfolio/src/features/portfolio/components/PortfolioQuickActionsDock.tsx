@@ -67,7 +67,7 @@ export function PortfolioQuickActionsDock({
       data-mobile-dock="true"
       data-mobile-dock-hidden={isDockHidden ? "true" : "false"}
       data-mobile-dock-compact={isMobileDockCompact ? "true" : "false"}
-      className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_3.2rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}
+      className={`contact-float fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-[60] grid grid-cols-[minmax(0,1fr)_4rem_3.5rem] items-stretch gap-2 overflow-hidden border border-[#67e8f9]/35 bg-[#07101e]/97 p-1.5 shadow-[0_14px_34px_rgba(0,0,0,0.38)] backdrop-blur-sm transition-[opacity,transform] duration-200 sm:bottom-5 sm:left-auto sm:right-5 sm:flex sm:bg-[#07101e]/95 sm:backdrop-blur-md ${shouldHideContactFloat ? "pointer-events-none translate-y-2 opacity-0" : isHeroCtaVisible ? "pointer-events-none translate-y-2 opacity-0 lg:pointer-events-auto lg:translate-y-0 lg:opacity-100" : "translate-y-0 opacity-100"}`}
     >
       <a
         data-mobile-primary-action="true"
@@ -77,13 +77,13 @@ export function PortfolioQuickActionsDock({
         className="inline-flex min-h-14 min-w-0 flex-1 touch-manipulation flex-col items-center justify-center rounded-[10px] bg-[#38bdf8] px-2 py-1 font-mono text-[#02111f] transition-[background-color,transform] hover:bg-[#a5f3fc] active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none min-[360px]:px-3 sm:hidden"
         aria-label={mobilePrimaryAction.ariaLabel}
       >
-        <span className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.08em]">
+        <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]">
           <ClipboardCheck className="h-4 w-4" aria-hidden="true" />
           {mobilePrimaryAction.label}
         </span>
         <span
           data-mobile-journey-hint="true"
-          className={`mt-0.5 max-w-full truncate text-[7px] uppercase tracking-[0.05em] opacity-70 min-[390px]:text-[8px] ${isMobileDockCompact ? "hidden" : ""}`}
+          className={`mt-0.5 max-w-full truncate text-xs uppercase tracking-[0.02em] opacity-80 ${isMobileDockCompact ? "hidden" : "hidden min-[390px]:block"}`}
         >
           {mobileJourneyHint}
         </span>
@@ -100,8 +100,8 @@ export function PortfolioQuickActionsDock({
         className="mobile-context-action inline-flex min-h-14 min-w-0 touch-manipulation flex-col items-center justify-center gap-0.5 rounded-[10px] border border-white/10 bg-[#071326] px-1 text-center text-[#d9fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:hidden"
       >
         <MobileSecondaryIcon className="h-4 w-4 text-[#67e8f9]" aria-hidden="true" />
-        <span className="max-w-full truncate font-mono text-[7px] font-semibold uppercase tracking-[0.03em] min-[390px]:text-[8px]">
-          {mobileSecondaryShortcut.label === "PG Arcade" ? "arcade" : mobileSecondaryShortcut.label}
+        <span className="max-w-full truncate font-mono text-xs font-semibold uppercase tracking-[-0.04em]">
+          {mobileSecondaryShortcut.label === "PG Arcade" ? "arcade" : mobileSecondaryShortcut.label === "currículo" ? "CV" : mobileSecondaryShortcut.label}
         </span>
       </a>
 

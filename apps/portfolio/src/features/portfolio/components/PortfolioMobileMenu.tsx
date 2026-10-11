@@ -131,7 +131,7 @@ export default function PortfolioMobileMenu({
               <p className="mt-0.5 truncate font-body text-[11px] text-[#a9bfd8]">
                 Desenvolvimento de produtos digitais
               </p>
-              <p className="mt-1 inline-flex items-center gap-1.5 font-mono text-[7px] uppercase tracking-[0.08em] text-amber-100">
+              <p className="mt-1 inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.04em] text-amber-100">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-300" aria-hidden="true" />
                 agenda sob consulta
               </p>
