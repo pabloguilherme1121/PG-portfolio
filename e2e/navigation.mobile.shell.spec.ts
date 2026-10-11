@@ -133,6 +133,7 @@ test.describe("portfólio profissional", () => {
       await page.setViewportSize({ width, height: 844 });
       await page.goto("/");
       await page.locator("#diagnostico").scrollIntoViewIfNeeded();
+      await page.evaluate(() => window.scrollBy(0, -120));
       const dock = page.locator('[data-mobile-dock="true"]');
       await expect(dock).toHaveAttribute("data-mobile-dock-hidden", "false");
       const primary = dock.locator('[data-mobile-primary-action="true"] > span').first();
@@ -157,7 +158,7 @@ test.describe("portfólio profissional", () => {
     await page.setViewportSize({ width: 320, height: 844 });
     await page.goto("/");
     await page.locator('[data-mobile-menu-toggle="true"]').click();
-    const status = page.getByText("agenda sob consulta", { exact: true });
+    const status = page.locator("#mobile-navigation").getByText("agenda sob consulta", { exact: true });
     await expect(status).toBeVisible();
     expect(await status.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12);
   });
