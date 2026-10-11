@@ -146,8 +146,12 @@ test.describe("portfólio profissional", () => {
       expect(secondarySize).toBeGreaterThanOrEqual(12);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
       const hint = dock.locator('[data-mobile-journey-hint="true"]');
-      if (width === 320) await expect(hint).toBeHidden();
-      else {
+      // O dock compacto oculta a dica por design, inclusive em 390px.
+      // Não confundir a compactação por scroll com falta de legibilidade.
+      const compact = await dock.getAttribute("data-mobile-dock-compact");
+      if (width === 320 || compact === "true") {
+        await expect(hint).toBeHidden();
+      } else {
         await expect(hint).toBeVisible();
         expect(await hint.evaluate(el => Number.parseFloat(getComputedStyle(el).fontSize))).toBeGreaterThanOrEqual(12);
       }
