@@ -83,7 +83,7 @@ export function PortfolioQuickActionsDock({
         </span>
         <span
           data-mobile-journey-hint="true"
-          className={`mt-0.5 hidden max-w-full truncate text-xs uppercase tracking-[0.02em] opacity-80 min-[390px]:block ${isMobileDockCompact ? "hidden" : ""}`}
+          className={`mt-0.5 max-w-full truncate text-xs uppercase tracking-[0.02em] opacity-80 ${isMobileDockCompact ? "hidden" : "hidden min-[390px]:block"}`}
         >
           {mobileJourneyHint}
         </span>
