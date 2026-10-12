@@ -21,6 +21,10 @@ export default function PortfolioHero({ portraitUrl, portraitResponsive, heroCta
             <a href="#projetos" className="professional-primary">Ver projetos <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
             <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="professional-secondary">Conversar sobre um projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
           </div>
+          <nav className="hero-project-index" aria-label="Explore meu trabalho">
+            <a href="#observatorio"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Dados que fazem sentido</strong><small>Observatório · conhecer o case</small></span><ArrowUpRight aria-hidden="true" /></a>
+            <a href="#pg-lab"><span className="hero-project-number" aria-hidden="true">02</span><span><strong>Interação que convida a jogar</strong><small>PG Arcade · explorar as mecânicas</small></span><ArrowUpRight aria-hidden="true" /></a>
+          </nav>
         </div>
         <figure className="professional-portrait">
           <picture>

@@ -1,9 +1,15 @@
 import { ArrowUpRight, Gamepad2, Github } from "lucide-react";
 import { portfolioArcadeUrl, portfolioMediaPath } from "@/features/portfolio/portfolioConfig";
 
+const playablePicks = [
+  {id:"peg", name:"Resta Um", label:"Planejamento", action:"Selecione uma peça e salte sobre outra. Busque a última peça.", art:"peg.svg"},
+  {id:"snake", name:"Snake", label:"Agilidade", action:"Guie a cobra, colete e evite bater. Use as setas ou deslize.", art:"snake.svg"},
+  {id:"liga4", name:"Liga 4", label:"Dupla local", action:"Jogue contra o bot ou com outra pessoa neste aparelho.", art:"liga4.svg"},
+] as const;
+
 export default function PortfolioArcadeShowcase() {
   return (
-    <section id="pg-lab" data-arcade-showcase="true" className="mt-8 scroll-mt-24 border-t border-[#67e8f9]/25 pt-8" aria-labelledby="pg-lab-title">
+    <section id="pg-lab" tabIndex={-1} data-arcade-showcase="true" className="mt-8 scroll-mt-24 border-t border-[#67e8f9]/25 pt-8" aria-labelledby="pg-lab-title">
       <div className="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-center">
         <div className="min-w-0">
           <p className="professional-eyebrow">PG Arcade · produto publicado</p>
@@ -24,6 +30,13 @@ export default function PortfolioArcadeShowcase() {
           <img src={portfolioMediaPath("arcade-resta-um.png")} alt="Partida de Resta Um no PG Arcade, com tabuleiro, peças e controles" width="1440" height="1000" loading="lazy" decoding="async" className="h-auto w-full rounded-lg border border-white/15" />
           <figcaption className="mt-3 font-body text-sm leading-6 text-[#a9bfd8]">Resta Um: selecionar uma peça, saltar sobre outra e buscar a última peça no tabuleiro. Captura real do produto em outubro de 2026.</figcaption>
         </figure>
+      </div>
+      <div className="arcade-playable-heading"><h3>Experimente uma mecânica</h3><p>Três entradas diretas. Cada jogo abre em outra aba.</p></div>
+      <div className="arcade-playable-grid">
+        {playablePicks.map(pick=><a key={pick.id} className="arcade-playable-card" data-arcade-direct-game={pick.id} href={`${portfolioArcadeUrl}#/jogar/${pick.id}`} target="_blank" rel="noopener noreferrer">
+          <div className={`arcade-playable-art art-${pick.id}`}><img src={portfolioMediaPath(`arcade-covers/${pick.art}`)} width="240" height="150" alt="" loading="lazy" decoding="async" /></div>
+          <div className="arcade-playable-copy"><span>{pick.label}</span><h4>{pick.name}</h4><p>{pick.action}</p><strong>Jogar {pick.name} <ArrowUpRight aria-hidden="true" /></strong></div>
+        </a>)}
       </div>
       <details className="professional-disclosure mt-6">
         <summary>Estudo de caso · controles, progresso e limites</summary>
