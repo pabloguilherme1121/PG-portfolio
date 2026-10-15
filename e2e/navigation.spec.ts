@@ -91,7 +91,7 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator("#estudos-de-caso")).toHaveCount(1);
 
     await page.goto("/#estudos-de-caso");
-    await expect(page.locator('[data-case-study="true"]')).toHaveCount(2);
+    await expect(page.locator('[data-case-study="true"]')).toHaveCount(3);
     await expect.poll(() => caseStudyRequests.length).toBeGreaterThan(0);
   });
 
@@ -100,7 +100,7 @@ test.describe("portfólio profissional", () => {
     await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(2);
+    await expect(studies).toHaveCount(3);
 
     const observatorioStudy = studies.filter({ hasText: "Observatório" });
     await expect(observatorioStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
@@ -118,7 +118,15 @@ test.describe("portfólio profissional", () => {
       "https://github.com/Pabloguilherme01/trajeto-web",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
+    const arcadeStudy = studies.filter({ hasText: "PG Arcade" });
+    await expect(arcadeStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
+      "href", "https://pabloguilherme1121.github.io/PG-Arcade/#/",
+    );
+    await expect(arcadeStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
+      "href", "https://github.com/pabloguilherme1121/PG-Arcade",
+    );
+
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(5);
   });
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
@@ -126,7 +134,7 @@ test.describe("portfólio profissional", () => {
     await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(2);
+    await expect(studies).toHaveCount(3);
 
     const trajetoStudy = studies.filter({ hasText: "Trajeto" });
     await expect(trajetoStudy).toContainText(/produto.*evolução|em evolução/i);
@@ -135,7 +143,7 @@ test.describe("portfólio profissional", () => {
       "https://github.com/Pabloguilherme01/trajeto-web",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(5);
 
     const featured = page.locator('[data-featured-project="TEC.09"]');
     await expect(featured).toBeVisible();
