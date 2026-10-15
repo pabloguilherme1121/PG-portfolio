@@ -21,6 +21,7 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
     const contact = page.locator("#contato");
     await expect(contact.getByRole("link", { name: "Conversar no WhatsApp" })).toBeVisible();
     await expect(contact.locator('[data-briefing-form="true"]')).toBeHidden();
+    await contact.getByRole("link", { name: "Prefiro preparar um briefing" }).scrollIntoViewIfNeeded();
     await contact.getByRole("link", { name: "Prefiro preparar um briefing" }).click();
     await expect(contact.locator('[data-briefing-form="true"]')).toBeVisible();
     await page.reload();
@@ -52,6 +53,7 @@ test("calendar deep link opens contextual consultation without requiring briefin
   await expect(calendar.locator(".." )).toHaveAttribute("open", "");
   await expect(page.locator('[data-briefing-form="true"]')).toBeHidden();
   await page.goto("./?consultation=1#contato");
+  await page.locator("#contato summary").filter({ hasText: "Consultar uma data" }).scrollIntoViewIfNeeded();
   await page.locator("#contato summary").filter({ hasText: "Consultar uma data" }).click();
   await expect(calendar).toBeVisible();
 });

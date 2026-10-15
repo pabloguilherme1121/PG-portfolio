@@ -41,5 +41,19 @@ export default defineConfig({
       use: { ...devices["Desktop Safari"] },
       testMatch: /browser-smoke\.spec\.ts/,
     },
+    // Run the #255/#256 contracts in every browser at both mobile widths.
+    // Firefox supports narrow viewports, but not mobile device emulation.
+    ...(["chromium", "firefox", "webkit"] as const).flatMap(browserName =>
+      [320, 390].map(width => ({
+        name: `mobile-actions-${browserName}-${width}`,
+        use: {
+          browserName,
+          viewport: { width, height: 844 },
+          ...(browserName !== "firefox" ? { isMobile: true, hasTouch: true } : {}),
+        },
+        testMatch: /navigation\.(mobile\.(shell|foundation)|briefing|projects)\.spec\.ts/,
+        grep: /dock em 320\/390px|dock mobile reduz detalhes|dock oculto pelo CTA|mobile esconde o dock|menu mobile não esconde estado|menu mobile move o foco|menu mobile mantém o foco|menu mobile expõe semântica modal|mobile adapta atalhos|mantém briefing e vitrine|briefing mantém apenas|abre projeto em destaque/,
+      })),
+    ),
   ],
 });
