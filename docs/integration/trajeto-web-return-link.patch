@@ -1,0 +1,15 @@
+diff --git a/client/src/pages/Help.tsx b/client/src/pages/Help.tsx
+index 7231ae4..d815d88 100644
+--- a/client/src/pages/Help.tsx
++++ b/client/src/pages/Help.tsx
+@@ -96,6 +96,10 @@ export default function Help() {
+           </div>
+         </section>
+ 
++        <nav aria-label="Outros projetos de Pablo Guilherme" className="mt-4 text-center">
++          <a href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos" className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-4 text-sm text-white underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Todos os projetos de Pablo</a>
++        </nav>
++
+         <section className="mt-4 pb-4 text-center text-sm leading-relaxed text-white/70">
+           Para trânsito, incidentes e chegada em tempo real, use o navegador externo escolhido.
+         </section>

@@ -1,0 +1,12 @@
+diff --git a/src/components/layout/Footer.tsx b/src/components/layout/Footer.tsx
+index 067f272..c838c2c 100644
+--- a/src/components/layout/Footer.tsx
++++ b/src/components/layout/Footer.tsx
+@@ -13,6 +13,7 @@ export function Footer() {
+         </div>
+ 
+         <nav className="site-footer-links" aria-label="Links do rodapé">
++          <a href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos">Todos os projetos de Pablo</a>
+           <a href="#dashboard">Indicadores</a>
+           <a href="#acao">Serviços públicos</a>
+           <a href="#fontes">Fontes e método</a>
