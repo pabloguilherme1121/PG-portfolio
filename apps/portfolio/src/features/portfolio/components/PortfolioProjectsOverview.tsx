@@ -105,6 +105,10 @@ export default function PortfolioProjectsOverview({
         </p>
       </div>
 
+      <p className="mt-4">
+        <a href="#rede-projetos" className="professional-secondary">Ver todos os projetos · produtos e código</a>
+      </p>
+
       <nav
         aria-label="Escolher uma leitura dos projetos"
         className="project-reading-nav"
