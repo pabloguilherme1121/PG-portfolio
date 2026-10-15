@@ -118,7 +118,7 @@ export function PortfolioContact({
       <div className="blueprint-grid pointer-events-none absolute inset-0 opacity-40" />
       <div className="relative mx-auto grid w-full min-w-0 max-w-[1440px] lg:grid-cols-[1fr_1.12fr] professional-contact-grid">
         <div className="min-w-0 border-b border-white/[0.08] px-5 py-16 sm:px-8 sm:py-24 lg:border-b-0 lg:border-r lg:px-12 lg:py-28">
-          <PortfolioContactIntro whatsAppUrl={whatsAppUrl} telegramUrl={telegramUrl} />
+          <PortfolioContactIntro whatsAppUrl={whatsAppUrl} telegramUrl={telegramUrl} onOpenBriefing={() => setBriefingOpen(true)} />
           <details open={agendaOpen} onToggle={(event) => setAgendaOpen(event.currentTarget.open)} className="mt-8 professional-disclosure"><summary>Consultar uma data · confirmação humana</summary>
           <PortfolioAvailabilityConsultation
             blockedDates={blockedDates}
