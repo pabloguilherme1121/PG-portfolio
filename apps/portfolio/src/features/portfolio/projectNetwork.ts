@@ -34,11 +34,22 @@ export const projectNetwork = [
     code: "https://github.com/pabloguilherme1121/PG-Arcade",
   },
   {
+    id: "mapa-planaltina",
+    name: "Mapa Planaltina GO",
+    category: "Serviços e território",
+    description:
+      "Encontre pontos de interesse de Planaltina com procedência identificada. Dados reais e pontos de demonstração ficam distintos.",
+    status: "Produto publicado",
+    href: "https://pabloguilherme01.github.io/mapa-planaltina-go/",
+    action: "Explorar o mapa",
+    code: "https://github.com/Pabloguilherme01/mapa-planaltina-go",
+  },
+  {
     id: "trajeto",
     name: "Trajeto",
     category: "Rotas e abastecimento",
     description:
-      "Conheça o fluxo buscar, comparar, decidir e navegar, com a origem dos dados explícita.",
+      "Serviços locais, rotas e abastecimento no Entorno do DF, com origem dos dados e continuidade offline documentadas.",
     status: "Em evolução",
     href: "https://github.com/Pabloguilherme01/trajeto-web",
     action: "Conhecer o código",

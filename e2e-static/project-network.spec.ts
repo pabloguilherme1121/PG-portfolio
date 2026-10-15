@@ -46,8 +46,13 @@ for (const [width, theme] of [
         "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
         "Template",
       ],
+      [
+        "mapa-planaltina",
+        "https://pabloguilherme01.github.io/mapa-planaltina-go/",
+        "Produto publicado",
+      ],
     ];
-    await expect(network.getByRole("listitem")).toHaveCount(5);
+    await expect(network.getByRole("listitem")).toHaveCount(6);
     for (const [id, href, status] of expected) {
       const card = network.locator(`[data-network-project="${id}"]`);
       await expect(card).toContainText(status);

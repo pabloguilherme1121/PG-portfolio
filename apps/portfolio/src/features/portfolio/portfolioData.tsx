@@ -98,6 +98,7 @@ export const caseStudies = [
     decisions: "Priorizei uma leitura rápida com poucos indicadores por vez, fonte acessível no próprio fluxo, hierarquia visual forte e reorganização responsiva da mesma informação no celular.",
     result: "Dashboard responsivo publicado no GitHub Pages, com código público e caminhos diretos para conferir a origem dos indicadores apresentados.",
     learning: "Uma boa interface de dados não precisa mostrar tudo de uma vez; precisa ajudar a pessoa a encontrar o que importa e entender o contexto.",
+    limits: "Consulte fonte, período e unidade no produto. Orçamento autorizado e despesa paga são medidas diferentes; os indicadores não são atualização ao vivo.",
     tags: ["Produto digital", "Web", "Dashboard", "Dados"],
     proofs: [
       {
@@ -117,13 +118,14 @@ export const caseStudies = [
   {
     id: "TEC.09",
     stage: "Produto em evolução",
-    title: "Trajeto — produto full-stack para decisões de rota e abastecimento",
-    context: "Produto em evolução para motoristas do Entorno do Distrito Federal, estruturado para apoiar uma decisão antes de abrir a navegação.",
+    title: "Trajeto — serviços locais e decisões de deslocamento",
+    context: "Produto em evolução para Águas Lindas e o Entorno do DF, reunindo serviços locais, rotas e abastecimento sem exigir conta para a consulta pública.",
     problem: "Encontrar e comparar opções de parada exige consultar fontes diferentes e entender quanto um desvio altera a rota, além de distinguir referência oficial, dado de terceiro e estimativa.",
-    objective: "Organizar contexto suficiente para comparar parada, desvio, referência de combustível e origem dos dados em um fluxo único.",
+    objective: "Ajudar a encontrar um serviço ou destino, comparar uma parada e abrir a navegação com contexto e origem dos dados.",
     decisions: "Estruturei o fluxo buscar → comparar → decidir → navegar, com React + TypeScript no frontend, tRPC/Express na API, MySQL/Drizzle na persistência e validação Zod. A origem do dado permanece explícita na experiência.",
     result: "Base técnica pública e testável com frontend, API, persistência, testes automatizados, CI e auditoria de dependências, sem apresentar estimativas como dados oficiais.",
     learning: "Produtos de decisão ficam mais úteis quando cada tela responde uma pergunta prática e a origem do dado é tratada como parte da experiência, não como detalhe técnico.",
+    limits: "Produto em evolução. O código público demonstra implementação e testes; a disponibilidade de produção não foi confirmada nesta vitrine.",
     tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
     proofs: [
       {
@@ -134,6 +136,24 @@ export const caseStudies = [
       },
     ],
   },
+  {
+    id: "TEC.10",
+    stage: "Produto publicado",
+    title: "PG Arcade — escolher uma mecânica e começar a jogar",
+    context: "Catálogo de jogos de lógica, tabuleiro e ação para celular e computador, com acesso sem cadastro.",
+    problem: "Mecânicas diferentes exigem controles e estados próprios. No celular, descobrir o jogo e alcançar suas ações precisa continuar simples.",
+    objective: "Conectar descoberta, objetivo e partida, preservando os controles de cada jogo e os dados locais do jogador.",
+    decisions: "Navegação e preferências compartilham um shell; as mecânicas carregam sob demanda. Teclado e toque recebem cenários de regressão, e a publicação depende de qualidade e testes nos três navegadores.",
+    result: "Produto publicado com catálogo, partidas, favoritos e recordes locais; código e workflow públicos permitem verificar implementação e validação de cada mudança.",
+    learning: "A comparação entre navegadores exige cenários pequenos e identificáveis: percorrer todo o catálogo em um único teste pode esgotar o tempo antes de concluir a cobertura.",
+    limits: "Progresso local não sincroniza entre aparelhos. Offline depende dos recursos preparados. CI e emulação não comprovam desempenho sustentado em celular físico.",
+    tags: ["Jogos", "Mobile", "React", "Playwright"],
+    proofs: [
+      { label: "Abrir produto", description: "Catálogo publicado; escolha uma mecânica e inicie a partida.", href: "https://pabloguilherme1121.github.io/PG-Arcade/#/", type: "live" as const },
+      { label: "Ver código", description: "Motores, controles e cenários automatizados no repositório público.", href: "https://github.com/pabloguilherme1121/PG-Arcade", type: "code" as const },
+    ],
+  },
+
 ];
 
 export type Repository = {
