@@ -2046,6 +2046,8 @@ html.theme-transitioning .arquivo-page * {
 .arcade-playable-copy strong svg {width:16px;height:16px;flex-shrink:0;}
 .arquivo-page[data-theme="light"] :is(.hero-project-index strong,.arcade-playable-heading h3,.arcade-playable-copy h4) {color:#153c55;}
 .arquivo-page[data-theme="light"] :is(.hero-project-index small,.arcade-playable-heading p,.arcade-playable-copy p) {color:#385d76;}
+/* WCAG AA: small index numerals need readable contrast on the pale hero surface. */
+.arquivo-page[data-theme="light"] .hero-project-number {color:#365875;}
 .arquivo-page[data-theme="light"] .arcade-playable-card {background:#f0f7fc;border-color:#7199b4;}
 .arquivo-page[data-theme="light"] :is(.arcade-playable-copy>span,.arcade-playable-copy strong,.hero-project-index svg) {color:#086080;}
 @media(max-width:767px) {.hero-project-index {margin-top:1.5rem;}.hero-project-index a {min-height:72px;}.arcade-playable-grid {grid-template-columns:1fr;gap:12px;}.arcade-playable-card {display:grid;grid-template-columns:100px minmax(0,1fr);}.arcade-playable-art {aspect-ratio:auto;border-bottom:0;border-right:1px solid #7899b344;}.arcade-playable-art img {width:100%;}.arcade-playable-copy {padding:14px;gap:6px;}.arcade-playable-copy h4 {font-size:21px;}.arcade-playable-copy p {font-size:13px;min-height:0;}.arcade-playable-copy strong {margin-top:0;padding-top:8px;}.arcade-playable-heading {margin-top:24px;gap:8px;}}
