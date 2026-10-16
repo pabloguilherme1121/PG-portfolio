@@ -56,6 +56,17 @@ export const projectNetwork = [
     code: "https://github.com/Pabloguilherme01/trajeto-web",
   },
   {
+    id: "eliane-vitrine",
+    name: "Eliane Fashion — Vitrine",
+    category: "Comércio local",
+    description:
+      "Vitrine de moda com catálogo, filtros, sacola e contato via WhatsApp. Administração demonstrativa, sem pagamento integrado.",
+    status: "Em evolução",
+    href: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
+    action: "Conhecer a vitrine",
+    code: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
+  },
+  {
     id: "eliane-fashion",
     name: "Eliane Fashion",
     category: "Template de loja virtual",
