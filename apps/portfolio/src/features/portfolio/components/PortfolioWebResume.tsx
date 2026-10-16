@@ -16,7 +16,7 @@ const competencies = [
     proof: "Exemplos: portfólio profissional e PG Arcade.",
   },
   {
-    title: "Dados e APIs",
+    title: "APIs e dados",
     tools: "tRPC · Express · MySQL · Drizzle · Zod",
     detail:
       "Integração e validação de dados; desenvolvimento de recursos de servidor em projetos próprios.",
