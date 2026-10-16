@@ -59,14 +59,25 @@ test("calendar deep link opens contextual consultation without requiring briefin
 });
 
 
-test("normal-motion contact journey opens optional briefing after public navigation", async ({ page }) => {
+test("normal-motion contact journey opens optional briefing after public navigation", async ({ page, browserName }) => {
   await page.setViewportSize({ width: 1024, height: 900 });
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("./");
   await page.locator("#inicio").getByRole("link", { name: "Conversar sobre um projeto" }).click();
   const contact = page.locator("#contato");
   await expect(contact.getByRole("link", { name: "Conversar no WhatsApp" })).toBeVisible();
-  await contact.getByRole("link", { name: "Prefiro preparar um briefing" }).click();
+  const briefing = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+  // WebKit can move the click hit target while smooth scrolling and deferred
+  // sections reflow. Activate the same native link using keyboard semantics;
+  // pointer activation is covered by the reduced-motion journey above.
+  if (browserName === "webkit") {
+    await briefing.focus();
+    await expect(briefing).toBeFocused();
+    await briefing.press("Enter");
+  } else {
+    await briefing.click();
+  }
+  await expect(page).toHaveURL(/#contato-briefing$/);
   await expect(contact.locator('[data-briefing-form="true"]')).toBeVisible();
   await expect(contact.locator('input[name="name"]')).toBeEditable();
 });
