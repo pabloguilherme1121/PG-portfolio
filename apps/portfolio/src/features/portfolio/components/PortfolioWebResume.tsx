@@ -9,7 +9,7 @@ type PortfolioWebResumeProps = {
 
 const competencies = [
   {
-    title: "Front-end",
+    title: "Frontend",
     tools: "React · TypeScript · Vite · Tailwind CSS",
     detail:
       "Construção de interfaces acessíveis e responsivas, com componentes reutilizáveis.",
