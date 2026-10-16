@@ -80,6 +80,39 @@
       ],
       "group": "build",
       "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: install Playwright browsers",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "exec",
+        "playwright",
+        "install",
+        "chromium",
+        "webkit"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: static mobile WebKit",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "exec",
+        "playwright",
+        "test",
+        "--config=playwright.static.config.ts",
+        "--project=static-mobile-webkit"
+      ],
+      "group": "test",
+      "problemMatcher": []
     }
   ]
 }
