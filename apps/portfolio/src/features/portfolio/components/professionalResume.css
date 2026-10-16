@@ -91,3 +91,67 @@
     break-inside: avoid;
   }
 }
+
+/* On screen, the interactive competence panel is the single source of detail.
+   In PDF/print, replace controls with a compact readable skills summary. */
+@media screen {
+  .professional-resume .resume-competency-summary {
+    display: none;
+  }
+}
+@media print {
+  @page { size: A4; margin: 12mm; }
+  .professional-resume {
+    color: #102033 !important;
+    background: #fff !important;
+    font-size: 9.5pt;
+    line-height: 1.3;
+    print-color-adjust: exact;
+  }
+  .professional-resume > div {
+    max-width: none;
+    padding: 0 !important;
+  }
+  .professional-resume > div > div:first-child {
+    padding-bottom: 8px !important;
+    gap: 8px !important;
+  }
+  .professional-resume > div > .grid {
+    display: grid !important;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr) !important;
+    gap: 16px !important;
+    padding-block: 10px !important;
+  }
+  .professional-resume aside {
+    padding-left: 10px;
+  }
+  .professional-resume h2 { font-size: 25pt !important; }
+  .professional-resume h3 { margin: 0 !important; font-size: 9pt !important; }
+  .professional-resume h4 { font-size: 13pt !important; }
+  .professional-resume p { line-height: 1.3 !important; }
+  .professional-resume :is(aside, aside section, .resume-competency-summary li) {
+    break-inside: avoid;
+  }
+  .professional-resume article {
+    padding: 8px !important;
+    border-radius: 0;
+    break-inside: avoid;
+  }
+  .professional-resume .space-y-9,
+  .professional-resume .space-y-8,
+  .professional-resume .space-y-4 {
+    display: grid;
+    gap: 9px;
+  }
+  .professional-resume .resume-competency-summary {
+    display: block !important;
+    margin-top: 6px;
+  }
+  .professional-resume .resume-competency-summary li {
+    padding-block: 3px;
+    font-size: 9pt;
+  }
+  .professional-resume footer {
+    padding-top: 7px;
+  }
+}
