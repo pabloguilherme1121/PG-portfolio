@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export type PortfolioDeferredHashRequests = {
+  footer: boolean;
   contact: boolean;
   caseStudies: boolean;
   staticSections: boolean;
@@ -9,6 +10,7 @@ export type PortfolioDeferredHashRequests = {
 
 export function getPortfolioDeferredHashRequests(hash: string): PortfolioDeferredHashRequests {
   return {
+    footer: ["#rede-projetos", "#contato-rodape"].includes(hash),
     contact: ["#contato", "#contato-briefing", "#agenda"].includes(hash),
     caseStudies: hash === "#estudos-de-caso",
     staticSections: ["#trilha", "#qualidade", "#servicos", "#processo"].includes(hash),

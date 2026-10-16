@@ -2017,3 +2017,38 @@ html.theme-transitioning .arquivo-page * {
 .arquivo-page :is(h2,h3,h4) { letter-spacing: -.035em; }
 .arquivo-page h2 { font-size: clamp(1.85rem, 3.6vw, 3.5rem); line-height: 1.12; }
 .professional-contact-grid > div:first-child { padding-block: var(--pg-section-space); }
+
+/* Evidence-led entry points share the portfolio's existing editorial palette. */
+.hero-project-index {display:grid;gap:0;margin-top:2rem;border-block:1px solid #6f9bb344;max-width:630px;}
+.hero-project-index a {display:grid;grid-template-columns:28px minmax(0,1fr) 20px;align-items:center;gap:14px;min-height:76px;padding:14px 0;color:#e7f4ff;transition:background-color 160ms ease;}
+.hero-project-index a+a {border-top:1px solid #6f9bb333;}
+.hero-project-index a:hover {background:#38bdf80b;}
+.hero-project-index a:focus-visible {outline:3px solid #a5f3fc;outline-offset:4px;}
+.hero-project-number {font:500 11px var(--font-mono);color:#7fa5ba;}
+.hero-project-index strong {display:block;font:500 15px/1.4 var(--font-body);}
+.hero-project-index small {display:block;margin-top:4px;font:400 12px/1.5 var(--font-body);color:#aac7df;}
+.hero-project-index svg {width:18px;height:18px;color:#a5f3fc;}
+.arcade-playable-heading {display:flex;align-items:end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:32px 0 18px;}
+.arcade-playable-heading h3 {font:500 clamp(1.3rem,2vw,1.8rem)/1.2 var(--font-display);color:#e7f4ff;}
+.arcade-playable-heading p {font:400 13px/1.5 var(--font-body);color:#aec8de;}
+.arcade-playable-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}
+.arcade-playable-card {min-width:0;border:1px solid #7899b355;border-radius:12px;background:#0b1b2d;overflow:hidden;transition:border-color 160ms ease;}
+.arcade-playable-card:hover {border-color:#a5f3fc;}
+.arcade-playable-card:focus-visible {outline:3px solid #a5f3fc;outline-offset:4px;}
+.arcade-playable-art {display:grid;place-items:center;aspect-ratio:8/5;background:#143238;border-bottom:1px solid #7899b344;}
+.arcade-playable-art.art-snake {background:#213227;}.arcade-playable-art.art-liga4 {background:#253447;}
+.arcade-playable-art img {width:88%;height:auto;max-height:100%;object-fit:contain;}
+.arcade-playable-copy {padding:20px;display:flex;flex-direction:column;gap:10px;}
+.arcade-playable-copy>span {font:500 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:#8fd9ec;}
+.arcade-playable-copy h4 {font:500 24px/1.2 var(--font-display);color:#f1f7ff;}
+.arcade-playable-copy p {font:400 14px/1.6 var(--font-body);color:#bfd4e4;min-height:4.8em;}
+.arcade-playable-copy strong {display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px;padding-top:12px;border-top:1px solid #7899b344;font:600 13px var(--font-body);color:#b2efff;min-height:44px;}
+.arcade-playable-copy strong svg {width:16px;height:16px;flex-shrink:0;}
+.arquivo-page[data-theme="light"] :is(.hero-project-index strong,.arcade-playable-heading h3,.arcade-playable-copy h4) {color:#153c55;}
+.arquivo-page[data-theme="light"] :is(.hero-project-index small,.arcade-playable-heading p,.arcade-playable-copy p) {color:#385d76;}
+/* WCAG AA: small index numerals need readable contrast on the pale hero surface. */
+.arquivo-page[data-theme="light"] .hero-project-number {color:#365875;}
+.arquivo-page[data-theme="light"] .arcade-playable-card {background:#f0f7fc;border-color:#7199b4;}
+.arquivo-page[data-theme="light"] :is(.arcade-playable-copy>span,.arcade-playable-copy strong,.hero-project-index svg) {color:#086080;}
+@media(max-width:767px) {.hero-project-index {margin-top:1.5rem;}.hero-project-index a {min-height:72px;}.arcade-playable-grid {grid-template-columns:1fr;gap:12px;}.arcade-playable-card {display:grid;grid-template-columns:100px minmax(0,1fr);}.arcade-playable-art {aspect-ratio:auto;border-bottom:0;border-right:1px solid #7899b344;}.arcade-playable-art img {width:100%;}.arcade-playable-copy {padding:14px;gap:6px;}.arcade-playable-copy h4 {font-size:21px;}.arcade-playable-copy p {font-size:13px;min-height:0;}.arcade-playable-copy strong {margin-top:0;padding-top:8px;}.arcade-playable-heading {margin-top:24px;gap:8px;}}
+@media(prefers-reduced-motion:reduce) {.hero-project-index a,.arcade-playable-card {transition:none;}}

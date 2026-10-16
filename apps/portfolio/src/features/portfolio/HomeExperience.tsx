@@ -116,6 +116,7 @@ export default function Home() {
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
   const {
+    footer: footerHashRequested,
     contact: contactHashRequested,
     caseStudies: caseStudiesHashRequested,
     staticSections: staticSectionsHashRequested,
@@ -168,9 +169,9 @@ export default function Home() {
   const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
   const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
-  const shouldRenderFooter = shouldLoadFooter || shouldLoadContact || (typeof window !== "undefined" && window.location.hash === "#contato-rodape");
+  const shouldRenderFooter = shouldLoadFooter || shouldLoadContact || footerHashRequested;
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
-  const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || new URLSearchParams(window.location.search).has("projeto")));
+  const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || window.location.hash === "#trajeto" || window.location.hash === "#pg-lab" || new URLSearchParams(window.location.search).has("projeto")));
   const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
   const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || backgroundContactReady;
 

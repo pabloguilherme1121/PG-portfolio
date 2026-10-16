@@ -6,7 +6,7 @@ test("cases preservam provas e explicam decisões sem overflow em 320 px", async
   await page.setViewportSize({ width: 320, height: 812 });
   await page.goto("/#estudos-de-caso");
   const cases = page.locator('[data-case-study="true"]');
-  await expect(cases).toHaveCount(2);
+  await expect(cases).toHaveCount(3);
   for (const study of await cases.all()) {
     await study.locator("summary").click();
     for (const detail of ["problema", "objetivo", "decisões", "resultado"]) {

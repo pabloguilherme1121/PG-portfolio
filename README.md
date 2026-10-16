@@ -18,9 +18,11 @@ A apresentação principal gira em torno de três provas públicas:
 
 - **Observatório:** produto publicado para demonstrar organização de informação, dados, interface responsiva e entrega web.
 - **PG Arcade:** produto interativo dedicado que demonstra arquitetura de frontend, estados complexos, compatibilidade mobile e QA sem duplicar motores dentro do portfólio.
-- **Trajeto:** produto full-stack em evolução que demonstra frontend, API, persistência, contratos e decisões de arquitetura.
+- **Trajeto:** produto em evolução para serviços locais, mobilidade e abastecimento, com frontend, API opcional, persistência, contratos e decisões de arquitetura.
 
 Project Lens, Briefing Studio, currículo web e a matriz de qualidade continuam no projeto como **recursos auxiliares da jornada**, não como produtos concorrendo pela mesma atenção.
+
+A central `#rede-projetos` também reúne Eleições Goiás, Mapa Planaltina GO e o template Eliane Fashion. Cada entrada distingue produto publicado, código em evolução e template. Os três estudos principais registram problema, decisões, evidências e limites específicos.
 
 ## Jornada principal
 

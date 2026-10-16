@@ -62,6 +62,8 @@ Valores de backend devem ficar no secret manager do ambiente e nunca no bundle p
 
 Use `NOTIFICATION_SERVICE_URL` e `NOTIFICATION_SERVICE_API_KEY` como nomes preferenciais para o serviço backend de notificação ao proprietário. Para compatibilidade com ambientes existentes, `BUILT_IN_FORGE_API_URL` e `BUILT_IN_FORGE_API_KEY` continuam aceitas como fallback legado quando as variáveis neutras não estiverem definidas. Variáveis com prefixo `VITE_` podem chegar ao cliente e não devem conter segredos.
 
+A API exige `JWT_SECRET` não vazio para assinar e verificar sessões e `VITE_APP_ID` configurado para emitir sessões. A verificação rejeita tokens cujo `appId` difere do aplicativo configurado; mantenha esse identificador estável para preservar sessões existentes. O nome de exibição pode ser vazio. Essas exigências não se aplicam ao portfólio estático no GitHub Pages.
+
 ## Banco
 
 `pnpm db:push` gera e aplica migrations usando `drizzle.config.ts`. O comando exige `DATABASE_URL` válida e não faz parte do deploy estático.

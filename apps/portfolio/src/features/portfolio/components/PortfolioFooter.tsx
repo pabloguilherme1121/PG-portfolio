@@ -1,3 +1,5 @@
+import PortfolioProjectNetwork from "./PortfolioProjectNetwork";
+
 import { Copy, Instagram, Mail, MessageCircle, Send } from "lucide-react";
 
 import {
@@ -19,6 +21,8 @@ type PortfolioFooterProps = {
 
 export default function PortfolioFooter({ markUrl, telegramUrl, whatsAppUrl, onWhatsAppClick, emailCopyStatus, copyContactEmail }: PortfolioFooterProps) {
   return (
+    <>
+    <PortfolioProjectNetwork />
     <footer id="contato-rodape" className="border-t border-white/[0.07] bg-[#06080d]" aria-labelledby="footer-contact-title">
       <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-12">
         <div>
@@ -30,5 +34,6 @@ export default function PortfolioFooter({ markUrl, telegramUrl, whatsAppUrl, onW
         <div><p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">links profissionais</p><div className="mt-3 flex flex-wrap gap-2"><a href={portfolioInstagramPersonalUrl} target="_blank" rel="noreferrer" aria-label={`Instagram ${portfolioInstagramPersonalHandle}`} className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href={portfolioInstagramWorkUrl} target="_blank" rel="noreferrer" aria-label={`Instagram ${portfolioInstagramWorkHandle}`} className="footer-social-icon text-[#6e85a8]"><Instagram className="h-4 w-4" /></a><a href={telegramUrl} target="_blank" rel="noreferrer" aria-label="Canal público de atendimento no Telegram" className="footer-social-icon text-[#6e85a8]"><Send className="h-4 w-4" /></a><a href={whatsAppUrl} onClick={onWhatsAppClick} target="_blank" rel="noreferrer" aria-label="Falar com Pablo pelo WhatsApp" className="footer-social-icon text-[#6e85a8]"><MessageCircle className="h-4 w-4" /></a></div><div className="mt-4 flex flex-wrap items-center gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7b91b3]">portfólio profissional / projetos em evolução</p><a href={import.meta.env.BASE_URL + "privacidade/"} className="inline-flex min-h-11 items-center font-mono text-[9px] uppercase tracking-[0.12em] text-[#6f8fbd] underline decoration-[#3b82f6]/50 underline-offset-4 transition-colors hover:text-[#b7d4ff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">privacidade</a></div></div>
       </div>
     </footer>
+    </>
   );
 }

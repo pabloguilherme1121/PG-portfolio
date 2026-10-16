@@ -1,0 +1,14 @@
+diff --git a/src/pages/SourcesPage.tsx b/src/pages/SourcesPage.tsx
+index eb2deca..e089248 100644
+--- a/src/pages/SourcesPage.tsx
++++ b/src/pages/SourcesPage.tsx
+@@ -265,6 +265,9 @@ export const SourcesPage: React.FC<SourcesPageProps> = ({ onBackToMap }) => {
+           </div>
+         )}
+       </section>
++      <nav aria-label="Outros projetos de Pablo Guilherme" className="mt-6 pb-6">
++        <a href="https://pabloguilherme1121.github.io/PG-portfolio/#rede-projetos" className="inline-flex min-h-11 items-center rounded-lg border border-neutral-300 px-4 text-sm font-semibold text-[#355E3B] underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4">Todos os projetos de Pablo</a>
++      </nav>
+     </div>
+   );
+ };

@@ -36,7 +36,7 @@ test.describe("portfólio profissional", () => {
     await expect(strip).toHaveAttribute("aria-label", /projeto em destaque/i);
   });
 
-  test("mobile apresenta projetos destacados em showcase horizontal por swipe", async ({ page }) => {
+  test("mobile adapta showcase ao total de projetos, com swipe quando há vários", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
 
@@ -45,10 +45,6 @@ test.describe("portfólio profissional", () => {
 
     const strip = projects.locator('[data-featured-project-strip="true"]');
     await expect(strip).toBeVisible();
-    await expect(strip).toHaveCSS("overflow-x", "auto");
-    await expect(strip).toHaveCSS("scroll-snap-type", /x/);
-    await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
-
     await expect(strip).toHaveAttribute("aria-busy", "false");
     const cards = strip.locator("[data-featured-project]");
     await expect(cards.first()).toBeVisible();
@@ -59,9 +55,15 @@ test.describe("portfólio profissional", () => {
     expect(firstBox?.width ?? 0).toBeGreaterThanOrEqual(280);
 
     if (cardCount > 1) {
+      await expect(strip).toHaveCSS("overflow-x", "auto");
+      await expect(strip).toHaveCSS("scroll-snap-type", /x/);
+      await expect(strip).toHaveCSS("touch-action", /pan-x pan-y|pan-y pan-x/);
       const initialScroll = await strip.evaluate((element) => element.scrollLeft);
       await strip.evaluate((element) => element.scrollTo({ left: element.scrollWidth, behavior: "instant" as ScrollBehavior }));
       await expect.poll(() => strip.evaluate((element) => element.scrollLeft)).toBeGreaterThan(initialScroll);
+    } else {
+      await expect(strip).toHaveAttribute("data-single-project", "true");
+      await expect(strip).toHaveCSS("overflow-x", "visible");
     }
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
   });
