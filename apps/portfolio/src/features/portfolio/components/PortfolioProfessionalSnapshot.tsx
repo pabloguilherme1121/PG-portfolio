@@ -42,7 +42,7 @@ export default function PortfolioProfessionalSnapshot() {
       label: "Produto full-stack",
       title: "Ver Trajeto",
       text: "Produto em evolução com frontend, API, persistência, testes e CI em código público.",
-      href: "https://github.com/Pabloguilherme01/trajeto-web",
+      href: "https://pabloguilherme01.github.io/trajeto-web/",
       external: true,
       Icon: Route,
       available: true,

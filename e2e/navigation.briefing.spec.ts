@@ -203,7 +203,7 @@ test.describe("portfólio profissional", () => {
     );
     await expect(profile.getByRole("link", { name: /ver trajeto/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
     await expect(profile.getByRole("link", { name: /ver qualidade/i })).toHaveAttribute("href", "#qualidade");
 

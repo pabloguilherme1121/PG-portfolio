@@ -41,7 +41,7 @@ test.describe("portfólio profissional", () => {
     );
     await expect(resume.getByRole("link", { name: /trajeto/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
 
     await resume.getByRole("button", { name: /imprimir.*salvar.*pdf/i }).click();
@@ -149,9 +149,9 @@ test.describe("portfólio profissional", () => {
     await expect(featured).toBeVisible();
     await expect(featured).toContainText(/Trajeto/i);
     await expect(featured).toContainText(/em evolução/i);
-    await expect(featured.getByRole("link", { name: /abrir prova.*código/i })).toHaveAttribute(
+    await expect(featured.getByRole("link", { name: /abrir prova.*site/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
     await featured.getByRole("button", { name: /ver detalhes.*trajeto/i }).click();
 
@@ -160,7 +160,7 @@ test.describe("portfólio profissional", () => {
     await expect(dialog.getByRole("heading", { name: /Trajeto/i })).toBeVisible();
     await expect(dialog.getByRole("link", { name: /abrir projeto/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
   });
 

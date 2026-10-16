@@ -125,9 +125,10 @@ export const caseStudies = [
     decisions: "Estruturei o fluxo buscar → comparar → decidir → navegar, com React + TypeScript no frontend, tRPC/Express na API, MySQL/Drizzle na persistência e validação Zod. A origem do dado permanece explícita na experiência.",
     result: "Base técnica pública e testável com frontend, API, persistência, testes automatizados, CI e auditoria de dependências, sem apresentar estimativas como dados oficiais.",
     learning: "Produtos de decisão ficam mais úteis quando cada tela responde uma pergunta prática e a origem do dado é tratada como parte da experiência, não como detalhe técnico.",
-    limits: "Produto em evolução. O código público demonstra implementação e testes; a disponibilidade de produção não foi confirmada nesta vitrine.",
+    limits: "Produto em evolução. O código público demonstra implementação e testes; o núcleo público está disponível no site, com recursos avançados dependentes de configuração.",
     tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
     proofs: [
+      { label: "Abrir Trajeto", description: "Consultar serviços, rotas e abastecimento no site público.", href: "https://pabloguilherme01.github.io/trajeto-web/", type: "live" as const },
       {
         label: "Ver código",
         description: "Repositório público com frontend, API, testes, CI e segurança documentada.",
@@ -168,9 +169,9 @@ export type Repository = {
   kind: "repository";
   status: "Em evolução" | "Publicado";
   evidence: {
-    label: "código";
+    label: "código" | "site";
     href: string;
-    type: "code";
+    type: "code" | "live";
   };
   cover?: string;
   featured?: boolean;
@@ -206,13 +207,13 @@ export const repositories: Repository[] = [
     process: "Estruturação do fluxo buscar → comparar → decidir → navegar, separando dados oficiais, dados de terceiros e estimativas próprias.",
     result: "Repositório público com frontend React, API tRPC/Express, persistência MySQL/Drizzle, testes automatizados, CI e auditoria de segurança.",
     technologies: ["Web", "Interface", "React", "TypeScript"],
-    url: "https://github.com/Pabloguilherme01/trajeto-web",
+    url: "https://pabloguilherme01.github.io/trajeto-web/",
     kind: "repository",
     status: "Em evolução",
     evidence: {
-      label: "código",
-      href: "https://github.com/Pabloguilherme01/trajeto-web",
-      type: "code",
+      label: "site",
+      href: "https://pabloguilherme01.github.io/trajeto-web/",
+      type: "live",
     },
     featured: true,
     addedOrder: 13,

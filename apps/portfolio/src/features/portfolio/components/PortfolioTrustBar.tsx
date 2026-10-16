@@ -15,7 +15,7 @@ const proofItems = [
     status: "CÓDIGO",
     title: "Trajeto",
     description: "React, TypeScript, tRPC, Express e banco relacional.",
-    href: "https://github.com/Pabloguilherme01/trajeto-web",
+    href: "https://pabloguilherme01.github.io/trajeto-web/",
     cta: "ver Trajeto",
     Icon: GitBranch,
   },

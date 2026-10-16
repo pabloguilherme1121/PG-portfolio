@@ -130,7 +130,7 @@ export default function PortfolioWebResume({ embedded = false }: PortfolioWebRes
                       <p className="font-mono text-[9px] uppercase tracking-[0.11em] text-[#0e7490]">produto full-stack em evolução</p>
                       <h4 className="mt-2 font-display text-2xl tracking-[-0.04em] text-[#0b2235]">Trajeto</h4>
                     </div>
-                    <a href="https://github.com/Pabloguilherme01/trajeto-web" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#0e7490]">
+                    <a href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-2 font-mono text-[9px] font-bold uppercase tracking-[0.1em] text-[#0e7490]">
                       ver Trajeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                     </a>
                   </div>

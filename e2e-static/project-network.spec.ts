@@ -38,18 +38,8 @@ for (const [width, theme] of [
       ],
       [
         "trajeto",
-        "https://github.com/Pabloguilherme01/trajeto-web",
+        "https://pabloguilherme01.github.io/trajeto-web/",
         "Em evolução",
-      ],
-      [
-        "eliane-vitrine",
-        "https://github.com/pabloguilherme1121/dainty-horse-23162a",
-        "Em evolução",
-      ],
-      [
-        "eliane-fashion",
-        "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
-        "Template",
       ],
       [
         "mapa-planaltina",
@@ -57,7 +47,8 @@ for (const [width, theme] of [
         "Produto publicado",
       ],
     ];
-    await expect(network.getByRole("listitem")).toHaveCount(7);
+    await expect(network.getByRole("listitem")).toHaveCount(5);
+    await expect(network.getByText(/Eliane Fashion/)).toHaveCount(0);
     for (const [id, href, status] of expected) {
       const card = network.locator(`[data-network-project="${id}"]`);
       await expect(card).toContainText(status);

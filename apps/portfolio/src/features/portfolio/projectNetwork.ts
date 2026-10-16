@@ -51,30 +51,8 @@ export const projectNetwork = [
     description:
       "Serviços locais, rotas e abastecimento no Entorno do DF, com origem dos dados e continuidade offline documentadas.",
     status: "Em evolução",
-    href: "https://github.com/Pabloguilherme01/trajeto-web",
-    action: "Conhecer o código",
+    href: "https://pabloguilherme01.github.io/trajeto-web/",
+    action: "Abrir Trajeto",
     code: "https://github.com/Pabloguilherme01/trajeto-web",
-  },
-  {
-    id: "eliane-vitrine",
-    name: "Eliane Fashion — Vitrine",
-    category: "Comércio local",
-    description:
-      "Vitrine de moda com catálogo, filtros, sacola e contato via WhatsApp. Administração demonstrativa, sem pagamento integrado.",
-    status: "Em evolução",
-    href: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
-    action: "Conhecer a vitrine",
-    code: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
-  },
-  {
-    id: "eliane-fashion",
-    name: "Eliane Fashion",
-    category: "Template de loja virtual",
-    description:
-      "Base de loja com painel administrativo e integrações que exigem configuração antes da publicação.",
-    status: "Template",
-    href: "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
-    action: "Conhecer o template",
-    code: "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
   },
 ] as const;

@@ -22,7 +22,7 @@ A apresentação principal gira em torno de três provas públicas:
 
 Project Lens, Briefing Studio, currículo web e a matriz de qualidade continuam no projeto como **recursos auxiliares da jornada**, não como produtos concorrendo pela mesma atenção.
 
-A central `#rede-projetos` também reúne Eleições Goiás, Mapa Planaltina GO e o template Eliane Fashion. Cada entrada distingue produto publicado, código em evolução e template. Os três estudos principais registram problema, decisões, evidências e limites específicos.
+A central `#rede-projetos` também reúne Eleições Goiás, Mapa Planaltina GO. Cada entrada identifica seu estado e acesso público. Os três estudos principais registram problema, decisões, evidências e limites específicos.
 
 ## Jornada principal
 
@@ -59,7 +59,7 @@ O Trajeto é um produto full-stack em evolução para apoiar decisões de rota e
 
 - [Código-fonte do Trajeto](https://github.com/Pabloguilherme01/trajeto-web)
 
-O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, MySQL + Drizzle na persistência, validação com Zod, testes automatizados, CI e auditoria de dependências. O portfólio não apresenta o Trajeto como produto publicado enquanto não houver uma evidência pública de produção.
+O repositório demonstra React + TypeScript no frontend, tRPC/Express na API, MySQL + Drizzle na persistência, validação com Zod, testes automatizados, CI e auditoria de dependências. O acesso principal abre o [site do Trajeto](https://pabloguilherme01.github.io/trajeto-web/), mantendo o repositório como evidência técnica.
 
 ## Tecnologias
 

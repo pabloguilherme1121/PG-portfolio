@@ -8,14 +8,14 @@ describe("portfolioData — catálogo público verificável", () => {
     expect(repositories.some((project) => project.id === "TEC.08")).toBe(false);
   });
 
-  it("mantém o Trajeto como código público sem inventar mídia ou deploy", () => {
+  it("direciona o Trajeto ao site público sem inventar mídia", () => {
     const trajeto = repositories.find((project) => project.id === "TEC.09");
 
     expect(trajeto).toEqual(
       expect.objectContaining({
         id: "TEC.09",
         kind: "repository",
-        url: "https://github.com/Pabloguilherme01/trajeto-web",
+        url: "https://pabloguilherme01.github.io/trajeto-web/",
       }),
     );
     expect(trajeto?.cover).toBeUndefined();
