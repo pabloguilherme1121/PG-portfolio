@@ -26,7 +26,7 @@ const competencies = [
     title: "Qualidade",
     tools: "Vitest · Playwright · GitHub Actions",
     detail:
-      "Testes unitários e E2E, revisão de acessibilidade e checagens antes do deploy.",
+      "Testes unitários e de navegador, revisão de acessibilidade e checagens antes da publicação.",
     proof: "Exemplos: CI do PG-portfolio e do PG Arcade.",
   },
 ] as const;
