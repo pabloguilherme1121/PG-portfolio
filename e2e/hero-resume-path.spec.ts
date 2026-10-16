@@ -11,7 +11,7 @@ for (const width of [320, 390]) {
     await resumeLink.click();
 
     await expect(page).toHaveURL(/#curriculo-web$/);
-    const resume = page.locator('#curriculo-web[data-web-resume="true"]');
+    const resume = page.locator('#curriculo-web [data-web-resume="true"]');
     await expect(resume).toBeVisible({ timeout: 30000 });
     await expect(resume.getByRole("button", { name: /imprimir \/ salvar em PDF/i })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
