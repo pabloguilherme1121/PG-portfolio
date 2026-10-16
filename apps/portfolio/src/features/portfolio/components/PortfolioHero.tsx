@@ -20,6 +20,7 @@ export default function PortfolioHero({ portraitUrl, portraitResponsive, heroCta
           <div ref={heroCtaRef} data-hero-cta="true" className="mt-6 flex flex-wrap gap-3">
             <a href="#projetos" className="professional-primary">Ver projetos <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
             <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="professional-secondary">Conversar sobre um projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+            <a href="#curriculo-web" onClick={() => trackPortfolioEvent("professional_profile_opened")} className="professional-secondary">Ver currículo <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
           </div>
           <nav className="hero-project-index" aria-label="Explore meu trabalho">
             <a href="#observatorio"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Dados que fazem sentido</strong><small>Observatório · conhecer o case</small></span><ArrowUpRight aria-hidden="true" /></a>
