@@ -151,6 +151,9 @@ class SDKServer {
 
   private getSessionSecret() {
     const secret = ENV.cookieSecret;
+    if (!secret.trim()) {
+      throw new Error("JWT_SECRET must be configured before using sessions");
+    }
     return new TextEncoder().encode(secret);
   }
 
@@ -177,6 +180,9 @@ class SDKServer {
     payload: SessionPayload,
     options: { expiresInMs?: number } = {}
   ): Promise<string> {
+    if (!isNonEmptyString(ENV.appId) || payload.appId !== ENV.appId) {
+      throw new Error("Session appId must match the configured app");
+    }
     const issuedAt = Date.now();
     const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
     const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1000);
@@ -210,7 +216,8 @@ class SDKServer {
       if (
         !isNonEmptyString(openId) ||
         !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
+        appId !== ENV.appId ||
+        typeof name !== "string"
       ) {
         console.warn("[Auth] Session payload missing required fields");
         return null;

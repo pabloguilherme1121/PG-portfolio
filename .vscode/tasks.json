@@ -1,0 +1,118 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PG-portfolio: install dependencies",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "install",
+        "--frozen-lockfile"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: dev server",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "dev"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: typecheck",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "check"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: unit tests",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "test"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: Playwright Chromium",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "exec",
+        "playwright",
+        "test",
+        "--project=desktop-chromium"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: production build",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "build"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: install Playwright browsers",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "exec",
+        "playwright",
+        "install",
+        "chromium",
+        "webkit"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "PG-portfolio: static mobile WebKit",
+      "type": "shell",
+      "command": "pnpm",
+      "windows": {
+        "command": "pnpm.cmd"
+      },
+      "args": [
+        "exec",
+        "playwright",
+        "test",
+        "--config=playwright.static.config.ts",
+        "--project=static-mobile-webkit"
+      ],
+      "group": "test",
+      "problemMatcher": []
+    }
+  ]
+}
