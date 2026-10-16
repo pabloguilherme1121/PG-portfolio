@@ -187,7 +187,7 @@ test.describe("portfólio profissional", () => {
 
     const profile = page.locator('[data-professional-snapshot="true"]');
     await expect(profile).toBeVisible();
-    await expect(profile.getByRole("heading", { name: /avaliação profissional/i })).toBeVisible();
+    await expect(profile.getByRole("heading", { name: /perfil profissional/i })).toBeVisible();
     await expect(profile.locator('[data-professional-proof="true"]')).toHaveCount(5);
 
     const resumeProof = profile.locator('[data-professional-proof-id="resume"]');

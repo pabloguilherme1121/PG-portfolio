@@ -44,6 +44,13 @@ test.describe("portfólio profissional", () => {
       "https://pabloguilherme01.github.io/trajeto-web/",
     );
 
+    const competencies = resume.getByRole("group", { name: "Explorar competências" });
+    await competencies.getByRole("button", { name: "APIs e dados", exact: true }).click();
+    await expect(competencies.getByRole("button", { name: "APIs e dados", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(resume.getByRole("status")).toContainText("Contratos tipados");
+    await competencies.getByRole("button", { name: "Qualidade", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(resume.getByRole("status")).toContainText("Testes unitários e de navegador");
     await resume.getByRole("button", { name: /imprimir.*salvar.*pdf/i }).click();
     await expect.poll(() =>
       page.evaluate(() =>

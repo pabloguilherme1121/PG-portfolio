@@ -11,7 +11,7 @@ export default function PortfolioProfessionalSnapshot() {
       id: "resume",
       label: "Currículo",
       title: "Abrir currículo web",
-      text: "Versão verificável e imprimível com formação, stack, projetos e contato.",
+      text: "Formação, competências e projetos próprios. Consulte online ou salve em PDF.",
       href: "#curriculo-web",
       external: false,
       Icon: FileText,
@@ -70,34 +70,34 @@ export default function PortfolioProfessionalSnapshot() {
       <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24">
         <div className="grid gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:gap-16">
           <div>
-            <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
+            <p className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[#a5f3fc]">
               para recrutadores e times
             </p>
             <h2
               id="professional-snapshot-title"
-              className="mt-4 max-w-xl font-display text-[clamp(2.6rem,4.6vw,5rem)] font-medium leading-[0.92] tracking-[-0.06em] text-white"
+              className="mt-4 max-w-xl font-display text-[clamp(2.6rem,4.6vw,5rem)] font-medium leading-[1.05] tracking-[-0.06em] text-white"
             >
-              Avaliação profissional, sem caça ao tesouro.
+              Perfil profissional.
             </h2>
             <p className="mt-6 max-w-xl font-body text-base leading-8 text-[#b8d3e6]">
-              Currículo, código, produto publicado, desenvolvimento full-stack e sinais de qualidade reunidos em uma leitura curta para quem está avaliando perfil, processo e capacidade de entrega.
+              Sou Pablo Guilherme, estudante de ADS com foco em desenvolvimento web. Crio interfaces com React e TypeScript e aplico testes nos meus projetos. Conheça minhas competências, explore as aplicações ou entre em contato.
             </p>
 
             <dl className="mt-8 grid gap-px border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
               <div className="bg-[#081523] p-4">
-                <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">formação</dt>
-                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">Análise e Desenvolvimento de Sistemas</dd>
+                <dt className="font-mono text-xs uppercase tracking-[0.13em] text-[#a2bbce]">formação</dt>
+                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">ADS · em andamento</dd>
               </div>
               <div className="bg-[#081523] p-4">
-                <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">foco</dt>
-                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">Produtos digitais · interfaces · dados</dd>
+                <dt className="font-mono text-xs uppercase tracking-[0.13em] text-[#a2bbce]">foco</dt>
+                <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">Desenvolvimento web · interfaces responsivas</dd>
               </div>
               <div className="bg-[#081523] p-4">
-                <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">stack demonstrada</dt>
+                <dt className="font-mono text-xs uppercase tracking-[0.13em] text-[#a2bbce]">stack demonstrada</dt>
                 <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">React · TypeScript · tRPC</dd>
               </div>
               <div className="bg-[#081523] p-4">
-                <dt className="font-mono text-[8px] uppercase tracking-[0.13em] text-[#718ca4]">validação</dt>
+                <dt className="font-mono text-xs uppercase tracking-[0.13em] text-[#a2bbce]">validação</dt>
                 <dd className="mt-2 font-body text-sm leading-6 text-[#e4f3fb]">Unitários · Playwright · build publicado</dd>
               </div>
             </dl>
@@ -105,7 +105,7 @@ export default function PortfolioProfessionalSnapshot() {
             <a
               href={opportunityEmailUrl}
               onClick={() => trackPortfolioEvent("professional_contact_clicked")}
-              className="group mt-7 inline-flex min-h-12 w-full items-center justify-between gap-4 bg-[#38bdf8] px-5 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:w-auto"
+              className="group mt-7 inline-flex min-h-12 w-full items-center justify-between gap-4 bg-[#38bdf8] px-5 py-3 font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] sm:w-auto"
             >
               <span className="inline-flex items-center gap-2"><Mail className="h-4 w-4" aria-hidden="true" /> falar sobre oportunidade</span>
               <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
@@ -115,7 +115,7 @@ export default function PortfolioProfessionalSnapshot() {
           <div className="grid gap-px bg-cyan-100/[0.12] sm:grid-cols-2 xl:grid-cols-2">
             {proofs.map(({ id, label, title, text, href, external, Icon }) => {
               const className =
-                "group flex min-h-[190px] flex-col justify-between bg-[#071326] p-5 transition-colors hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:p-6";
+                "group flex min-h-[170px] flex-col justify-between bg-[#071326] p-5 transition-colors hover:bg-[#0a1d33] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a5f3fc] sm:p-6";
 
               return (
                 <a
@@ -133,10 +133,10 @@ export default function PortfolioProfessionalSnapshot() {
                       <Icon className="h-5 w-5 text-[#67e8f9]" aria-hidden="true" />
                       <ArrowUpRight className="h-4 w-4 text-[#5d7892] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transition-none" aria-hidden="true" />
                     </div>
-                    <p className="mt-5 font-mono text-[9px] uppercase tracking-[0.14em] text-[#77a9fc]">{label}</p>
+                    <p className="mt-5 font-mono text-xs uppercase tracking-[0.14em] text-[#77a9fc]">{label}</p>
                     <p className="mt-2 font-display text-2xl tracking-[-0.04em] text-white">{title}</p>
                   </div>
-                  <p className="mt-5 font-body text-xs leading-5 text-[#9db8ca]">{text}</p>
+                  <p className="mt-5 font-body text-sm leading-5 text-[#9db8ca]">{text}</p>
                 </a>
               );
             })}
