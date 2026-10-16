@@ -42,6 +42,11 @@ for (const [width, theme] of [
         "Em evolução",
       ],
       [
+        "eliane-vitrine",
+        "https://github.com/pabloguilherme1121/dainty-horse-23162a",
+        "Em evolução",
+      ],
+      [
         "eliane-fashion",
         "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
         "Template",
@@ -52,12 +57,14 @@ for (const [width, theme] of [
         "Produto publicado",
       ],
     ];
-    await expect(network.getByRole("listitem")).toHaveCount(6);
+    await expect(network.getByRole("listitem")).toHaveCount(7);
     for (const [id, href, status] of expected) {
       const card = network.locator(`[data-network-project="${id}"]`);
       await expect(card).toContainText(status);
       const link = card.getByRole("link").first();
       await expect(link).toHaveAttribute("href", href);
+      await expect(link).toHaveAttribute("target", "_blank");
+      await expect(link).toHaveAttribute("rel", /noopener noreferrer/);
       await link.scrollIntoViewIfNeeded();
       await link.focus();
       await expect(link).toBeFocused();
