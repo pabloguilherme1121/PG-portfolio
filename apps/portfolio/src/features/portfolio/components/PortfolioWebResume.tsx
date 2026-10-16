@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpRight, Github, Mail, Printer } from "lucide-react";
+import { ArrowUpRight, Copy, Github, Mail, Printer } from "lucide-react";
 import "./professionalResume.css";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 
@@ -36,6 +36,18 @@ export default function PortfolioWebResume({
 }: PortfolioWebResumeProps) {
   const [activeCompetency, setActiveCompetency] = useState(0);
 
+  const [copyMessage, setCopyMessage] = useState("");
+  async function handleCopyEmail() {
+    try {
+      await navigator.clipboard.writeText("mpjcreator@gmail.com");
+      setCopyMessage("E-mail copiado.");
+    } catch {
+      setCopyMessage(
+        "Não foi possível copiar. Selecione mpjcreator@gmail.com ou use Entrar em contato."
+      );
+    }
+  }
+
   function handlePrint() {
     trackPortfolioEvent("professional_resume_printed");
     window.print();
@@ -52,13 +64,14 @@ export default function PortfolioWebResume({
         <div className="flex flex-col gap-6 border-b border-[#b8cfdd] pb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-[#0e7490]">
-              Pablo Guilherme · desenvolvimento web
+              Currículo profissional · desenvolvimento web
             </p>
             <h2
               id="web-resume-title"
+              aria-label="Currículo profissional de Pablo Guilherme"
               className="mt-3 font-display text-[clamp(2.6rem,5vw,5.2rem)] font-medium leading-[1.05] tracking-[-0.055em] text-[#071626]"
             >
-              Currículo profissional
+              Pablo Guilherme
             </h2>
             <p className="mt-4 max-w-2xl font-body text-base leading-7 text-[#365166]">
               Estudante de Análise e Desenvolvimento de Sistemas. Desenvolvo
@@ -85,6 +98,16 @@ export default function PortfolioWebResume({
             >
               <Mail className="h-4 w-4" aria-hidden="true" /> Entrar em contato
             </a>
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              className="resume-contact-action"
+            >
+              <Copy className="h-4 w-4" aria-hidden="true" /> Copiar e-mail
+            </button>
+            <p role="status" className="resume-copy-feedback">
+              {copyMessage}
+            </p>
           </div>
         </div>
 

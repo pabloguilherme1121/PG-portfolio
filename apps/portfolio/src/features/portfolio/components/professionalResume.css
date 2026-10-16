@@ -45,7 +45,15 @@
   border-color: #082f49;
   color: white;
 }
+.resume-copy-feedback {
+  max-width: 30ch;
+  min-height: 1.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #365166;
+}
 .resume-competency-detail {
+  min-height: 12rem;
   margin-top: 1rem;
   padding: 1.25rem;
   border: 1px solid #b8cfdd;
