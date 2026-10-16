@@ -39,9 +39,9 @@ export default function PortfolioProfessionalSnapshot() {
     },
     {
       id: "fullstack",
-      label: "Produto full-stack",
+      label: "Utilidade pública e mobilidade",
       title: "Ver Trajeto",
-      text: "Produto em evolução com frontend, API, persistência, testes e CI em código público.",
+      text: "Encontre serviços, contatos úteis, rotas e abastecimento em Águas Lindas e no Entorno do DF, sem cadastro.",
       href: "https://pabloguilherme01.github.io/trajeto-web/",
       external: true,
       Icon: Route,

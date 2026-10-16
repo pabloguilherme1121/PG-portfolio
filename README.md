@@ -22,7 +22,7 @@ A apresentação principal gira em torno de três provas públicas:
 
 Project Lens, Briefing Studio, currículo web e a matriz de qualidade continuam no projeto como **recursos auxiliares da jornada**, não como produtos concorrendo pela mesma atenção.
 
-A central `#rede-projetos` também reúne Eleições Goiás, Mapa Planaltina GO. Cada entrada identifica seu estado e acesso público. Os três estudos principais registram problema, decisões, evidências e limites específicos.
+A central `#rede-projetos` também reúne Eleições Goiás e Mapa Planaltina GO. Cada entrada identifica seu estado e acesso público. Os três estudos principais registram problema, decisões, evidências e limites específicos.
 
 ## Jornada principal
 
@@ -53,7 +53,7 @@ O case é usado no portfólio como evidência de arquitetura de informação, in
 
 ## Case técnico: Trajeto
 
-O Trajeto é um produto full-stack em evolução para apoiar decisões de rota e abastecimento no Entorno do Distrito Federal. A proposta organiza o fluxo **buscar → comparar → decidir → navegar** e separa explicitamente dados oficiais, dados de terceiros e estimativas próprias.
+O Trajeto é uma plataforma mobile de utilidade pública e mobilidade para Águas Lindas e o Entorno do Distrito Federal. A proposta é: **Encontre o que precisa. Saiba por onde seguir.** Reúne serviços públicos, contatos úteis, rotas e abastecimento, com consulta sem cadastro e conteúdo preparado para uso offline. A proposta organiza o fluxo **buscar → resolver → decidir → navegar** e separa explicitamente dados oficiais, dados de terceiros e estimativas próprias.
 
 **Prova pública:**
 

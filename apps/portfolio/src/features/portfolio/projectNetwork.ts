@@ -47,9 +47,9 @@ export const projectNetwork = [
   {
     id: "trajeto",
     name: "Trajeto",
-    category: "Rotas e abastecimento",
+    category: "Utilidade pública e mobilidade",
     description:
-      "Serviços locais, rotas e abastecimento no Entorno do DF, com origem dos dados e continuidade offline documentadas.",
+      "Encontre serviços públicos, contatos úteis, rotas e abastecimento em Águas Lindas e no Entorno do DF. Consulta sem cadastro e conteúdo preparado para uso offline.",
     status: "Em evolução",
     href: "https://pabloguilherme01.github.io/trajeto-web/",
     action: "Abrir Trajeto",

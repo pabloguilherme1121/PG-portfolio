@@ -38,6 +38,8 @@ for (const [width, theme] of [
       "Em evolução"
     );
 
+    await expect(page.getByRole("link", { name: "Abrir site do Trajeto ↗" })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
+
     const flow = project.getByRole("group", {
       name: "Etapas do fluxo Trajeto",
     });

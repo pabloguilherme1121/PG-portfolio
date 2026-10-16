@@ -11,10 +11,10 @@ const proofItems = [
     Icon: Gauge,
   },
   {
-    eyebrow: "full-stack",
-    status: "CÓDIGO",
+    eyebrow: "utilidade pública",
+    status: "SITE",
     title: "Trajeto",
-    description: "React, TypeScript, tRPC, Express e banco relacional.",
+    description: "Serviços locais, rotas e abastecimento sem cadastro.",
     href: "https://pabloguilherme01.github.io/trajeto-web/",
     cta: "ver Trajeto",
     Icon: GitBranch,
