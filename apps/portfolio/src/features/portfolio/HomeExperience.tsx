@@ -124,7 +124,7 @@ export default function Home() {
   } = usePortfolioDeferredHashRequests();
   const [formError, setFormError] = useState<string | null>(null);
   const [emailCopyStatus, setEmailCopyStatus] = useState<"idle" | "copied" | "error">("idle");
-  const [featuredCardsReady, setFeaturedCardsReady] = useState(false);
+  const [featuredCardsReady, setFeaturedCardsReady] = useState(() => typeof window !== "undefined" && window.location.hash === "#curriculo-web");
   const {
     favoriteProjectIdSet,
     toggleFavoriteProject,
@@ -166,13 +166,14 @@ export default function Home() {
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
   const mobileSecondaryShortcut = mobileDock.secondary;
-  const shouldRenderWebResume = shouldLoadWebResume || (typeof window !== "undefined" && window.location.hash === "#curriculo-web");
+  const resumeHashRequested = typeof window !== "undefined" && window.location.hash === "#curriculo-web";
+  const shouldRenderWebResume = shouldLoadWebResume || resumeHashRequested;
   const shouldRenderDiagnostic = shouldLoadDiagnostic || (typeof window !== "undefined" && window.location.hash === "#diagnostico");
-  const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested;
+  const shouldRenderProfileSections = shouldLoadProfileSections || profileSectionsHashRequested || resumeHashRequested;
   const shouldRenderFooter = shouldLoadFooter || shouldLoadContact || footerHashRequested;
   const shouldRenderStaticSections = shouldLoadStaticSections || staticSectionsHashRequested;
-  const shouldRenderProjects = shouldLoadProjects || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || window.location.hash === "#trajeto" || window.location.hash === "#pg-lab" || new URLSearchParams(window.location.search).has("projeto")));
-  const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested;
+  const shouldRenderProjects = shouldLoadProjects || resumeHashRequested || (typeof window !== "undefined" && (window.location.hash === "#projetos" || window.location.hash === "#observatorio" || window.location.hash === "#trajeto" || window.location.hash === "#pg-lab" || new URLSearchParams(window.location.search).has("projeto")));
+  const shouldRenderCaseStudies = shouldLoadCaseStudies || caseStudiesHashRequested || resumeHashRequested;
   const shouldRenderContact = shouldLoadContact || contactHashRequested || Boolean(pendingBriefingSeed) || backgroundContactReady;
 
   useEffect(() => {

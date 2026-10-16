@@ -15,9 +15,18 @@ const PortfolioDeferredProfileSections = lazy(
 const PortfolioDeferredStaticSections = lazy(
   () => import("@/features/portfolio/components/PortfolioDeferredStaticSections"),
 );
-const PortfolioWebResume = lazy(
-  () => import("@/features/portfolio/components/PortfolioWebResume"),
-);
+const PortfolioWebResume = lazy(async () => {
+  // A direct resume visit must not expose controls while preceding sections
+  // are still replacing their placeholders and moving the pointer target.
+  if (typeof window !== "undefined" && window.location.hash === "#curriculo-web") {
+    await Promise.all([
+      import("@/features/portfolio/components/PortfolioProjectsOverview"),
+      import("@/features/portfolio/components/PortfolioCaseStudies"),
+      import("@/features/portfolio/components/PortfolioDeferredProfileSections"),
+    ]);
+  }
+  return import("@/features/portfolio/components/PortfolioWebResume");
+});
 
 type PortfolioDeferredContentSectionsProps = {
   profileSectionsRef: RefObject<HTMLDivElement | null>;
