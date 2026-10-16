@@ -1,4 +1,4 @@
-import { ArrowUpRight, BadgeCheck, Gauge, GitBranch } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Gauge, Route } from "lucide-react";
 
 const proofItems = [
   {
@@ -17,7 +17,7 @@ const proofItems = [
     description: "Serviços locais, rotas e abastecimento sem cadastro.",
     href: "https://pabloguilherme01.github.io/trajeto-web/",
     cta: "ver Trajeto",
-    Icon: GitBranch,
+    Icon: Route,
   },
   {
     eyebrow: "qualidade",
