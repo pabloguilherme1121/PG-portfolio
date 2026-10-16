@@ -69,7 +69,10 @@ test.describe("portfólio profissional", () => {
     const expandedHeight = (await dock.boundingBox())?.height ?? 0;
     await page.evaluate(() => window.scrollTo(0, 1200));
     await expect(dock).toHaveAttribute("data-mobile-dock-compact", "true");
-    expect((await dock.boundingBox())?.height ?? 0).toBeLessThan(expandedHeight);
+    // The attribute can update before Firefox commits the corresponding layout.
+    // Keep the real height reduction as the contract, and wait for that layout.
+    await expect.poll(async () => (await dock.boundingBox())?.height ?? Infinity)
+      .toBeLessThan(expandedHeight);
     await page.evaluate(() => window.scrollTo(0, 450));
     await expect(dock).toHaveAttribute("data-mobile-dock-compact", "false");
     const form = await openContactBriefing(page);
