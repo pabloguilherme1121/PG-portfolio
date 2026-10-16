@@ -5,7 +5,7 @@ test("currículo reúne posicionamento direto, competências e três provas púb
   await page.goto("/#curriculo-web");
   const resume = page.locator('[data-web-resume="true"]');
   await expect(resume).toBeVisible({ timeout: 30000 });
-  await expect(resume.getByRole("heading", { name: "Pablo Guilherme" })).toBeVisible();
+  await expect(resume.locator("#web-resume-title")).toHaveText("Pablo Guilherme");
   await expect(resume.getByText("Desenvolvimento Front-end · React e TypeScript", { exact: true })).toBeVisible();
   await expect(resume.getByText(/Estágio ou posição júnior em desenvolvimento front-end/)).toBeVisible();
   await expect(resume.getByRole("heading", { name: "Projetos selecionados" })).toBeVisible();
