@@ -19,7 +19,7 @@ const competencies = [
     title: "APIs e dados",
     tools: "tRPC · Express · MySQL · Drizzle · Zod",
     detail:
-      "Integração e validação de dados; desenvolvimento de recursos de servidor em projetos próprios.",
+      "Contratos tipados, validação de dados e recursos de servidor em projetos próprios.",
     proof: "Exemplo: arquitetura opcional de backend do Trajeto.",
   },
   {
