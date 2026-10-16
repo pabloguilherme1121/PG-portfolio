@@ -50,11 +50,9 @@ export default function PortfolioProjectNetwork() {
                   <span className="sr-only"> — {project.name}</span>
                   <span aria-hidden="true"> ↗</span>
                 </a>
-                {project.href !== project.code && (
-                  <a href={project.code} target="_blank" rel="noopener noreferrer">
-                    Código<span className="sr-only"> de {project.name}</span>
-                  </a>
-                )}
+                <a href={project.code} target="_blank" rel="noopener noreferrer">
+                  Código<span className="sr-only"> de {project.name}</span>
+                </a>
               </div>
             </li>
           ))}

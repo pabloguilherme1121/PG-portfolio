@@ -1,4 +1,4 @@
-import { ArrowUpRight, Github, Play } from "lucide-react";
+import { ArrowUpRight, Github } from "lucide-react";
 import { useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
@@ -15,7 +15,7 @@ export default function PortfolioFeaturedProjectCard({
   onOpenDetails,
   singleProject = false,
 }: PortfolioFeaturedProjectCardProps) {
-  const EvidenceIcon = project.evidence.type === "code" ? Github : Play;
+  const EvidenceIcon = project.evidence.type === "code" ? Github : ArrowUpRight;
   const [previewOpen, setPreviewOpen] = useState(false);
   const previewButton = useRef<HTMLButtonElement>(null);
   const [quickReading, setQuickReading] = useState<
@@ -90,12 +90,12 @@ export default function PortfolioFeaturedProjectCard({
 
       <div className="featured-project-copy flex min-w-0 flex-col">
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#60a5fa]">
+          <p className="font-mono text-xs uppercase tracking-[0.1em] text-[#60a5fa]">
             {project.id}
           </p>
           <span
             data-project-status="true"
-            className="border border-[#67e8f9]/25 bg-[#0b2746]/55 px-2 py-1 font-mono text-[8px] font-semibold uppercase tracking-[0.11em] text-[#bdf7ff]"
+            className="border border-[#67e8f9]/25 bg-[#0b2746]/55 px-2 py-1 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-[#bdf7ff]"
           >
             {project.status}
           </span>
@@ -213,7 +213,7 @@ export default function PortfolioFeaturedProjectCard({
             className="inline-flex min-h-12 items-center justify-center gap-2 bg-[#38bdf8] px-4 font-mono text-[11px] font-semibold uppercase tracking-[0.07em] text-[#02111f] transition-colors hover:bg-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
             <EvidenceIcon className="h-4 w-4" aria-hidden="true" />
-            abrir prova · {project.evidence.label}
+            {project.evidence.type === "live" ? "Abrir site" : "Ver código"}
           </a>
 
           <button

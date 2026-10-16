@@ -41,9 +41,16 @@ test.describe("portfólio profissional", () => {
     );
     await expect(resume.getByRole("link", { name: /trajeto/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
 
+    const competencies = resume.getByRole("group", { name: "Explorar competências" });
+    await competencies.getByRole("button", { name: "APIs e dados", exact: true }).click();
+    await expect(competencies.getByRole("button", { name: "APIs e dados", exact: true })).toHaveAttribute("aria-pressed", "true");
+    await expect(resume.getByRole("status")).toContainText("Contratos tipados");
+    await competencies.getByRole("button", { name: "Qualidade", exact: true }).focus();
+    await page.keyboard.press("Enter");
+    await expect(resume.getByRole("status")).toContainText("Testes unitários e de navegador");
     await resume.getByRole("button", { name: /imprimir.*salvar.*pdf/i }).click();
     await expect.poll(() =>
       page.evaluate(() =>
@@ -113,6 +120,7 @@ test.describe("portfólio profissional", () => {
     );
 
     const trajetoStudy = studies.filter({ hasText: "Trajeto" });
+    await expect(trajetoStudy.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
     await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
       "href",
       "https://github.com/Pabloguilherme01/trajeto-web",
@@ -126,7 +134,7 @@ test.describe("portfólio profissional", () => {
       "href", "https://github.com/pabloguilherme1121/PG-Arcade",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(5);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(6);
   });
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
@@ -137,21 +145,22 @@ test.describe("portfólio profissional", () => {
     await expect(studies).toHaveCount(3);
 
     const trajetoStudy = studies.filter({ hasText: "Trajeto" });
+    await expect(trajetoStudy.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
     await expect(trajetoStudy).toContainText(/produto.*evolução|em evolução/i);
     await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
       "href",
       "https://github.com/Pabloguilherme01/trajeto-web",
     );
 
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(5);
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(6);
 
     const featured = page.locator('[data-featured-project="TEC.09"]');
     await expect(featured).toBeVisible();
     await expect(featured).toContainText(/Trajeto/i);
     await expect(featured).toContainText(/em evolução/i);
-    await expect(featured.getByRole("link", { name: /abrir prova.*código/i })).toHaveAttribute(
+    await expect(featured.getByRole("link", { name: /abrir prova.*site/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
     await featured.getByRole("button", { name: /ver detalhes.*trajeto/i }).click();
 
@@ -160,7 +169,7 @@ test.describe("portfólio profissional", () => {
     await expect(dialog.getByRole("heading", { name: /Trajeto/i })).toBeVisible();
     await expect(dialog.getByRole("link", { name: /abrir projeto/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
   });
 

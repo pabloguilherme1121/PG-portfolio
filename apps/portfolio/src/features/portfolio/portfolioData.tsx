@@ -118,16 +118,17 @@ export const caseStudies = [
   {
     id: "TEC.09",
     stage: "Produto em evolução",
-    title: "Trajeto — serviços locais e decisões de deslocamento",
+    title: "Trajeto — utilidade pública e mobilidade",
     context: "Produto em evolução para Águas Lindas e o Entorno do DF, reunindo serviços locais, rotas e abastecimento sem exigir conta para a consulta pública.",
     problem: "Encontrar e comparar opções de parada exige consultar fontes diferentes e entender quanto um desvio altera a rota, além de distinguir referência oficial, dado de terceiro e estimativa.",
     objective: "Ajudar a encontrar um serviço ou destino, comparar uma parada e abrir a navegação com contexto e origem dos dados.",
-    decisions: "Estruturei o fluxo buscar → comparar → decidir → navegar, com React + TypeScript no frontend, tRPC/Express na API, MySQL/Drizzle na persistência e validação Zod. A origem do dado permanece explícita na experiência.",
+    decisions: "Estruturei o fluxo buscar → resolver → decidir → navegar, com React + TypeScript no frontend, tRPC/Express na API, MySQL/Drizzle na persistência e validação Zod. A origem do dado permanece explícita na experiência.",
     result: "Base técnica pública e testável com frontend, API, persistência, testes automatizados, CI e auditoria de dependências, sem apresentar estimativas como dados oficiais.",
     learning: "Produtos de decisão ficam mais úteis quando cada tela responde uma pergunta prática e a origem do dado é tratada como parte da experiência, não como detalhe técnico.",
-    limits: "Produto em evolução. O código público demonstra implementação e testes; a disponibilidade de produção não foi confirmada nesta vitrine.",
+    limits: "Produto em evolução. O código público demonstra implementação e testes; o núcleo público está disponível no site, com recursos avançados dependentes de configuração.",
     tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
     proofs: [
+      { label: "Abrir Trajeto", description: "Consultar serviços, rotas e abastecimento no site público.", href: "https://pabloguilherme01.github.io/trajeto-web/", type: "live" as const },
       {
         label: "Ver código",
         description: "Repositório público com frontend, API, testes, CI e segurança documentada.",
@@ -168,9 +169,9 @@ export type Repository = {
   kind: "repository";
   status: "Em evolução" | "Publicado";
   evidence: {
-    label: "código";
+    label: "código" | "site";
     href: string;
-    type: "code";
+    type: "code" | "live";
   };
   cover?: string;
   featured?: boolean;
@@ -200,35 +201,35 @@ export type Repository = {
 export const repositories: Repository[] = [
   {
     id: "TEC.09",
-    name: "Trajeto — decisão de rota e abastecimento",
-    description: "Produto full-stack em evolução para transformar busca de posto ou rota em uma decisão prática, com comparação de desvio, contexto de combustível e transparência sobre fontes.",
+    name: "Trajeto — encontre o que precisa. Saiba por onde seguir.",
+    description: "Plataforma de utilidade pública e mobilidade para Águas Lindas e o Entorno do DF: serviços públicos, contatos úteis, rotas e abastecimento sem cadastro obrigatório.",
     role: "Produto, interface e arquitetura full-stack.",
-    process: "Estruturação do fluxo buscar → comparar → decidir → navegar, separando dados oficiais, dados de terceiros e estimativas próprias.",
-    result: "Repositório público com frontend React, API tRPC/Express, persistência MySQL/Drizzle, testes automatizados, CI e auditoria de segurança.",
+    process: "Estruturação do fluxo buscar → resolver → decidir → navegar, separando dados oficiais, dados de terceiros e estimativas próprias.",
+    result: "Site público sem cadastro obrigatório, com serviços locais, rotas, abastecimento e preparação para uso offline; backend opcional para recursos avançados.",
     technologies: ["Web", "Interface", "React", "TypeScript"],
-    url: "https://github.com/Pabloguilherme01/trajeto-web",
+    url: "https://pabloguilherme01.github.io/trajeto-web/",
     kind: "repository",
     status: "Em evolução",
     evidence: {
-      label: "código",
-      href: "https://github.com/Pabloguilherme01/trajeto-web",
-      type: "code",
+      label: "site",
+      href: "https://pabloguilherme01.github.io/trajeto-web/",
+      type: "live",
     },
     featured: true,
     addedOrder: 13,
     relevance: 98,
     catalog: {
-      description: "Produto full-stack para decisões de rota e abastecimento no Entorno do Distrito Federal.",
+      description: "Utilidade pública e mobilidade para encontrar serviços locais e decidir por onde seguir.",
       tags: ["Produto digital", "Full-stack", "React", "TypeScript", "Dados"],
     },
     caseStudy: {
-      context: "Ferramenta de decisão para motoristas que circulam pelo Entorno do Distrito Federal.",
+      context: "Plataforma mobile de utilidade pública e mobilidade para moradores de Águas Lindas e do Entorno do DF.",
       problem: "Encontrar e comparar opções de parada exige consultar fontes diferentes e entender quanto um desvio realmente altera a rota.",
       objective: "Organizar contexto suficiente para decidir onde parar, quanto desviar e qual é a origem de cada dado antes de navegar.",
       function: "Produto, interface, arquitetura de dados e implementação full-stack.",
-      process: "Fluxo buscar → comparar → decidir → navegar, com React/TypeScript no frontend e tRPC, Express, MySQL, Drizzle e Zod no backend.",
+      process: "Fluxo buscar → resolver → decidir → navegar, com React/TypeScript no frontend e tRPC, Express, MySQL, Drizzle e Zod no backend.",
       decisions: "Cadastro opcional, separação explícita entre dado oficial, dado de terceiro e estimativa, e CI com typecheck, testes, build e auditoria de dependências.",
-      result: "Base técnica pública e testável para um produto em evolução, sem apresentar referência oficial como preço de bomba ou inventar disponibilidade de produção.",
+      result: "Núcleo público acessível pelo site, com serviços locais, rotas, abastecimento e continuidade com conteúdo preparado no aparelho. Referências oficiais, dados de terceiros e estimativas ficam identificados.",
       learning: "Transparência de fonte e redução de passos são parte do produto quando a interface apoia uma decisão prática.",
     },
   },

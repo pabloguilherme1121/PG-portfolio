@@ -123,7 +123,7 @@ export default function PortfolioProjectsOverview({
         <a href="#trajeto" data-project-reading="architecture">
           <span>
             <strong>Entender a arquitetura</strong>
-            <small>Trajeto · fluxo, decisões e código público</small>
+            <small>Trajeto · serviços locais, rotas e acesso ao site</small>
           </span>
           <ArrowUpRight aria-hidden="true" />
         </a>
@@ -291,12 +291,13 @@ export default function PortfolioProjectsOverview({
               id="trabalhos-destaque-title"
               className="mt-2 font-display text-[clamp(1.7rem,3vw,2.8rem)] font-medium leading-none tracking-[-0.05em] text-white"
             >
-              Trajeto · arquitetura em evolução.
+              Trajeto · encontre o que precisa.
             </h3>
           </div>
           <p className="max-w-sm font-body text-sm leading-6 text-[#b6d7eb]">
-            Frontend, API e persistência com origem dos dados explícita. Código
-            público para examinar a implementação.
+            Serviços públicos, rotas e abastecimento em Águas Lindas e no Entorno
+            do DF. Saiba por onde seguir, sem precisar criar uma conta.
+            <a href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer" className="mt-3 flex min-h-11 items-center font-semibold text-[#67e8f9] underline underline-offset-4">Abrir site do Trajeto ↗</a>
           </p>
         </div>
         <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">

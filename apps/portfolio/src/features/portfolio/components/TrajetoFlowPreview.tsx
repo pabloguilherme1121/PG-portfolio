@@ -4,12 +4,12 @@ import { ArrowRight } from "lucide-react";
 const journey = [
   {
     label: "Buscar",
-    detail: "Encontrar opções de posto ou rota para começar a decisão.",
+    detail: "Encontrar um serviço público, contato útil, posto ou destino em Águas Lindas e no Entorno do DF.",
   },
   {
-    label: "Comparar",
+    label: "Resolver",
     detail:
-      "Colocar parada, desvio e contexto de combustível na mesma leitura.",
+      "Consultar a próxima ação, os contatos e as orientações disponíveis para resolver uma necessidade local.",
   },
   {
     label: "Decidir",
@@ -18,7 +18,7 @@ const journey = [
   },
   {
     label: "Navegar",
-    detail: "Escolher a próxima ação depois de comparar o contexto da parada.",
+    detail: "Abrir o aplicativo de mapas escolhido ou preparar o acesso offline enquanto houver conexão.",
   },
 ] as const;
 
@@ -107,16 +107,16 @@ export default function TrajetoFlowPreview() {
       </p>
       <div
         className="project-flow-stack"
-        aria-label="Camadas documentadas da arquitetura"
+        aria-label="Recursos públicos do Trajeto"
       >
         <span>
-          <strong>Interface</strong> React + TypeScript
+          <strong>Serviços locais</strong> Busca sem cadastro
         </span>
         <span>
-          <strong>API</strong> tRPC + Express
+          <strong>Mobilidade</strong> Rotas e abastecimento
         </span>
         <span>
-          <strong>Persistência</strong> MySQL + Drizzle
+          <strong>Offline</strong> Conteúdo preparado no aparelho
         </span>
       </div>
     </div>

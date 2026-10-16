@@ -43,9 +43,9 @@ test.describe("portfólio profissional", () => {
 
     const trajeto = page.locator('[data-featured-project="TEC.09"]');
     await expect(trajeto.locator('[data-project-status="true"]')).toContainText(/em evolução/i);
-    await expect(trajeto.getByRole("link", { name: /abrir prova.*código/i })).toHaveAttribute(
+    await expect(trajeto.getByRole("link", { name: /abrir prova.*site/i })).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+      "https://pabloguilherme01.github.io/trajeto-web/",
     );
     await expect(trajeto.getByRole("button", { name: /ver detalhes.*trajeto/i })).toBeVisible();
 

@@ -38,6 +38,8 @@ for (const [width, theme] of [
       "Em evolução"
     );
 
+    await expect(page.getByRole("link", { name: "Abrir site do Trajeto ↗" })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
+
     const flow = project.getByRole("group", {
       name: "Etapas do fluxo Trajeto",
     });
@@ -79,10 +81,10 @@ for (const [width, theme] of [
     await expect(preview).toBeFocused();
 
     await expect(
-      project.getByRole("link", { name: /abrir prova.*código/i })
+      project.getByRole("link", { name: /abrir prova.*site/i })
     ).toHaveAttribute(
       "href",
-      "https://github.com/Pabloguilherme01/trajeto-web"
+      "https://pabloguilherme01.github.io/trajeto-web/"
     );
     await project
       .getByRole("button", { name: /ver detalhes de trajeto/i })

@@ -47,34 +47,12 @@ export const projectNetwork = [
   {
     id: "trajeto",
     name: "Trajeto",
-    category: "Rotas e abastecimento",
+    category: "Utilidade pública e mobilidade",
     description:
-      "Serviços locais, rotas e abastecimento no Entorno do DF, com origem dos dados e continuidade offline documentadas.",
+      "Encontre serviços públicos, contatos úteis, rotas e abastecimento em Águas Lindas e no Entorno do DF. Consulta sem cadastro e conteúdo preparado para uso offline.",
     status: "Em evolução",
-    href: "https://github.com/Pabloguilherme01/trajeto-web",
-    action: "Conhecer o código",
+    href: "https://pabloguilherme01.github.io/trajeto-web/",
+    action: "Abrir Trajeto",
     code: "https://github.com/Pabloguilherme01/trajeto-web",
-  },
-  {
-    id: "eliane-vitrine",
-    name: "Eliane Fashion — Vitrine",
-    category: "Comércio local",
-    description:
-      "Vitrine de moda com catálogo, filtros, sacola e contato via WhatsApp. Administração demonstrativa, sem pagamento integrado.",
-    status: "Em evolução",
-    href: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
-    action: "Conhecer a vitrine",
-    code: "https://github.com/pabloguilherme1121/dainty-horse-23162a",
-  },
-  {
-    id: "eliane-fashion",
-    name: "Eliane Fashion",
-    category: "Template de loja virtual",
-    description:
-      "Base de loja com painel administrativo e integrações que exigem configuração antes da publicação.",
-    status: "Template",
-    href: "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
-    action: "Conhecer o template",
-    code: "https://github.com/pabloguilherme1121/elianefashion-netlify-template",
   },
 ] as const;

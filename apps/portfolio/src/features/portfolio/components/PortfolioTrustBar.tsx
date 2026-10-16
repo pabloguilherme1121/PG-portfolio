@@ -1,4 +1,4 @@
-import { ArrowUpRight, BadgeCheck, Gauge, GitBranch } from "lucide-react";
+import { ArrowUpRight, BadgeCheck, Gauge, Route } from "lucide-react";
 
 const proofItems = [
   {
@@ -11,13 +11,13 @@ const proofItems = [
     Icon: Gauge,
   },
   {
-    eyebrow: "full-stack",
-    status: "CÓDIGO",
+    eyebrow: "utilidade pública",
+    status: "SITE",
     title: "Trajeto",
-    description: "React, TypeScript, tRPC, Express e banco relacional.",
-    href: "https://github.com/Pabloguilherme01/trajeto-web",
+    description: "Serviços locais, rotas e abastecimento sem cadastro.",
+    href: "https://pabloguilherme01.github.io/trajeto-web/",
     cta: "ver Trajeto",
-    Icon: GitBranch,
+    Icon: Route,
   },
   {
     eyebrow: "qualidade",

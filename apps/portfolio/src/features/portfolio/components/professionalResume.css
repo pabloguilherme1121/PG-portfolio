@@ -1,0 +1,85 @@
+.professional-resume a:focus-visible,
+.professional-resume button:focus-visible {
+  outline: 3px solid #0e7490;
+  outline-offset: 4px;
+}
+.professional-resume aside {
+  border-left: 3px solid #0e7490;
+  padding-left: 1.25rem;
+}
+.professional-resume article {
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgb(8 47 73 / 4%);
+}
+.professional-resume a {
+  overflow-wrap: anywhere;
+}
+.resume-contact-action {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid #9bb8ca;
+  padding: 0.75rem 1rem;
+  color: #16435b;
+  font-weight: 600;
+}
+.resume-competency-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.resume-competency-controls button {
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border: 1px solid #9bb8ca;
+  border-radius: 0.5rem;
+  color: #16435b;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.resume-competency-controls button[aria-pressed="true"] {
+  background: #082f49;
+  border-color: #082f49;
+  color: white;
+}
+.resume-competency-detail {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid #b8cfdd;
+  border-radius: 0.75rem;
+  background: white;
+  color: #365166;
+  line-height: 1.7;
+}
+.resume-competency-detail p + p {
+  margin-top: 0.5rem;
+}
+.resume-competency-summary {
+  margin-top: 1rem;
+}
+.resume-competency-summary li {
+  display: grid;
+  gap: 0.25rem;
+  padding-block: 0.75rem;
+  border-bottom: 1px solid #cbdce6;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.resume-competency-summary span {
+  color: #365166;
+}
+@media print {
+  .professional-resume [data-print-hidden="true"] {
+    display: none !important;
+  }
+  .professional-resume article {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .resume-competency-summary li {
+    break-inside: avoid;
+  }
+}
