@@ -78,14 +78,25 @@ function exportCSV(runs){need(Array.isArray(runs)&&runs.length<=100,'Limite de r
  return '\uFEFF'+[headers,...rows].map(row=>row.map(csvCell).join(';')).join('\r\n')+'\r\n';
 }
 
+// Protect against a stale tab overwriting another tab's last save.
+const hasStorageConflict=(expected,current)=>expected!==current;
 const KEY='pg-qa-lab-runs-v1';
 const $=id=>document.getElementById(id);
-let runs=[],selectedId=null,filter='all';
+let runs=[],selectedId=null,filter='all',storedSnapshot=null;
 const labels={pending:'Pendente',pass:'Aprovado',fail:'Falhou',na:'Não aplicável'};
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const notify=(message,error=false)=>{const node=$('toast');node.textContent=message;node.classList.toggle('error',error);node.hidden=false;clearTimeout(notify.timer);notify.timer=setTimeout(()=>node.hidden=true,4100);};
-const load=()=>{try{const raw=localStorage.getItem(KEY);runs=raw?parseBackup(raw):[];}catch{runs=[];notify('O armazenamento local está bloqueado ou contém dados inválidos. Exporte seus backups regularmente.',true);}};
-const save=()=>{try{localStorage.setItem(KEY,serializeBackup(runs));return true;}catch{notify('Não foi possível salvar neste navegador. Exporte seu backup JSON.',true);return false;}};
+const load=()=>{try{const raw=localStorage.getItem(KEY);runs=raw?parseBackup(raw):[];storedSnapshot=raw;}catch{runs=[];notify('O armazenamento local está bloqueado ou contém dados inválidos. Exporte seus backups regularmente.',true);}};
+const save=()=>{try{
+  if(hasStorageConflict(storedSnapshot,localStorage.getItem(KEY))){
+    notify('Outra aba alterou as execuções. Exporte um backup JSON desta aba antes de atualizar; alterações externas foram preservadas.',true);
+    return false;
+  }
+  const snapshot=serializeBackup(runs);
+  localStorage.setItem(KEY,snapshot);
+  storedSnapshot=snapshot;
+  return true;
+ }catch{notify('Não foi possível salvar neste navegador. Exporte seu backup JSON.',true);return false;}};
 function download(text,name,type){const blob=new Blob([text],{type});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const current=()=>runs.find(r=>r.id===selectedId)||null;
 const todayLocal=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
@@ -131,6 +142,10 @@ function init(){for(const p of PROJECTS){const o=document.createElement('option'
  const projectList=$('project-list');for(const p of PROJECTS.slice(0,5)){const b=el('button','project-item');b.type='button';b.dataset.project=p;b.append(el('span','project-bullet'),el('span','',p));projectList.append(b);}
  for(const p of PROJECTS){const opt=document.createElement('option');opt.value=p;opt.textContent=p;$('edit-project').append(opt);}
  load();selectedId=runs[0]?.id??null;render();
+ window.addEventListener('storage',e=>{
+  if((e.key===KEY||e.key===null)&&hasStorageConflict(storedSnapshot,e.newValue))
+    notify('Outra aba alterou as execuções. Exporte backup JSON desta aba antes de recarregar.',true);
+ });
  $('edit-meta').addEventListener('click',editContext);
  $('edit-form').addEventListener('submit',e=>{
   if(e.submitter?.value!=='save')return;
