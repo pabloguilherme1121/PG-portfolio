@@ -2,3 +2,69 @@
 
 /* PG Lab navigation: five applications without remote assets */
 .lab-nav{display:flex;align-items:center;gap:16px;padding:12px 0 13px;border-bottom:1px solid #ffffff1c;min-width:0}.lab-nav-label{color:#a7bfcb;font-size:10px;letter-spacing:.12em;font-weight:800;flex-shrink:0}.lab-nav-items{display:flex;gap:5px;overflow-x:auto;max-width:100%;scrollbar-width:thin;scrollbar-color:#476775 transparent;padding:3px}.lab-nav-items a{white-space:nowrap;display:inline-flex;min-height:39px;padding:9px 12px;border-radius:9px;border:1px solid transparent;color:#c2d0d9;font-size:12px;font-weight:700}.lab-nav-items a:hover{background:#284455;border-color:#527183}.lab-nav-items a[aria-current="page"]{color:#13251d;background:#c4ed98;border-color:#c4ed98}.budget .lab-nav-items a[aria-current="page"]{background:#c8afff;border-color:#c8afff;color:#161129}@media(max-width:760px){.lab-nav{display:block;padding:10px 0}.lab-nav-label{display:block;margin-bottom:5px}.lab-nav-items{gap:3px}.lab-nav-items a{min-height:44px}}
+
+\n/* PG Lab — interface de trabalho. Mantém elementos e comportamento existentes. */
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#e6edf2;background:#101820;color-scheme:dark}
+body{background:#101820}
+.shell{max-width:1140px}
+.top{height:68px}
+.brand-name{letter-spacing:0;font-size:16px;font-weight:730}
+.brand-name small{letter-spacing:0;text-transform:none;font-size:11px}
+.mark{width:35px;height:35px;border-radius:9px;letter-spacing:-1px;font-size:14px}
+.pill{letter-spacing:0;text-transform:none;font-size:12px;font-weight:500;white-space:normal;text-align:right;color:#adbfce;border:0;padding:0}
+.lab-nav{padding:6px 0 8px;gap:10px}
+.lab-nav-label{letter-spacing:0;text-transform:none;font-size:12px;font-weight:500}
+.lab-nav-items a{font-weight:550;font-size:12px}
+.hero{padding:27px 0 19px;align-items:center;gap:12px}
+.hero .eyebrow{font-size:12px;letter-spacing:0;text-transform:none;font-weight:500;color:#99abbd}
+.hero h1{font-size:clamp(28px,3.1vw,38px);font-weight:710;letter-spacing:-.035em;line-height:1.2;margin:4px 0 5px}
+.hero .lead{font-size:13px;line-height:1.5;max-width:600px}
+.quick-add{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:130px}
+.metric-grid{gap:10px}
+.metric{padding:14px 18px;background:#182531;border-color:#ffffff16;border-radius:11px}
+.metric>span{font-size:12px;letter-spacing:0;color:#acb9c4;font-weight:550}
+.metric strong{font-size:clamp(21px,2.7vw,30px);margin:4px 0;letter-spacing:-.025em}
+.metric small{font-size:11px}
+.layout{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;margin-top:16px}
+.layout > .panel:first-child{order:2}
+.layout > .panel:last-child{order:1}
+.panel{background:#182531;border:1px solid #ffffff1c;box-shadow:none;border-radius:13px;padding:20px}
+.section-head{margin-bottom:13px}
+.section-head .eyebrow,.panel>.eyebrow{font-size:11px;letter-spacing:0;text-transform:none;color:#8fa7b8;font-weight:500}
+.section-head h2,.panel>h2{font-size:20px;letter-spacing:-.02em;margin:4px 0 8px}
+.kicker{font-size:11px;letter-spacing:0;white-space:normal}
+label{font-size:12px;font-weight:600}
+input,select,textarea{background:#111e2a;border-color:#536575;color:#e6edf2;border-radius:9px;min-height:44px;font-size:14px}
+input::placeholder,textarea::placeholder{color:#93a6b4}
+.button{border-radius:9px;font-size:13px;font-weight:650;min-height:44px}
+.button.primary{box-shadow:none}
+.button.subtle{background:#243847;border:1px solid #486072}
+.mini{font-size:12px;min-height:40px}
+.task-card{background:#121f2a;border-color:#425365}
+.task-name{font-size:14px}
+.task-meta{font-size:12px}
+.microcopy{font-size:12px;line-height:1.5}
+.panel-divider{margin:23px 0}
+.timer{background:#121f2a;border-radius:11px;box-shadow:none}
+.timer output{font-variant-numeric:tabular-nums}
+footer{font-size:11px;letter-spacing:0}
+.toast{font-size:13px;border-radius:10px}
+@media(max-width:760px){
+ .shell{padding:0 16px}.top{height:63px}.pill{font-size:11px;max-width:135px}
+ .hero{padding:20px 0 15px;align-items:flex-start}
+ .hero h1{font-size:29px}.hero .lead{font-size:12px}
+ .metric{padding:12px}
+ .metric strong{font-size:22px}.metric>span{font-size:11px}.metric small{font-size:10px}
+ .layout{grid-template-columns:1fr}.panel{padding:17px}
+ .quick-add{min-width:109px;padding:10px}
+}
+@media(max-width:390px){
+ .shell{padding:0 12px}.metric-grid{gap:6px}.metric{padding:10px 9px}.metric strong{font-size:18px}
+ .hero{flex-wrap:wrap}.hero .lead{max-width:none}.quick-add{width:100%;margin-top:4px}
+ .panel{padding:15px}.task-card{padding:12px}
+}
+@media print{.hero .quick-add{display:none!important}}
+
+/* Corrige controles ocultos por atributos nativos e valores financeiros no mobile. */
+[hidden]{display:none!important}
+@media(max-width:600px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-grid .metric:last-child{grid-column:1/-1}.metric strong{overflow-wrap:normal;word-break:normal;font-size:clamp(20px,5.5vw,25px)}.metric-grid .metric:last-child strong{font-size:26px}}
