@@ -20,3 +20,11 @@ input,textarea,select{accent-color:var(--pg-accent);caret-color:var(--pg-accent)
 dialog{border-radius:20px;border-color:#50637e;background:#172438}dialog p,dialog form>label,.dialog-cols label{font-size:14px}dialog input,dialog select{font-size:15px;border-radius:10px;min-height:46px}
 @media(max-width:720px){.topbar{min-height:64px;height:auto}.content{padding:24px 15px}.title-row h1{font-size:35px}.title-row .primary{min-height:50px}.lead{font-size:14px}.stat-grid{gap:10px}.stat-card{min-height:116px}.stat-card strong{font-size:29px}.stat-label,.stat-card small{font-size:12px!important}.panel{padding:17px}.check-card{padding:16px}.check-card strong{font-size:15px!important}.check-notes label{font-size:12px!important}.check-notes input,.check-notes textarea,.check-card .status-select{font-size:16px!important}.filter-strip button{font-size:13px!important}.run-title{font-size:14px}.run-subtitle{font-size:12px}.filter-strip button,.utility,.outline,.status-select{min-height:44px!important}}
 @media(max-width:390px){.check-card-head{flex-direction:column}.check-card .status-select{width:100%}}
+
+/* Interface de trabalho: menos ornamentação, mais conteúdo e leitura. */
+body{background:#0e1623!important}
+[hidden]{display:none!important}
+.eyebrow,.section-index,.sidebar .eyebrow{letter-spacing:0!important;text-transform:none!important;font-weight:600!important}
+h1{letter-spacing:-.03em!important;line-height:1.18!important}
+button{transform:none!important;box-shadow:none!important}
+@media(max-width:720px){h1{font-size:clamp(28px,7.5vw,34px)!important}.lead,.intro{font-size:14px!important;line-height:1.5!important}.stat-card,.metric{min-height:0!important}.page-heading h2{font-size:clamp(27px,7vw,33px)!important}}
