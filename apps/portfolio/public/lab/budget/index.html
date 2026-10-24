@@ -4,7 +4,73 @@
 
 /* PG Lab navigation: five applications without remote assets */
 .lab-nav{display:flex;align-items:center;gap:16px;padding:12px 0 13px;border-bottom:1px solid #ffffff1c;min-width:0}.lab-nav-label{color:#a7bfcb;font-size:10px;letter-spacing:.12em;font-weight:800;flex-shrink:0}.lab-nav-items{display:flex;gap:5px;overflow-x:auto;max-width:100%;scrollbar-width:thin;scrollbar-color:#476775 transparent;padding:3px}.lab-nav-items a{white-space:nowrap;display:inline-flex;min-height:39px;padding:9px 12px;border-radius:9px;border:1px solid transparent;color:#c2d0d9;font-size:12px;font-weight:700}.lab-nav-items a:hover{background:#284455;border-color:#527183}.lab-nav-items a[aria-current="page"]{color:#13251d;background:#c4ed98;border-color:#c4ed98}.budget .lab-nav-items a[aria-current="page"]{background:#c8afff;border-color:#c8afff;color:#161129}@media(max-width:760px){.lab-nav{display:block;padding:10px 0}.lab-nav-label{display:block;margin-bottom:5px}.lab-nav-items{gap:3px}.lab-nav-items a{min-height:44px}}
-</style></head><body class="budget"><div class="shell"><header class="top"><a class="brand" href="./" aria-label="PG Budget início"><span class="mark">PG<span>•</span></span><span class="brand-name">BUDGET <small>LAB / 02</small></span></a><div class="pill">CÁLCULO LOCAL <span class="dot"></span> SEM CONTA</div></header><nav class="lab-nav" aria-label="Navegação do PG Lab"><span class="lab-nav-label">PG LAB / FERRAMENTAS</span><div class="lab-nav-items"><a href="https://pg-shotlist-lab.vercel.app/">Shotlist</a><a href="https://pg-qa-lab.vercel.app/">QA Lab</a><a href="https://pg-creator-kit.vercel.app/">Creator Kit</a><a href="https://pg-sprint-lab.vercel.app/">Sprint</a><a href="https://pg-budget-lab.vercel.app/" aria-current="page">Budget</a></div></nav><main><div class="hero"><div><p class="eyebrow">PRODUÇÃO / ORGANIZAÇÃO FINANCEIRA</p><h1>Planeje os custos.<br><em>Decida com clareza.</em></h1><p class="lead">Organize entradas e saídas de filmagens, eventos e projetos pessoais. Cálculos precisos em centavos, sem enviar valores para servidores.</p></div><div class="hero-stamp"><span>CONTROLE DE PROJETO</span><strong>R$<span>+</span></strong><small>Orçamento é estimativa.</small></div></div><section class="metric-grid" aria-label="Resumo do orçamento"><div class="metric"><span>01 / DESPESAS</span><strong id="metric-expense">R$ 0,00</strong><small>saídas planejadas</small></div><div class="metric"><span>02 / ENTRADAS</span><strong id="metric-income">R$ 0,00</strong><small>receitas estimadas</small></div><div class="metric"><span>03 / SALDO PROJETADO</span><strong id="metric-balance">R$ 0,00</strong><small>entradas menos despesas</small></div></section><div class="layout"><section class="panel"><div class="section-head"><div><span class="eyebrow">01 / ORÇAMENTO</span><h2>Adicionar item</h2></div><span class="kicker">Até 150 itens</span></div><label for="budget-title">Nome do projeto</label><div class="inline"><input id="budget-title" maxlength="90" value="Meu projeto" aria-label="Nome do orçamento"><button id="save-title" type="button" class="button subtle">Salvar nome</button></div><form id="item-form"><input type="hidden" id="edit-id"><label for="item-description">Descrição</label><input id="item-description" maxlength="100" required placeholder="Ex.: Transporte para captação"><div class="two"><div><label for="item-kind">Tipo</label><select id="item-kind"><option value="expense">Despesa</option><option value="income">Entrada</option></select></div><div><label for="item-qty">Quantidade</label><input id="item-qty" type="number" min="1" max="1000" step="1" value="1" required></div></div><label for="item-price">Valor unitário (R$)</label><input id="item-price" inputmode="decimal" placeholder="Ex.: 125,90" required><p class="microcopy">Informe valores em reais, com até duas casas decimais. Não inclui impostos automaticamente.</p><div class="action-row"><button class="button primary" id="item-submit" type="submit">Adicionar item <span aria-hidden="true">↗</span></button><button type="button" class="button subtle" id="cancel-edit" hidden>Cancelar edição</button></div></form><div class="panel-divider"></div><span class="eyebrow">02 / PREPARAR</span><h2>Relatório</h2><p class="microcopy">Confira todos os valores antes de utilizar o planejamento. Isto não substitui proposta comercial, cálculo tributário ou documento fiscal.</p><div class="action-row"><button class="button subtle" type="button" id="print">Imprimir / PDF</button><button class="button subtle" type="button" id="export-csv">Exportar CSV</button></div></section><section class="panel"><div class="section-head"><div><span class="eyebrow">03 / DETALHAMENTO</span><h2>Itens do projeto</h2></div><span id="save-state" role="status" class="kicker">Armazenamento local</span></div><div class="filter-row"><input id="search" aria-label="Pesquisar item" placeholder="Pesquisar item"><select id="filter" aria-label="Filtrar lançamentos"><option value="all">Todos</option><option value="expense">Despesas</option><option value="income">Entradas</option></select></div><ul id="item-list" class="cards" aria-live="polite"></ul><div id="empty-state" class="empty">Seu orçamento ainda não tem itens.</div><div class="panel-divider"></div><div class="section-head"><div><span class="eyebrow">04 / PORTABILIDADE</span><h2>Guardar e restaurar</h2></div></div><div class="action-row file-row"><button class="button subtle" type="button" id="export-json">Backup JSON</button><button class="button subtle" type="button" id="import-trigger">Importar JSON</button><input type="file" id="import-json" accept=".json,application/json" hidden></div><p class="microcopy">Dados guardados apenas no navegador. Exportar backup preserva seu trabalho fora deste dispositivo.</p></section></div></main><footer>PG BUDGET LAB <span>SEM SERVIÇOS PAGOS • SEM BACKEND • DADOS NO NAVEGADOR</span></footer></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script>const MAX_ITEMS=150;
+
+\n/* PG Lab — interface de trabalho. Mantém elementos e comportamento existentes. */
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#e6edf2;background:#101820;color-scheme:dark}
+body{background:#101820}
+.shell{max-width:1140px}
+.top{height:68px}
+.brand-name{letter-spacing:0;font-size:16px;font-weight:730}
+.brand-name small{letter-spacing:0;text-transform:none;font-size:11px}
+.mark{width:35px;height:35px;border-radius:9px;letter-spacing:-1px;font-size:14px}
+.pill{letter-spacing:0;text-transform:none;font-size:12px;font-weight:500;white-space:normal;text-align:right;color:#adbfce;border:0;padding:0}
+.lab-nav{padding:6px 0 8px;gap:10px}
+.lab-nav-label{letter-spacing:0;text-transform:none;font-size:12px;font-weight:500}
+.lab-nav-items a{font-weight:550;font-size:12px}
+.hero{padding:27px 0 19px;align-items:center;gap:12px}
+.hero .eyebrow{font-size:12px;letter-spacing:0;text-transform:none;font-weight:500;color:#99abbd}
+.hero h1{font-size:clamp(28px,3.1vw,38px);font-weight:710;letter-spacing:-.035em;line-height:1.2;margin:4px 0 5px}
+.hero .lead{font-size:13px;line-height:1.5;max-width:600px}
+.quick-add{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:130px}
+.metric-grid{gap:10px}
+.metric{padding:14px 18px;background:#182531;border-color:#ffffff16;border-radius:11px}
+.metric>span{font-size:12px;letter-spacing:0;color:#acb9c4;font-weight:550}
+.metric strong{font-size:clamp(21px,2.7vw,30px);margin:4px 0;letter-spacing:-.025em}
+.metric small{font-size:11px}
+.layout{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;margin-top:16px}
+.layout > .panel:first-child{order:2}
+.layout > .panel:last-child{order:1}
+.panel{background:#182531;border:1px solid #ffffff1c;box-shadow:none;border-radius:13px;padding:20px}
+.section-head{margin-bottom:13px}
+.section-head .eyebrow,.panel>.eyebrow{font-size:11px;letter-spacing:0;text-transform:none;color:#8fa7b8;font-weight:500}
+.section-head h2,.panel>h2{font-size:20px;letter-spacing:-.02em;margin:4px 0 8px}
+.kicker{font-size:11px;letter-spacing:0;white-space:normal}
+label{font-size:12px;font-weight:600}
+input,select,textarea{background:#111e2a;border-color:#536575;color:#e6edf2;border-radius:9px;min-height:44px;font-size:14px}
+input::placeholder,textarea::placeholder{color:#93a6b4}
+.button{border-radius:9px;font-size:13px;font-weight:650;min-height:44px}
+.button.primary{box-shadow:none}
+.button.subtle{background:#243847;border:1px solid #486072}
+.mini{font-size:12px;min-height:40px}
+.task-card{background:#121f2a;border-color:#425365}
+.task-name{font-size:14px}
+.task-meta{font-size:12px}
+.microcopy{font-size:12px;line-height:1.5}
+.panel-divider{margin:23px 0}
+.timer{background:#121f2a;border-radius:11px;box-shadow:none}
+.timer output{font-variant-numeric:tabular-nums}
+footer{font-size:11px;letter-spacing:0}
+.toast{font-size:13px;border-radius:10px}
+@media(max-width:760px){
+ .shell{padding:0 16px}.top{height:63px}.pill{font-size:11px;max-width:135px}
+ .hero{padding:20px 0 15px;align-items:flex-start}
+ .hero h1{font-size:29px}.hero .lead{font-size:12px}
+ .metric{padding:12px}
+ .metric strong{font-size:22px}.metric>span{font-size:11px}.metric small{font-size:10px}
+ .layout{grid-template-columns:1fr}.panel{padding:17px}
+ .quick-add{min-width:109px;padding:10px}
+}
+@media(max-width:390px){
+ .shell{padding:0 12px}.metric-grid{gap:6px}.metric{padding:10px 9px}.metric strong{font-size:18px}
+ .hero{flex-wrap:wrap}.hero .lead{max-width:none}.quick-add{width:100%;margin-top:4px}
+ .panel{padding:15px}.task-card{padding:12px}
+}
+@media print{.hero .quick-add{display:none!important}}
+
+/* Corrige controles ocultos por atributos nativos e valores financeiros no mobile. */
+[hidden]{display:none!important}
+@media(max-width:600px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-grid .metric:last-child{grid-column:1/-1}.metric strong{overflow-wrap:normal;word-break:normal;font-size:clamp(20px,5.5vw,25px)}.metric-grid .metric:last-child strong{font-size:26px}}
+</style></head><body class="budget"><div class="shell"><header class="top"><a class="brand" href="./" aria-label="PG Budget início"><span class="mark">PG<span>•</span></span><span class="brand-name">Budget <small>PG Lab</small></span></a><div class="pill">Dados no seu navegador</div></header><nav class="lab-nav" aria-label="Navegação do PG Lab"><span class="lab-nav-label">Ferramentas</span><div class="lab-nav-items"><a href="https://pg-shotlist-lab.vercel.app/">Shotlist</a><a href="https://pg-qa-lab.vercel.app/">QA Lab</a><a href="https://pg-creator-kit.vercel.app/">Creator Kit</a><a href="https://pg-sprint-lab.vercel.app/">Sprint</a><a href="https://pg-budget-lab.vercel.app/" aria-current="page">Budget</a></div></nav><main><div class="hero"><div><p class="eyebrow">Controle do projeto</p><h1>Orçamento</h1><p class="lead">Registre entradas e despesas e acompanhe o saldo previsto.</p></div><a class="button primary quick-add" href="#item-form">Adicionar item</a></div><section class="metric-grid" aria-label="Resumo do orçamento"><div class="metric"><span>Despesas</span><strong id="metric-expense">R$ 0,00</strong><small>saídas planejadas</small></div><div class="metric"><span>Entradas</span><strong id="metric-income">R$ 0,00</strong><small>receitas estimadas</small></div><div class="metric"><span>Saldo previsto</span><strong id="metric-balance">R$ 0,00</strong><small>entradas menos despesas</small></div></section><div class="layout"><section class="panel"><div class="section-head"><div><h2>Novo lançamento</h2></div><span class="kicker"></span></div><label for="budget-title">Nome do projeto</label><div class="inline"><input id="budget-title" maxlength="90" value="Meu projeto" aria-label="Nome do orçamento"><button id="save-title" type="button" class="button subtle">Salvar nome</button></div><form id="item-form"><input type="hidden" id="edit-id"><label for="item-description">Descrição</label><input id="item-description" maxlength="100" required placeholder="Ex.: Transporte para captação"><div class="two"><div><label for="item-kind">Tipo</label><select id="item-kind"><option value="expense">Despesa</option><option value="income">Entrada</option></select></div><div><label for="item-qty">Quantidade</label><input id="item-qty" type="number" min="1" max="1000" step="1" value="1" required></div></div><label for="item-price">Valor unitário (R$)</label><input id="item-price" inputmode="decimal" placeholder="Ex.: 125,90" required><p class="microcopy">Aceita 125,90 ou 1.234,56. Valores são estimativas, sem impostos automáticos.</p><div class="action-row"><button class="button primary" id="item-submit" type="submit">Adicionar item <span aria-hidden="true">↗</span></button><button type="button" class="button subtle" id="cancel-edit" hidden>Cancelar edição</button></div></form><div class="panel-divider"></div><h2>Relatório</h2><p class="microcopy">Confira todos os valores antes de utilizar o planejamento. Isto não substitui proposta comercial, cálculo tributário ou documento fiscal.</p><div class="action-row"><button class="button subtle" type="button" id="print">Imprimir / PDF</button><button class="button subtle" type="button" id="export-csv">Exportar CSV</button></div></section><section class="panel"><div class="section-head"><div><h2>Lançamentos</h2></div><span id="save-state" role="status" class="kicker">Armazenamento local</span></div><div class="filter-row"><input id="search" aria-label="Pesquisar item" placeholder="Pesquisar item"><select id="filter" aria-label="Filtrar lançamentos"><option value="all">Todos</option><option value="expense">Despesas</option><option value="income">Entradas</option></select></div><ul id="item-list" class="cards" aria-live="polite"></ul><div id="empty-state" class="empty">Nenhum lançamento. Adicione uma despesa ou entrada.</div><div class="panel-divider"></div><div class="section-head"><div><h2>Cópia de segurança</h2></div></div><div class="action-row file-row"><button class="button subtle" type="button" id="export-json">Backup JSON</button><button class="button subtle" type="button" id="import-trigger">Importar JSON</button><input type="file" id="import-json" accept=".json,application/json" hidden></div><p class="microcopy">Dados guardados apenas no navegador. Exportar backup preserva seu trabalho fora deste dispositivo.</p></section></div></main><footer>PG BUDGET LAB <span>Dados armazenados neste navegador</span></footer></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><script>const MAX_ITEMS=150;
 const fields=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).every(k=>keys.includes(k));
 const named=(s,n)=>typeof s==='string'&&s.trim().length>0&&s.trim().length<=n;
 function newBudget(title='Meu projeto'){if(!named(title,90))throw Error('Título inválido.');return {version:1,title:title.trim(),items:[]};}
@@ -19,6 +85,21 @@ function serialize(s){return JSON.stringify(validate(s),null,2);}
 function parseBackup(raw){if(typeof raw!=='string'||raw.length>300000)throw Error('Backup inválido.');return validate(JSON.parse(raw));}
 const cell=s=>{const v=String(s??'');const out=/^[\s\uFEFF]*[=+\-@\t\r]/.test(v)?`'${v}`:v;return '"'+out.replaceAll('"','""')+'"'};
 function exportCSV(s){const rows=validate(s).items.map(i=>[i.description,i.kind==='income'?'Entrada':'Saída',i.qty,money(i.unitCents),money(i.qty*i.unitCents)]);const sum=totals(s);const summary=[['','','','',''],['Resumo financeiro','','','',''],['Total despesas','','','',money(sum.expense)],['Total entradas','','','',money(sum.income)],['Saldo projetado','','','',money(sum.balance)]];return '\uFEFF'+[['Descrição','Tipo','Quantidade','Valor unitário','Total'],...rows,...summary].map(x=>x.map(cell).join(';')).join('\r\n')+'\r\n';}
+
+/** Parses pt-BR currency (1.234,56) and plain decimal amounts without floating-point arithmetic. */
+function parseBRL(raw){
+  let value=String(raw??'').trim().replace(/^R\$\s*/, '').replace(/\u00a0/g,' ').trim();
+  // 1.234 is a grouped thousand; 1234.56 has a decimal separator.
+  const br=/^([0-9]{1,3}(?:\.[0-9]{3})+|[0-9]{1,7})(?:,([0-9]{1,2}))?$/;
+  const standard=/^([0-9]{1,7})\.([0-9]{1,2})$/;
+  let whole, fractional='';
+  const match=br.exec(value);
+  if(match){whole=match[1].replaceAll('.','');fractional=match[2]??'';}
+  else {const m=standard.exec(value);if(!m)throw Error('Informe um valor como 125,90 ou 1.234,56.');whole=m[1];fractional=m[2];}
+  const cents=Number(whole)*100+Number(fractional.padEnd(2,'0'));
+  if(!Number.isSafeInteger(cents)||cents>100000000)throw Error('Valor acima do limite por item.');
+  return cents;
+}
 
 const $=id=>document.getElementById(id),KEY='pg-budget-lab-v1';let budget=newBudget(),snapshot=null,editing=null;
 // Browsers without a secure origin may omit crypto.randomUUID (e.g. local HTML previews).
@@ -36,7 +117,7 @@ const notify=(msg,bad=false)=>{const el=$('toast');el.textContent=msg;el.hidden=
 function load(){try{snapshot=localStorage.getItem(KEY);if(snapshot)budget=parseBackup(snapshot);}catch(e){notify('Backup local inválido: '+e.message,true)}}
 function commit(next){try{if(localStorage.getItem(KEY)!==snapshot){$('save-state').textContent='Conflito entre abas';notify('Outra aba salvou mudanças. Exporte backup e recarregue antes de alterar.',true);return false;}const raw=serialize(next);localStorage.setItem(KEY,raw);snapshot=raw;budget=next;$('save-state').textContent='Salvo no dispositivo';render();return true;}catch(e){notify('Não foi possível salvar: '+e.message,true);return false;}}
 const h=(tag,cls='',txt)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(txt!==undefined)el.textContent=txt;return el;};
-const toCents=v=>{const s=String(v).trim().replace(/^R\$\s*/, '').replaceAll(' ','');if(!/^\d{1,7}(?:[.,]\d{1,2})?$/.test(s))throw Error('Use valor em reais, ex.: 125,90.');const [int,decimal='']=s.replace(',','.').split('.');return Number(int)*100+Number(decimal.padEnd(2,'0'));};
+const toCents=parseBRL;
 function resetForm(){$('item-form').reset();$('item-qty').value='1';editing=null;$('edit-id').value='';$('item-submit').textContent='Adicionar item ↗';$('cancel-edit').hidden=true;}
 function render(){const t=totals(budget);$('metric-expense').textContent=money(t.expense);$('metric-income').textContent=money(t.income);$('metric-balance').textContent=money(t.balance);$('metric-balance').classList.toggle('negative',t.balance<0);$('budget-title').value=budget.title;document.title=budget.title+' · PG Budget';const q=$('search').value.toLocaleLowerCase('pt-BR').trim(),filter=$('filter').value;const items=budget.items.filter(i=>(filter==='all'||i.kind===filter)&&i.description.toLocaleLowerCase('pt-BR').includes(q));const list=$('item-list');list.replaceChildren();$('empty-state').hidden=items.length>0;for(const i of items){const li=h('li','task-card'),main=h('div','task-main'),head=h('div','budget-line');head.append(h('span','task-name',i.description),h('strong',i.kind==='income'?'value income':'value',money(i.qty*i.unitCents)));main.append(head,h('small','task-meta',(i.kind==='income'?'Entrada':'Despesa')+' • '+i.qty+' × '+money(i.unitCents)));const actions=h('div','card-actions');for(const [label,fn] of [['Editar',()=>edit(i)],['Excluir',()=>{if(confirm('Excluir item?')){const next=deleteItem(budget,i.id);commit(next)}}]]){const btn=h('button','mini',label);btn.type='button';btn.addEventListener('click',fn);actions.append(btn);}li.append(main,actions);list.append(li);}}
 function edit(i){editing=i.id;$('edit-id').value=i.id;$('item-description').value=i.description;$('item-qty').value=i.qty;$('item-price').value=(i.unitCents/100).toFixed(2).replace('.',',');$('item-kind').value=i.kind;$('item-submit').textContent='Salvar alterações ↗';$('cancel-edit').hidden=false;$('item-description').focus()}
