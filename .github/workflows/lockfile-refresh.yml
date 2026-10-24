@@ -38,8 +38,5 @@ jobs:
             echo "Lockfile unchanged"; exit 0
           fi
           sha="$(gh api "/repos/$GITHUB_REPOSITORY/contents/pnpm-lock.yaml?ref=fix/portfolio-security-audit-20261024" --jq '.sha')"
-          gh api --method PUT "/repos/$GITHUB_REPOSITORY/contents/pnpm-lock.yaml" \
-            -f branch=fix/portfolio-security-audit-20261024 \
-            -f message='chore(deps): lockfile regenerado com pnpm sem scripts' \
-            -f sha="$sha" \
-            --raw-field "content=$(base64 -w0 pnpm-lock.yaml)"
+          LOCK_SHA="$sha" node --input-type=module -e 'import fs from "node:fs"; fs.writeFileSync("lock-refresh-payload.json",JSON.stringify({branch:"fix/portfolio-security-audit-20261024",message:"chore(deps): lockfile regenerado com pnpm sem scripts",sha:process.env.LOCK_SHA,content:fs.readFileSync("pnpm-lock.yaml").toString("base64")}));'
+          gh api --method PUT "/repos/$GITHUB_REPOSITORY/contents/pnpm-lock.yaml" --input lock-refresh-payload.json
