@@ -13,3 +13,18 @@ export function serialize(s){return JSON.stringify(validate(s),null,2);}
 export function parseBackup(raw){if(typeof raw!=='string'||raw.length>300000)throw Error('Backup inválido.');return validate(JSON.parse(raw));}
 const cell=s=>{const v=String(s??'');const out=/^[\s\uFEFF]*[=+\-@\t\r]/.test(v)?`'${v}`:v;return '"'+out.replaceAll('"','""')+'"'};
 export function exportCSV(s){const rows=validate(s).items.map(i=>[i.description,i.kind==='income'?'Entrada':'Saída',i.qty,money(i.unitCents),money(i.qty*i.unitCents)]);const sum=totals(s);const summary=[['','','','',''],['Resumo financeiro','','','',''],['Total despesas','','','',money(sum.expense)],['Total entradas','','','',money(sum.income)],['Saldo projetado','','','',money(sum.balance)]];return '\uFEFF'+[['Descrição','Tipo','Quantidade','Valor unitário','Total'],...rows,...summary].map(x=>x.map(cell).join(';')).join('\r\n')+'\r\n';}
+
+/** Parses pt-BR currency (1.234,56) and plain decimal amounts without floating-point arithmetic. */
+export function parseBRL(raw){
+  let value=String(raw??'').trim().replace(/^R\$\s*/, '').replace(/\u00a0/g,' ').trim();
+  // 1.234 is a grouped thousand; 1234.56 has a decimal separator.
+  const br=/^([0-9]{1,3}(?:\.[0-9]{3})+|[0-9]{1,7})(?:,([0-9]{1,2}))?$/;
+  const standard=/^([0-9]{1,7})\.([0-9]{1,2})$/;
+  let whole, fractional='';
+  const match=br.exec(value);
+  if(match){whole=match[1].replaceAll('.','');fractional=match[2]??'';}
+  else {const m=standard.exec(value);if(!m)throw Error('Informe um valor como 125,90 ou 1.234,56.');whole=m[1];fractional=m[2];}
+  const cents=Number(whole)*100+Number(fractional.padEnd(2,'0'));
+  if(!Number.isSafeInteger(cents)||cents>100000000)throw Error('Valor acima do limite por item.');
+  return cents;
+}
