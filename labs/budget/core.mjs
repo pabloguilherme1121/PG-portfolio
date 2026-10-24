@@ -1,0 +1,15 @@
+export const MAX_ITEMS=150;
+const fields=(o,keys)=>o&&typeof o==='object'&&!Array.isArray(o)&&Object.keys(o).every(k=>keys.includes(k));
+const named=(s,n)=>typeof s==='string'&&s.trim().length>0&&s.trim().length<=n;
+export function newBudget(title='Meu projeto'){if(!named(title,90))throw Error('Título inválido.');return {version:1,title:title.trim(),items:[]};}
+export function makeItem(data){if(!fields(data,['id','description','kind','qty','unitCents']))throw Error('Campos desconhecidos no item.');const {id,description}=data,kind=data.kind??'expense',qty=data.qty??1,unitCents=data.unitCents??0;if(!named(id,80)||!named(description,100)||!['expense','income'].includes(kind)||!Number.isInteger(qty)||qty<1||qty>1000||!Number.isSafeInteger(unitCents)||unitCents<0||unitCents>100000000)throw Error('Valores do item inválidos.');return {id,description:description.trim(),kind,qty,unitCents};}
+export function validate(s){if(!fields(s,['version','title','items'])||s.version!==1||!named(s.title,90)||!Array.isArray(s.items)||s.items.length>MAX_ITEMS)throw Error('Orçamento inválido.');const ids=new Set(),items=s.items.map(x=>{const item=makeItem(x);if(ids.has(item.id))throw Error('Item duplicado.');ids.add(item.id);return item;});return {version:1,title:s.title.trim(),items};}
+export function addItem(s,t){const b=validate(s);if(b.items.length>=MAX_ITEMS)throw Error('Limite de 150 itens.');return validate({...b,items:[...b.items,makeItem(t)]});}
+export function updateItem(s,id,patch){const b=validate(s);if(!b.items.some(i=>i.id===id))throw Error('Item ausente.');return validate({...b,items:b.items.map(i=>i.id===id?makeItem({...i,...patch,id}):i)});}
+export function deleteItem(s,id){const b=validate(s);return validate({...b,items:b.items.filter(i=>i.id!==id)});}
+export function totals(s){const b=validate(s);const expense=b.items.filter(x=>x.kind==='expense').reduce((v,i)=>v+i.qty*i.unitCents,0),income=b.items.filter(x=>x.kind==='income').reduce((v,i)=>v+i.qty*i.unitCents,0);return {expense,income,balance:income-expense};}
+export const money=cents=>(cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+export function serialize(s){return JSON.stringify(validate(s),null,2);}
+export function parseBackup(raw){if(typeof raw!=='string'||raw.length>300000)throw Error('Backup inválido.');return validate(JSON.parse(raw));}
+const cell=s=>{const v=String(s??'');const out=/^[\s\uFEFF]*[=+\-@\t\r]/.test(v)?`'${v}`:v;return '"'+out.replaceAll('"','""')+'"'};
+export function exportCSV(s){const rows=validate(s).items.map(i=>[i.description,i.kind==='income'?'Entrada':'Saída',i.qty,money(i.unitCents),money(i.qty*i.unitCents)]);const sum=totals(s);const summary=[['','','','',''],['Resumo financeiro','','','',''],['Total despesas','','','',money(sum.expense)],['Total entradas','','','',money(sum.income)],['Saldo projetado','','','',money(sum.balance)]];return '\uFEFF'+[['Descrição','Tipo','Quantidade','Valor unitário','Total'],...rows,...summary].map(x=>x.map(cell).join(';')).join('\r\n')+'\r\n';}
