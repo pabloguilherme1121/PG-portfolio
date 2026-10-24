@@ -131,12 +131,15 @@ function exportCsv(plan) {
 }
 
 
+// Guard against overwriting data saved by another browser tab.
+const hasStorageConflict = (expected, current) => expected !== current;
 const KEY = 'pg-shotlist-project-v1';
 const $ = id => document.getElementById(id);
 let plan = createPlan('Meu projeto');
 let activeFilter = 'todas';
 let editingId = null;
 let toastTimer;
+let storedSnapshot = null;
 
 function notify(message, isError = false) {
   const el = $('toast');
@@ -148,8 +151,16 @@ function notify(message, isError = false) {
 }
 function save() {
   try {
-    localStorage.setItem(KEY, serializeBackup(plan));
+    if (hasStorageConflict(storedSnapshot, localStorage.getItem(KEY))) {
+      $('save-state').textContent = 'Conflito entre abas · exporte JSON';
+      notify('Outra aba alterou este projeto. Exporte seu backup JSON antes de recarregar; não substituí as alterações da outra aba.', true);
+      return false;
+    }
+    const snapshot = serializeBackup(plan);
+    localStorage.setItem(KEY, snapshot);
+    storedSnapshot = snapshot;
     $('save-state').textContent = 'Salvo no navegador';
+    return true;
   } catch {
     $('save-state').textContent = 'Não foi possível salvar';
     notify('O armazenamento foi bloqueado. Exporte um backup JSON para não perder seu trabalho.', true);
@@ -264,11 +275,18 @@ function init() {
   try {
     const stored=localStorage.getItem(KEY);
     if (stored) plan=parseBackup(stored);
+    storedSnapshot = stored;
   } catch {
     $('save-state').textContent = 'Armazenamento indisponível';
     notify('Não foi possível recuperar o arquivo local. Importe um backup JSON, se tiver um.',true);
   }
   render();
+  window.addEventListener('storage', e => {
+    if ((e.key === KEY || e.key === null) && hasStorageConflict(storedSnapshot, e.newValue)) {
+      $('save-state').textContent = 'Outra aba alterou os dados';
+      notify('Dados alterados em outra aba. Exporte um backup JSON nesta aba e recarregue antes de continuar.', true);
+    }
+  });
   $('save-title').addEventListener('click',()=>{
     try{setPlan({...plan,title:createPlan($('project-title').value).title});notify('Projeto renomeado.');}
     catch(e){notify(e.message,true);$('project-title').focus();}
