@@ -16,3 +16,11 @@ test('CSV de Sprint inclui totais e tempo restante para revisão',()=>{
   assert.match(csv,/Total previsto.*65/);
   assert.match(csv,/Minutos pendentes.*25/);
 });
+
+import {remainingFocusSeconds} from '../core.mjs';
+test('cronômetro usa horário real mesmo quando navegador suspende timers',()=>{
+  assert.equal(remainingFocusSeconds(120000, 0),120);
+  assert.equal(remainingFocusSeconds(120000, 60001),60);
+  assert.equal(remainingFocusSeconds(120000, 125000),0);
+  assert.equal(remainingFocusSeconds(0, 0),0);
+});
