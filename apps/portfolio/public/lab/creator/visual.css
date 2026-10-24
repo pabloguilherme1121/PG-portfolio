@@ -16,3 +16,11 @@ label{font-size:14px;color:#e2e7f8}input,select,textarea{background:#111a2f;bord
 @media(max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}.side{padding:15px 18px}.links{margin-top:8px}.side a{font-size:14px;padding:10px 12px}}
 @media(max-width:720px){main{padding:27px 16px}.statbar{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:last-child{grid-column:1/-1}h1{font-size:clamp(37px,9vw,46px)}.intro{font-size:15px}.panel{padding:20px}.item{padding:18px}}
 @media(max-width:420px){.panel{padding:17px}.stat{padding:18px}.row>*{min-width:120px}.toolbar input,.toolbar select{flex:1 1 100%}.card-actions button{min-height:44px;font-size:13px!important}}
+
+/* Interface de trabalho: menos ornamentação, mais conteúdo e leitura. */
+body{background:#0e1623!important}
+[hidden]{display:none!important}
+.eyebrow,.section-index,.sidebar .eyebrow{letter-spacing:0!important;text-transform:none!important;font-weight:600!important}
+h1{letter-spacing:-.03em!important;line-height:1.18!important}
+button{transform:none!important;box-shadow:none!important}
+@media(max-width:720px){h1{font-size:clamp(28px,7.5vw,34px)!important}.lead,.intro{font-size:14px!important;line-height:1.5!important}.stat-card,.metric{min-height:0!important}.page-heading h2{font-size:clamp(27px,7vw,33px)!important}}
