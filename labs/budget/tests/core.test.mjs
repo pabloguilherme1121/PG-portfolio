@@ -17,3 +17,12 @@ test('CSV de orçamento acompanha totais auditáveis em centavos',()=>{
   assert.match(csv,/100,00/);
   assert.match(csv,/65,00/);
 });
+
+// Moeda brasileira deve aceitar valores usados por clientes sem aproximar centavos.
+import {parseBRL} from '../core.mjs';
+test('interpreta milhares BRL e rejeita valores ambíguos',()=>{
+  for(const [input,expected] of [['125,90',12590],['1.234,56',123456],['R$ 1.234,56',123456],['1234.56',123456],['100',10000],['0,05',5],['1.234',123400]])
+    assert.equal(parseBRL(input),expected,input);
+  for(const input of ['1,234','1.23,45','12.34.56','-10,00','1e3','R$','1.000.000,01'])
+    assert.throws(()=>parseBRL(input),Error,input);
+});
