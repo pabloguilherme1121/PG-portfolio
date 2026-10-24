@@ -149,14 +149,14 @@ function notify(message, isError = false) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, 4400);
 }
-function save() {
+function save(next) {
   try {
     if (hasStorageConflict(storedSnapshot, localStorage.getItem(KEY))) {
       $('save-state').textContent = 'Conflito entre abas · exporte JSON';
       notify('Outra aba alterou este projeto. Exporte seu backup JSON antes de recarregar; não substituí as alterações da outra aba.', true);
       return false;
     }
-    const snapshot = serializeBackup(plan);
+    const snapshot = serializeBackup(next);
     localStorage.setItem(KEY, snapshot);
     storedSnapshot = snapshot;
     $('save-state').textContent = 'Salvo no navegador';
@@ -167,9 +167,10 @@ function save() {
   }
 }
 function setPlan(next) {
+  if (!save(next)) return false;
   plan = next;
-  save();
   render();
+  return true;
 }
 function el(tag, cls, value) {
   const node = document.createElement(tag);
@@ -288,14 +289,14 @@ function init() {
     }
   });
   $('save-title').addEventListener('click',()=>{
-    try{setPlan({...plan,title:createPlan($('project-title').value).title});notify('Projeto renomeado.');}
+    try{if(setPlan({...plan,title:createPlan($('project-title').value).title}))notify('Projeto renomeado.');}
     catch(e){notify(e.message,true);$('project-title').focus();}
   });
   $('shot-form').addEventListener('submit',e=>{
     e.preventDefault();
     const data={title:$('shot-title').value,type:$('shot-type').value,priority:$('shot-priority').value,location:$('shot-location').value,duration:Number($('shot-duration').value),notes:$('shot-notes').value};
     try {
-      setPlan(editingId?updateShot(plan,editingId,data):addShot(plan,data,crypto.randomUUID()));
+      if (!setPlan(editingId?updateShot(plan,editingId,data):addShot(plan,data,crypto.randomUUID()))) return;
       resetForm(); render(); notify('Cena salva.');
     } catch(err) { notify(err.message,true); }
   });
@@ -310,7 +311,7 @@ function init() {
       if(btn.dataset.action==='delete' && !confirm(`Excluir a cena “${shot.title}”?`))return;
       const handlers={capture:()=>updateShot(plan,shot.id,{status:shot.status==='captado'?'planejado':'captado'}),delete:()=>removeShot(plan,shot.id),duplicate:()=>duplicateShot(plan,shot.id,crypto.randomUUID()),up:()=>moveShot(plan,shot.id,-1),down:()=>moveShot(plan,shot.id,1)};
       if(!handlers[btn.dataset.action])return;
-      setPlan(handlers[btn.dataset.action]());
+      if (!setPlan(handlers[btn.dataset.action]())) return;
       if(editingId===shot.id){resetForm();render();}
     }catch(err){notify(err.message,true);}
   });
@@ -325,12 +326,12 @@ function init() {
       if(file.size>1_000_000)throw Error('O arquivo ultrapassa 1 MB.');
       const loaded=parseBackup(await file.text());
       if(!confirm('Substituir o projeto atual pelo backup importado?'))return;
-      resetForm();setPlan(loaded);notify('Backup importado.');
+      if(!setPlan(loaded))return;resetForm();notify('Backup importado.');
     }catch(err){notify(err.message,true);}finally{e.target.value='';}
   });
   $('example').addEventListener('click',()=>{
     if(plan.shots.length && !confirm('Substituir a lista atual pelo projeto de exemplo?'))return;
-    resetForm();setPlan(examplePlan());notify('Exemplo carregado.');
+    if(!setPlan(examplePlan()))return;resetForm();notify('Exemplo carregado.');
   });
   
 }
