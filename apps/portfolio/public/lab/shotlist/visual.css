@@ -19,3 +19,11 @@ input,textarea,select{accent-color:var(--pg-accent);caret-color:var(--pg-accent)
 @media(max-width:850px){.page-heading h2{font-size:clamp(35px,9vw,45px)}.workspace{padding:28px 18px}.aside-content{padding:28px 20px}.sidebar h1{font-size:35px}.action-strip{gap:10px}}
 @media(max-width:420px){.workspace{padding:23px 13px}.panel-head{padding:18px}.editor form{padding:18px}.shot-card{padding:15px}.filters{padding:16px}.page-heading h2{font-size:36px}.shot-card h4{font-size:16px}.shot-card p{font-size:13px}.action-strip button{font-size:13px!important}}
 @media(max-width:720px){.filters button,.shot-actions button,.secondary{min-height:44px!important}}
+
+/* Interface de trabalho: menos ornamentação, mais conteúdo e leitura. */
+body{background:#0e1623!important}
+[hidden]{display:none!important}
+.eyebrow,.section-index,.sidebar .eyebrow{letter-spacing:0!important;text-transform:none!important;font-weight:600!important}
+h1{letter-spacing:-.03em!important;line-height:1.18!important}
+button{transform:none!important;box-shadow:none!important}
+@media(max-width:720px){h1{font-size:clamp(28px,7.5vw,34px)!important}.lead,.intro{font-size:14px!important;line-height:1.5!important}.stat-card,.metric{min-height:0!important}.page-heading h2{font-size:clamp(27px,7vw,33px)!important}}
