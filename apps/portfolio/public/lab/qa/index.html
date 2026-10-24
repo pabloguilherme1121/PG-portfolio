@@ -87,16 +87,20 @@ const labels={pending:'Pendente',pass:'Aprovado',fail:'Falhou',na:'Não aplicáv
 const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const notify=(message,error=false)=>{const node=$('toast');node.textContent=message;node.classList.toggle('error',error);node.hidden=false;clearTimeout(notify.timer);notify.timer=setTimeout(()=>node.hidden=true,4100);};
 const load=()=>{try{const raw=localStorage.getItem(KEY);runs=raw?parseBackup(raw):[];storedSnapshot=raw;}catch{runs=[];notify('O armazenamento local está bloqueado ou contém dados inválidos. Exporte seus backups regularmente.',true);}};
-const save=()=>{try{
+const save=(next)=>{try{
   if(hasStorageConflict(storedSnapshot,localStorage.getItem(KEY))){
     notify('Outra aba alterou as execuções. Exporte um backup JSON desta aba antes de atualizar; alterações externas foram preservadas.',true);
     return false;
   }
-  const snapshot=serializeBackup(runs);
+  const snapshot=serializeBackup(next);
   localStorage.setItem(KEY,snapshot);
   storedSnapshot=snapshot;
   return true;
  }catch{notify('Não foi possível salvar neste navegador. Exporte seu backup JSON.',true);return false;}};
+function commitRuns(next,selected=selectedId){
+ if(!save(next))return false;
+ runs=next;selectedId=selected;render();return true;
+}
 function download(text,name,type){const blob=new Blob([text],{type});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const current=()=>runs.find(r=>r.id===selectedId)||null;
 const todayLocal=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
@@ -153,19 +157,19 @@ function init(){for(const p of PROJECTS){const o=document.createElement('option'
   try{
    const r=current();if(!r)return;
    const next=updateRunInfo(r,{project:$('edit-project').value,date:$('edit-date').value,sha:$('edit-sha').value,browser:$('edit-browser').value,viewport:$('edit-viewport').value});
-   runs=runs.map(x=>x.id===selectedId?next:x);save();$('edit-dialog').close();render();notify('Dados da execução atualizados.');
+   if(!commitRuns(runs.map(x=>x.id===selectedId?next:x)))return;$('edit-dialog').close();notify('Dados da execução atualizados.');
   }catch(err){notify(err.message,true);}
  });
  $('new-run').addEventListener('click',openModal);$('start-empty').addEventListener('click',openModal);
  projectList.addEventListener('click',e=>{const b=e.target.closest('[data-project]');if(!b)return;openModal();$('new-project').value=b.dataset.project;});
- $('create-form').addEventListener('submit',e=>{const sub=e.submitter;if(sub?.value!=='create')return;e.preventDefault();const form=new FormData(e.currentTarget);try{if(runs.length>=100)throw Error('Limite de 100 execuções. Faça backup e exclua as antigas.');const record=createRun({id:crypto.randomUUID(),project:String(form.get('project')),date:String(form.get('date')),sha:String(form.get('sha')||''),browser:String(form.get('browser')||''),viewport:String(form.get('viewport')||'')});runs.unshift(record);selectedId=record.id;filter='all';save();$('create-dialog').close();$('create-form').reset();render();notify('Execução criada — todos os critérios começam pendentes.');}catch(err){notify(err.message,true);}});
+ $('create-form').addEventListener('submit',e=>{const sub=e.submitter;if(sub?.value!=='create')return;e.preventDefault();const form=new FormData(e.currentTarget);try{if(runs.length>=100)throw Error('Limite de 100 execuções. Faça backup e exclua as antigas.');const record=createRun({id:crypto.randomUUID(),project:String(form.get('project')),date:String(form.get('date')),sha:String(form.get('sha')||''),browser:String(form.get('browser')||''),viewport:String(form.get('viewport')||'')});if(!commitRuns([record,...runs],record.id))return;filter='all';$('create-dialog').close();$('create-form').reset();render();notify('Execução criada — todos os critérios começam pendentes.');}catch(err){notify(err.message,true);}});
  $('run-list').addEventListener('click',e=>{const b=e.target.closest('[data-run]');if(!b)return;selectedId=b.dataset.run;filter='all';render();});
  $('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;drawDetail();});
- $('check-list').addEventListener('change',e=>{const target=e.target;if(!target.dataset.check)return;const id=target.dataset.check;const field=target.dataset.field;try{const updated=updateCheck(current(),id,{[field]:target.value});runs=runs.map(r=>r.id===selectedId?updated:r);save();if(field==='status')render();else updateStats();}catch(error){notify(error.message,true);target.value=current().checks.find(c=>c.id===id)[field];}});
- $('delete-run').addEventListener('click',()=>{const r=current();if(!r)return;if(!window.confirm(`Excluir a execução de ${r.project} em ${r.date}? Exporte um backup antes se precisar recuperá-la.`))return;runs=runs.filter(x=>x.id!==r.id);selectedId=runs[0]?.id??null;save();render();notify('Execução excluída.');});
+ $('check-list').addEventListener('change',e=>{const target=e.target;if(!target.dataset.check)return;const id=target.dataset.check;const field=target.dataset.field;try{const updated=updateCheck(current(),id,{[field]:target.value});if(!commitRuns(runs.map(r=>r.id===selectedId?updated:r))){target.value=current().checks.find(c=>c.id===id)[field];return;}}catch(error){notify(error.message,true);target.value=current().checks.find(c=>c.id===id)[field];}});
+ $('delete-run').addEventListener('click',()=>{const r=current();if(!r)return;if(!window.confirm(`Excluir a execução de ${r.project} em ${r.date}? Exporte um backup antes se precisar recuperá-la.`))return;const next=runs.filter(x=>x.id!==r.id);if(!commitRuns(next,next[0]?.id??null))return;notify('Execução excluída.');});
  $('download-json').addEventListener('click',()=>{try{download(serializeBackup(runs),'pg-qa-lab-backup.json','application/json');notify('Backup JSON preparado.');}catch(e){notify(e.message,true);}});
  $('download-csv').addEventListener('click',()=>{try{download(exportCSV(runs),'pg-qa-lab-evidencias.csv','text/csv;charset=utf-8');notify('CSV preparado.');}catch(e){notify(e.message,true);}});
- $('upload-json').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1024*1024)throw Error('Backup acima do limite de 1 MB.');const parsed=parseBackup(await file.text());if(runs.length&&!window.confirm('Substituir todas as execuções locais pelos dados do arquivo?'))return;runs=parsed;selectedId=runs[0]?.id??null;filter='all';save();render();notify(`${runs.length} execução(ões) restaurada(s).`);}catch(err){notify(`Importação recusada: ${err.message}`,true);}finally{e.target.value='';}});
+ $('upload-json').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1024*1024)throw Error('Backup acima do limite de 1 MB.');const parsed=parseBackup(await file.text());if(runs.length&&!window.confirm('Substituir todas as execuções locais pelos dados do arquivo?'))return;if(!commitRuns(parsed,parsed[0]?.id??null))return;filter='all';render();notify(`${runs.length} execução(ões) restaurada(s).`);}catch(err){notify(`Importação recusada: ${err.message}`,true);}finally{e.target.value='';}});
 }
 init();
 
