@@ -47,6 +47,12 @@ function runSchema(run){
  }
  return run;
 }
+function updateRunInfo(run,changes){
+ runSchema(run);
+ const allowed=['project','date','sha','browser','viewport'];
+ const clean=Object.fromEntries(Object.entries(changes).filter(([key])=>allowed.includes(key)));
+ return runSchema({...run,...clean});
+}
 function updateCheck(run,id,changes){
  runSchema(run);
  const index=run.checks.findIndex(c=>c.id===id);need(index>=0,'Check inexistente');
@@ -56,7 +62,8 @@ function updateCheck(run,id,changes){
 }
 function overview(run){
  runSchema(run);const counts=Object.fromEntries(STATUSES.map(s=>[s,run.checks.filter(x=>x.status===s).length]));
- return {total:run.checks.length,done:counts.pass+counts.fail+counts.na,pass:counts.pass,fail:counts.fail,na:counts.na,pending:counts.pending,evidenceMissing:run.checks.filter(c=>c.status==='pass'&&!c.evidence).length,ready:counts.pass===run.checks.length&&run.checks.every(c=>!!c.evidence)};
+ const contextMissing=['sha','browser','viewport'].filter(key=>!run[key].trim());
+ return {total:run.checks.length,done:counts.pass+counts.fail+counts.na,pass:counts.pass,fail:counts.fail,na:counts.na,pending:counts.pending,evidenceMissing:run.checks.filter(c=>c.status==='pass'&&!c.evidence).length,contextMissing,ready:counts.pass===run.checks.length&&run.checks.every(c=>!!c.evidence)&&contextMissing.length===0};
 }
 function parseBackup(text){
  need(typeof text==='string'&&text.length<=1024*1024,'Arquivo muito grande');const data=JSON.parse(text);
@@ -90,9 +97,9 @@ function drawRuns(){const list=$('run-list');list.replaceChildren();if(!runs.len
  const main=el('span','run-main');main.append(el('span','run-title',r.project),el('span','run-subtitle',`${r.date} · ${r.sha||'SHA não informado'}`));b.append(main,el('span','run-metric',`${count.pass}/${count.total}`));list.append(b);}
 }
 function drawDetail(){const run=current();$('detail-empty').hidden=!!run;$('detail-content').hidden=!run;const st=$('run-status');st.className='status-pill';if(!run){st.textContent='SEM EXECUÇÃO';return;}
- const summary=overview(run);st.textContent=summary.ready?'REGISTRO COMPLETO':summary.fail?'COM FALHAS':summary.pass===summary.total?'FALTAM EVIDÊNCIAS':'EM VALIDAÇÃO';if(summary.ready)st.classList.add('good');if(summary.fail)st.classList.add('blocked');
+ const summary=overview(run);st.textContent=summary.ready?'REGISTRO COMPLETO':summary.fail?'COM FALHAS':summary.pass===summary.total?'FALTAM EVIDÊNCIAS':'EM VALIDAÇÃO';if(!summary.ready && summary.pass===summary.total && !summary.evidenceMissing && summary.contextMissing.length)st.textContent='FALTAM DADOS DA EXECUÇÃO';if(summary.ready)st.classList.add('good');if(summary.fail)st.classList.add('blocked');
  const meta=$('run-meta');meta.replaceChildren(makeTag(run.date),makeTag(run.sha?`SHA: ${run.sha}`:'SHA pendente'),makeTag(run.browser||'Dispositivo não informado'),makeTag(run.viewport||'Viewport não informado'));
- $('progress-label').textContent=`${summary.done} de ${summary.total} avaliados · ${summary.pass} aprovados · ${summary.evidenceMissing} sem link`;
+ $('progress-label').textContent=`${summary.done} de ${summary.total} avaliados · ${summary.pass} aprovados · ${summary.evidenceMissing} sem link · ${summary.contextMissing.length} campo(s) de contexto pendente(s)`;
  $('progress-percent').textContent=`${Math.round(summary.done/summary.total*100)}%`;
  $('progress-bar').style.width=`${summary.done/summary.total*100}%`;
  for(const b of document.querySelectorAll('[data-filter]'))b.setAttribute('aria-pressed',String(b.dataset.filter===filter));
@@ -111,9 +118,29 @@ function drawChecks(run){const box=$('check-list');box.replaceChildren();let las
 }
 function render(){updateStats();drawRuns();drawDetail();}
 function openModal(){const dlg=$('create-dialog');$('new-date').value=todayLocal();if(current())$('new-project').value=current().project;dlg.showModal();}
+function editContext(){
+ const r=current();if(!r)return;
+ $('edit-project').value=r.project;
+ $('edit-date').value=r.date;
+ $('edit-sha').value=r.sha;
+ $('edit-browser').value=r.browser;
+ $('edit-viewport').value=r.viewport;
+ $('edit-dialog').showModal();
+}
 function init(){for(const p of PROJECTS){const o=document.createElement('option');o.value=p;o.textContent=p;$('new-project').append(o);}
  const projectList=$('project-list');for(const p of PROJECTS.slice(0,5)){const b=el('button','project-item');b.type='button';b.dataset.project=p;b.append(el('span','project-bullet'),el('span','',p));projectList.append(b);}
+ for(const p of PROJECTS){const opt=document.createElement('option');opt.value=p;opt.textContent=p;$('edit-project').append(opt);}
  load();selectedId=runs[0]?.id??null;render();
+ $('edit-meta').addEventListener('click',editContext);
+ $('edit-form').addEventListener('submit',e=>{
+  if(e.submitter?.value!=='save')return;
+  e.preventDefault();
+  try{
+   const r=current();if(!r)return;
+   const next=updateRunInfo(r,{project:$('edit-project').value,date:$('edit-date').value,sha:$('edit-sha').value,browser:$('edit-browser').value,viewport:$('edit-viewport').value});
+   runs=runs.map(x=>x.id===selectedId?next:x);save();$('edit-dialog').close();render();notify('Dados da execução atualizados.');
+  }catch(err){notify(err.message,true);}
+ });
  $('new-run').addEventListener('click',openModal);$('start-empty').addEventListener('click',openModal);
  projectList.addEventListener('click',e=>{const b=e.target.closest('[data-project]');if(!b)return;openModal();$('new-project').value=b.dataset.project;});
  $('create-form').addEventListener('submit',e=>{const sub=e.submitter;if(sub?.value!=='create')return;e.preventDefault();const form=new FormData(e.currentTarget);try{if(runs.length>=100)throw Error('Limite de 100 execuções. Faça backup e exclua as antigas.');const record=createRun({id:crypto.randomUUID(),project:String(form.get('project')),date:String(form.get('date')),sha:String(form.get('sha')||''),browser:String(form.get('browser')||''),viewport:String(form.get('viewport')||'')});runs.unshift(record);selectedId=record.id;filter='all';save();$('create-dialog').close();$('create-form').reset();render();notify('Execução criada — todos os critérios começam pendentes.');}catch(err){notify(err.message,true);}});
@@ -148,13 +175,14 @@ init();
    <div class="stat-grid"><section class="stat-card"><div class="stat-label">EXECUÇÕES SALVAS <span>◈</span></div><strong id="stat-runs">0</strong><small>Relatórios locais</small></section><section class="stat-card"><div class="stat-label">CRITÉRIOS APROVADOS <span>✓</span></div><strong id="stat-pass">0</strong><small>Com status aprovado</small></section><section class="stat-card"><div class="stat-label">FALHAS REGISTRADAS <span>!</span></div><strong id="stat-fail">0</strong><small>Precisam de atenção</small></section><section class="stat-card"><div class="stat-label">EXECUÇÕES COMPLETAS <span>◉</span></div><strong id="stat-ready">0</strong><small>Todos os critérios passaram</small></section></div>
    <div class="dashboard-grid">
     <section class="panel run-panel" aria-labelledby="runs-title"><div class="panel-head"><div><span class="section-index">01 / HISTÓRICO</span><h2 id="runs-title">Suas execuções</h2></div><div class="tool-group"><button id="download-json" class="utility">↓ JSON</button><button id="download-csv" class="utility">↓ CSV</button><label class="utility file-label" for="upload-json">↑ Importar</label><input id="upload-json" type="file" accept=".json,application/json" hidden></div></div><p class="helper">Selecione uma execução para ver os resultados. Um backup JSON permite transferir os registros para outro dispositivo.</p><div id="run-list" class="run-list" aria-live="polite"></div></section>
-    <section class="panel detail-panel" aria-labelledby="detail-title"><div class="panel-head"><div><span class="section-index">02 / MATRIZ DE ACEITE</span><h2 id="detail-title">Critérios e evidências</h2></div><span id="run-status" class="status-pill">SEM EXECUÇÃO</span></div><div id="detail-empty" class="empty"><span class="empty-symbol">◎</span><strong>Nenhuma execução selecionada</strong><p>Comece uma execução para registrar o estado de cada requisito.</p><button id="start-empty" class="outline">Criar minha primeira execução</button></div><div id="detail-content" hidden><div class="run-meta" id="run-meta"></div><div class="progress-head"><strong id="progress-label"></strong><span id="progress-percent"></span></div><div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div><div class="filter-strip" id="filters"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendentes</button><button data-filter="pass" aria-pressed="false">Aprovados</button><button data-filter="fail" aria-pressed="false">Falhas</button><button data-filter="na" aria-pressed="false">N/A</button></div><div id="check-list" class="check-list"></div><div class="detail-foot"><p>O estado “N/A” não equivale a aprovação. Não marque tarefas como feitas sem teste verificável.</p><button id="delete-run" class="danger">Excluir execução</button></div></div></section>
+    <section class="panel detail-panel" aria-labelledby="detail-title"><div class="panel-head"><div><span class="section-index">02 / MATRIZ DE ACEITE</span><h2 id="detail-title">Critérios e evidências</h2></div><span id="run-status" class="status-pill">SEM EXECUÇÃO</span></div><div id="detail-empty" class="empty"><span class="empty-symbol">◎</span><strong>Nenhuma execução selecionada</strong><p>Comece uma execução para registrar o estado de cada requisito.</p><button id="start-empty" class="outline">Criar minha primeira execução</button></div><div id="detail-content" hidden><div class="run-meta" id="run-meta"></div><button id="edit-meta" type="button" class="utility">Editar dados da execução</button><div class="progress-head"><strong id="progress-label"></strong><span id="progress-percent"></span></div><div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div><div class="filter-strip" id="filters"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendentes</button><button data-filter="pass" aria-pressed="false">Aprovados</button><button data-filter="fail" aria-pressed="false">Falhas</button><button data-filter="na" aria-pressed="false">N/A</button></div><div id="check-list" class="check-list"></div><div class="detail-foot"><p>O estado “N/A” não equivale a aprovação. Não marque tarefas como feitas sem teste verificável.</p><button id="delete-run" class="danger">Excluir execução</button></div></div></section>
    </div>
    <footer class="footer"><span>PG QA LAB · MVP 1.0</span><span>Dados locais · Exportação portátil · Sem chamadas externas</span></footer>
   </div>
  </main>
 </div>
 <dialog id="create-dialog" aria-labelledby="create-title"><form method="dialog" id="create-form"><div class="dialog-top"><span class="section-index">NOVA CERTIFICAÇÃO</span><button value="cancel" formnovalidate aria-label="Fechar" class="close">×</button></div><h2 id="create-title">Nova execução</h2><p>Separe resultados automatizados de medições em dispositivos físicos.</p><label>Projeto<select name="project" required id="new-project"></select></label><label>Data<input type="date" name="date" id="new-date" required></label><label>SHA / versão (opcional)<input maxlength="80" name="sha" placeholder="ex.: 2b9db72"></label><div class="dialog-cols"><label>Navegador / dispositivo<input name="browser" maxlength="80" placeholder="ex.: Chrome Android"></label><label>Viewport<input name="viewport" maxlength="50" placeholder="ex.: 390 × 844"></label></div><div class="dialog-actions"><button value="cancel" formnovalidate class="outline">Cancelar</button><button value="create" class="primary" id="confirm-create">Criar execução ↗</button></div></form></dialog>
+<dialog id="edit-dialog" aria-labelledby="edit-title"><form method="dialog" id="edit-form"><div class="dialog-top"><span class="section-index">RASTREABILIDADE</span><button value="cancel" formnovalidate aria-label="Fechar" class="close">×</button></div><h2 id="edit-title">Editar dados da execução</h2><p>Versão, dispositivo e viewport são necessários para marcar uma execução como completa.</p><label>Projeto<select id="edit-project" required></select></label><label>Data<input type="date" id="edit-date" required></label><label>SHA / versão<input maxlength="80" id="edit-sha" placeholder="ex.: 2b9db72"></label><div class="dialog-cols"><label>Navegador / dispositivo<input id="edit-browser" maxlength="80" placeholder="ex.: Chrome Android"></label><label>Viewport<input id="edit-viewport" maxlength="50" placeholder="ex.: 390 × 844"></label></div><div class="dialog-actions"><button value="cancel" formnovalidate class="outline">Cancelar</button><button value="save" class="primary">Salvar dados</button></div></form></dialog>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 </body>
 </html>
