@@ -1,0 +1,21 @@
+/* PG Lab — sistema visual profissional v2. Sem dependências externas. */
+:root{color-scheme:dark;--pg-fg:#eef5ff;--pg-muted:#b6c7dd;--pg-ease:cubic-bezier(.2,.8,.2,1);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-synthesis:none}
+html{scroll-padding-top:84px}body{color:var(--pg-fg);background:radial-gradient(ellipse 750px 400px at 80% -10%,var(--pg-glow),transparent 78%),linear-gradient(160deg,#0a1221 0%,#0b1424 50%,#080e1a 100%);min-height:100dvh;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}button{touch-action:manipulation;transition:background .15s var(--pg-ease),border-color .15s var(--pg-ease),transform .15s var(--pg-ease)}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--pg-accent);outline-offset:3px}
+input,textarea,select{accent-color:var(--pg-accent);caret-color:var(--pg-accent)}input::placeholder,textarea::placeholder{color:#9aadc6;opacity:1}
+@media(hover:hover) and (pointer:fine){button:not(:disabled):hover{transform:translateY(-1px)}}
+@media(prefers-reduced-motion:reduce){button{transition:none!important;transform:none!important}html{scroll-behavior:auto!important}}
+@media(max-width:720px){input,textarea,select{font-size:16px!important}button{min-height:44px;font-size:13px!important}a{min-height:24px}}
+:root{--pg-accent:#b2ed83;--pg-glow:#31573148}
+.sidebar{background:linear-gradient(165deg,#121c2d,#10192b);border-color:#34425a}.brand{border-color:#314158}.brand-mark{box-shadow:0 0 0 4px #b2ed8315;background:#b2ed8310}
+.aside-content{padding-top:clamp(24px,3.1vw,40px)}.sidebar h1{font-size:clamp(34px,3.2vw,44px);letter-spacing:-.06em}.intro{font-size:14px;line-height:1.7;color:#b7c8da}
+.project-field label,.editor label{font-size:14px;color:#deeafa}.project-field input,.editor input,.editor select,.editor textarea{min-height:48px;background:#101b2d;border-color:#465770;border-radius:12px;color:var(--pg-fg);font-size:15px;line-height:1.5}
+.progress-head{font-size:14px}.progress-head strong{font-size:26px}.privacy{border-radius:16px!important;background:#162d29!important;border-color:#436650!important}
+.workspace{max-width:1520px}.page-heading h2{font-size:clamp(34px,4vw,54px)}.page-heading p:last-child{font-size:14px;color:var(--pg-muted)}.eyebrow{font-size:12px;letter-spacing:.17em}
+.panel{background:linear-gradient(165deg,#19263a,#151f32);border-color:#394b63;border-radius:22px;box-shadow:0 16px 44px #0002}.panel-head{border-color:#34465b}.panel-head h3{font-size:20px}.panel-head p{font-size:13px;color:#b4c6da}.step-number{width:38px;height:38px;flex-basis:38px;font-size:13px}
+.secondary{background:#24344a;border-color:#465b71;color:#f0f7ff;min-height:44px;font-size:13px}.primary{background:#b2ed83;border-color:#b2ed83;color:#122116;min-height:48px;font-size:15px}.primary:hover{background:#c6f6a5}
+.filters button{font-size:13px;min-height:40px;border-radius:12px}.filters button[aria-pressed=true]{background:#b2ed83;color:#132117}
+.shot-card{background:#19273c;border-color:#40536e;border-radius:17px;padding:19px}.shot-card.done{background:#1a3130;border-color:#496f59}.shot-card h4{font-size:17px;line-height:1.4}.shot-card p{font-size:13px;color:#b5c7da}.shot-num{font-size:12px}.tag{font-size:11px;border-radius:8px}.shot-actions button{font-size:12px;min-height:40px;border-color:#506079;border-radius:10px}.count-tag{font-size:12px}.toast{font-size:14px}
+@media(max-width:850px){.page-heading h2{font-size:clamp(35px,9vw,45px)}.workspace{padding:28px 18px}.aside-content{padding:28px 20px}.sidebar h1{font-size:35px}.action-strip{gap:10px}}
+@media(max-width:420px){.workspace{padding:23px 13px}.panel-head{padding:18px}.editor form{padding:18px}.shot-card{padding:15px}.filters{padding:16px}.page-heading h2{font-size:36px}.shot-card h4{font-size:16px}.shot-card p{font-size:13px}.action-strip button{font-size:13px!important}}
+@media(max-width:720px){.filters button,.shot-actions button,.secondary{min-height:44px!important}}
