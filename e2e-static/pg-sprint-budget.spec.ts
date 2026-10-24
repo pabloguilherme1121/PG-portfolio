@@ -7,7 +7,14 @@ test("PG Sprint cria e persiste tarefa com exportação CSV",async({page})=>{
   await page.locator("#task-name").fill("Praticar React e Playwright");
   await page.locator("#task-submit").click();
   await expect(page.locator("#metric-total")).toHaveText("1");
+  await expect(page.locator("#cancel-edit")).toBeHidden();
+  await page.locator("#focus-task").selectOption({index:1});
+  await page.locator("#timer-toggle").click();
+  await expect(page.locator("#timer-toggle")).toHaveText("Pausar");
   await page.reload();
+  await expect(page.locator("#timer-toggle")).toHaveText("Pausar");
+  await page.locator("#timer-toggle").click();
+  await expect(page.locator("#timer-toggle")).toHaveText("Iniciar foco");
   await expect(page.locator("#task-list")).toContainText("Praticar React e Playwright");
   await page.locator('#task-list input[type="checkbox"]').check();
   await expect(page.locator("#metric-done")).toHaveText("1");
@@ -26,6 +33,11 @@ test("PG Budget persiste custos e calcula saldo projetado exato",async({page})=>
   await page.locator("#item-price").fill("35,90");
   await page.locator("#item-submit").click();
   await expect(page.locator("#metric-expense")).toContainText("35,90");
+  await expect(page.locator("#cancel-edit")).toBeHidden();
+  await page.locator("#item-description").fill("Aluguel da câmera");
+  await page.locator("#item-price").fill("1.234,56");
+  await page.locator("#item-submit").click();
+  await expect(page.locator("#metric-expense")).toContainText("1.270,46");
   await page.reload();
   await expect(page.locator("#item-list")).toContainText("Transporte para captação");
   const [file]=await Promise.all([page.waitForEvent("download"),page.locator("#export-csv").click()]);
