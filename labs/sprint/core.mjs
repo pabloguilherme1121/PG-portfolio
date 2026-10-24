@@ -15,3 +15,9 @@ export function serialize(s){return JSON.stringify(validate(s),null,2);}
 export function parseBackup(raw){if(typeof raw!=='string'||raw.length>300000)throw Error('Backup muito grande.');return validate(JSON.parse(raw));}
 const cell=s=>{const v=String(s??'');const secured=/^[\s\uFEFF]*[=+\-@\t\r]/.test(v)?`'${v}`:v;return '"'+secured.replaceAll('"','""')+'"';};
 export function exportCSV(s){const rows=validate(s).tasks.map(t=>[t.name,t.project,t.minutes,t.date,t.done?'Concluída':'Pendente']);const sum=metrics(s);const summary=[['','','','',''],['Resumo geral','','','',''],['Total previsto','',sum.minutes,'','min'],['Minutos pendentes','',sum.remaining,'','min'],['Tarefas concluídas','',sum.complete,'','de '+sum.total]];return '\uFEFF'+[['Tarefa','Projeto','Minutos','Data','Situação'],...rows,...summary].map(r=>r.map(cell).join(';')).join('\r\n')+'\r\n';}
+
+/** Remaining whole seconds from an absolute deadline. Accounts for suspended browser timers. */
+export function remainingFocusSeconds(deadline,now=Date.now()){
+  if(!Number.isFinite(deadline)||!Number.isFinite(now)||deadline<=0)return 0;
+  return Math.max(0,Math.ceil((deadline-now)/1000));
+}
