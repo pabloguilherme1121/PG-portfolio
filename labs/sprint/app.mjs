@@ -1,7 +1,10 @@
-import {makeState,makeTask,addTask,updateTask,removeTask,metrics,serialize,parseBackup,exportCSV} from './core.mjs';
+import {makeState,makeTask,addTask,updateTask,removeTask,metrics,serialize,parseBackup,exportCSV,remainingFocusSeconds} from './core.mjs';
 const $=id=>document.getElementById(id),KEY='pg-sprint-lab-v1';
 let state=makeState(),snapshot=null,editing=null;
 let focus={running:false,remain:1500,deadline:0,interval:null};
+const FOCUS_KEY='pg-sprint-focus-session-v1';
+function rememberFocus(){try{sessionStorage.setItem(FOCUS_KEY,JSON.stringify({running:focus.running,remain:focus.remain,deadline:focus.deadline,task:$('focus-task').value}));}catch{}}
+function resumeFocus(){try{const raw=sessionStorage.getItem(FOCUS_KEY);if(!raw)return;const saved=JSON.parse(raw);if(!Number.isInteger(saved.remain)||saved.remain<0||saved.remain>21600)return;focus.remain=saved.remain;if(saved.task&&[...$('focus-task').options].some(x=>x.value===saved.task))$('focus-task').value=saved.task;if(saved.running&&Number.isFinite(saved.deadline)){focus.deadline=saved.deadline;focus.remain=remainingFocusSeconds(saved.deadline);focus.running=focus.remain>0;if(focus.running)focus.interval=setInterval(tick,500)}}catch{}}
 // Browsers without a secure origin may omit crypto.randomUUID (e.g. local HTML previews).
 // IDs identify local records only; they are never credentials or access tokens.
 function newId(){
@@ -22,17 +25,17 @@ function render(){const m=metrics(state);$('metric-total').textContent=m.total;$
 function apply(fn){try{const next=fn();if(!commit(next))render();}catch(e){notify(e.message,true);render()}}
 function edit(t){editing=t.id;$('edit-id').value=t.id;$('task-name').value=t.name;$('task-project').value=t.project;$('task-minutes').value=t.minutes;$('task-date').value=t.date;$('task-submit').textContent='Salvar alterações ↗';$('cancel-edit').hidden=false;$('task-name').focus();}
 function download(text,name,mime){const b=new Blob([text],{type:mime});const url=URL.createObjectURL(b);const a=h('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2500)}
-function clockRender(){const m=Math.floor(focus.remain/60),s=focus.remain%60;$('clock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer-status').textContent=focus.running?'SESSÃO EM ANDAMENTO':focus.remain===0?'SESSÃO CONCLUÍDA':'PAUSADO / PRONTO';$('timer-toggle').textContent=focus.running?'Pausar':'Iniciar foco';}
-function tick(){if(!focus.running)return;focus.remain=Math.max(0,Math.ceil((focus.deadline-Date.now())/1000));if(!focus.remain){focus.running=false;clearInterval(focus.interval);notify('Bloco de foco concluído. Marque a tarefa como feita se estiver pronta.');}clockRender();}
+function clockRender(){const m=Math.floor(focus.remain/60),s=focus.remain%60;$('clock').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');$('timer-status').textContent=focus.running?'SESSÃO EM ANDAMENTO':focus.remain===0?'SESSÃO CONCLUÍDA':'PAUSADO / PRONTO';$('timer-toggle').textContent=focus.running?'Pausar':focus.remain===0?'Recomeçar':'Iniciar foco';}
+function tick(){if(!focus.running)return;focus.remain=remainingFocusSeconds(focus.deadline);if(!focus.remain){focus.running=false;clearInterval(focus.interval);notify('Tempo de foco concluído.');rememberFocus();}clockRender();}
 $('task-form').addEventListener('submit',e=>{e.preventDefault();try{const id=editing||newId();const t=makeTask({id,name:$('task-name').value,project:$('task-project').value,minutes:Number($('task-minutes').value),date:$('task-date').value,done:editing?state.tasks.find(t=>t.id===editing).done:false});const next=editing?updateTask(state,id,t):addTask(state,t);if(commit(next)){const wasEdit=Boolean(editing);resetForm();notify(wasEdit?'Alterações salvas.':'Tarefa salva.');}}catch(err){notify(err.message,true)}});
 $('cancel-edit').addEventListener('click',resetForm);
 for(const key of ['search','filter'])$(key).addEventListener(key==='search'?'input':'change',render);
-$('timer-toggle').addEventListener('click',()=>{if(focus.running){tick();focus.running=false;clearInterval(focus.interval);}else{if(focus.remain===0)focus.remain=1500;focus.deadline=Date.now()+focus.remain*1000;focus.running=true;focus.interval=setInterval(tick,500)}clockRender()});
-$('timer-reset').addEventListener('click',()=>{focus.running=false;clearInterval(focus.interval);const t=state.tasks.find(x=>x.id===$('focus-task').value);focus.remain=(t?.minutes||25)*60;clockRender()});
+$('timer-toggle').addEventListener('click',()=>{if(focus.running){tick();focus.running=false;clearInterval(focus.interval);}else{if(focus.remain===0)focus.remain=1500;focus.deadline=Date.now()+focus.remain*1000;focus.running=true;focus.interval=setInterval(tick,500)}rememberFocus();clockRender()});
+$('timer-reset').addEventListener('click',()=>{focus.running=false;clearInterval(focus.interval);const t=state.tasks.find(x=>x.id===$('focus-task').value);focus.remain=(t?.minutes||25)*60;rememberFocus();clockRender()});
 $('focus-task').addEventListener('change',()=>{$('timer-reset').click()});
 $('export-json').addEventListener('click',()=>download(serialize(state),'pg-sprint-backup.json','application/json'));
 $('export-csv').addEventListener('click',()=>download(exportCSV(state),'pg-sprint-tarefas.csv','text/csv;charset=utf-8'));
 $('import-trigger').addEventListener('click',()=>$('import-json').click());
 $('import-json').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;try{if(file.size>300000)throw Error('Arquivo grande demais.');const data=parseBackup(await file.text());if(!confirm('Substituir tarefas atuais pelas tarefas do backup?'))return;if(commit(data)){resetForm();notify('Backup importado.')}}catch(err){notify('Importação recusada: '+err.message,true)}finally{e.target.value=''}});
 window.addEventListener('storage',e=>{if(e.key===KEY&&e.newValue!==snapshot){$('save-state').textContent='Alteração em outra aba';notify('Outra aba salvou dados. Faça backup e recarregue antes de editar.',true)}});
-load();render();clockRender();
+load();render();resumeFocus();clockRender();document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});window.addEventListener('pageshow',()=>tick());
