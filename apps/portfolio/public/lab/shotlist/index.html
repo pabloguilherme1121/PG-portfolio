@@ -70,6 +70,17 @@ function addShot(plan, input, id) {
   if (p.shots.some(s => s.id === shot.id)) throw Error('ID de cena duplicado.');
   return { ...p, shots: [...p.shots, shot] };
 }
+function duplicateShot(plan, id, newId) {
+  const p = projectFrom(plan);
+  if (p.shots.length >= MAX_SHOTS) throw Error('Limite de 150 cenas.');
+  const index = p.shots.findIndex(s => s.id === id);
+  if (index < 0) throw Error('Cena não encontrada.');
+  const nextId = safeId(newId);
+  if (p.shots.some(s => s.id === nextId)) throw Error('ID de cena duplicado.');
+  const source = p.shots[index];
+  const copy = shotFrom({ ...source, title: source.title.slice(0, 82) + ' (cópia)', status: 'planejado' }, nextId);
+  return { ...p, shots: [...p.shots.slice(0, index+1), copy, ...p.shots.slice(index+1)] };
+}
 function updateShot(plan, id, patch) {
   const p = projectFrom(plan);
   if (!p.shots.some(s => s.id === id)) throw Error('Cena não encontrada.');
@@ -177,7 +188,7 @@ function card(shot, index) {
   const actions = el('div','shot-actions');
   const done = shot.status==='captado';
   actions.append(action(done?'↶ Reabrir':'✓ Captada','capture',shot.id,'capture',`${done?'Marcar como a gravar':'Marcar como captada'}: ${shot.title}`));
-  actions.append(action('Editar','edit',shot.id,'',`Editar ${shot.title}`));
+  actions.append(action('Editar','edit',shot.id,'',`Editar ${shot.title}`),action('Duplicar','duplicate',shot.id,'',`Duplicar ${shot.title}`));
   const move = el('div','move-row');
   const up = action('↑','up',shot.id,'',`Subir ${shot.title}`);
   const down = action('↓','down',shot.id,'',`Descer ${shot.title}`);
@@ -279,7 +290,7 @@ function init() {
     try{
       if(btn.dataset.action==='edit'){openEdit(shot);return;}
       if(btn.dataset.action==='delete' && !confirm(`Excluir a cena “${shot.title}”?`))return;
-      const handlers={capture:()=>updateShot(plan,shot.id,{status:shot.status==='captado'?'planejado':'captado'}),delete:()=>removeShot(plan,shot.id),up:()=>moveShot(plan,shot.id,-1),down:()=>moveShot(plan,shot.id,1)};
+      const handlers={capture:()=>updateShot(plan,shot.id,{status:shot.status==='captado'?'planejado':'captado'}),delete:()=>removeShot(plan,shot.id),duplicate:()=>duplicateShot(plan,shot.id,crypto.randomUUID()),up:()=>moveShot(plan,shot.id,-1),down:()=>moveShot(plan,shot.id,1)};
       if(!handlers[btn.dataset.action])return;
       setPlan(handlers[btn.dataset.action]());
       if(editingId===shot.id){resetForm();render();}
