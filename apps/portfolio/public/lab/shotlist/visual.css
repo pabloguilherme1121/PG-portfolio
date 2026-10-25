@@ -27,3 +27,12 @@ body{background:#0e1623!important}
 h1{letter-spacing:-.03em!important;line-height:1.18!important}
 button{transform:none!important;box-shadow:none!important}
 @media(max-width:720px){h1{font-size:clamp(28px,7.5vw,34px)!important}.lead,.intro{font-size:14px!important;line-height:1.5!important}.stat-card,.metric{min-height:0!important}.page-heading h2{font-size:clamp(27px,7vw,33px)!important}}
+
+
+/* Legibilidade editorial: destaque o trabalho, não a decoração. */
+.brand small,.breadcrumb,.eyebrow,.tag,.privacy p,.metrics small{letter-spacing:0!important}
+.brand small,.breadcrumb,.metrics small{font-size:12px!important;line-height:1.5}
+.shot-card p{font-size:14px!important;line-height:1.55}
+.filters button,.shot-actions button{font-size:13px!important;min-height:44px!important}
+.panel{box-shadow:none!important}
+@media(max-width:420px){.intro{font-size:14px!important}.filters button{font-size:13px!important}.shot-card h4{font-size:16px!important}}
