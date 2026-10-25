@@ -8,7 +8,8 @@ test('Creator Kit guarda ideias, permite editar e exporta cenas compatíveis com
   await page.locator('#topic').fill('Reel PG Tech');
   await page.locator('#scenes').fill('Plano geral\nDetalhe do equipamento');
   await page.locator('#generate').click();
-  await expect(page.locator('#hook')).toHaveValue(/Reel PG Tech/);
+  await expect(page.locator('#hook')).toHaveValue('Bastidores de Reel PG Tech — do planejamento ao resultado.');
+  await expect(page.locator('#hook')).not.toHaveValue(/veja até o final/i);
   await page.locator('#submit').click();
   await expect(page.locator('#total')).toHaveText('1');
   await page.reload();
