@@ -25,3 +25,11 @@ Status: **prévia isolada em branch, NÃO PUBLICADA**. A página vive em `apps/p
 Não acrescentar dependências pagas, telemetria, API, banco externo ou serviços de hospedagem novos. GitHub Pages do portfólio público já está configurado; conferir limites e faturamento antes de alterações administrativas. Nenhuma chamada externa é feita pela página.
 
 Coordenação: [#280](https://github.com/pabloguilherme1121/PG-portfolio/issues/280), [#279](https://github.com/pabloguilherme1121/PG-portfolio/issues/279).
+
+
+## Recertificação após PR #284 — 25/10/2026
+
+- PR de segurança [#284](https://github.com/pabloguilherme1121/PG-portfolio/pull/284) foi integrada em `main` no commit `b6b58759917d2d0395dea805670570bb2805b691`, com audit de dependências, qualidade e isolamento estático aprovados no HEAD da PR.
+- O aplicativo independente está publicado em [Vercel](https://pg-shotlist-lab.vercel.app/); o HTML/CSS contém os ajustes editoriais de leitura e a navegação integrada. Deploy de produção READY e resposta HTTP 200 conferidos.
+- A sincronização do HTML com a versão publicada preservou os scripts próprios e identificadores de formulários; a versão do aplicativo não foi declarada certificada para Android físico.
+- Este commit documental solicita uma execução nova dos gates no contexto da base segura, sem relaxar `pnpm audit --audit-level=low` e sem liberar merge automático. A integração só ocorrerá após aprovar os gates do HEAD final.
