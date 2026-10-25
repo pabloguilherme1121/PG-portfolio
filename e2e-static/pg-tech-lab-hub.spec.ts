@@ -30,6 +30,14 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
       `Overflow horizontal em ${width}px`,
     ).toBeLessThanOrEqual(1);
     await expect(page.locator("h1")).toBeVisible();
+    // Links de projetos precisam ser tocáveis sem zoom e sem arrastar a tela.
+    const cards = page.locator("#apps .project-body > a, #ferramentas .project-body > a");
+    await expect(cards).toHaveCount(9);
+    for (const anchor of await cards.all()) {
+      const bounds = await anchor.boundingBox();
+      expect(bounds, "O link deve ter área de clique").not.toBeNull();
+      expect(bounds!.height, `Alvo de toque mínimo a ${width}px`).toBeGreaterThanOrEqual(44);
+    }
   }
   expect(errors).toEqual([]);
 });
