@@ -28,3 +28,12 @@ body{background:#0e1623!important}
 h1{letter-spacing:-.03em!important;line-height:1.18!important}
 button{transform:none!important;box-shadow:none!important}
 @media(max-width:720px){h1{font-size:clamp(28px,7.5vw,34px)!important}.lead,.intro{font-size:14px!important;line-height:1.5!important}.stat-card,.metric{min-height:0!important}.page-heading h2{font-size:clamp(27px,7vw,33px)!important}}
+
+
+/* Hierarquia de informação e leitura de evidências. */
+.eyebrow,.section-index,.stat-label,.breadcrumb,.run-meta,.check-notes label{letter-spacing:0!important}
+.stat-label,.stat-card small,.run-meta,.run-subtitle{font-size:13px!important;line-height:1.55}
+.check-notes label{font-size:13px!important}
+.filter-strip button,.utility,.outline,.status-select{min-height:44px!important}
+.panel,.stat-card{box-shadow:none!important}
+@media(max-width:390px){.stat-label,.stat-card small{font-size:13px!important}.run-subtitle{font-size:13px!important}}
