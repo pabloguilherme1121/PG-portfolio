@@ -19,3 +19,11 @@
 - Nenhum banco, API paga, upgrade ou publicação social automática. Sem prometer integração OAuth com Canva/Meta/Descript que não exista.
 
 Relacionados: PG Shotlist #281, QA Lab #283, segurança #284 e issue #282.
+
+
+## Recertificação após PR #284 — 25/10/2026
+
+- PR de segurança [#284](https://github.com/pabloguilherme1121/PG-portfolio/pull/284) foi integrada em `main` no commit `b6b58759917d2d0395dea805670570bb2805b691`, com audit de dependências, qualidade e isolamento estático aprovados no HEAD da PR.
+- O aplicativo independente está publicado em [Vercel](https://pg-creator-kit.vercel.app/); o HTML/CSS contém os ajustes editoriais de leitura e a navegação integrada. Deploy de produção READY e resposta HTTP 200 conferidos.
+- A sincronização do HTML com a versão publicada preservou os scripts próprios e identificadores de formulários; a versão do aplicativo não foi declarada certificada para Android físico.
+- Este commit documental solicita uma execução nova dos gates no contexto da base segura, sem relaxar `pnpm audit --audit-level=low` e sem liberar merge automático. A integração só ocorrerá após aprovar os gates do HEAD final.
