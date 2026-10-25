@@ -24,6 +24,8 @@ test("PG Sprint cria e persiste tarefa com exportação CSV",async({page})=>{
     await expect(labNav.locator(".lab-nav-items a")).toHaveCount(5);
     await expect(labNav.locator("a.lab-home")).toHaveAttribute("href", "https://pgtech-pi.vercel.app/");
     await expect(labNav.locator("a[aria-current='page']")).toHaveCount(1);
+  await expect(page.locator(".metric small").first()).toHaveCSS("font-size", "13px");
+  await expect(page.locator(".hero .lead")).toHaveCSS("font-size", "14px");
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
@@ -49,6 +51,8 @@ test("PG Budget persiste custos e calcula saldo projetado exato",async({page})=>
     await expect(labNav.locator(".lab-nav-items a")).toHaveCount(5);
     await expect(labNav.locator("a.lab-home")).toHaveAttribute("href", "https://pgtech-pi.vercel.app/");
     await expect(labNav.locator("a[aria-current='page']")).toHaveCount(1);
+  await expect(page.locator(".metric small").first()).toHaveCSS("font-size", "13px");
+  await expect(page.locator(".hero .lead")).toHaveCSS("font-size", "14px");
   expect(await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth)).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
