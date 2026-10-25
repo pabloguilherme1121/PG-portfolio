@@ -335,7 +335,12 @@ function init() {
   });
   
 }
-init();
+// The editor markup is rendered after this inline script; initialize only once it exists.
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init, { once: true });
+} else {
+  init();
+}
 
 </script>
 <link rel="stylesheet" href="./visual.css" />
