@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#0b1120">
+<meta name="description" content="PG QA Lab: critérios e evidências de validação web no próprio navegador, sem cadastro ou API externa.">
+<title>PG QA Lab · Qualidade verificável</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e9effb;background:#090f1b;font-synthesis:none}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-width:280px}button,input,select,textarea{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid #84f5cc;outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}[hidden]{display:none!important}.skip{position:absolute;left:10px;top:-90px;background:#fff;color:#000;padding:10px;z-index:10}.skip:focus{top:10px}.shell{display:grid;grid-template-columns:258px minmax(0,1fr);min-height:100vh}.sidebar{border-right:1px solid #222e42;background:#0b1322;display:flex;flex-direction:column;padding:31px 18px;min-width:0}.brand{display:flex;align-items:center;gap:12px;padding:1px 10px 37px}.brand-mark{width:43px;height:43px;display:grid;place-items:center;background:#d7f2e9;color:#152738;font-weight:900;font-size:17px;letter-spacing:-2px;border-radius:11px}.brand-mark span{color:#0a947f}.brand strong{display:block;letter-spacing:.13em;font-size:14px}.brand small{display:block;color:#8393ac;font-size:9px;letter-spacing:.13em;margin-top:6px}.side-section{font-size:10px;font-weight:700;color:#61748e;letter-spacing:.19em;padding:0 12px;margin-bottom:14px}.side-section.second{margin-top:39px}.nav-current{color:#b7ffdf;background:#112a2b;border:1px solid #255647;border-radius:9px;padding:12px;display:flex;gap:11px;align-items:center;font-weight:700;font-size:12px}.nav-icon{font-size:21px;line-height:1}.nav-arrow{margin-left:auto}.project-list{display:grid;gap:3px}.project-item{background:transparent;border:0;color:#a6b5cc;font-size:12px;text-align:left;padding:10px 12px;display:flex;align-items:center;gap:11px;border-radius:7px}.project-item:hover{background:#172438;color:#fff}.project-bullet{width:7px;height:7px;border-radius:50%;background:#54657b}.sidebar-footer{margin-top:auto;border-top:1px solid #263247;padding:25px 11px 0}.privacy-icon{font-size:25px;color:#9ce8ca}.sidebar-footer strong{display:block;font-size:12px;margin-top:8px}.sidebar-footer p{color:#91a0b5;line-height:1.7;font-size:11px;margin:8px 0 25px}.sidebar-footer>span{color:#5e7089;font-size:9px;letter-spacing:.18em}.main{min-width:0}.topbar{height:75px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #202d40;padding:0 clamp(19px,3.5vw,64px);gap:15px}.breadcrumb{color:#7f90a8;font-size:12px}.breadcrumb span{margin:0 12px;color:#42536a}.breadcrumb b{color:#e7f1ff;font-weight:600}.top-tag{font-size:10px;color:#a8dfce;letter-spacing:.14em;white-space:nowrap}.dot{display:inline-block;width:6px;height:6px;background:#6ee9bc;border-radius:50%;margin-right:6px;box-shadow:0 0 8px #6ee9bc}.sep{color:#42536a;padding:0 5px}.content{max-width:1690px;padding:45px clamp(19px,3.5vw,64px) 20px;margin:auto}.eyebrow,.section-index{font-size:10px;color:#83dfbd;letter-spacing:.18em;font-weight:800}.eyebrow-line{display:inline-block;width:19px;height:2px;background:#83dfbd;vertical-align:middle;margin-right:7px}.title-row{display:flex;justify-content:space-between;align-items:center;gap:25px;margin-top:13px;margin-bottom:34px}h1{font-size:clamp(31px,3.3vw,51px);line-height:1.05;letter-spacing:-.055em;margin:0;font-weight:750}h1 em{font-style:normal;color:#89dfc4}.lead{font-size:13px;color:#93a3b9;max-width:610px;line-height:1.8;margin:18px 0 0}.primary{background:#a9e9d4;color:#092520;border:1px solid #a9e9d4;border-radius:8px;padding:14px 20px;font-size:12px;font-weight:800;white-space:nowrap}.primary:hover{background:#c0f6e5}.stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.stat-card{border:1px solid #263347;background:#101a2b;border-radius:10px;padding:20px 20px 17px}.stat-label{color:#99adc7;font-weight:700;letter-spacing:.08em;font-size:9px;display:flex;justify-content:space-between;gap:4px}.stat-label span{font-size:17px;color:#5bbaa1}.stat-card strong{display:block;font-size:36px;letter-spacing:-.06em;margin:16px 0 5px}.stat-card small{color:#788aa4;font-size:11px}.dashboard-grid{display:grid;grid-template-columns:minmax(250px,.82fr) minmax(0,1.45fr);gap:15px;margin-top:23px;align-items:start}.panel{background:#101a2b;border:1px solid #263347;border-radius:10px;min-width:0;padding:24px}.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.panel-head h2{font-size:20px;letter-spacing:-.025em;margin:8px 0 0}.tool-group{display:flex;gap:5px;flex-wrap:wrap}.utility{display:inline-block;padding:9px 10px;color:#b8c9df;border:1px solid #36455b;background:#142338;border-radius:5px;text-decoration:none;font-size:10px;font-weight:700}.utility:hover{color:#fff;background:#1f3248}.helper{font-size:12px;line-height:1.65;color:#8498b3;margin:17px 0 22px}.run-list{display:grid;gap:8px}.run-item{display:flex;gap:12px;width:100%;align-items:start;text-align:left;border-radius:7px;border:1px solid #2b3a4f;background:#121f31;color:#eff5ff;padding:15px}.run-item.selected{border-color:#6ed5ae;background:#183037}.run-item:hover{border-color:#7495b6}.run-icon{display:grid;place-items:center;flex-shrink:0;background:#233e46;color:#b0f4d7;border-radius:6px;width:35px;height:35px;font-size:19px}.run-main{min-width:0;flex:1}.run-title{display:block;font-size:12px;font-weight:800}.run-subtitle{display:block;font-size:10px;color:#91a5bc;line-height:1.7;margin-top:4px;overflow-wrap:anywhere}.run-metric{font-size:11px;color:#a5f5d6;font-weight:800;white-space:nowrap}.empty{display:flex;align-items:center;text-align:center;flex-direction:column;gap:10px;padding:75px 15px 85px}.empty-symbol{font-size:52px;color:#71d9b3}.empty strong{font-size:15px}.empty p{font-size:12px;color:#8f9fb4;max-width:250px;line-height:1.7;margin:0 0 12px}.outline{border:1px solid #446677;background:#152536;color:#c8fce9;border-radius:7px;padding:11px 14px;font-size:12px;font-weight:700}.outline:hover{background:#223a49}.status-pill{border-radius:99px;border:1px solid #37465e;color:#9cafc9;font-size:9px;font-weight:800;padding:8px 10px;letter-spacing:.09em}.status-pill.good{color:#84f1c5;border-color:#267557;background:#11332c}.status-pill.blocked{color:#f7adab;border-color:#824447;background:#361e2b}.run-meta{display:flex;gap:8px;flex-wrap:wrap;margin:24px 0 19px;color:#a1b4cb;font-size:10px}.run-meta span{border:1px solid #33435b;background:#172639;border-radius:5px;padding:7px 9px;overflow-wrap:anywhere}.progress-head{display:flex;justify-content:space-between;font-size:12px;margin-bottom:9px}.progress-head span{color:#93ebc8}.progress-track{height:7px;background:#27364a;border-radius:100px;overflow:hidden}.progress-bar{height:100%;background:#7fe0b7;width:0%;transition:width .15s}.filter-strip{display:flex;gap:6px;flex-wrap:wrap;padding:21px 0 15px;border-bottom:1px solid #283951}.filter-strip button{background:#172538;color:#9cb0c8;border:1px solid #34465d;padding:8px 10px;border-radius:6px;font-size:11px}.filter-strip button[aria-pressed=true]{color:#093021;background:#a1eacc;border-color:#a1eacc;font-weight:800}.check-list{display:grid;gap:12px;margin-top:22px}.area-title{font-size:10px;color:#7de1bc;font-weight:800;letter-spacing:.14em;margin:10px 0 3px}.check-card{border:1px solid #314159;border-radius:8px;background:#121f31;padding:15px}.check-card-head{display:flex;align-items:start;gap:12px;justify-content:space-between}.check-card strong{font-size:12px;line-height:1.5}.check-card .status-select{background:#1f3045;border:1px solid #485b73;color:#d7e5f8;border-radius:5px;padding:8px;min-width:125px;font-size:11px;max-width:100%}.check-card .status-select[value=pass]{border-color:#398b6e}.check-notes{display:grid;gap:8px;margin-top:12px}.check-notes label{display:grid;gap:5px;color:#93a7c1;font-size:10px}.check-notes textarea,.check-notes input{width:100%;min-width:0;border-radius:5px;border:1px solid #34455d;background:#0d1726;color:#e5f3ff;padding:9px 10px;font-size:11px}.check-notes textarea{resize:vertical;min-height:49px;max-height:170px}.detail-foot{border-top:1px solid #314159;margin-top:23px;padding-top:15px;display:flex;gap:16px;align-items:center;justify-content:space-between}.detail-foot p{font-size:10px;color:#8299b4;line-height:1.6;margin:0}.danger{background:transparent;color:#f6abab;border:1px solid #7b4350;border-radius:5px;padding:9px;white-space:nowrap;font-size:10px}.empty-small{color:#879cb5;text-align:center;font-size:12px;line-height:1.7;padding:22px 10px}.footer{margin-top:28px;color:#5f718a;font-size:10px;display:flex;gap:12px;justify-content:space-between;border-top:1px solid #202d40;padding:20px 0}dialog{width:min(520px,calc(100vw - 30px));border:1px solid #46617a;border-radius:12px;padding:27px;color:#e8f4ff;background:#132035;box-shadow:0 25px 80px #000b}dialog::backdrop{background:#020713d9}.dialog-top{display:flex;justify-content:space-between;align-items:center}.close{color:#d7e9ff;background:transparent;border:0;font-size:28px}dialog h2{font-size:26px;margin:10px 0}dialog p{color:#96aac5;line-height:1.65;font-size:12px;margin:0 0 20px}dialog form>label,.dialog-cols label{display:grid;gap:7px;margin-top:14px;color:#c9d6e8;font-size:12px}dialog input,dialog select{border:1px solid #43576e;border-radius:6px;background:#0d1828;color:#e9f2ff;padding:12px;width:100%;min-width:0}dialog .dialog-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:25px}.toast{position:fixed;bottom:22px;right:22px;padding:12px 18px;border-radius:8px;background:#ceffe7;color:#123728;font-size:12px;font-weight:700;box-shadow:0 15px 35px #0008;max-width:min(360px,calc(100vw - 44px));z-index:100}.toast.error{background:#ffc9c9;color:#512024}
+@media(max-width:1140px){.shell{grid-template-columns:205px minmax(0,1fr)}.sidebar{padding:22px 12px}.dashboard-grid{grid-template-columns:minmax(0,1fr)}.stat-card{padding:15px}.stat-label{font-size:8px}}
+@media(max-width:720px){.shell{display:block}.sidebar{display:none}.topbar{height:59px;padding:0 18px}.top-tag{font-size:8px}.breadcrumb{font-size:10px}.breadcrumb span{margin:0 5px}.content{padding:27px 15px 20px}.title-row{display:block;margin-bottom:24px}.title-row .primary{margin-top:19px;width:100%}.lead{font-size:12px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.stat-card strong{font-size:28px;margin:10px 0 3px}.panel{padding:17px}.footer{flex-direction:column}.detail-foot{align-items:start;flex-direction:column}.detail-foot .danger{width:100%}}
+@media(max-width:390px){.top-tag .sep,.top-tag{display:none}.panel-head h2{font-size:18px}.check-card-head{flex-direction:column}.check-card .status-select{width:100%}.dialog-cols{grid-template-columns:1fr!important}.dialog-actions{flex-direction:column}.dialog-actions button{width:100%}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+/* Mobile readability: avoid microtext despite dense verification lists. */
+@media(max-width:720px){.section-index,.eyebrow,.stat-label,.stat-card small,.run-subtitle,.helper,.check-notes label,.footer,.detail-foot p{font-size:11px}.check-card strong,.run-title,.check-notes input,.check-notes textarea,.check-card .status-select,.filter-strip button{font-size:12px}.topbar .breadcrumb{font-size:11px}.stat-card{min-height:115px}}
+
+</style>
+<script type="module">
+const PROJECTS=['PG-Arcade','PG-portfolio','Cuidador(a)','Eleições Goiás','PG Tech','Outro projeto'];
+const STATUSES=['pending','pass','fail','na'];
+const AREAS={ 'Produto':['Abrir página inicial e rota profunda','Verificar fluxo principal com resultado real','Sem erros relevantes no console'], 'Mobile':['Sem overflow em 320 e 390 px','Controles touch funcionais em aparelho físico','Paisagem, zoom e teclado sem bloqueios'], 'Acessibilidade':['Navegação por teclado e foco visível','Contraste, rótulos e leitor de tela revisados'], 'Confiabilidade':['Persistência após recarga e atualização','Offline / reconexão testados ou explicitamente limitados'], 'Release':['Qualidade automatizada aprovada no HEAD final','Artifact e deploy vinculados ao mesmo SHA','URL HTTPS pública verificada'], 'Segurança':['Ausência de segredos ou dados pessoais nos logs','Dependências e permissões revisadas']};
+const TEMPLATE=Object.entries(AREAS).flatMap(([area,labels])=>labels.map((label,i)=>({id:`${area.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'-')}-${i+1}`,area,label,status:'pending',note:'',evidence:''})));
+const need=(yes,message)=>{if(!yes)throw Error(message);};
+const str=(v,max,label)=>{need(typeof v==='string'&&v.length<=max,`${label} inválido`);return v;};
+const validateEvidenceUrl=(url)=>{if(!url)return true;try{const u=new URL(url);return ['https:','http:'].includes(u.protocol)&&!!u.hostname&&url.length<=500;}catch{return false;}};
+function createRun({id,project,date,sha='',browser='',viewport=''}){
+ need(typeof id==='string'&&id.length>0&&id.length<=100,'ID inválido');
+ need(PROJECTS.includes(project),'Projeto inválido');
+ need(/^\d{4}-\d{2}-\d{2}$/.test(date),'Data inválida');
+ return {id,project,date,sha:str(sha,80,'SHA'),browser:str(browser,80,'Navegador'),viewport:str(viewport,50,'Viewport'),checks:TEMPLATE.map(c=>({...c}))};
+}
+function runSchema(run){
+ need(run&&typeof run==='object'&&!Array.isArray(run),'Execução inválida');
+ need(typeof run.id==='string'&&run.id.length>0&&run.id.length<=100,'ID inválido');
+ need(PROJECTS.includes(run.project),'Projeto inválido');
+ need(typeof run.date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(run.date),'Data inválida');
+ str(run.sha,80,'SHA');str(run.browser,80,'Navegador');str(run.viewport,50,'Viewport');
+ need(Array.isArray(run.checks)&&run.checks.length===TEMPLATE.length,'Checklist incompatível');
+ const seen=new Set();
+ for(const check of run.checks){
+  need(check&&typeof check==='object','Check inválido');
+  const original=TEMPLATE.find(x=>x.id===check.id);
+  need(original&&!seen.has(check.id),'ID do check inválido ou duplicado');seen.add(check.id);
+  need(check.label===original.label && check.area===original.area,'Contrato do check diferente');
+  need(STATUSES.includes(check.status),'Status inválido');str(check.note,1200,'Nota');
+  need(typeof check.evidence==='string'&&validateEvidenceUrl(check.evidence),'Evidência inválida');
+ }
+ return run;
+}
+function updateRunInfo(run,changes){
+ runSchema(run);
+ const allowed=['project','date','sha','browser','viewport'];
+ const clean=Object.fromEntries(Object.entries(changes).filter(([key])=>allowed.includes(key)));
+ return runSchema({...run,...clean});
+}
+function updateCheck(run,id,changes){
+ runSchema(run);
+ const index=run.checks.findIndex(c=>c.id===id);need(index>=0,'Check inexistente');
+ const updated={...run.checks[index],...Object.fromEntries(Object.entries(changes).filter(([k])=>['status','note','evidence'].includes(k)))};
+ const copy={...run,checks:run.checks.map((c,i)=>i===index?updated:c)};
+ return runSchema(copy);
+}
+function overview(run){
+ runSchema(run);const counts=Object.fromEntries(STATUSES.map(s=>[s,run.checks.filter(x=>x.status===s).length]));
+ const contextMissing=['sha','browser','viewport'].filter(key=>!run[key].trim());
+ return {total:run.checks.length,done:counts.pass+counts.fail+counts.na,pass:counts.pass,fail:counts.fail,na:counts.na,pending:counts.pending,evidenceMissing:run.checks.filter(c=>c.status==='pass'&&!c.evidence).length,contextMissing,ready:counts.pass===run.checks.length&&run.checks.every(c=>!!c.evidence)&&contextMissing.length===0};
+}
+function parseBackup(text){
+ need(typeof text==='string'&&text.length<=1024*1024,'Arquivo muito grande');const data=JSON.parse(text);
+ need(data&&data.version===1&&Array.isArray(data.runs)&&data.runs.length<=100,'Versão ou quantidade inválida');
+ const seen=new Set();for(const run of data.runs){runSchema(run);need(!seen.has(run.id),'Execução duplicada');seen.add(run.id);}return data.runs;
+}
+function serializeBackup(runs){need(Array.isArray(runs)&&runs.length<=100,'Limite de registros');runs.forEach(runSchema);return JSON.stringify({version:1,exportedAt:new Date().toISOString(),runs},null,2);}
+const csvCell=(input)=>{let s=String(input??'');if(/^[\s\u0000-\u001f]*[=+@\-]/u.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';};
+function exportCSV(runs){need(Array.isArray(runs)&&runs.length<=100,'Limite de registros');runs.forEach(runSchema);
+ const headers=['projeto','data','id_execucao','sha','navegador','viewport','area','criterio','status','observacao','evidencia'];
+ const rows=runs.flatMap(r=>r.checks.map(c=>[r.project,r.date,r.id,r.sha,r.browser,r.viewport,c.area,c.label,c.status,c.note,c.evidence]));
+ return '\uFEFF'+[headers,...rows].map(row=>row.map(csvCell).join(';')).join('\r\n')+'\r\n';
+}
+
+// Protect against a stale tab overwriting another tab's last save.
+const hasStorageConflict=(expected,current)=>expected!==current;
+const KEY='pg-qa-lab-runs-v1';
+const $=id=>document.getElementById(id);
+let runs=[],selectedId=null,filter='all',storedSnapshot=null;
+const labels={pending:'Pendente',pass:'Aprovado',fail:'Falhou',na:'Não aplicável'};
+const el=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
+const notify=(message,error=false)=>{const node=$('toast');node.textContent=message;node.classList.toggle('error',error);node.hidden=false;clearTimeout(notify.timer);notify.timer=setTimeout(()=>node.hidden=true,4100);};
+const load=()=>{try{const raw=localStorage.getItem(KEY);runs=raw?parseBackup(raw):[];storedSnapshot=raw;}catch{runs=[];notify('O armazenamento local está bloqueado ou contém dados inválidos. Exporte seus backups regularmente.',true);}};
+const save=(next)=>{try{
+  if(hasStorageConflict(storedSnapshot,localStorage.getItem(KEY))){
+    notify('Outra aba alterou as execuções. Exporte um backup JSON desta aba antes de atualizar; alterações externas foram preservadas.',true);
+    return false;
+  }
+  const snapshot=serializeBackup(next);
+  localStorage.setItem(KEY,snapshot);
+  storedSnapshot=snapshot;
+  return true;
+ }catch{notify('Não foi possível salvar neste navegador. Exporte seu backup JSON.',true);return false;}};
+function commitRuns(next,selected=selectedId){
+ if(!save(next))return false;
+ runs=next;selectedId=selected;render();return true;
+}
+function download(text,name,type){const blob=new Blob([text],{type});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1000);}
+const current=()=>runs.find(r=>r.id===selectedId)||null;
+const todayLocal=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
+const makeTag=(text)=>el('span','',text||'—');
+function updateStats(){ $('stat-runs').textContent=runs.length; $('stat-pass').textContent=runs.reduce((sum,r)=>sum+overview(r).pass,0);$('stat-fail').textContent=runs.reduce((sum,r)=>sum+overview(r).fail,0);$('stat-ready').textContent=runs.filter(r=>overview(r).ready).length;}
+function drawRuns(){const list=$('run-list');list.replaceChildren();if(!runs.length){list.append(el('div','empty-small','Nenhum registro salvo ainda. Sua primeira execução começa aqui.'));return;}
+ for(const r of runs){const count=overview(r);const b=el('button','run-item'+(r.id===selectedId?' selected':''));b.type='button';b.dataset.run=r.id;b.setAttribute('aria-pressed',r.id===selectedId?'true':'false');
+ b.append(el('span','run-icon',r.project==='PG-Arcade'?'♟':'▤'));
+ const main=el('span','run-main');main.append(el('span','run-title',r.project),el('span','run-subtitle',`${r.date} · ${r.sha||'SHA não informado'}`));b.append(main,el('span','run-metric',`${count.pass}/${count.total}`));list.append(b);}
+}
+function drawDetail(){const run=current();$('detail-empty').hidden=!!run;$('detail-content').hidden=!run;const st=$('run-status');st.className='status-pill';if(!run){st.textContent='SEM EXECUÇÃO';return;}
+ const summary=overview(run);st.textContent=summary.ready?'REGISTRO COMPLETO':summary.fail?'COM FALHAS':summary.pass===summary.total?'FALTAM EVIDÊNCIAS':'EM VALIDAÇÃO';if(!summary.ready && summary.pass===summary.total && !summary.evidenceMissing && summary.contextMissing.length)st.textContent='FALTAM DADOS DA EXECUÇÃO';if(summary.ready)st.classList.add('good');if(summary.fail)st.classList.add('blocked');
+ const meta=$('run-meta');meta.replaceChildren(makeTag(run.date),makeTag(run.sha?`SHA: ${run.sha}`:'SHA pendente'),makeTag(run.browser||'Dispositivo não informado'),makeTag(run.viewport||'Viewport não informado'));
+ $('progress-label').textContent=`${summary.done} de ${summary.total} avaliados · ${summary.pass} aprovados · ${summary.evidenceMissing} sem link · ${summary.contextMissing.length} campo(s) de contexto pendente(s)`;
+ $('progress-percent').textContent=`${Math.round(summary.done/summary.total*100)}%`;
+ $('progress-bar').style.width=`${summary.done/summary.total*100}%`;
+ for(const b of document.querySelectorAll('[data-filter]'))b.setAttribute('aria-pressed',String(b.dataset.filter===filter));
+ drawChecks(run);
+}
+function drawChecks(run){const box=$('check-list');box.replaceChildren();let lastArea='';let shown=0;
+ for(const check of run.checks){if(filter!=='all'&&check.status!==filter)continue;
+  if(lastArea!==check.area){box.append(el('div','area-title',check.area.toUpperCase()));lastArea=check.area;}
+  const card=el('article','check-card');const heading=el('div','check-card-head');const title=el('strong','',check.label);
+  const select=el('select','status-select');select.setAttribute('aria-label',`Resultado: ${check.label}`);select.dataset.check=check.id;select.dataset.field='status';
+  for(const status of STATUSES){const opt=document.createElement('option');opt.value=status;opt.textContent=labels[status];select.append(opt);}select.value=check.status;heading.append(title,select);card.append(heading);
+  const notes=el('div','check-notes');const comment=el('label');comment.append(el('span','','Observação / resultado'));const textarea=el('textarea');textarea.dataset.check=check.id;textarea.dataset.field='note';textarea.maxLength=1200;textarea.rows=2;textarea.value=check.note;textarea.placeholder='Descreva o que aconteceu, sem dados pessoais.';comment.append(textarea);
+  const evidence=el('label');evidence.append(el('span','','Link da evidência (HTTP/HTTPS)'));const inp=el('input');inp.type='url';inp.maxLength=500;inp.placeholder='https://github.com/.../actions/runs/...';inp.value=check.evidence;inp.dataset.check=check.id;inp.dataset.field='evidence';evidence.append(inp);notes.append(comment,evidence);card.append(notes);box.append(card);shown++;
+ }
+ if(!shown)box.append(el('div','empty-small','Nenhum critério com este status.'));
+}
+function render(){updateStats();drawRuns();drawDetail();}
+function openModal(){const dlg=$('create-dialog');$('new-date').value=todayLocal();if(current())$('new-project').value=current().project;dlg.showModal();}
+function editContext(){
+ const r=current();if(!r)return;
+ $('edit-project').value=r.project;
+ $('edit-date').value=r.date;
+ $('edit-sha').value=r.sha;
+ $('edit-browser').value=r.browser;
+ $('edit-viewport').value=r.viewport;
+ $('edit-dialog').showModal();
+}
+function init(){for(const p of PROJECTS){const o=document.createElement('option');o.value=p;o.textContent=p;$('new-project').append(o);}
+ const projectList=$('project-list');for(const p of PROJECTS.slice(0,5)){const b=el('button','project-item');b.type='button';b.dataset.project=p;b.append(el('span','project-bullet'),el('span','',p));projectList.append(b);}
+ for(const p of PROJECTS){const opt=document.createElement('option');opt.value=p;opt.textContent=p;$('edit-project').append(opt);}
+ load();selectedId=runs[0]?.id??null;render();
+ window.addEventListener('storage',e=>{
+  if((e.key===KEY||e.key===null)&&hasStorageConflict(storedSnapshot,e.newValue))
+    notify('Outra aba alterou as execuções. Exporte backup JSON desta aba antes de recarregar.',true);
+ });
+ $('edit-meta').addEventListener('click',editContext);
+ $('edit-form').addEventListener('submit',e=>{
+  if(e.submitter?.value!=='save')return;
+  e.preventDefault();
+  try{
+   const r=current();if(!r)return;
+   const next=updateRunInfo(r,{project:$('edit-project').value,date:$('edit-date').value,sha:$('edit-sha').value,browser:$('edit-browser').value,viewport:$('edit-viewport').value});
+   if(!commitRuns(runs.map(x=>x.id===selectedId?next:x)))return;$('edit-dialog').close();notify('Dados da execução atualizados.');
+  }catch(err){notify(err.message,true);}
+ });
+ $('new-run').addEventListener('click',openModal);$('start-empty').addEventListener('click',openModal);
+ projectList.addEventListener('click',e=>{const b=e.target.closest('[data-project]');if(!b)return;openModal();$('new-project').value=b.dataset.project;});
+ $('create-form').addEventListener('submit',e=>{const sub=e.submitter;if(sub?.value!=='create')return;e.preventDefault();const form=new FormData(e.currentTarget);try{if(runs.length>=100)throw Error('Limite de 100 execuções. Faça backup e exclua as antigas.');const record=createRun({id:crypto.randomUUID(),project:String(form.get('project')),date:String(form.get('date')),sha:String(form.get('sha')||''),browser:String(form.get('browser')||''),viewport:String(form.get('viewport')||'')});if(!commitRuns([record,...runs],record.id))return;filter='all';$('create-dialog').close();$('create-form').reset();render();notify('Execução criada — todos os critérios começam pendentes.');}catch(err){notify(err.message,true);}});
+ $('run-list').addEventListener('click',e=>{const b=e.target.closest('[data-run]');if(!b)return;selectedId=b.dataset.run;filter='all';render();});
+ $('filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(!b)return;filter=b.dataset.filter;drawDetail();});
+ $('check-list').addEventListener('change',e=>{const target=e.target;if(!target.dataset.check)return;const id=target.dataset.check;const field=target.dataset.field;try{const updated=updateCheck(current(),id,{[field]:target.value});if(!commitRuns(runs.map(r=>r.id===selectedId?updated:r))){target.value=current().checks.find(c=>c.id===id)[field];return;}}catch(error){notify(error.message,true);target.value=current().checks.find(c=>c.id===id)[field];}});
+ $('delete-run').addEventListener('click',()=>{const r=current();if(!r)return;if(!window.confirm(`Excluir a execução de ${r.project} em ${r.date}? Exporte um backup antes se precisar recuperá-la.`))return;const next=runs.filter(x=>x.id!==r.id);if(!commitRuns(next,next[0]?.id??null))return;notify('Execução excluída.');});
+ $('download-json').addEventListener('click',()=>{try{download(serializeBackup(runs),'pg-qa-lab-backup.json','application/json');notify('Backup JSON preparado.');}catch(e){notify(e.message,true);}});
+ $('download-csv').addEventListener('click',()=>{try{download(exportCSV(runs),'pg-qa-lab-evidencias.csv','text/csv;charset=utf-8');notify('CSV preparado.');}catch(e){notify(e.message,true);}});
+ $('upload-json').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>1024*1024)throw Error('Backup acima do limite de 1 MB.');const parsed=parseBackup(await file.text());if(runs.length&&!window.confirm('Substituir todas as execuções locais pelos dados do arquivo?'))return;if(!commitRuns(parsed,parsed[0]?.id??null))return;filter='all';render();notify(`${runs.length} execução(ões) restaurada(s).`);}catch(err){notify(`Importação recusada: ${err.message}`,true);}finally{e.target.value='';}});
+}
+init();
+
+</script>
+<link rel="stylesheet" href="./visual.css" />
+<style id="pg-suite-style">.pg-suite-nav{border-top:1px solid #35435b;background:#0d1626;color:#ebf2ff;padding:26px 18px}.pg-suite-inner{max-width:1180px;margin:0 auto}.pg-suite-nav strong{font-size:16px}.pg-suite-nav p{font-size:13px;color:#bfcede;line-height:1.5;margin:8px 0 15px}.pg-suite-links{display:flex;flex-wrap:wrap;gap:10px}.pg-suite-links a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:9px;border:1px solid #435774;color:#ebf2ff;text-decoration:none;font-size:13px;font-weight:650}.pg-suite-links a:hover{border-color:#b7a6ff;background:#28314a}.pg-suite-links a:focus-visible{outline:3px solid #b7a6ff;outline-offset:2px}@media(max-width:420px){.pg-suite-links a{flex:1 1 43%}}</style></head>
+<body>
+<a class="skip" href="#workspace">Ir ao conteúdo</a>
+<div class="shell">
+ <aside class="sidebar">
+  <div class="brand"><span class="brand-mark">PG<span>·</span></span><div><strong>QA LAB</strong><small>QUALITY WORKSPACE</small></div></div>
+  <div class="side-section">WORKSPACE</div>
+  <div class="nav-current"><span class="nav-icon">▤</span><span>Execuções de QA</span><span class="nav-arrow">↗</span></div>
+  <div class="side-section second">PROJETOS</div>
+  <div id="project-list" class="project-list" aria-label="Projetos disponíveis"></div>
+  <div class="sidebar-footer"><div class="privacy-icon">◎</div><strong>Privacidade por padrão</strong><p>Os relatórios ficam neste navegador. Nenhum dado é enviado a servidores.</p><span>PG ECOSYSTEM / V1.0</span></div>
+ </aside>
+ <main id="workspace" class="main">
+  <header class="topbar"><div class="breadcrumb">PG Ecosystem <span>/</span> Ferramentas <span>/</span> <b>QA Lab</b></div><div class="top-tag"><span class="dot"></span> LOCAL-FIRST <span class="sep">•</span> SEM API</div></header>
+  <div class="content">
+   <div class="eyebrow"><span class="eyebrow-line"></span> CONTROLE DE QUALIDADE</div>
+   <div class="title-row"><div><h1>Qualidade <em>verificável.</em></h1><p class="lead">Cada teste conta. Cada resultado precisa de evidência. Registre o que realmente passou — sem confundir automação com validação física.</p></div><button class="primary" id="new-run">＋ Nova execução</button></div>
+   <div class="stat-grid"><section class="stat-card"><div class="stat-label">EXECUÇÕES SALVAS <span>◈</span></div><strong id="stat-runs">0</strong><small>Relatórios locais</small></section><section class="stat-card"><div class="stat-label">CRITÉRIOS APROVADOS <span>✓</span></div><strong id="stat-pass">0</strong><small>Com status aprovado</small></section><section class="stat-card"><div class="stat-label">FALHAS REGISTRADAS <span>!</span></div><strong id="stat-fail">0</strong><small>Precisam de atenção</small></section><section class="stat-card"><div class="stat-label">EXECUÇÕES COMPLETAS <span>◉</span></div><strong id="stat-ready">0</strong><small>Todos os critérios passaram</small></section></div>
+   <div class="dashboard-grid">
+    <section class="panel run-panel" aria-labelledby="runs-title"><div class="panel-head"><div><span class="section-index">01 / HISTÓRICO</span><h2 id="runs-title">Suas execuções</h2></div><div class="tool-group"><button id="download-json" class="utility">↓ JSON</button><button id="download-csv" class="utility">↓ CSV</button><label class="utility file-label" for="upload-json">↑ Importar</label><input id="upload-json" type="file" accept=".json,application/json" hidden></div></div><p class="helper">Selecione uma execução para ver os resultados. Um backup JSON permite transferir os registros para outro dispositivo.</p><div id="run-list" class="run-list" aria-live="polite"></div></section>
+    <section class="panel detail-panel" aria-labelledby="detail-title"><div class="panel-head"><div><span class="section-index">RESULTADOS DOS TESTES</span><h2 id="detail-title">Critérios e evidências</h2></div><span id="run-status" class="status-pill">SEM EXECUÇÃO</span></div><div id="detail-empty" class="empty"><span class="empty-symbol">◎</span><strong>Nenhuma execução selecionada</strong><p>Comece uma execução para registrar o estado de cada requisito.</p><button id="start-empty" class="outline">Criar minha primeira execução</button></div><div id="detail-content" hidden><div class="run-meta" id="run-meta"></div><button id="edit-meta" type="button" class="utility">Editar dados da execução</button><div class="progress-head"><strong id="progress-label"></strong><span id="progress-percent"></span></div><div class="progress-track"><div id="progress-bar" class="progress-bar"></div></div><div class="filter-strip" id="filters"><button data-filter="all" aria-pressed="true">Todos</button><button data-filter="pending" aria-pressed="false">Pendentes</button><button data-filter="pass" aria-pressed="false">Aprovados</button><button data-filter="fail" aria-pressed="false">Falhas</button><button data-filter="na" aria-pressed="false">N/A</button></div><div id="check-list" class="check-list"></div><div class="detail-foot"><p>O estado “N/A” não equivale a aprovação. Não marque tarefas como feitas sem teste verificável.</p><button id="delete-run" class="danger">Excluir execução</button></div></div></section>
+   </div>
+   <footer class="footer"><span>PG QA LAB · MVP 1.0</span><span>Dados locais · Exportação portátil · Sem chamadas externas</span></footer>
+  </div>
+ </main>
+</div>
+<dialog id="create-dialog" aria-labelledby="create-title"><form method="dialog" id="create-form"><div class="dialog-top"><span class="section-index">NOVO TESTE</span><button value="cancel" formnovalidate aria-label="Fechar" class="close">×</button></div><h2 id="create-title">Nova execução</h2><p>Separe resultados automatizados de medições em dispositivos físicos.</p><label>Projeto<select name="project" required id="new-project"></select></label><label>Data<input type="date" name="date" id="new-date" required></label><label>SHA / versão (opcional)<input maxlength="80" name="sha" placeholder="ex.: 2b9db72"></label><div class="dialog-cols"><label>Navegador / dispositivo<input name="browser" maxlength="80" placeholder="ex.: Chrome Android"></label><label>Viewport<input name="viewport" maxlength="50" placeholder="ex.: 390 × 844"></label></div><div class="dialog-actions"><button value="cancel" formnovalidate class="outline">Cancelar</button><button value="create" class="primary" id="confirm-create">Criar execução ↗</button></div></form></dialog>
+<dialog id="edit-dialog" aria-labelledby="edit-title"><form method="dialog" id="edit-form"><div class="dialog-top"><span class="section-index">RASTREABILIDADE</span><button value="cancel" formnovalidate aria-label="Fechar" class="close">×</button></div><h2 id="edit-title">Editar dados da execução</h2><p>Versão, dispositivo e viewport são necessários para marcar uma execução como completa.</p><label>Projeto<select id="edit-project" required></select></label><label>Data<input type="date" id="edit-date" required></label><label>SHA / versão<input maxlength="80" id="edit-sha" placeholder="ex.: 2b9db72"></label><div class="dialog-cols"><label>Navegador / dispositivo<input id="edit-browser" maxlength="80" placeholder="ex.: Chrome Android"></label><label>Viewport<input id="edit-viewport" maxlength="50" placeholder="ex.: 390 × 844"></label></div><div class="dialog-actions"><button value="cancel" formnovalidate class="outline">Cancelar</button><button value="save" class="primary">Salvar dados</button></div></form></dialog>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<nav class="pg-suite-nav" aria-label="Outras ferramentas PG Tech"><div class="pg-suite-inner"><strong>Continue seu trabalho</strong><p>Ferramentas independentes para organizar o seu projeto.</p><div class="pg-suite-links"><a href="https://pgtech-pi.vercel.app/">PG Tech</a><a href="https://pg-shotlist-lab.vercel.app/">Shotlist</a><a href="https://pg-creator-kit.vercel.app/">Creator Kit</a><a href="https://pg-sprint-lab.vercel.app/">Sprint</a><a href="https://pg-budget-lab.vercel.app/">Budget</a></div></div></nav></body>
+</html>
