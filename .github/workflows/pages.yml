@@ -58,6 +58,8 @@ jobs:
         run: pnpm audit:assets --strict-if-present
       - name: Audit source escapes
         run: pnpm audit:source
+      - name: Verify PG Tech hub Vercel security headers
+        run: node --test scripts/check-pgtech-vercel-headers.test.mjs
       - name: Lint source
         run: pnpm lint
       - name: Typecheck public app
