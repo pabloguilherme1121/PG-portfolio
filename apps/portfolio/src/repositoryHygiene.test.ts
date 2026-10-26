@@ -86,6 +86,8 @@ describe("repository hygiene", () => {
       "audit-public-assets.mjs",
       "build-api.mjs",
       "check-bundle-budget.mjs",
+      "check-ecosystem-endpoints.mjs",
+      "check-ecosystem-endpoints.test.mjs",
       "check-source-escapes.mjs",
       "prepare-github-pages.mjs",
       "run-workspace.mjs",
