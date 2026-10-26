@@ -64,6 +64,8 @@ jobs:
         run: pnpm lint
       - name: Typecheck public app
         run: pnpm check:portfolio
+      - name: Verify standalone PG Shotlist package
+        run: pnpm test:shotlist-deploy
       - name: Portfolio unit tests
         run: pnpm test:portfolio
       - name: Install Playwright browsers
