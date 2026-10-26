@@ -66,6 +66,8 @@ jobs:
         run: pnpm check:portfolio
       - name: Verify standalone PG Shotlist package
         run: pnpm test:shotlist-deploy
+      - name: Verify four standalone PG Lab packages
+        run: pnpm test:pg-labs-deploy
       - name: Portfolio unit tests
         run: pnpm test:portfolio
       - name: Install Playwright browsers
