@@ -19,7 +19,15 @@ export async function prepareShotlistBundle({ root = defaultRoot, outputDir = jo
     throw new Error('Referência do mascote PG Bot ausente no HTML do Shotlist');
   }
   const config = JSON.parse(bytes[3].toString('utf8'));
-  if (!config.headers?.some(rule => rule.source === '/(.*)' && rule.headers?.some(h => h.key === 'X-Content-Type-Options' && h.value === 'nosniff') && rule.headers?.some(h => h.key === 'Content-Security-Policy' && h.value.includes("frame-ancestors 'none'")))) {
+  const requiredHeaders = [
+    ['X-Content-Type-Options', 'nosniff'],
+    ['X-Frame-Options', 'DENY'],
+    ['Referrer-Policy', 'strict-origin-when-cross-origin'],
+    ['Content-Security-Policy', "frame-ancestors 'none'"],
+  ];
+  if (!config.headers?.some(rule =>
+    rule.source === '/(.*)' && requiredHeaders.every(([key, value]) =>
+      rule.headers?.some(header => header.key === key && header.value === value)))) {
     throw new Error('Cabeçalhos Vercel insuficientes');
   }
   await mkdir(dirname(destination), { recursive: true });

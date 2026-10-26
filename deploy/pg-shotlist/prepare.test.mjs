@@ -18,7 +18,12 @@ async function fixture(t) {
   const html = Buffer.from('<!doctype html><html><script>window.example=1</script><img src="../../brand/pg-bot/mascot.webp"><link href="./visual.css" rel="stylesheet"></html>');
   const css = Buffer.from('body { color: #fff; }');
   const mascot = Buffer.from([0x52, 0x49, 0x46, 0x46, 0, 0xff, 0x00, 0x01, 0x57, 0x45, 0x42, 0x50]);
-  const config = '{"headers":[{"source":"/(.*)","headers":[{"key":"X-Content-Type-Options","value":"nosniff"},{"key":"Content-Security-Policy","value":"frame-ancestors \'none\'"}]}]}\n';
+  const config = JSON.stringify({ headers: [{ source: '/(.*)', headers: [
+    { key: 'X-Content-Type-Options', value: 'nosniff' },
+    { key: 'X-Frame-Options', value: 'DENY' },
+    { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+    { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+  ] }] }) + '\n';
   await Promise.all([
     writeFile(join(src, 'index.html'), html),
     writeFile(join(src, 'visual.css'), css),
@@ -60,6 +65,24 @@ test('não publica HTML com referência incorreta ao mascote', async t => {
   await writeFile(join(root, 'apps/portfolio/public/lab/shotlist/index.html'), '<html><img src="/nonexistent.webp"></html>');
   await assert.rejects(() => prepareShotlistBundle({ root, outputDir }), /mascote/);
   await assert.rejects(() => readFile(join(outputDir, 'index.html')), { code: 'ENOENT' });
+});
+
+test('bloqueia pacote quando X-Frame-Options está ausente', async t => {
+  const { root, config, outputDir } = await fixture(t);
+  const rules = JSON.parse(config);
+  rules.headers[0].headers = rules.headers[0].headers.filter(h => h.key !== 'X-Frame-Options');
+  await writeFile(join(root, 'deploy/pg-shotlist/vercel.json'), JSON.stringify(rules));
+  await assert.rejects(() => prepareShotlistBundle({ root, outputDir }), /Cabeçalhos Vercel insuficientes/);
+  await assert.rejects(() => readFile(join(outputDir, 'index.html')), { code: 'ENOENT' });
+});
+
+test('bloqueia pacote quando Referrer-Policy é enfraquecido', async t => {
+  const { root, config, outputDir } = await fixture(t);
+  const rules = JSON.parse(config);
+  const policy = rules.headers[0].headers.find(h => h.key === 'Referrer-Policy');
+  policy.value = 'unsafe-url';
+  await writeFile(join(root, 'deploy/pg-shotlist/vercel.json'), JSON.stringify(rules));
+  await assert.rejects(() => prepareShotlistBundle({ root, outputDir }), /Cabeçalhos Vercel insuficientes/);
 });
 
 test('fonte real do repositório gera pacote com os mesmos bytes', async t => {
