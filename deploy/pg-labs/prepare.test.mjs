@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, readFile, writeFile, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { prepareLabBundle, LABS } from './prepare.mjs';
 
 const WEBP = Buffer.concat([Buffer.from('RIFF'), Buffer.from([0,0,0,0]), Buffer.from('WEBP'), Buffer.from([1,2,3])]);
@@ -89,7 +90,7 @@ test('rejects missing visual.css for labs that require it',async t=>{
 });
 
 test('real project source and artwork also build with exact original bytes',async t=>{
-  const root = new URL('../../', import.meta.url).pathname;
+  const root = fileURLToPath(new URL('../../', import.meta.url));
   const folder=await mkdtemp(join(tmpdir(),'pg-labs-real-'));
   t.after(()=>rm(folder,{recursive:true,force:true}));
   for(const lab of Object.keys(LABS)){
