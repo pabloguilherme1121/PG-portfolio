@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 
-const config = JSON.parse(readFileSync(new URL('../deploy/pgtech-hub/vercel.json', import.meta.url), 'utf8'));
+const config = JSON.parse(readFileSync(new URL('../deploy/pgtech/vercel.json', import.meta.url), 'utf8'));
 const html = readFileSync(new URL('../apps/portfolio/public/lab/index.html', import.meta.url), 'utf8');
 const configuredHeaders = config.headers.find(item => item.source === '/(.*)')?.headers ?? [];
 const value = name => configuredHeaders.find(item => item.key.toLowerCase() === name.toLowerCase())?.value;
