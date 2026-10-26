@@ -1,38 +1,25 @@
-# PG Tech: cabeçalhos HTTP no deploy Vercel
+# PG Tech: implantação Vercel do hub
 
-Este diretório mantém versionada a configuração comprovada no preview do hub PG Tech. O arquivo `vercel.json` **não é utilizado automaticamente pelo GitHub Pages** e não altera o projeto Vercel até ser incluído explicitamente no pacote do próximo deploy.
+Configuração canônica do domínio https://pgtech-pi.vercel.app/. O conteúdo público está em `apps/portfolio/public/lab/index.html`. Esta pasta não é publicada automaticamente pelo GitHub Pages e o merge não faz deploy no Vercel.
 
-## Contexto
+## Pacote estático
 
-- Origem do HTML do hub: `apps/portfolio/public/lab/index.html`.
-- Mascote: `apps/portfolio/public/brand/pg-bot/mascot.webp`.
-- Vercel: projeto existente `pgtech`; **não criar um novo projeto, não alterar o domínio de produção sem QA**.
-- Preview de segurança: `dpl_14HkLvJtEaxJMirG5pDN7foSNJM6`, https://pgtech-kolm7tqa4-pabloguilherme1121-4857.vercel.app/
-- Fonte de conteúdo verificada: `main` `7260b2324b5323e6fc4b12531ed3f9c06d573d9b`.
+Enviar somente os arquivos da revisão aprovada à raiz do deployment: `index.html` (fonte `apps/portfolio/public/lab/index.html`), `brand/pg-bot/mascot.webp` (fonte `apps/portfolio/public/brand/pg-bot/mascot.webp`), `vercel.json` (este diretório), e `robots.txt` e `favicon.svg` somente se os arquivos estiverem verificados na versão pretendida. Não publicar scripts internos, segredos nem `apps/api`.
 
-O preview retornou **HTTP 200** em `/`, `/brand/pg-bot/mascot.webp`, `/favicon.svg` e `/robots.txt`. Em todos esses endereços, o conector Vercel confirmou:
+## Evidências e segurança
 
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `Referrer-Policy: strict-origin-when-cross-origin`
-- `Content-Security-Policy: frame-ancestors 'none'`
+Em 26/10/2026, SiteTriage observou HTTP 200 sem `Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options` e `Referrer-Policy` no hub anterior. O deployment de produção `dpl_G4t4iTFYQqbWJHxFC1zL5CkStWZW` foi publicado com a configuração agora versionada e confirmado `READY`. A resposta pública posteriormente retornou HTTP 200, HSTS, CSP `default-src 'none'; script-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:` e diretivas complementares, `nosniff`, `DENY`, `no-referrer`. Firecrawl confirmou cinco links PG Lab e a assinatura do PG Bot; WebP 200 com MIME correto.
 
-A CSP restringe apenas quem pode incorporar o site em um frame. **Não adicionar** `default-src`, `script-src` ou `style-src` sem testes reais, porque o HTML usa estilo embutido e a plataforma pode incluir scripts adicionais. Não remover a proteção SSO dos previews para facilitar testes.
+A CSP é válida para este HTML **sem JavaScript**. Caso o hub precise de scripts no futuro, revisar a política, os testes e a prévia autenticada em vez de enfraquecer genericamente `script-src`. Evitar bloquear scripts utilizados por outras ferramentas: esta configuração é exclusiva do hub, não dos outros apps.
 
-## Publicação e aceite
+## Controle antes do próximo deploy
 
-O projeto Vercel usa um pacote de **cinco arquivos na raiz do envio**, não `src/src`:
+```sh
+node --test scripts/check-pgtech-vercel-headers.test.mjs
+node --test scripts/check-pgtech-parity.test.mjs
+node scripts/check-pgtech-parity.mjs
+```
 
-1. `index.html` obtido de `apps/portfolio/public/lab/index.html`;
-2. `brand/pg-bot/mascot.webp` obtido de `apps/portfolio/public/brand/pg-bot/mascot.webp`;
-3. `favicon.svg` correspondente à revisão de produção aprovada;
-4. `robots.txt` correspondente à revisão de produção aprovada;
-5. `vercel.json` deste diretório.
+Revisar navegação com teclado e leitores de tela, visual 320/390 px, ancoragem, contato sem envio real, links, console, HTTP e imagens. Nenhum `READY` isolado certifica esses fluxos. Não desabilitar proteção SSO das prévias para facilitar QA. Versão anterior disponível para rollback: `dpl_5YcpvboygpY3psjEmdcZoYkTvxNX`.
 
-O primeiro envio experimental com a pasta extra `src/src` retornou 404; não reutilizar. Manter `target` omitido para preview e não associar aliases de produção durante QA.
-
-Critérios antes de promover: conferir no navegador autorizado com SSO em 320 px, 390 px e desktop; header e links; foco/Tab/Enter e âncoras; ausência de overflow e erros de console; contatos sem enviar mensagem; imagem do PG Bot carregada; status e MIME dos quatro recursos; as quatro proteções HTTP presentes; comparar HTML com fonte do SHA. Não confundir status `READY` com aprovação funcional.
-
-A produção `pgtech-pi.vercel.app` ainda não foi atualizada durante esta tarefa. Para rastreabilidade, registrar o ID do deploy, SHA da fonte e resultados na issue #279 antes de qualquer promoção.
-
-Evidências: https://github.com/pabloguilherme1121/PG-portfolio/issues/279
+O fluxo de manutenção está registrado na issue [#279](https://github.com/pabloguilherme1121/PG-portfolio/issues/279).
