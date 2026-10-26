@@ -25,7 +25,8 @@
     "test:portfolio": "vitest run apps/portfolio/src",
     "test:api": "vitest run apps/api/src",
     "lint:api": "pnpm dlx oxlint@1.86.0 apps/api/src apps/api/client apps/api/drizzle packages/contracts drizzle.config.ts scripts/build-api.mjs scripts/smoke-api.mjs",
-    "test:shotlist-deploy": "node --test deploy/pg-shotlist/prepare.test.mjs"
+    "test:shotlist-deploy": "node --test deploy/pg-shotlist/prepare.test.mjs",
+    "test:pg-labs-deploy": "node --test deploy/pg-labs/prepare.test.mjs"
   },
   "dependencies": {},
   "devDependencies": {
