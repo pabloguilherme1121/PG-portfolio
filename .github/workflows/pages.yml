@@ -71,7 +71,14 @@ jobs:
       - name: Portfolio unit tests
         run: pnpm test:portfolio
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium firefox webkit
+        # Ubuntu 24.04 hosted runner includes system libraries; apt mirror downloads
+        # were repeatedly cancelled. The explicit launch check below fails closed
+        # if any native dependency is missing.
+        run: pnpm exec playwright install chromium firefox webkit
+      - name: Verify Playwright browser startup
+        run: node scripts/verify-playwright-startup.mjs
+      - name: Verify CI browser installation contract
+        run: node --test scripts/check-playwright-ci-install.test.mjs
       - name: Build static portfolio
         run: pnpm build:static
       - name: Browser smoke on static bundle
