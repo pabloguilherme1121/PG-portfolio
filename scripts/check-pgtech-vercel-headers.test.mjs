@@ -16,9 +16,9 @@ test('PG Tech static Vercel deployment has response hardening on every route', (
 });
 
 test('static CSP matches the actual HTML instead of blocking its inline styles or brand image', () => {
-  const scripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)];
+  const scripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)];
   assert.equal(scripts.length, 1, 'Only inert structured data may be embedded');
-  assert.match(scripts[0][1], /type=["']application\\/ld\\+json["']/i);
+  assert.match(scripts[0][1], /type=["']application\/ld\+json["']/i);
   assert.match(html, /<style>/i, 'Hub uses inline styles');
   assert.match(value('Content-Security-Policy'), /style-src 'unsafe-inline'/);
   assert.match(value('Content-Security-Policy'), /img-src 'self'/);
