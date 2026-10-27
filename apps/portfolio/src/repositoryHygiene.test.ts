@@ -91,11 +91,13 @@ describe("repository hygiene", () => {
       "check-pgtech-parity.mjs",
       "check-pgtech-parity.test.mjs",
       "check-pgtech-vercel-headers.test.mjs",
+      "check-playwright-ci-install.test.mjs",
       "check-source-escapes.mjs",
       "prepare-github-pages.mjs",
       "run-workspace.mjs",
       "smoke-api.mjs",
       "validate-pages-bundle.mjs",
+      "verify-playwright-startup.mjs",
       "verify-static-isolation.mjs",
     ]);
   });
