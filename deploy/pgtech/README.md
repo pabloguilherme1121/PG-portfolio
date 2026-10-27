@@ -1,10 +1,12 @@
 # PG Tech: implantação Vercel do hub
 
-Configuração canônica do domínio https://pgtech-pi.vercel.app/. O conteúdo público está em `apps/portfolio/public/lab/index.html`. Esta pasta não é publicada automaticamente pelo GitHub Pages e o merge não faz deploy no Vercel.
+Configuração canônica do domínio https://pgtech-pi.vercel.app/. O conteúdo público está em `apps/portfolio/public/lab/index.html`; o aviso de privacidade separado está em `apps/portfolio/public/lab/privacidade.html`. Esta pasta não é publicada automaticamente pelo GitHub Pages e o merge não faz deploy no Vercel.
 
 ## Pacote estático
 
-Enviar somente os arquivos da revisão aprovada à raiz do deployment: `index.html` (fonte `apps/portfolio/public/lab/index.html`), `brand/pg-bot/mascot.webp` (fonte `apps/portfolio/public/brand/pg-bot/mascot.webp`), `vercel.json` (este diretório), e `robots.txt` e `favicon.svg` somente se os arquivos estiverem verificados na versão pretendida. Não publicar scripts internos, segredos nem `apps/api`.
+**Obrigatório:** incluir também `privacidade.html` na raiz do pacote Vercel, com origem em `apps/portfolio/public/lab/privacidade.html`, no mesmo commit do `index.html`. Após publicar, verificar `GET /privacidade.html` HTTP 200 e o link `Privacidade e dados` no rodapé. Não fazer deploy de HTML que aponta para aviso ausente.
+
+Enviar somente os arquivos da revisão aprovada à raiz do deployment: `index.html` (fonte `apps/portfolio/public/lab/index.html`), `brand/pg-bot/mascot.webp` (fonte `apps/portfolio/public/brand/pg-bot/mascot.webp`), `vercel.json` (este diretório), `robots.txt` e `sitemap.xml` (ambos neste diretório), além de `favicon.svg` somente quando verificado. Os arquivos `robots.txt` e `sitemap.xml` devem estar na **raiz pública**, não dentro de `/deploy/pgtech/`. Não publicar scripts internos, segredos nem `apps/api`.
 
 ## Evidências e segurança
 
@@ -16,6 +18,7 @@ A CSP é válida para este HTML **sem JavaScript**. Caso o hub precise de script
 
 ```sh
 node --test scripts/check-pgtech-vercel-headers.test.mjs
+node --test scripts/check-pgtech-seo.test.mjs
 node --test scripts/check-pgtech-parity.test.mjs
 node scripts/check-pgtech-parity.mjs
 ```
@@ -23,3 +26,7 @@ node scripts/check-pgtech-parity.mjs
 Revisar navegação com teclado e leitores de tela, visual 320/390 px, ancoragem, contato sem envio real, links, console, HTTP e imagens. Nenhum `READY` isolado certifica esses fluxos. Não desabilitar proteção SSO das prévias para facilitar QA. Versão anterior disponível para rollback: `dpl_5YcpvboygpY3psjEmdcZoYkTvxNX`.
 
 O fluxo de manutenção está registrado na issue [#279](https://github.com/pabloguilherme1121/PG-portfolio/issues/279).
+
+## Descoberta e metadados
+
+O hub possui metadados Open Graph factuais, endereço canônico e um bloco inerte JSON-LD `WebSite` com editor pessoa física. A política CSP continua bloqueando JavaScript executável. O `sitemap.xml` declara apenas a página principal; não anunciar rotas ou releases inexistentes. Um deploy Vercel **não ocorre** ao integrar mudanças no repositório: empacotar, validar preview sem alterar SSO, publicar apenas com aceite e verificar HTTP 200 de `/robots.txt` e `/sitemap.xml`, além de `/brand/pg-bot/mascot.webp`. Manter referência do deployment anterior para rollback.

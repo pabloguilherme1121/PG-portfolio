@@ -90,6 +90,7 @@ describe("repository hygiene", () => {
       "check-ecosystem-endpoints.test.mjs",
       "check-pgtech-parity.mjs",
       "check-pgtech-parity.test.mjs",
+      "check-pgtech-seo.test.mjs",
       "check-pgtech-vercel-headers.test.mjs",
       "check-source-escapes.mjs",
       "prepare-github-pages.mjs",

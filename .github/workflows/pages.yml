@@ -68,6 +68,8 @@ jobs:
         run: pnpm audit:source
       - name: Verify PG Tech hub Vercel security headers
         run: node --test scripts/check-pgtech-vercel-headers.test.mjs
+      - name: Verify PG Tech hub semantic metadata and crawl files
+        run: node --test scripts/check-pgtech-seo.test.mjs
       - name: Lint source
         run: pnpm lint
       - name: Typecheck public app
