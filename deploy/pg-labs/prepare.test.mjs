@@ -104,3 +104,20 @@ test('real project source and artwork also build with exact original bytes',asyn
     }
   }
 });
+
+test('Cloudflare Pages recebe _headers nos pacotes QA e Creator', async t => {
+  const { root } = await fixture(t);
+  for (const lab of ['qa', 'creator']) {
+    const outputDir = join(root, 'cloudflare-out', lab);
+    const result = await prepareLabBundle({ root, lab, outputDir });
+    assert.ok(result.files.includes('_headers'));
+    const headers = await readFile(join(outputDir, '_headers'), 'utf8');
+    assert.match(headers, /^\/\*\n/);
+    for (const directive of [
+      'X-Content-Type-Options: nosniff',
+      'X-Frame-Options: DENY',
+      'Referrer-Policy: strict-origin-when-cross-origin',
+      "Content-Security-Policy: frame-ancestors 'none'",
+    ]) assert.ok(headers.split('\n').includes('  ' + directive), directive);
+  }
+});
