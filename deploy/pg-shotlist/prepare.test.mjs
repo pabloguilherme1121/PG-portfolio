@@ -107,3 +107,17 @@ test('fonte real do repositório gera pacote com os mesmos bytes', async t => {
   }
   assert.ok(!headers.find(h => h.key === 'Content-Security-Policy').value.includes("script-src 'none'"), 'Shotlist uses inline JavaScript');
 });
+
+test('Cloudflare Pages recebe _headers de segurança no pacote Shotlist', async t => {
+  const { root, outputDir } = await fixture(t);
+  const result = await prepareShotlistBundle({ root, outputDir });
+  assert.ok(result.files.includes('_headers'));
+  const headers = await readFile(join(outputDir, '_headers'), 'utf8');
+  assert.match(headers, /^\/\*\n/);
+  for (const directive of [
+    'X-Content-Type-Options: nosniff',
+    'X-Frame-Options: DENY',
+    'Referrer-Policy: strict-origin-when-cross-origin',
+    "Content-Security-Policy: frame-ancestors 'none'",
+  ]) assert.ok(headers.split('\n').includes('  ' + directive), directive);
+});
