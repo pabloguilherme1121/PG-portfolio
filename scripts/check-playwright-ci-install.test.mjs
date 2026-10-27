@@ -9,6 +9,7 @@ test("CI quality uses official Playwright image aligned to locked package versio
   const lockfile = readFileSync(new URL("../pnpm-lock.yaml", import.meta.url), "utf8");
   assert.match(lockfile, /'@playwright\/test':\s*\n\s*specifier: \^1\.62\.1\s*\n\s*version: 1\.62\.1/);
   assert.match(yaml, /quality:\s*\n\s*runs-on: ubuntu-24\.04\s*\n\s*container:\s*\n\s*image: mcr\.microsoft\.com\/playwright:v1\.62\.1-noble/);
+  assert.match(yaml, /image: mcr\.microsoft\.com\/playwright:v1\.62\.1-noble[\s\S]*?env:\s*\n\s*HOME: \/root/);
   assert.doesNotMatch(yaml, /playwright install --with-deps/);
   assert.match(yaml, /name: Verify Playwright browser startup/);
   assert.match(yaml, /run: node scripts\/verify-playwright-startup\.mjs/);
