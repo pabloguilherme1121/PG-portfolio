@@ -118,3 +118,10 @@ test('rejects an absent Cloudflare Pages _headers input without leaving a partia
   await assert.rejects(()=>prepareShotlistBundle({root,outputDir}),{code:'ENOENT'});
   await assert.rejects(()=>readFile(join(outputDir,'index.html')),{code:'ENOENT'});
 });
+
+test('rejects weakened Cloudflare Pages headers before creating an output',async t=>{
+  const {root,outputDir}=await fixture(t);
+  await writeFile(join(root,'deploy/pg-shotlist/_headers'), "/*\n  X-Frame-Options: ALLOWALL\n");
+  await assert.rejects(()=>prepareShotlistBundle({root,outputDir}),/Cloudflare Pages/);
+  await assert.rejects(()=>readFile(join(outputDir,'index.html')),{code:'ENOENT'});
+});
