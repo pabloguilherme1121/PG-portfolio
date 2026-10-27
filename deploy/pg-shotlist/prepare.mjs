@@ -7,6 +7,7 @@ const files = [
   ['apps/portfolio/public/lab/shotlist/index.html', 'index.html'],
   ['apps/portfolio/public/lab/shotlist/visual.css', 'visual.css'],
   ['apps/portfolio/public/brand/pg-bot/mascot.webp', 'brand/pg-bot/mascot.webp'],
+  ['deploy/pg-shotlist/_headers', '_headers'],
   ['deploy/pg-shotlist/vercel.json', 'vercel.json'],
 ];
 
@@ -18,7 +19,7 @@ export async function prepareShotlistBundle({ root = defaultRoot, outputDir = jo
   if (!html.includes('../../brand/pg-bot/mascot.webp')) {
     throw new Error('Referência do mascote PG Bot ausente no HTML do Shotlist');
   }
-  const config = JSON.parse(bytes[3].toString('utf8'));
+  const config = JSON.parse(bytes[files.findIndex(([, to]) => to === 'vercel.json')].toString('utf8'));
   const requiredHeaders = [
     ['X-Content-Type-Options', 'nosniff'],
     ['X-Frame-Options', 'DENY'],
@@ -29,6 +30,12 @@ export async function prepareShotlistBundle({ root = defaultRoot, outputDir = jo
     rule.source === '/(.*)' && requiredHeaders.every(([key, value]) =>
       rule.headers?.some(header => header.key === key && header.value === value)))) {
     throw new Error('Cabeçalhos Vercel insuficientes');
+  }
+  // Cloudflare Pages reads _headers from its published root, not vercel.json.
+  const pagesHeaders = bytes[files.findIndex(([, to]) => to === '_headers')].toString('utf8');
+  if (!pagesHeaders.startsWith('/*\\n') ||
+      !requiredHeaders.every(([key, value]) => pagesHeaders.includes('\\n  ' + key + ': ' + value + '\\n'))) {
+    throw new Error('Cabeçalhos Cloudflare Pages insuficientes');
   }
   await mkdir(dirname(destination), { recursive: true });
   await mkdir(destination); // EEXIST is intentional: never overwrite an existing build.
