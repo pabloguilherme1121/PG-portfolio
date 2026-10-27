@@ -18,7 +18,7 @@ async function fixture(t) {
   const html = Buffer.from('<!doctype html><html><script>window.example=1</script><img src="../../brand/pg-bot/mascot.webp"><link href="./visual.css" rel="stylesheet"></html>');
   const css = Buffer.from('body { color: #fff; }');
   const mascot = Buffer.from([0x52, 0x49, 0x46, 0x46, 0, 0xff, 0x00, 0x01, 0x57, 0x45, 0x42, 0x50]);
-  const pagesHeaders = '/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n';
+  const pagesHeaders = "/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n";
   const config = JSON.stringify({ headers: [{ source: '/(.*)', headers: [
     { key: 'X-Content-Type-Options', value: 'nosniff' },
     { key: 'X-Frame-Options', value: 'DENY' },
