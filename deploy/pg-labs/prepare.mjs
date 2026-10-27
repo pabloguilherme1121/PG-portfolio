@@ -20,6 +20,7 @@ export async function prepareLabBundle({ root = defaultRoot, lab, outputDir } = 
     [`${dir}/index.html`, 'index.html'],
     ...(LABS[lab] ? [[`${dir}/visual.css`, 'visual.css']] : []),
     ['apps/portfolio/public/brand/pg-bot/mascot.webp', mascot],
+    ['deploy/cloudflare/_headers', '_headers'],
     ['deploy/pg-labs/vercel.json', 'vercel.json'],
   ];
   // Read and validate every input before creating any output.
@@ -39,6 +40,10 @@ export async function prepareLabBundle({ root = defaultRoot, lab, outputDir } = 
   const headerReady = config.headers?.some(rule => rule.source === '/(.*)' &&
     requiredHeaders.every(([key, value]) => rule.headers?.some(h => h.key === key && h.value === value)));
   if (!headerReady) throw new Error('Cabeçalhos Vercel ausentes ou alterados');
+  const expectedPagesHeaders = ['/*', ...requiredHeaders.map(([key, value]) => `  ${key}: ${value}`), ''].join('\n');
+  if (bytes[sources.findIndex(([, to]) => to === '_headers')].toString('utf8') !== expectedPagesHeaders) {
+    throw new Error('Cabeçalhos Cloudflare Pages ausentes ou alterados');
+  }
   await mkdir(dirname(output), { recursive: true });
   await mkdir(output); // Never overwrite a previous output.
   try {
