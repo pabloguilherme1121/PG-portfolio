@@ -22,6 +22,9 @@ async function fixture(t) {
   await writeFile(mascotPath, WEBP);
   await mkdir(join(root, 'deploy/pg-labs'), {recursive:true});
   await writeFile(join(root,'deploy/pg-labs/vercel.json'), JSON.stringify(config)+'\n');
+  await mkdir(join(root, 'deploy/cloudflare'), {recursive:true});
+  const pagesHeaders = await readFile(fileURLToPath(new URL('../cloudflare/_headers', import.meta.url)));
+  await writeFile(join(root, 'deploy/cloudflare/_headers'), pagesHeaders);
   const htmls = {}, styles = {};
   for (const [lab, hasCss] of Object.entries(LABS)) {
     const folder = join(root, 'apps/portfolio/public/lab',lab);
@@ -40,13 +43,14 @@ test('four Vercel lab bundles preserve HTML, CSS and WebP byte-for-byte', async 
   for(const lab of Object.keys(LABS)){
     const outputDir=join(f.root,'out',lab);
     const result=await prepareLabBundle({root:f.root,lab,outputDir});
-    const expected=['index.html',...(LABS[lab]?['visual.css']:[]),'brand/pg-bot/mascot.webp','vercel.json'];
+    const expected=['index.html',...(LABS[lab]?['visual.css']:[]),'brand/pg-bot/mascot.webp','_headers','vercel.json'];
     assert.deepEqual(result.files,expected);
     assert.deepEqual(await readFile(join(outputDir,'index.html')),f.htmls[lab]);
     assert.deepEqual(await readFile(join(outputDir,'brand/pg-bot/mascot.webp')),WEBP);
     assert.deepEqual(await readFile(join(outputDir,'vercel.json')),Buffer.from(JSON.stringify(config)+'\n'));
+    assert.deepEqual(await readFile(join(outputDir,'_headers')),await readFile(join(f.root,'deploy/cloudflare/_headers')));
     if(LABS[lab]) assert.deepEqual(await readFile(join(outputDir,'visual.css')),f.styles[lab]);
-    assert.deepEqual((await readdir(outputDir)).sort(),(LABS[lab]?['index.html','visual.css','brand','vercel.json']:['index.html','brand','vercel.json']).sort());
+    assert.deepEqual((await readdir(outputDir)).sort(),(LABS[lab]?['index.html','visual.css','brand','_headers','vercel.json']:['index.html','brand','_headers','vercel.json']).sort());
   }
 });
 
@@ -98,6 +102,7 @@ test('real project source and artwork also build with exact original bytes',asyn
     const r=await prepareLabBundle({root,lab,outputDir});
     for(const name of r.files){
       const source=name==='vercel.json'?join(root,'deploy/pg-labs/vercel.json')
+        : name==='_headers'?join(root,'deploy/cloudflare/_headers')
         : name==='brand/pg-bot/mascot.webp'?join(root,'apps/portfolio/public/brand/pg-bot/mascot.webp')
         : join(root,'apps/portfolio/public/lab',lab,name);
       assert.deepEqual(await readFile(source),await readFile(join(outputDir,name)));
@@ -120,4 +125,12 @@ test('Cloudflare Pages recebe _headers nos pacotes QA e Creator', async t => {
       "Content-Security-Policy: frame-ancestors 'none'",
     ]) assert.ok(headers.split('\n').includes('  ' + directive), directive);
   }
+});
+
+test('não publica os laboratórios com _headers Cloudflare incompletos', async t => {
+  const f = await fixture(t);
+  const outputDir = join(f.root, 'out', 'qa-bad-headers');
+  await writeFile(join(f.root, 'deploy/cloudflare/_headers'), '/*\n  X-Frame-Options: SAMEORIGIN\n');
+  await assert.rejects(() => prepareLabBundle({ root: f.root, lab: 'qa', outputDir }), /Cabeçalhos Cloudflare Pages/);
+  await assert.rejects(() => readFile(join(outputDir, 'index.html')), { code: 'ENOENT' });
 });
