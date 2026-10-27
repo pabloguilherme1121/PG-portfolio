@@ -1,8 +1,10 @@
 # PG Tech: implantação Vercel do hub
 
-Configuração canônica do domínio https://pgtech-pi.vercel.app/. O conteúdo público está em `apps/portfolio/public/lab/index.html`. Esta pasta não é publicada automaticamente pelo GitHub Pages e o merge não faz deploy no Vercel.
+Configuração canônica do domínio https://pgtech-pi.vercel.app/. O conteúdo público está em `apps/portfolio/public/lab/index.html`. O aviso de privacidade da vitrine está em `apps/portfolio/public/lab/privacidade.html` e não deve ser generalizado aos aplicativos externos. Esta pasta não é publicada automaticamente pelo GitHub Pages e o merge não faz deploy no Vercel.
 
 ## Pacote estático
+
+**Obrigatório no mesmo pacote:** `privacidade.html` na raiz, a partir de `apps/portfolio/public/lab/privacidade.html`, além de `index.html`, `sitemap.xml`, `robots.txt`, o mascote e `vercel.json`. Verificar `GET /privacidade.html` = HTTP 200 e o link do rodapé antes de publicar. Não transferir o domínio se o aviso estiver ausente.
 
 Enviar somente os arquivos da revisão aprovada à raiz do deployment: `index.html` (fonte `apps/portfolio/public/lab/index.html`), `brand/pg-bot/mascot.webp` (fonte `apps/portfolio/public/brand/pg-bot/mascot.webp`), `vercel.json` (este diretório), `robots.txt` e `sitemap.xml` (ambos neste diretório), além de `favicon.svg` somente quando verificado. Os arquivos `robots.txt` e `sitemap.xml` devem estar na **raiz pública**, não dentro de `/deploy/pgtech/`. Não publicar scripts internos, segredos nem `apps/api`.
 
