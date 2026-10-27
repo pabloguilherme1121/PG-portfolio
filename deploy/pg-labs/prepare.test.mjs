@@ -22,6 +22,7 @@ async function fixture(t) {
   await writeFile(mascotPath, WEBP);
   await mkdir(join(root, 'deploy/pg-labs'), {recursive:true});
   await writeFile(join(root,'deploy/pg-labs/vercel.json'), JSON.stringify(config)+'\n');
+  await writeFile(join(root,'deploy/pg-labs/_headers'), "/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n");
   const htmls = {}, styles = {};
   for (const [lab, hasCss] of Object.entries(LABS)) {
     const folder = join(root, 'apps/portfolio/public/lab',lab);
@@ -40,13 +41,14 @@ test('four Vercel lab bundles preserve HTML, CSS and WebP byte-for-byte', async 
   for(const lab of Object.keys(LABS)){
     const outputDir=join(f.root,'out',lab);
     const result=await prepareLabBundle({root:f.root,lab,outputDir});
-    const expected=['index.html',...(LABS[lab]?['visual.css']:[]),'brand/pg-bot/mascot.webp','vercel.json'];
+    const expected=['index.html',...(LABS[lab]?['visual.css']:[]),'brand/pg-bot/mascot.webp','_headers','vercel.json'];
     assert.deepEqual(result.files,expected);
     assert.deepEqual(await readFile(join(outputDir,'index.html')),f.htmls[lab]);
     assert.deepEqual(await readFile(join(outputDir,'brand/pg-bot/mascot.webp')),WEBP);
     assert.deepEqual(await readFile(join(outputDir,'vercel.json')),Buffer.from(JSON.stringify(config)+'\n'));
+    assert.equal(await readFile(join(outputDir,'_headers'),'utf8'), "/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n");
     if(LABS[lab]) assert.deepEqual(await readFile(join(outputDir,'visual.css')),f.styles[lab]);
-    assert.deepEqual((await readdir(outputDir)).sort(),(LABS[lab]?['index.html','visual.css','brand','vercel.json']:['index.html','brand','vercel.json']).sort());
+    assert.deepEqual((await readdir(outputDir)).sort(),(LABS[lab]?['index.html','visual.css','brand','_headers','vercel.json']:['index.html','brand','_headers','vercel.json']).sort());
   }
 });
 
@@ -97,10 +99,28 @@ test('real project source and artwork also build with exact original bytes',asyn
     const outputDir=join(folder,lab);
     const r=await prepareLabBundle({root,lab,outputDir});
     for(const name of r.files){
-      const source=name==='vercel.json'?join(root,'deploy/pg-labs/vercel.json')
+      const source=name==='_headers'?join(root,'deploy/pg-labs/_headers')
+        : name==='vercel.json'?join(root,'deploy/pg-labs/vercel.json')
         : name==='brand/pg-bot/mascot.webp'?join(root,'apps/portfolio/public/brand/pg-bot/mascot.webp')
         : join(root,'apps/portfolio/public/lab',lab,name);
       assert.deepEqual(await readFile(source),await readFile(join(outputDir,name)));
     }
   }
+});
+
+
+test('fails closed when Cloudflare Pages _headers file is missing', async t => {
+  const f = await fixture(t);
+  const outputDir = join(f.root, 'out', 'sprint');
+  await rm(join(f.root, 'deploy/pg-labs/_headers'));
+  await assert.rejects(() => prepareLabBundle({root:f.root,lab:'sprint',outputDir}), {code:'ENOENT'});
+  await assert.rejects(() => readFile(join(outputDir,'index.html')), {code:'ENOENT'});
+});
+
+test('rejects weakened Cloudflare Pages headers before writing output',async t=>{
+  const f=await fixture(t);
+  const outputDir=join(f.root,'out','qa');
+  await writeFile(join(f.root,'deploy/pg-labs/_headers'), "/*\n  X-Frame-Options: ALLOWALL\n");
+  await assert.rejects(()=>prepareLabBundle({root:f.root,lab:'qa',outputDir}),/Cloudflare Pages/);
+  await assert.rejects(()=>readFile(join(outputDir,'index.html')),{code:'ENOENT'});
 });
