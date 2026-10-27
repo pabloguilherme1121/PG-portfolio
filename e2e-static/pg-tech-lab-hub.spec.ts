@@ -12,6 +12,10 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
     "https://pgtech-pi.vercel.app/",
   );
 
+  await expect(page.locator("#ferramentas .section-top p")).toContainText(
+    "a restauração ainda está em validação",
+  );
+
   for (const host of [
     "pg-shotlist-lab.vercel.app",
     "pg-qa-lab.vercel.app",
