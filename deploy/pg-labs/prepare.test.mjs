@@ -22,7 +22,7 @@ async function fixture(t) {
   await writeFile(mascotPath, WEBP);
   await mkdir(join(root, 'deploy/pg-labs'), {recursive:true});
   await writeFile(join(root,'deploy/pg-labs/vercel.json'), JSON.stringify(config)+'\n');
-  await writeFile(join(root,'deploy/pg-labs/_headers'), '/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n');
+  await writeFile(join(root,'deploy/pg-labs/_headers'), "/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n");
   const htmls = {}, styles = {};
   for (const [lab, hasCss] of Object.entries(LABS)) {
     const folder = join(root, 'apps/portfolio/public/lab',lab);
@@ -46,7 +46,7 @@ test('four Vercel lab bundles preserve HTML, CSS and WebP byte-for-byte', async 
     assert.deepEqual(await readFile(join(outputDir,'index.html')),f.htmls[lab]);
     assert.deepEqual(await readFile(join(outputDir,'brand/pg-bot/mascot.webp')),WEBP);
     assert.deepEqual(await readFile(join(outputDir,'vercel.json')),Buffer.from(JSON.stringify(config)+'\n'));
-    assert.equal(await readFile(join(outputDir,'_headers'),'utf8'), '/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n');
+    assert.equal(await readFile(join(outputDir,'_headers'),'utf8'), "/*\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: strict-origin-when-cross-origin\n  Content-Security-Policy: frame-ancestors 'none'\n");
     if(LABS[lab]) assert.deepEqual(await readFile(join(outputDir,'visual.css')),f.styles[lab]);
     assert.deepEqual((await readdir(outputDir)).sort(),(LABS[lab]?['index.html','visual.css','brand','_headers','vercel.json']:['index.html','brand','_headers','vercel.json']).sort());
   }
