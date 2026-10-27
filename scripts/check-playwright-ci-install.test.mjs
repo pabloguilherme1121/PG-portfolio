@@ -8,9 +8,9 @@ const checkSource = readFileSync(new URL("./verify-playwright-startup.mjs", impo
 test("CI quality uses official Playwright image aligned to locked package version", () => {
   const lockfile = readFileSync(new URL("../pnpm-lock.yaml", import.meta.url), "utf8");
   assert.match(lockfile, /'@playwright\/test':\s*\n\s*specifier: \^1\.62\.1\s*\n\s*version: 1\.62\.1/);
-  const quality = yaml.split(/^  quality:\\s*$/m)[1]?.split(/^  deploy:\\s*$/m)[0] ?? "";
-  assert.match(quality, /runs-on: ubuntu-24\\.04/);
-  assert.match(quality, /container:\\s*\\n\\s*image: mcr\\.microsoft\\.com\\/playwright:v1\\.62\\.1-noble/);
+  const quality = yaml.split(/^  quality:\s*$/m)[1]?.split(/^  deploy:\s*$/m)[0] ?? "";
+  assert.match(quality, /runs-on: ubuntu-24\.04/);
+  assert.match(quality, /container:\s*\n\s*image: mcr\.microsoft\.com\/playwright:v1\.62\.1-noble/);
   assert.match(yaml, /image: mcr\.microsoft\.com\/playwright:v1\.62\.1-noble[\s\S]*?env:\s*\n\s*HOME: \/root/);
   assert.doesNotMatch(yaml, /playwright install --with-deps/);
   assert.match(yaml, /name: Verify Playwright browser startup/);
