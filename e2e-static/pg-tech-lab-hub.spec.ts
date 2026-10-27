@@ -30,6 +30,24 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
       `Overflow horizontal em ${width}px`,
     ).toBeLessThanOrEqual(1);
     await expect(page.locator("h1")).toBeVisible();
+    if (width <= 390) {
+      // Mobile labels, section markers and navigation must remain readable without zoom.
+      for (const selector of ["header nav a", ".mini", ".micro"]) {
+        const sizes = await page.locator(selector).evaluateAll(elements =>
+          elements.map(element => parseFloat(getComputedStyle(element).fontSize)),
+        );
+        expect(sizes.length, `Missing elements for ${selector}`).toBeGreaterThan(0);
+        expect(Math.min(...sizes), `${selector} must be at least 14px at ${width}px`)
+          .toBeGreaterThanOrEqual(14);
+      }
+      const projectLabelSizes = await page.locator(".preview small").evaluateAll(elements =>
+        elements.map(element => parseFloat(getComputedStyle(element).fontSize)),
+      );
+      expect(projectLabelSizes.length).toBeGreaterThan(0);
+      expect(Math.min(...projectLabelSizes), `Project preview labels at ${width}px`)
+        .toBeGreaterThanOrEqual(13);
+    }
+
     // Links de projetos precisam ser tocáveis sem zoom e sem arrastar a tela.
     const cards = page.locator("#apps .project-body > a, #ferramentas .project-body > a");
     await expect(cards).toHaveCount(9);
