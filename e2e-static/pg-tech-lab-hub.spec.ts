@@ -5,7 +5,7 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
   page.on("pageerror", error => errors.push(error.message));
   const response = await page.goto("lab/");
   expect(response?.status()).toBe(200);
-  await expect(page).toHaveTitle("PG Tech | Produtos digitais");
+  await expect(page).toHaveTitle("PG Tech | Sites, apps e ferramentas digitais");
   await expect(page.locator("h1")).toContainText("Ferramentas feitas");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
