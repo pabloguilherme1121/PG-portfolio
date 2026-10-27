@@ -42,8 +42,8 @@ export async function prepareLabBundle({ root = defaultRoot, lab, outputDir } = 
   if (!headerReady) throw new Error('Cabeçalhos Vercel ausentes ou alterados');
   // Cloudflare Pages ignores vercel.json: its static response rules live in _headers.
   const pagesHeaders = bytes[sources.findIndex(([, to]) => to === '_headers')].toString('utf8');
-  if (!pagesHeaders.startsWith('/*\\n') ||
-      !requiredHeaders.every(([key, value]) => pagesHeaders.includes('\\n  ' + key + ': ' + value + '\\n'))) {
+  if (!pagesHeaders.startsWith('/*\n') ||
+      !requiredHeaders.every(([key, value]) => pagesHeaders.includes('\n  ' + key + ': ' + value + '\n'))) {
     throw new Error('Cabeçalhos Cloudflare Pages ausentes ou alterados');
   }
   await mkdir(dirname(output), { recursive: true });
