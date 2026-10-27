@@ -116,3 +116,11 @@ test('fails closed when Cloudflare Pages _headers file is missing', async t => {
   await assert.rejects(() => prepareLabBundle({root:f.root,lab:'sprint',outputDir}), {code:'ENOENT'});
   await assert.rejects(() => readFile(join(outputDir,'index.html')), {code:'ENOENT'});
 });
+
+test('rejects weakened Cloudflare Pages headers before writing output',async t=>{
+  const f=await fixture(t);
+  const outputDir=join(f.root,'out','qa');
+  await writeFile(join(f.root,'deploy/pg-labs/_headers'), "/*\n  X-Frame-Options: ALLOWALL\n");
+  await assert.rejects(()=>prepareLabBundle({root:f.root,lab:'qa',outputDir}),/Cloudflare Pages/);
+  await assert.rejects(()=>readFile(join(outputDir,'index.html')),{code:'ENOENT'});
+});
