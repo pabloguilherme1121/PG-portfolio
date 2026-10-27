@@ -12,9 +12,11 @@ async function fixture(t) {
   const src = join(root, 'apps/portfolio/public/lab/shotlist');
   const brand = join(root, 'apps/portfolio/public/brand/pg-bot');
   const configDir = join(root, 'deploy/pg-shotlist');
+  const cloudflareDir = join(root, 'deploy/cloudflare');
   await mkdir(src, { recursive: true });
   await mkdir(brand, { recursive: true });
   await mkdir(configDir, { recursive: true });
+  await mkdir(cloudflareDir, { recursive: true });
   const html = Buffer.from('<!doctype html><html><script>window.example=1</script><img src="../../brand/pg-bot/mascot.webp"><link href="./visual.css" rel="stylesheet"></html>');
   const css = Buffer.from('body { color: #fff; }');
   const mascot = Buffer.from([0x52, 0x49, 0x46, 0x46, 0, 0xff, 0x00, 0x01, 0x57, 0x45, 0x42, 0x50]);
@@ -24,23 +26,25 @@ async function fixture(t) {
     { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
     { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
   ] }] }) + '\n';
+  const pagesHeaders = await readFile(fileURLToPath(new URL('../cloudflare/_headers', import.meta.url)));
   await Promise.all([
     writeFile(join(src, 'index.html'), html),
     writeFile(join(src, 'visual.css'), css),
     writeFile(join(brand, 'mascot.webp'), mascot),
     writeFile(join(configDir, 'vercel.json'), config),
+    writeFile(join(cloudflareDir, '_headers'), pagesHeaders),
   ]);
-  return { root, html, css, mascot, config, outputDir: join(root, 'dist/pg-shotlist') };
+  return { root, html, css, mascot, config, pagesHeaders, outputDir: join(root, 'dist/pg-shotlist') };
 }
 
 test('prepara somente HTML, CSS, WebP e cabeçalhos, preservando os bytes', async t => {
-  const { root, html, css, mascot, config, outputDir } = await fixture(t);
+  const { root, html, css, mascot, config, pagesHeaders, outputDir } = await fixture(t);
   const result = await prepareShotlistBundle({ root, outputDir });
   assert.equal(resolve(result.outputDir), resolve(outputDir));
-  const paths = ['index.html', 'visual.css', 'brand/pg-bot/mascot.webp', 'vercel.json'];
+  const paths = ['index.html', 'visual.css', 'brand/pg-bot/mascot.webp', 'vercel.json', '_headers'];
   assert.deepEqual(result.files, paths);
   const buffers = await Promise.all(paths.map(p => readFile(join(outputDir, p))));
-  assert.deepEqual(buffers, [html, css, mascot, Buffer.from(config)]);
+  assert.deepEqual(buffers, [html, css, mascot, Buffer.from(config), pagesHeaders]);
   assert.equal(new URL('../../brand/pg-bot/mascot.webp', 'https://shotlist.example/').pathname, '/brand/pg-bot/mascot.webp');
 });
 
@@ -96,6 +100,7 @@ test('fonte real do repositório gera pacote com os mesmos bytes', async t => {
     ['apps/portfolio/public/lab/shotlist/visual.css', 'visual.css'],
     ['apps/portfolio/public/brand/pg-bot/mascot.webp', 'brand/pg-bot/mascot.webp'],
     ['deploy/pg-shotlist/vercel.json', 'vercel.json'],
+    ['deploy/cloudflare/_headers', '_headers'],
   ];
   for (const [source, target] of map) {
     assert.deepEqual(await readFile(join(root, source)), await readFile(join(outputDir, target)));
@@ -120,4 +125,11 @@ test('Cloudflare Pages recebe _headers de segurança no pacote Shotlist', async 
     'Referrer-Policy: strict-origin-when-cross-origin',
     "Content-Security-Policy: frame-ancestors 'none'",
   ]) assert.ok(headers.split('\n').includes('  ' + directive), directive);
+});
+
+test('não publica um pacote com _headers Cloudflare enfraquecido', async t => {
+  const { root, outputDir } = await fixture(t);
+  await writeFile(join(root, 'deploy/cloudflare/_headers'), '/*\n  X-Frame-Options: SAMEORIGIN\n');
+  await assert.rejects(() => prepareShotlistBundle({ root, outputDir }), /Cabeçalhos Cloudflare Pages/);
+  await assert.rejects(() => readFile(join(outputDir, 'index.html')), { code: 'ENOENT' });
 });
