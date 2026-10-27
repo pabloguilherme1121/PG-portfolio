@@ -39,6 +39,11 @@ jobs:
 
   quality:
     runs-on: ubuntu-24.04
+    # Official image carries Chromium, Firefox, WebKit and required native libs.
+    # Version matches pnpm-lock.yaml (Playwright 1.62.1) to avoid drift.
+    container:
+      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      options: --ipc=host
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
@@ -70,11 +75,6 @@ jobs:
         run: pnpm test:pg-labs-deploy
       - name: Portfolio unit tests
         run: pnpm test:portfolio
-      - name: Install Playwright browsers
-        # Ubuntu 24.04 hosted runner includes system libraries; apt mirror downloads
-        # were repeatedly cancelled. The explicit launch check below fails closed
-        # if any native dependency is missing.
-        run: pnpm exec playwright install chromium firefox webkit
       - name: Verify Playwright browser startup
         run: node scripts/verify-playwright-startup.mjs
       - name: Verify CI browser installation contract
