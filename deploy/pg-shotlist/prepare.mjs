@@ -8,6 +8,7 @@ const files = [
   ['apps/portfolio/public/lab/shotlist/visual.css', 'visual.css'],
   ['apps/portfolio/public/brand/pg-bot/mascot.webp', 'brand/pg-bot/mascot.webp'],
   ['deploy/pg-shotlist/vercel.json', 'vercel.json'],
+  ['deploy/cloudflare/_headers', '_headers'],
 ];
 
 export async function prepareShotlistBundle({ root = defaultRoot, outputDir = join(root, 'dist/pg-shotlist') } = {}) {
@@ -29,6 +30,10 @@ export async function prepareShotlistBundle({ root = defaultRoot, outputDir = jo
     rule.source === '/(.*)' && requiredHeaders.every(([key, value]) =>
       rule.headers?.some(header => header.key === key && header.value === value)))) {
     throw new Error('Cabeçalhos Vercel insuficientes');
+  }
+  const expectedPagesHeaders = ['/*', ...requiredHeaders.map(([key, value]) => `  ${key}: ${value}`), ''].join('\n');
+  if (bytes[4].toString('utf8') !== expectedPagesHeaders) {
+    throw new Error('Cabeçalhos Cloudflare Pages ausentes ou alterados');
   }
   await mkdir(dirname(destination), { recursive: true });
   await mkdir(destination); // EEXIST is intentional: never overwrite an existing build.
