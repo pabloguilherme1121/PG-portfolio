@@ -22,6 +22,9 @@ const stylesheetFiles = files.filter((file) => file.endsWith(".css"));
 
 const violations = [];
 
+if (javascriptFiles.length === 0) violations.push("Nenhum arquivo JavaScript encontrado em dist/public/assets.");
+if (stylesheetFiles.length === 0) violations.push("Nenhuma folha de estilo encontrada em dist/public/assets.");
+
 if (process.env.VITE_STATIC_DEPLOY === "true") {
   const staticRuntimeChunks = javascriptFiles.filter((file) => file.startsWith("vendor-data-"));
   for (const file of staticRuntimeChunks) {
