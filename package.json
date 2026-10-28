@@ -24,7 +24,9 @@
     "lint": "pnpm dlx oxlint@1.86.0 apps/portfolio/src scripts/audit-public-assets.mjs scripts/check-bundle-budget.mjs scripts/check-source-escapes.mjs scripts/prepare-github-pages.mjs scripts/run-workspace.mjs scripts/validate-pages-bundle.mjs scripts/verify-static-isolation.mjs vite.config.ts playwright.config.ts playwright.static.config.ts && pnpm lint:api",
     "test:portfolio": "vitest run apps/portfolio/src",
     "test:api": "vitest run apps/api/src",
-    "lint:api": "pnpm dlx oxlint@1.86.0 apps/api/src apps/api/client apps/api/drizzle packages/contracts drizzle.config.ts scripts/build-api.mjs scripts/smoke-api.mjs"
+    "lint:api": "pnpm dlx oxlint@1.86.0 apps/api/src apps/api/client apps/api/drizzle packages/contracts drizzle.config.ts scripts/build-api.mjs scripts/smoke-api.mjs",
+    "test:shotlist-deploy": "node --test deploy/pg-shotlist/prepare.test.mjs",
+    "test:pg-labs-deploy": "node --test deploy/pg-labs/prepare.test.mjs"
   },
   "dependencies": {},
   "devDependencies": {
@@ -39,8 +41,8 @@
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.14",
     "typescript": "5.9.3",
-    "vite": "^7.3.5",
-    "vitest": "^4.1.11"
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12"
   },
   "packageManager": "pnpm@10.34.5",
   "pnpm": {
@@ -56,10 +58,12 @@
       "@babel/helper-compilation-targets>browserslist": "4.28.7",
       "axios>form-data": "4.0.6",
       "vitest>picomatch": "4.0.4",
-      "qs": "6.16.0",
+      "qs": "6.16.1",
       "@esbuild-kit/core-utils>esbuild": "0.25.10",
       "@babel/core": "7.29.6",
-      "source-map-js": "1.2.2"
+      "source-map-js": "1.2.2",
+      "body-parser": "2.4.0",
+      "follow-redirects": "1.16.1"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
