@@ -44,9 +44,13 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
 test("main navigation names are distinct and keyboard-accessible", async ({ page, browserName }) => {
   await page.goto("./");
   const links = page.locator('header nav a[href^="#"]');
+  // The SPA shell renders after navigation; allTextContents() does not wait
+  // for matches, and an early Tab can run before the skip link exists.
+  await expect(links).not.toHaveCount(0);
   const names = await links.allTextContents();
   expect(new Set(names.map(name => name.trim())).size).toBe(names.length);
   const skipLink = page.getByRole("link", { name: /pular para o conteúdo/i });
+  await expect(skipLink).toBeAttached();
   if (browserName === "webkit") {
     // Safari full keyboard access is an OS preference; test activation separately.
     await skipLink.focus();
