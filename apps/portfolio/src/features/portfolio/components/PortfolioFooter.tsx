@@ -27,6 +27,7 @@ export default function PortfolioFooter({ markUrl, telegramUrl, whatsAppUrl, onW
       <div className="mx-auto grid max-w-[1440px] gap-8 px-5 py-10 sm:px-8 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-12">
         <div>
           <div className="flex items-center gap-3"><img src={markUrl} alt="" width="24" height="24" decoding="async" className="h-6 w-6 object-contain" /><p className="font-mono text-[10px] uppercase tracking-[0.13em] text-[#7b91b3] light-muted-ink">Pablo Guilherme · desenvolvimento web & produtos digitais</p></div>
+          <p className="mt-4 flex items-center gap-2 font-body text-xs text-[#9fb4d2]" data-pg-bot="signature"><img src={import.meta.env.BASE_URL + "brand/pg-bot/mascot.webp"} alt="" width="40" height="46" loading="lazy" decoding="async" className="shrink-0 object-contain" /><span>PG Bot · projetos de Pablo Guilherme</span></p>
           <h2 id="footer-contact-title" className="mt-5 max-w-sm font-display text-2xl font-medium tracking-[-0.04em] text-white">Tem um projeto em mente?</h2>
           <p className="mt-3 max-w-md font-body text-sm leading-6 text-[#9fb4d2]">Conte o que você precisa construir ou melhorar. Posso ajudar com produtos digitais, interfaces, dashboards e desenvolvimento web.</p>
         </div>
