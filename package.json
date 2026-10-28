@@ -58,7 +58,7 @@
       "@babel/helper-compilation-targets>browserslist": "4.28.7",
       "axios>form-data": "4.0.6",
       "vitest>picomatch": "4.0.4",
-      "qs": "6.16.0",
+      "qs": "6.16.1",
       "@esbuild-kit/core-utils>esbuild": "0.25.10",
       "@babel/core": "7.29.6",
       "source-map-js": "1.2.2",
