@@ -107,6 +107,8 @@ jobs:
         run: pnpm test:e2e
       - name: Repeat mobile WebKit Arcade regression
         run: pnpm exec playwright test --project=mobile-webkit --grep="PG Arcade mobile" --repeat-each=5 --workers=1
+      - name: Verify bundle budget audit
+        run: node --test scripts/check-bundle-budget.test.mjs
       - name: Enforce bundle budget
         env:
           VITE_STATIC_DEPLOY: "true"
