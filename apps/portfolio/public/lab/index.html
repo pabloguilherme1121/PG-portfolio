@@ -7,10 +7,28 @@
 <meta name="description" content="Ferramentas digitais gratuitas, projetos web e dados públicos. Conheça os aplicativos e o trabalho de Pablo Guilherme.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
-<meta property="og:title" content="PG Tech | Produtos digitais">
+<meta property="og:title" content="PG Tech | Sites, apps e ferramentas digitais">
 <meta property="og:description" content="Projetos reais, código aberto e soluções digitais feitas para funcionar.">
+<meta property="og:url" content="https://pgtech-pi.vercel.app/">
+<meta property="og:site_name" content="PG Tech">
 <link rel="canonical" href="https://pgtech-pi.vercel.app/">
-<title>PG Tech | Produtos digitais</title>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://pgtech-pi.vercel.app/#website",
+  "url": "https://pgtech-pi.vercel.app/",
+  "name": "PG Tech",
+  "description": "Ferramentas digitais gratuitas, projetos web e dados públicos de Pablo Guilherme.",
+  "inLanguage": "pt-BR",
+  "publisher": {
+    "@type": "Person",
+    "name": "Pablo Guilherme",
+    "url": "https://pabloguilherme1121.github.io/PG-portfolio/"
+  }
+}
+</script>
+<title>PG Tech | Sites, apps e ferramentas digitais</title>
 <style>
 :root {color-scheme:dark;--bg:#0d1117;--surface:#151c25;--surface2:#10171e;--border:#30404d;--txt:#edf4f7;--muted:#a7bac6;--accent:#8bedcc;--focus:#f6dc83}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 70% 0%,#173244 0%,transparent 46%),var(--bg);color:var(--txt);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
@@ -19,30 +37,31 @@ a{color:inherit}a:focus-visible{outline:3px solid var(--focus);outline-offset:4p
 .shell{width:min(100% - 40px,960px);margin-inline:auto}
 header{display:flex;justify-content:space-between;align-items:center;padding:24px 0;gap:20px}
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:750;letter-spacing:.03em}.logo{width:39px;height:39px;display:grid;place-items:center;background:var(--accent);color:#0b1d1d;border-radius:13px;font-weight:900}
-.mini{color:var(--muted);font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.mini{color:var(--muted);font-size:14px;letter-spacing:.09em;text-transform:uppercase}
 nav{display:flex;gap:20px;font-size:14px;color:#d5e4e9}nav a{text-underline-offset:4px}
-.hero{padding:68px 0 64px;max-width:770px}.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #527a75;border-radius:100px;padding:6px 13px;color:#b2f7de;font-size:13px;background:#14362d}
+.hero{padding:68px 0 64px;max-width:770px}.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #527a75;border-radius:100px;padding:6px 13px;color:#b2f7de;font-size:14px;background:#14362d}
 .dot{width:7px;height:7px;background:#7ae0a7;border-radius:50%}
 h1{font-size:clamp(40px,7.7vw,78px);letter-spacing:-.055em;line-height:1.055;margin:24px 0 18px;font-weight:820}h1 span{color:var(--accent)}.lead{font-size:clamp(17px,2.8vw,22px);color:#c4d5dd;max-width:630px;line-height:1.48}
 .ctas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:33px 0 22px}
 .cta{min-height:63px;display:flex;align-items:center;justify-content:center;gap:9px;text-align:center;padding:12px 15px;border:1px solid #576872;background:#172530;border-radius:15px;text-decoration:none;font-size:15px;font-weight:700;transition:background .2s,transform .2s}
 .cta:hover{transform:translateY(-2px);background:#243c47}
 .cta.primary{color:#071b17;background:var(--accent);border-color:var(--accent)}.cta.primary:hover{background:#b2f7de}
-.micro{font-size:13px;color:var(--muted)}
+.micro{font-size:14px;color:var(--muted)}
 section{scroll-margin-top:30px;padding:44px 0 45px;border-top:1px solid var(--border)}.section-top{display:flex;align-items:end;justify-content:space-between;gap:22px;flex-wrap:wrap}h2{font-size:clamp(26px,4vw,35px);line-height:1.2;letter-spacing:-.035em;margin:0 0 10px}.section-top p,section>p{color:var(--muted);margin:5px 0 22px}
 .projects{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;margin-top:22px}
 .project{border:1px solid var(--border);border-radius:20px;background:linear-gradient(145deg,#192431,#111923);overflow:hidden;min-width:0}
 .preview{min-height:163px;position:relative;overflow:hidden;padding:22px;background:radial-gradient(circle at 85% 20%,#2a5d60 0%,transparent 48%),#122532;display:flex;flex-direction:column;justify-content:space-between}
 .preview:after{content:"";position:absolute;right:-48px;top:42px;border:1px solid #9af2dd55;width:210px;height:210px;border-radius:35px;transform:rotate(-19deg)}
-.preview small{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:#c6e7e4;z-index:1}.preview strong{font-size:27px;letter-spacing:-.04em;line-height:1.1;max-width:250px;z-index:1}
+.preview small{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:#c6e7e4;z-index:1}.preview strong{font-size:27px;letter-spacing:-.04em;line-height:1.1;max-width:250px;z-index:1}
 .project-body{padding:20px 21px 23px}.project h3{font-size:19px;letter-spacing:-.01em;margin:0 0 7px}.project p{color:#b7cad3;font-size:14px;min-height:46px;margin:0 0 15px}.project a{display:inline-flex;align-items:center;min-height:44px;padding:8px 0;color:var(--accent);font-weight:700;text-decoration-thickness:1px;text-underline-offset:4px;overflow-wrap:anywhere}
 .stack{display:flex;flex-wrap:wrap;gap:10px;margin:19px 0 15px}.chip{border:1px solid #425361;background:#1b2832;padding:8px 13px;border-radius:100px;font-size:14px}
 .note{border-left:3px solid var(--accent);padding:9px 15px;background:#182730;border-radius:0 12px 12px 0;font-size:14px;color:#b8cbd1}
 .contact{border:1px solid #416f62;background:linear-gradient(125deg,#15322f,#13212b);border-radius:22px;padding:28px;margin:12px 0 28px}
 .contact h2{margin:0 0 12px}.contact p{color:#d1e5df;margin-bottom:20px;max-width:580px}.contact a{display:inline-flex;background:var(--accent);color:#08201b;text-decoration:none;padding:12px 18px;font-weight:750;border-radius:12px}
-footer{padding:20px 0 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13px;color:var(--muted)}
-@media(max-width:700px){header{padding:18px 0;flex-direction:column;align-items:stretch;gap:14px}header .brand{align-self:flex-start;min-width:0}header nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}header nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 6px;border:1px solid var(--border);border-radius:9px;text-align:center;white-space:normal;overflow-wrap:anywhere}nav a{font-size:13px}.hero{padding:42px 0 42px}.ctas{grid-template-columns:1fr}.projects{grid-template-columns:1fr}section{padding:30px 0}.project p{min-height:0}}
-@media(max-width:360px){.shell{width:min(100% - 24px,960px)}nav{gap:9px}nav a{font-size:12px}.brand{gap:6px;font-size:13px}.logo{width:34px;height:34px}}
+footer{padding:20px 0 40px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:14px;color:var(--muted)}
+.footer-link{display:inline-flex;align-items:center;min-height:44px;color:var(--accent);text-underline-offset:4px}
+@media(max-width:700px){header{padding:18px 0;flex-direction:column;align-items:stretch;gap:14px}header .brand{align-self:flex-start;min-width:0}header nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}header nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 6px;border:1px solid var(--border);border-radius:9px;text-align:center;white-space:normal;overflow-wrap:anywhere}nav a{font-size:14px}.hero{padding:42px 0 42px}.ctas{grid-template-columns:1fr}.projects{grid-template-columns:1fr}section{padding:30px 0}.project p{min-height:0}}
+@media(max-width:360px){.shell{width:min(100% - 24px,960px)}nav{gap:9px}nav a{font-size:14px}.brand{gap:6px;font-size:14px}.logo{width:34px;height:34px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cta{transition:none}.cta:hover{transform:none}}
 </style>
 </head>
@@ -61,9 +80,9 @@ footer{padding:20px 0 40px;display:flex;justify-content:space-between;flex-wrap:
 <article class="project"><div class="preview"><small>Dados públicos / Goiás</small><strong>Observatório Eleitoral</strong></div><div class="project-body"><h3>Dados para consulta responsável</h3><p>Painel independente de candidaturas estaduais, com data e metodologia da base.</p><a href="https://github.com/pabloguilherme1121/eleicoes-goias-2026" target="_blank" rel="noopener noreferrer">Ver projeto e fontes ↗</a></div></article>
 <article class="project"><div class="preview"><small>Informação / Dashboard</small><strong>Observatório</strong></div><div class="project-body"><h3>Informação bem organizada</h3><p>Dashboard com interfaces para explorar dados e informação pública.</p><a href="https://pabloguilherme01.github.io/observatorio/#dashboard" target="_blank" rel="noopener noreferrer">Abrir Observatório ↗</a></div></article>
 </div></section>
-<section id="ferramentas" aria-labelledby="titulo-ferramentas"><div class="section-top"><div><span class="mini">FERRAMENTAS / USO GRATUITO</span><h2 id="titulo-ferramentas">Ferramentas para o trabalho diário</h2><p>Sem cadastro. Os dados ficam salvos neste navegador; exporte um backup para usar em outro aparelho.</p></div></div><div class="projects"><article class="project"><div class="preview"><small>Produção audiovisual</small><strong>PG Shotlist</strong></div><div class="project-body"><h3>Organize as cenas da gravação</h3><p>Planeje captações, defina prioridades e acompanhe o que foi gravado.</p><a href="https://pg-shotlist-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir planejador de cenas ↗</a></div></article><article class="project"><div class="preview"><small>Testes e evidências</small><strong>PG QA Lab</strong></div><div class="project-body"><h3>Registre o que foi testado</h3><p>Crie execuções, documente critérios e exporte evidências em CSV ou JSON.</p><a href="https://pg-qa-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir registro de testes ↗</a></div></article><article class="project"><div class="preview"><small>Planejamento criativo</small><strong>PG Creator Kit</strong></div><div class="project-body"><h3>Guarde ideias e roteiros</h3><p>Organize ideias e roteiros de conteúdo para a próxima produção.</p><a href="https://pg-creator-kit.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir estúdio de ideias ↗</a></div></article><article class="project"><div class="preview"><small>Produtividade</small><strong>PG Sprint</strong></div><div class="project-body"><h3>Planeje tarefas e ciclos de foco</h3><p>Priorize tarefas, use um temporizador e faça backup do planejamento.</p><a href="https://pg-sprint-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir tarefas e foco ↗</a></div></article><article class="project"><div class="preview"><small>Custos de produção</small><strong>PG Budget</strong></div><div class="project-body"><h3>Calcule os custos do trabalho</h3><p>Organize lançamentos, acompanhe totais e exporte orçamentos.</p><a href="https://pg-budget-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir orçamento ↗</a></div></article></div></section>
+<section id="ferramentas" aria-labelledby="titulo-ferramentas"><div class="section-top"><div><span class="mini">FERRAMENTAS / USO GRATUITO</span><h2 id="titulo-ferramentas">Ferramentas para o trabalho diário</h2><p>Versões gratuitas em teste. Confira cada recurso e mantenha uma cópia dos seus dados; a restauração ainda está em validação.</p></div></div><div class="projects"><article class="project"><div class="preview"><small>Produção audiovisual</small><strong>PG Shotlist</strong></div><div class="project-body"><h3>Organize as cenas da gravação</h3><p>Planeje captações, defina prioridades e acompanhe o que foi gravado.</p><a href="https://pg-shotlist-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir planejador de cenas ↗</a></div></article><article class="project"><div class="preview"><small>Testes e evidências</small><strong>PG QA Lab</strong></div><div class="project-body"><h3>Registre o que foi testado</h3><p>Crie execuções, documente critérios e exporte evidências em CSV ou JSON.</p><a href="https://pg-qa-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir registro de testes ↗</a></div></article><article class="project"><div class="preview"><small>Planejamento criativo</small><strong>PG Creator Kit</strong></div><div class="project-body"><h3>Guarde ideias e roteiros</h3><p>Organize ideias e roteiros de conteúdo para a próxima produção.</p><a href="https://pg-creator-kit.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir estúdio de ideias ↗</a></div></article><article class="project"><div class="preview"><small>Produtividade</small><strong>PG Sprint</strong></div><div class="project-body"><h3>Planeje tarefas e ciclos de foco</h3><p>Priorize tarefas, use um temporizador e faça backup do planejamento.</p><a href="https://pg-sprint-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir tarefas e foco ↗</a></div></article><article class="project"><div class="preview"><small>Custos de produção</small><strong>PG Budget</strong></div><div class="project-body"><h3>Calcule os custos do trabalho</h3><p>Organize lançamentos, acompanhe totais e exporte orçamentos.</p><a href="https://pg-budget-lab.vercel.app/" target="_blank" rel="noopener noreferrer">Abrir orçamento ↗</a></div></article></div></section>
 <section id="stack" aria-labelledby="titulo-stack"><span class="mini">FERRAMENTAS / 2026</span><h2 id="titulo-stack">Meu stack de trabalho</h2><p>Tecnologias presentes nos meus projetos publicados e no fluxo de desenvolvimento.</p><div class="stack"><span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Vite</span><span class="chip">Tailwind CSS</span><span class="chip">Playwright</span><span class="chip">GitHub Actions</span><span class="chip">GitHub Pages</span><span class="chip">Vercel</span></div><p class="note">Cada projeto documenta o que funciona e o que ainda está em desenvolvimento.</p></section>
 <section id="contato" aria-labelledby="titulo-contato"><div class="contact"><span class="mini">TEM UMA IDEIA?</span><h2 id="titulo-contato">Vamos transformar o problema em solução.</h2><p>Precisa de um site, dashboard ou protótipo? Abra meu portfólio e use o contato profissional para iniciar uma conversa pelo canal disponível, incluindo WhatsApp quando oferecido.</p><a href="https://pabloguilherme1121.github.io/PG-portfolio/#contato" target="_blank" rel="noopener noreferrer">Abrir contato profissional ↗</a></div></section>
 </main>
-<footer><span>© 2026 Pablo Guilherme · Projetos, código e contexto.</span><span>Goiás, Brasil · @pablo.builds.ia</span></footer>
+<footer><span>© 2026 Pablo Guilherme · Projetos, código e contexto.</span><a class="footer-link" href="privacidade.html">Privacidade e dados</a><span>Goiás, Brasil · @pablo.builds.ia</span></footer>
 </div><div class="shell"><p data-pg-bot="signature" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;font:inherit;font-size:12px;line-height:1.5;margin:12px 0;"><img src="../brand/pg-bot/mascot.webp" alt="" width="40" height="46" loading="lazy" decoding="async" style="object-fit:contain;flex:none" /><span>PG Bot · projetos de Pablo Guilherme</span></p></div></body></html>
