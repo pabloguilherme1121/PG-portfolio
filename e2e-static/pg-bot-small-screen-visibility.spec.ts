@@ -75,7 +75,11 @@ for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 740 });
     await page.goto("./");
     await page.locator('[data-hero-pg-bot="true"]').click();
-    const options = page.locator('[data-pg-bot-suggestions="true"] button');
+    const dialog = page.locator('[data-pg-bot-dialog="true"]');
+    await expect(dialog).toBeVisible();
+    const options = dialog.locator('[data-pg-bot-suggestions="true"] button');
+    // The guide is lazy-loaded. Wait for the real buttons before measuring targets.
+    await expect(options.first()).toBeVisible();
     expect(await options.count()).toBeGreaterThanOrEqual(4);
     for (const option of await options.all()) {
       const bounds = await option.boundingBox();
