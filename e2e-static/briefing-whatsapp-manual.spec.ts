@@ -28,6 +28,15 @@ for (const width of [320, 390]) {
       "Preciso de um site profissional para apresentar serviços e receber contatos."
     );
 
+    // Native constraint validation runs before React's onSubmit callback.
+    // Make the first invalid required field visible in the failing trace.
+    const invalidFields = await form.evaluate(node =>
+      Array.from(node.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("[required]"))
+        .filter(field => !field.checkValidity())
+        .map(field => field.name)
+    );
+    expect(invalidFields, "todos os campos obrigatórios devem permanecer válidos após as cinco etapas").toEqual([]);
+
     let popups = 0;
     page.on("popup", () => { popups += 1; });
     await form.locator('[data-briefing-submit="true"]').click();
