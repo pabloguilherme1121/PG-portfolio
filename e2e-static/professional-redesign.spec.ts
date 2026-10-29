@@ -46,9 +46,11 @@ test("briefing native anchor survives five pointer visits at 390px", async ({ pa
   await page.setViewportSize({ width: 390, height: 900 });
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
+    // A página anterior termina em #contato-briefing. Voltar à raiz força um
+    // documento novo antes de abrir o deep link exato, sem competir com reload
+    // durante a navegação de hash no WebKit.
+    await page.goto("./");
     await page.goto("./?consultation=1#contato");
-    // Uma navegação só de fragmento preserva o estado React; testar cada visita a frio.
-    await page.reload();
     const contact = page.locator("#contato");
     const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
     const form = contact.locator('[data-briefing-form="true"]');
