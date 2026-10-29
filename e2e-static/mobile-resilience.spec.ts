@@ -87,6 +87,9 @@ test("página inteira e repertório social funcionam em telas pequenas", async (
       await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy();
     }
     const social = page.locator("#social");
+    // Earlier lazy sections can shift the viewport after the first social scroll.
+    // Revisit the section before asserting its real (not placeholder) content.
+    await social.scrollIntoViewIfNeeded();
     await expect(social.getByRole("heading", { name: "O que está em movimento." })).toBeVisible();
     await expect(social.locator('[data-social-profiles="true"]').getByRole("link")).toHaveCount(2);
     await expect(page.getByText("Algo saiu do percurso.", { exact: true })).toHaveCount(0);
