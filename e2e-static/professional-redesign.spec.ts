@@ -47,6 +47,8 @@ test("briefing native anchor survives five pointer visits at 390px", async ({ pa
 
   for (let attempt = 0; attempt < 5; attempt += 1) {
     await page.goto("./?consultation=1#contato");
+    // Uma navegação só de fragmento preserva o estado React; testar cada visita a frio.
+    await page.reload();
     const contact = page.locator("#contato");
     const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
     const form = contact.locator('[data-briefing-form="true"]');
