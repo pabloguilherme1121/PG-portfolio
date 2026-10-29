@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07101d">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="Prévia de uma nova apresentação do portfólio de Pablo Guilherme, com projetos reais, decisões técnicas e contato.">
+  <link rel="canonical" href="https://pabloguilherme1121.github.io/PG-portfolio/">
+  <title>Prévia V2 · Pablo Guilherme | Produtos digitais</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07101d;
+      --panel: #101d2d;
+      --panel-2: #12273a;
+      --ink: #f3f8fc;
+      --muted: #bbcede;
+      --line: #365267;
+      --accent: #7ce4ec;
+      --warm: #ffbc83;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body { margin: 0; min-width: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.55; }
+    body::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 610px; background: radial-gradient(ellipse at 81% 12%, #1d5360 0, transparent 52%), radial-gradient(ellipse at 0% 50%, #172846 0, transparent 48%); pointer-events: none; z-index: -1; }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--warm); outline-offset: 4px; border-radius: 4px; }
+    .skip { position: fixed; z-index: 100; top: -100px; left: 16px; padding: 12px 18px; background: var(--accent); color: #05111c; font-weight: 800; }
+    .skip:focus { top: 12px; }
+    .shell { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
+    .topbar { position: relative; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding-block: 20px; border-bottom: 1px solid #365267aa; }
+    .brand { min-height: 48px; display: inline-flex; align-items: center; gap: 11px; font-weight: 800; text-decoration: none; letter-spacing: -.02em; }
+    .brand-mark { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--accent); border-radius: 13px; color: #05111c; background: var(--accent); font-size: 15px; letter-spacing: -.05em; }
+    .brand small { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); font-weight: 600; }
+    .topnav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+    .topnav a { display: inline-flex; align-items: center; min-height: 44px; padding: 4px; font-size: 14px; font-weight: 650; text-decoration: none; color: #dceaf2; }
+    .topnav a:hover, .simple-link:hover { color: var(--accent); }
+    .tag { display: inline-flex; align-items: center; border: 1px solid #467083; border-radius: 999px; padding: 6px 12px; background: #143044; color: var(--accent); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(270px, .65fr); align-items: center; gap: clamp(26px, 5vw, 70px); padding-block: clamp(50px, 8vw, 112px) 92px; }
+    .eyebrow { color: var(--accent); font-size: 12px; letter-spacing: .18em; text-transform: uppercase; font-weight: 750; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 13ch; margin-bottom: 24px; font-size: clamp(42px, 6.8vw, 86px); line-height: 1.04; letter-spacing: -.07em; font-weight: 800; text-wrap: balance; }
+    h1 em { font-style: normal; color: var(--accent); }
+    .hero-copy { max-width: 60ch; color: var(--muted); font-size: clamp(16px, 1.6vw, 19px); line-height: 1.75; }
+    .actions { display: flex; gap: 11px; flex-wrap: wrap; margin-top: 28px; }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 12px 19px; border: 1px solid #477489; border-radius: 11px; text-decoration: none; font-size: 14px; font-weight: 750; line-height: 1.4; text-align: center; transition: background-color .2s ease, transform .2s ease; }
+    .button:hover { transform: translateY(-2px); border-color: var(--accent); }
+    .button-primary { background: var(--accent); border-color: var(--accent); color: #07121d; }
+    .button-primary:hover { background: #b2f5f1; }
+    .button-quiet { background: #122a3b; }
+    .secondary-actions { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 19px; }
+    .simple-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 650; text-underline-offset: 5px; }
+    .portrait { position: relative; padding: 10px; margin: 0; border: 1px solid #426b7c; border-radius: 28px; background: linear-gradient(145deg, #1c5969, #142036 60%, #0d1d2e); box-shadow: 0 28px 90px #0007; }
+    .portrait img { display: block; aspect-ratio: 4 / 5; width: 100%; height: auto; object-fit: cover; object-position: top; border-radius: 19px; background: #173245; }
+    .portrait figcaption { display: flex; gap: 12px; align-items: center; padding: 13px 6px 4px; color: var(--muted); font-size: 12px; }
+    .status-dot { flex: none; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 5px #7ce4ec25; }
+    .section { padding-block: 70px; border-top: 1px solid #36526770; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 24px; margin-bottom: 28px; }
+    .section-heading h2 { max-width: 17ch; margin-bottom: 0; font-size: clamp(31px, 4.1vw, 50px); letter-spacing: -.055em; line-height: 1.12; }
+    .section-heading p { max-width: 40ch; margin-bottom: 0; color: var(--muted); }
+    .projects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .project { display: flex; flex-direction: column; min-width: 0; padding: clamp(20px, 2.5vw, 30px); background: linear-gradient(160deg, #162c40, #0d1a2a); border: 1px solid #365267; border-radius: 20px; }
+    .project:hover { border-color: #7ce4ec88; }
+    .project-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .project-number { font-weight: 800; font-size: 27px; color: #85c7da; }
+    .project h3 { margin: 34px 0 12px; font-size: 26px; letter-spacing: -.04em; }
+    .project p { color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .project .evidence { margin-top: auto; padding-top: 12px; color: #f4d2ad; font-size: 12px; font-weight: 700; }
+    .project .button { margin-top: 18px; width: fit-content; }
+    .method { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start; }
+    .method h2 { font-size: clamp(31px, 4vw, 50px); line-height: 1.1; letter-spacing: -.055em; }
+    .method p { color: var(--muted); line-height: 1.8; }
+    .steps { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .steps li { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 16px; border: 1px solid #365267; border-radius: 13px; background: #102438; color: #d6e4f0; }
+    .steps strong { color: var(--accent); }
+    .contact { position: relative; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; padding: clamp(25px, 5vw, 52px); border-radius: 23px; border: 1px solid #527b88; background: linear-gradient(110deg, #184454, #0f253a 85%); }
+    .contact h2 { max-width: 14ch; margin-bottom: 10px; font-size: clamp(31px, 4vw, 50px); letter-spacing: -.05em; line-height: 1.1; }
+    .contact p { max-width: 50ch; margin-bottom: 0; color: #d2e5ee; }
+    .footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 18px; padding-block: 32px 42px; color: var(--muted); font-size: 12px; }
+    .footer a { min-height: 44px; display: inline-flex; align-items: center; text-underline-offset: 4px; }
+    @media (max-width: 850px) {
+      .hero { grid-template-columns: 1fr; padding-bottom: 70px; }
+      .portrait { width: min(420px, 100%); }
+      .projects { grid-template-columns: 1fr; }
+      .project h3 { margin-top: 22px; }
+      .method { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 470px) {
+      .shell { width: calc(100% - 32px); }
+      .topbar { padding-block: 12px; }
+      .topnav { width: 100%; gap: 4px 18px; }
+      .hero { padding-top: 44px; }
+      h1 { font-size: clamp(40px, 12vw, 54px); }
+      .actions .button { width: 100%; }
+      .section { padding-block: 54px; }
+      .contact .button { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topbar shell">
+    <a class="brand" href="../" aria-label="Pablo Guilherme, abrir portfólio completo">
+      <span class="brand-mark" aria-hidden="true">PG</span>
+      <span>Pablo Guilherme<small>Desenvolvimento &amp; produtos</small></span>
+    </a>
+    <nav class="topnav" aria-label="Navegação da prévia">
+      <a href="#projetos">Projetos</a>
+      <a href="#processo">Processo</a>
+      <a href="#contato">Contato</a>
+    </nav>
+  </header>
+  <main id="conteudo" tabindex="-1" class="shell">
+    <section class="hero" aria-labelledby="titulo">
+      <div>
+        <p class="eyebrow">Prévia de uma nova apresentação · 2026</p>
+        <h1 id="titulo">Produtos digitais que <em>saem do papel.</em></h1>
+        <p class="hero-copy">Desenvolvo interfaces, aplicações e experiências na web com foco em clareza, uso real e desempenho. Os projetos abaixo mostram o que funciona, como foi feito e o que ainda está em evolução.</p>
+        <div class="actions">
+          <a class="button button-primary" href="#projetos">Ver projetos</a>
+          <a class="button button-quiet" href="../#contato-briefing">Preparar briefing</a>
+        </div>
+        <div class="secondary-actions">
+          <a class="simple-link" href="../#curriculo-web">Ver currículo</a>
+          <a class="simple-link" href="../">Portfólio completo e PG Bot</a>
+        </div>
+      </div>
+      <figure class="portrait">
+        <img src="../portfolio-media/pablo-profile-2026.webp" alt="Retrato de Pablo Guilherme" width="720" height="900" decoding="async">
+        <figcaption><span class="status-dot" aria-hidden="true"></span>Projetos verificáveis, sem demonstrações inventadas.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="projetos" aria-labelledby="projetos-titulo">
+      <div class="section-heading">
+        <div><p class="eyebrow">Trabalhos em destaque</p><h2 id="projetos-titulo">Três projetos, três tipos de problema</h2></div>
+        <p>Links diretos para explorar os produtos. Cada card distingue o que está publicado daquilo que continua em desenvolvimento.</p>
+      </div>
+      <div class="projects">
+        <article class="project">
+          <div class="project-top"><span class="project-number">01</span><span class="tag">Publicado</span></div>
+          <h3>Observatório</h3>
+          <p>Dados públicos organizados em indicadores e uma interface que facilita explorar informação.</p>
+          <div class="evidence">Dashboard · dados · navegação</div>
+          <a class="button button-quiet" href="https://pabloguilherme01.github.io/observatorio/#dashboard" target="_blank" rel="noopener noreferrer">Abrir Observatório</a>
+        </article>
+        <article class="project">
+          <div class="project-top"><span class="project-number">02</span><span class="tag">Publicado</span></div>
+          <h3>PG Arcade</h3>
+          <p>Catálogo de jogos com foco em toque, acessibilidade, desempenho mobile e estados de partida.</p>
+          <div class="evidence">Interatividade · QA · mobile</div>
+          <a class="button button-quiet" href="https://pabloguilherme1121.github.io/PG-Arcade/" target="_blank" rel="noopener noreferrer">Abrir PG Arcade</a>
+        </article>
+        <article class="project">
+          <div class="project-top"><span class="project-number">03</span><span class="tag">Em evolução</span></div>
+          <h3>Trajeto</h3>
+          <p>Uma proposta para consultar serviços locais, mobilidade e informações úteis do Entorno do DF.</p>
+          <div class="evidence">Utilidade pública · React · arquitetura</div>
+          <a class="button button-quiet" href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer">Conhecer Trajeto</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section method" id="processo" aria-labelledby="processo-titulo">
+      <div>
+        <p class="eyebrow">Meu processo</p>
+        <h2 id="processo-titulo">Da necessidade à entrega.</h2>
+        <p>Estudo Análise e Desenvolvimento de Sistemas e aplico os conceitos em projetos que podem ser usados e verificados. Trabalho principalmente com React, TypeScript e testes automatizados.</p>
+        <a class="simple-link" href="../#perfil-profissional">Conhecer meu perfil profissional</a>
+      </div>
+      <ol class="steps">
+        <li><strong>01</strong><span><b>Entender.</b> Definir a necessidade, as restrições e quem vai usar.</span></li>
+        <li><strong>02</strong><span><b>Construir.</b> Projetar fluxo, interface e comportamento com prioridades claras.</span></li>
+        <li><strong>03</strong><span><b>Validar.</b> Conferir acessibilidade, testes mobile e funcionamento antes de publicar.</span></li>
+      </ol>
+    </section>
+
+    <section class="section" id="contato" aria-labelledby="contato-titulo">
+      <div class="contact">
+        <div>
+          <p class="eyebrow">Vamos conversar?</p>
+          <h2 id="contato-titulo">Sua ideia merece um começo claro.</h2>
+          <p>Descreva o que precisa. O briefing do portfólio original organiza as informações antes do contato, sem criar uma conta.</p>
+        </div>
+        <a class="button button-primary" href="../#contato-briefing">Abrir briefing</a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer shell">
+    <span>© 2026 Pablo Guilherme · Prévia visual independente, sem coleta de dados.</span>
+    <a href="../">Voltar ao portfólio completo</a>
+  </footer>
+</body>
+</html>
