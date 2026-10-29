@@ -4,11 +4,12 @@ import { PG_BOT_SUGGESTIONS, resolvePgBotAnswer, type PgBotAnswer } from "@/feat
 
 type Entry = { id: number; speaker: "visitor" | "bot"; text: string; action?: PgBotAnswer["action"] };
 
-export default function PortfolioPGBot({ onClose }: { onClose: () => void }) {
+export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: boolean) => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(0);
+  const navigatingInternallyRef = useRef(false);
   const [question, setQuestion] = useState("");
   const [entries, setEntries] = useState<Entry[]>([
     { id: 0, speaker: "bot", text: "Olá! Sou o PG Bot. Posso indicar projetos, currículo, jogos e o caminho para conversar sobre sua ideia." },
@@ -50,7 +51,7 @@ export default function PortfolioPGBot({ onClose }: { onClose: () => void }) {
       ref={dialogRef}
       data-pg-bot-dialog="true"
       aria-labelledby="pg-bot-title"
-      onClose={onClose}
+      onClose={() => onClose(!navigatingInternallyRef.current)}
       className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-[540px] max-h-[min(90dvh,720px)] overflow-hidden rounded-2xl border border-[#7de7f5]/45 bg-[#09182b] p-0 text-[#f2fbff] shadow-[0_28px_90px_rgba(0,0,0,0.65)] backdrop:bg-[#030812]/85"
     >
       <div className="flex max-h-[min(90dvh,720px)] min-h-0 flex-col">
@@ -71,7 +72,11 @@ export default function PortfolioPGBot({ onClose }: { onClose: () => void }) {
                 <a
                   data-pg-bot-action="true"
                   href={entry.action.href}
-                  onClick={() => dialogRef.current?.close()}
+                  onClick={() => {
+                    // Internal navigation keeps focus near the destination, not at the old hero button.
+                    navigatingInternallyRef.current = !entry.action?.external;
+                    dialogRef.current?.close();
+                  }}
                   target={entry.action.external ? "_blank" : undefined}
                   rel={entry.action.external ? "noopener noreferrer" : undefined}
                   className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/45 bg-[#0c3353] px-3 py-2 font-semibold text-[#d2fbff] underline-offset-4 hover:bg-[#175076] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
