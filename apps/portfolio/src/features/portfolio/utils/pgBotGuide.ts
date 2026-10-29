@@ -24,7 +24,7 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
   if (!term) {
     return { kind: "fallback", text: "Escolha um assunto ou escreva sua dúvida sobre projetos, currículo, serviços ou contato." };
   }
-  if (/privacidad|dados|cookies|lgpd/.test(term)) {
+  if (/privacidad|cookies|lgpd|dados pessoais|meus dados|coleta de dados|armazenamento de dados/.test(term)) {
     return {
       kind: "answer",
       text: "O guia PG Bot responde neste navegador, sem enviar esta conversa a um servidor. O briefing usa um rascunho local e você decide se envia a mensagem. Leia também a política de privacidade.",
@@ -88,18 +88,18 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: "Preparar briefing", href: "#contato-briefing" },
     };
   }
-  if (/servic|soluc|desenvolv|site|dashboard|interface/.test(term)) {
-    return {
-      kind: "answer",
-      text: "O trabalho apresentado envolve sites, interfaces responsivas, dashboards e produtos digitais. Cada serviço começa pela compreensão do problema e do público.",
-      action: { label: "Explorar serviços", href: "#servicos" },
-    };
-  }
   if (/codigo|github|repositori|playwright|testes|qualidade/.test(term)) {
     return {
       kind: "answer",
       text: "O código deste portfólio está no GitHub. Lá você pode conferir o React e TypeScript, os testes automatizados e as mudanças propostas. O histórico de commits mostra a evolução do projeto.",
       action: { label: "Ver repositório", href: "https://github.com/pabloguilherme1121/PG-portfolio", external: true },
+    };
+  }
+  if (/servic|soluc|desenvolv|site|dashboard|interface/.test(term)) {
+    return {
+      kind: "answer",
+      text: "O trabalho apresentado envolve sites, interfaces responsivas, dashboards e produtos digitais. Cada serviço começa pela compreensão do problema e do público.",
+      action: { label: "Explorar serviços", href: "#servicos" },
     };
   }
   if (/outro|rede|acompanhar|ecossistema|todos os projetos/.test(term)) {
