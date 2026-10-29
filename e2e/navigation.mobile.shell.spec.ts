@@ -239,7 +239,8 @@ test.describe("portfólio profissional", () => {
     await expect(mobileNavigation.getByRole("link", { name: "04 / serviços", exact: true })).toHaveAttribute("href", "#servicos");
     await expect(mobileNavigation.getByRole("link", { name: "05 / contato", exact: true })).toHaveAttribute("href", "#contato");
     await expect(mobileNavigation.getByRole("link", { name: /contato/i })).toBeVisible();
-    // Five main destinations plus three existing utility links, with no duplicate navigation.\n    await expect(mobileNavigation.getByRole("link")).toHaveCount(8);
+    // Five main destinations plus three existing utility links, with no duplicate navigation.
+    await expect(mobileNavigation.getByRole("link")).toHaveCount(8);
 
     await mobileMenuButton.click();
     const mobilePrimaryAction = page.locator('[data-mobile-primary-action="true"]');
