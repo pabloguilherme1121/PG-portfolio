@@ -90,10 +90,10 @@ export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: bo
           ))}
         </div>
         <div className="shrink-0 border-t border-white/10 bg-[#081727] px-4 py-3 sm:px-5">
-          <p className="mb-2 font-mono text-xs uppercase tracking-wide text-[#b1d6e9]">Comece por um assunto</p>
-          <div className="flex flex-wrap gap-2" data-pg-bot-suggestions="true">
+          <p className="mb-2 font-mono text-xs uppercase tracking-wide text-[#b1d6e9]">Comece por um assunto <span className="normal-case tracking-normal text-[#a9c6d9] sm:hidden">· deslize para explorar</span></p>
+          <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 overscroll-x-contain sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0" data-pg-bot-suggestions="true">
             {PG_BOT_SUGGESTIONS.map(value => (
-              <button key={value} type="button" onClick={() => ask(value)} className="min-h-10 rounded-lg border border-[#67e8f9]/25 bg-[#112d48] px-3 py-2 text-left font-body text-xs text-[#e2f6ff] hover:border-[#67e8f9] hover:bg-[#194064] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{value}</button>
+              <button key={value} type="button" onClick={() => ask(value)} className="min-h-10 shrink-0 whitespace-nowrap rounded-lg border border-[#67e8f9]/25 bg-[#112d48] px-3 py-2 text-left font-body text-xs text-[#e2f6ff] hover:border-[#67e8f9] hover:bg-[#194064] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">{value}</button>
             ))}
           </div>
           <form onSubmit={handleSubmit} className="mt-3 flex gap-2">
