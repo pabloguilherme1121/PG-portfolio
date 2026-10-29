@@ -173,7 +173,7 @@ export default function PortfolioMobileMenu({
           >
             <span className="inline-flex min-w-0 items-center gap-2">
               <ClipboardCheck className="h-4 w-4 shrink-0" aria-hidden="true" />
-              <span className="min-w-0 break-words leading-snug">{mobilePrimaryAction.ariaLabel}</span>
+              <span className="block min-w-0 break-words leading-snug">{mobilePrimaryAction.ariaLabel}</span>
             </span>
             <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden="true" />
           </a>
