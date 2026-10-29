@@ -102,6 +102,7 @@ test("PG Bot não devolve foco ao hero após seguir link de briefing em 320/390p
     await expect(page).toHaveURL(/#contato-briefing$/);
     await expect(opener).not.toBeFocused();
     await expect(page.locator('[data-briefing-form="true"]')).toBeVisible();
+    await expect(page.locator("#contato-briefing")).toBeFocused();
   }
 });
 
