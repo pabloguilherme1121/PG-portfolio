@@ -21,7 +21,7 @@ for (const width of [320, 390]) {
       expect(metrics.height).toBeGreaterThanOrEqual(44);
       expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.width + 2);
     }
-    const stage = stages.getByText("Já existe e precisa evoluir");
+    const stage = section.getByRole("button", { name: "Já existe e precisa evoluir" });
     await stage.click();
     await expect(stage).toHaveAttribute("aria-pressed", "true");
 
