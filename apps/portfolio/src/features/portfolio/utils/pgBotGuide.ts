@@ -45,6 +45,13 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: `Abrir ${linkedProject.name}`, href: linkedProject.href, external: true },
     };
   }
+  if (/estrateg|miss(?:ao|oes)|campanha tatica/.test(term)) {
+    return {
+      kind: "answer",
+      text: "O PG Estratégia é a expansão de jogos de estratégia do PG Arcade. A campanha reúne 150 missões distribuídas por seis sistemas de regras; missões não devem ser contadas como 150 jogos independentes. Conheça o Arcade e acompanhe a evolução dos novos motores.",
+      action: { label: "Abrir PG Arcade", href: portfolioArcadeUrl, external: true },
+    };
+  }
   if (/arcade|jog|game|estrateg|snake|tabuleiro/.test(term)) {
     return {
       kind: "answer",
