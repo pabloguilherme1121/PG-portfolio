@@ -74,3 +74,16 @@ test("hero organiza três provas de trabalho com navegação interna", async ({ 
   await expect(choices.getByRole("link", { name: /PG Arcade/ })).toHaveAttribute("href", "#pg-lab");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
+
+test("a assinatura PG Bot no rodapé é um atalho funcional, inclusive no mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./");
+  await page.locator('[data-footer-anchor="true"]').scrollIntoViewIfNeeded();
+  const shortcut = page.locator('[data-pg-bot="signature"]');
+  await expect(shortcut).toBeVisible();
+  await expect(shortcut).toHaveAttribute("type", "button");
+  await shortcut.click();
+  await expect(page.locator('[data-pg-bot-dialog="true"]')).toBeVisible();
+  await page.locator('[data-pg-bot-close="true"]').click();
+  await expect(shortcut).toBeFocused();
+});
