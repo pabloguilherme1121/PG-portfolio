@@ -27,6 +27,12 @@ for (const width of [320, 390]) {
       expect(rect).not.toBeNull();
       expect(rect!.height).toBeGreaterThanOrEqual(44);
     }
+    const contactBounds = await links.nth(4).boundingBox();
+    const groupBounds = await navigation.boundingBox();
+    expect(contactBounds).not.toBeNull();
+    expect(groupBounds).not.toBeNull();
+    // Final destination is clearly visible rather than a half-width orphan card.
+    expect(contactBounds!.width).toBeGreaterThanOrEqual(groupBounds!.width - 2);
     await links.nth(2).click();
     await expect(menu).toBeHidden();
     await expect(page).toHaveURL(/#sobre$/);
