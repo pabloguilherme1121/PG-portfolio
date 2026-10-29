@@ -771,6 +771,7 @@ export default function Home() {
               onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })}
               emailCopyStatus={emailCopyStatus}
               copyContactEmail={copyContactEmail}
+              onOpenPGBot={openPGBot}
             />
           </Suspense>
         ) : (
