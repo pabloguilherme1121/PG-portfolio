@@ -87,3 +87,31 @@ test("a assinatura PG Bot no rodapé é um atalho funcional, inclusive no mobile
   await page.locator('[data-pg-bot-close="true"]').click();
   await expect(shortcut).toBeFocused();
 });
+
+test("PG Bot não devolve foco ao hero após seguir link de briefing em 320/390px", async ({ page }) => {
+  for (const width of [320, 390]) {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    const opener = page.locator('[data-hero-pg-bot="true"]');
+    await opener.click();
+    const bot = page.locator('[data-pg-bot-dialog="true"]');
+    await bot.getByRole("button", { name: "Como pedir orçamento?" }).click();
+    await bot.getByRole("link", { name: "Preparar briefing" }).click();
+    await expect(bot).toHaveCount(0);
+    await expect(page).toHaveURL(/#contato-briefing$/);
+    await expect(opener).not.toBeFocused();
+    await expect(page.locator('[data-briefing-form="true"]')).toBeVisible();
+    await expect(page.locator("#contato-briefing")).toBeFocused();
+  }
+});
+
+test("PG Bot mantém foco no botão original quando é fechado sem navegação", async ({ page }) => {
+  await page.goto("./");
+  const opener = page.locator('[data-hero-pg-bot="true"]');
+  await opener.click();
+  const dialog = page.locator('[data-pg-bot-dialog="true"]');
+  await dialog.getByRole("button", { name: "Fechar PG Bot" }).click();
+  await expect(dialog).toHaveCount(0);
+  await expect(opener).toBeFocused();
+});
