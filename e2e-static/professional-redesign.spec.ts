@@ -41,27 +41,27 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
   }
 }
 
-test("briefing native anchor survives five pointer visits at 390px", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.setViewportSize({ width: 390, height: 900 });
-
+test("briefing native anchor survives five pointer visits at 390px", async ({ browser }) => {
   for (let attempt = 0; attempt < 5; attempt += 1) {
-    // A página anterior termina em #contato-briefing. Voltar à raiz força um
-    // documento novo antes de abrir o deep link exato, sem competir com reload
-    // durante a navegação de hash no WebKit.
-    await page.goto("./");
-    await page.goto("./?consultation=1#contato");
-    const contact = page.locator("#contato");
-    const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
-    const form = contact.locator('[data-briefing-form="true"]');
+    // Each visit gets a new browser context and document. This tests a genuinely
+    // cold arrival without interrupting deferred preloads with another navigation.
+    const visit = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce" });
+    try {
+      await visit.goto("./?consultation=1#contato");
+      const contact = visit.locator("#contato");
+      const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+      const form = contact.locator('[data-briefing-form="true"]');
 
-    await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
-    await expect(briefingLink).toBeVisible();
-    await expect(form).toBeHidden();
-    await briefingLink.scrollIntoViewIfNeeded();
-    await briefingLink.click();
-    await expect(page).toHaveURL(/#contato-briefing$/);
-    await expect(form).toBeVisible();
+      await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
+      await expect(briefingLink).toBeVisible();
+      await expect(form).toBeHidden();
+      await briefingLink.scrollIntoViewIfNeeded();
+      await briefingLink.click();
+      await expect(visit).toHaveURL(/#contato-briefing$/);
+      await expect(form).toBeVisible();
+    } finally {
+      await visit.close();
+    }
   }
 });
 
