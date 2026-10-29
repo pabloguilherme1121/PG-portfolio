@@ -32,6 +32,16 @@ describe("PG Bot guia local do portfólio", () => {
     expect(PG_BOT_SUGGESTIONS.length).toBeGreaterThanOrEqual(4);
   });
 
+
+  it("abre os produtos específicos usando a rede centralizada, com estado verídico", () => {
+    const observatorio = resolvePgBotAnswer("Quero abrir o Observatório");
+    expect(observatorio.action).toEqual({ label: "Abrir Observatório", href: "https://pabloguilherme01.github.io/observatorio/#dashboard", external: true });
+    expect(observatorio.text).toContain("Produto publicado");
+    const trajeto = resolvePgBotAnswer("Me mostre o Trajeto");
+    expect(trajeto.action?.href).toBe("https://pabloguilherme01.github.io/trajeto-web/");
+    expect(trajeto.text).toContain("Em evolução");
+  });
+
   it("aceita caminhos públicos próprios do GitHub Pages", () => {
     const answer = resolvePgBotAnswer("privacidade");
     expect(answer.action?.href).toBe(`${import.meta.env.BASE_URL}privacidade/`);
