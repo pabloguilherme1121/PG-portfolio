@@ -22,6 +22,7 @@ import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioAr
 import { PortfolioQuickActionsDock } from "@/features/portfolio/components/PortfolioQuickActionsDock";
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { isPgBotKeyboardShortcut } from "@/features/portfolio/utils/pgBotShortcut";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import type { BriefingSeed } from "@/features/portfolio/utils/briefingFlow";
 import { copyText, copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
@@ -203,6 +204,21 @@ export default function Home() {
     shareSelectedProject,
     copySelectedProjectLink,
   } = useProjectDetailsController({ repositories });
+  useEffect(() => {
+    function handlePgBotShortcut(event: KeyboardEvent) {
+      const target = event.target instanceof Element ? event.target : null;
+      const editing = Boolean(target?.closest('input, textarea, select, [contenteditable], [role="textbox"]'));
+      if (!isPgBotKeyboardShortcut(event, editing)) return;
+      if (pgBotOpen || menuOpen || appearanceOpen || selectedProject || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
+      event.preventDefault();
+      // Preserve the current keyboard focus, even when the original hero launcher is offscreen.
+      pgBotTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : document.body;
+      setPgBotOpen(true);
+    }
+    window.addEventListener("keydown", handlePgBotShortcut);
+    return () => window.removeEventListener("keydown", handlePgBotShortcut);
+  }, [pgBotOpen, menuOpen, appearanceOpen, selectedProject]);
+
   const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const isBackToTopVisible = showBackToTop && !shouldHideContactFloat;
@@ -504,7 +520,7 @@ export default function Home() {
             >
               <Settings2 className="h-4 w-4" aria-hidden="true" />
             </button>
-            <button type="button" data-pg-bot-header="true" onClick={event => openPGBot(event.currentTarget)} className="hidden min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/35 px-3 text-xs font-semibold text-[#dcfaff] transition-colors hover:bg-[#143956] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] lg:inline-flex"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="25" height="29" loading="lazy" decoding="async" className="h-[29px] w-[25px] object-contain" />PG Bot</button>
+            <button type="button" data-pg-bot-header="true" aria-keyshortcuts="Alt+B" title="Abrir PG Bot (Alt+B)" onClick={event => openPGBot(event.currentTarget)} className="hidden min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/35 px-3 text-xs font-semibold text-[#dcfaff] transition-colors hover:bg-[#143956] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] lg:inline-flex"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="25" height="29" loading="lazy" decoding="async" className="h-[29px] w-[25px] object-contain" />PG Bot</button>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
