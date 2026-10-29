@@ -122,13 +122,36 @@ export default function Home() {
     setPgBotOpen(true);
   }
 
-  function closePGBot(restoreFocus = true) {
+  function closePGBot(restoreFocus = true, destinationId?: string | null) {
     setPgBotOpen(false);
-    if (!restoreFocus) return;
     window.requestAnimationFrame(() => {
-      const trigger = pgBotTriggerRef.current;
-      const focusTarget = trigger?.isConnected ? trigger : menuButtonRef.current;
-      focusTarget?.focus({ preventScroll: true });
+      if (restoreFocus) {
+        const trigger = pgBotTriggerRef.current;
+        const focusTarget = trigger?.isConnected ? trigger : menuButtonRef.current;
+        focusTarget?.focus({ preventScroll: true });
+        return;
+      }
+      // Native <dialog> restores the launcher's focus on close.
+      // Move it to the hash destination after React mounts the lazy section.
+      if (!destinationId) return;
+      const focusDestination = () => {
+        const target = document.getElementById(destinationId);
+        if (!target || target.closest("[hidden]")) return false;
+        if (!target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+        return document.activeElement === target;
+      };
+      if (focusDestination()) return;
+      const root = document.getElementById("conteudo-principal");
+      const observer = new MutationObserver(() => {
+        if (window.location.hash !== `#${destinationId}`) {
+          observer.disconnect();
+        } else if (focusDestination()) {
+          observer.disconnect();
+        }
+      });
+      observer.observe(root ?? document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+      window.setTimeout(() => observer.disconnect(), 3000);
     });
   }
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
