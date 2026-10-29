@@ -113,7 +113,7 @@ export default function PortfolioProjectDetailsDialog({
                 {copyStatus === "copied" ? "link copiado" : copyStatus === "error" ? "tentar novamente" : "copiar link"}
               </button>
 
-              <a href={project.url} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 border border-[#67e8f9]/30 px-3.5 font-mono text-[11px] uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]">
+              <a href={project.url} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 border border-[#67e8f9]/30 px-3.5 font-mono text-xs uppercase tracking-[0.1em] text-[#cfe3ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] active:scale-[0.97]">
                 <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
                 abrir projeto
               </a>
