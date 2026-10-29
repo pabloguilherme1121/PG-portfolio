@@ -68,8 +68,9 @@ test("briefing native anchor survives five pointer visits at 390px", async ({ pa
 test("briefing ignores pointer release without a matching press at 390px", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 900 });
+  // A primeira visita já cria um documento frio; o reload extra pode competir
+  // com a navegação inicial por âncora no WebKit.
   await page.goto("./?consultation=1#contato");
-  await page.reload();
 
   const contact = page.locator("#contato");
   const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
