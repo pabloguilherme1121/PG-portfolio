@@ -63,3 +63,14 @@ test("PG Bot oferece acesso externo real sem prometer envio de mensagem", async 
   await expect(action).toHaveAttribute("rel", /noopener noreferrer/);
   await expect(dialog.getByText(/sem envio da conversa/i)).toBeVisible();
 });
+
+test("hero organiza três provas de trabalho com navegação interna", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("./");
+  const choices = page.getByRole("navigation", { name: "Explore meu trabalho" });
+  await expect(choices.getByRole("link")).toHaveCount(3);
+  await expect(choices.getByRole("link", { name: /Trajeto/ })).toHaveAttribute("href", "#trajeto");
+  await expect(choices.getByRole("link", { name: /Observatório/ })).toHaveAttribute("href", "#observatorio");
+  await expect(choices.getByRole("link", { name: /PG Arcade/ })).toHaveAttribute("href", "#pg-lab");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
