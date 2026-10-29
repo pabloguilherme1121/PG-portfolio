@@ -28,7 +28,7 @@ export default function InstagramRepertoire() {
               <Instagram className="h-6 w-6 shrink-0 text-[#67e8f9]" aria-hidden="true" />
               <span className="min-w-0 flex-1">
                 <span className="block font-mono text-[9px] uppercase tracking-[0.1em] text-[#8fa8c7]">{profile.label}</span>
-                <span className="mt-1 block font-display text-xl text-white">{profile.handle}</span>
+                <span className="mt-1 block font-display text-base text-white sm:text-xl">{profile.handle}</span>
                 <span className="mt-2 block font-body text-sm leading-6 text-[#b9ddec]">{profile.description}</span>
               </span>
               <ArrowUpRight className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
