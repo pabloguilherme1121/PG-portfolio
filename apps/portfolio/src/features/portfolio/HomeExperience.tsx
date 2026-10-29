@@ -222,6 +222,7 @@ export default function Home() {
   const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const isBackToTopVisible = showBackToTop && !shouldHideContactFloat;
+  const isPgBotQuickAccessHidden = isHeroCtaVisible || shouldHideContactFloat || pgBotOpen;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
@@ -823,6 +824,20 @@ export default function Home() {
         )}
       </div>
 
+      <button
+        type="button"
+        data-pg-bot-floating="true"
+        onClick={event => openPGBot(event.currentTarget)}
+        aria-label="Abrir ajuda do PG Bot"
+        aria-keyshortcuts="Alt+B"
+        title="Abrir PG Bot (Alt+B)"
+        aria-hidden={isPgBotQuickAccessHidden ? "true" : "false"}
+        inert={isPgBotQuickAccessHidden ? true : undefined}
+        tabIndex={isPgBotQuickAccessHidden ? -1 : 0}
+        className={`fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-3 z-[55] grid h-12 w-12 place-items-center rounded-xl border border-[#67e8f9]/55 bg-[#09243d]/95 shadow-[0_8px_25px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-[opacity,transform] duration-200 hover:bg-[#164466] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none md:hidden ${isPgBotQuickAccessHidden ? "pointer-events-none translate-y-2 opacity-0" : "translate-y-0 opacity-100"}`}
+      >
+        <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="30" height="35" loading="lazy" decoding="async" className="h-[35px] w-[30px] object-contain" />
+      </button>
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!isBackToTopVisible} tabIndex={isBackToTopVisible ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${isBackToTopVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <PortfolioQuickActionsDock
         isDockHidden={isDockHidden}
