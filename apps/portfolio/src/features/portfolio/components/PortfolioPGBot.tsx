@@ -53,9 +53,9 @@ export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: bo
       data-pg-bot-dialog="true"
       aria-labelledby="pg-bot-title"
       onClose={() => onClose(!navigatingInternallyRef.current, destinationIdRef.current)}
-      className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-[540px] max-h-[min(90dvh,720px)] overflow-hidden rounded-2xl border border-[#7de7f5]/45 bg-[#09182b] p-0 text-[#f2fbff] shadow-[0_28px_90px_rgba(0,0,0,0.65)] backdrop:bg-[#030812]/85"
+      className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-[540px] h-[min(90dvh,720px)] max-h-[min(90dvh,720px)] overflow-hidden rounded-2xl border border-[#7de7f5]/45 bg-[#09182b] p-0 text-[#f2fbff] shadow-[0_28px_90px_rgba(0,0,0,0.65)] backdrop:bg-[#030812]/85"
     >
-      <div className="flex max-h-[min(90dvh,720px)] min-h-0 flex-col">
+      <div className="flex h-full min-h-0 flex-col">
         <header className="flex shrink-0 items-center gap-3 border-b border-[#67e8f9]/20 bg-[#0b2540] px-4 py-3 sm:px-5">
           <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width={44} height={51} decoding="async" className="h-[51px] w-11 shrink-0 object-contain" />
           <div className="min-w-0 flex-1">
