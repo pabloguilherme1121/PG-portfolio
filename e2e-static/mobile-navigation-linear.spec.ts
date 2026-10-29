@@ -45,7 +45,10 @@ test("navegação mobile e desktop compartilham os quatro destinos principais", 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./");
   await page.locator('[data-mobile-menu-toggle="true"]').click();
-  const mobile = await page.locator('#mobile-navigation [aria-label="Seções do portfólio"] a').evaluateAll(nodes =>
+  const mobileLinks = page.locator('#mobile-navigation [aria-label="Seções do portfólio"] a');
+  // Menu content is lazy-loaded. Wait for all five real links before reading DOM.
+  await expect(mobileLinks).toHaveCount(5);
+  const mobile = await mobileLinks.evaluateAll(nodes =>
     nodes.map(node => node.getAttribute("href")).filter(href => href !== "#inicio")
   );
   await page.setViewportSize({ width: 1280, height: 900 });
