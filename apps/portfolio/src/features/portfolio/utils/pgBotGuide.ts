@@ -31,7 +31,7 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: "Ler privacidade", href: `${import.meta.env.BASE_URL}privacidade/` },
     };
   }
-  if (/^(oi|ola|bom dia|boa tarde|boa noite|ajuda|menu|o que voce faz)[!?.\\s]*$/.test(term)) {
+  if (/^(oi|ola|bom dia|boa tarde|boa noite|ajuda|menu|o que voce faz)[!?.\s]*$/.test(term)) {
     return {
       kind: "answer",
       text: "Posso indicar projetos em funcionamento, o currículo, o código no GitHub e as etapas para preparar um briefing. Escreva o que você procura ou escolha uma sugestão abaixo.",
