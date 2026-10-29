@@ -8,7 +8,7 @@ export function PortfolioContactIntro({ whatsAppUrl, onOpenBriefing }: { whatsAp
     <p className="mt-5 max-w-[60ch] font-body text-base leading-7 text-[#c0e3f4]">Conte o que precisa resolver e quem vai usar a solução. A conversa começa por aí; depois alinhamos escopo, prazo e próximos passos.</p>
     <div className="mt-6 flex flex-wrap gap-3">
       <a href={whatsAppUrl} onClick={() => trackPortfolioEvent("whatsapp_click", { source: "contact" })} target="_blank" rel="noopener noreferrer" className="professional-primary">Conversar no WhatsApp <MessageCircle className="h-4 w-4" aria-hidden="true" /></a>
-      <a href="#contato-briefing" onClick={() => { onOpenBriefing(); window.location.hash = "contato-briefing"; }} className="professional-secondary">Prefiro preparar um briefing <ArrowDown className="h-4 w-4" aria-hidden="true" /></a>
+      <a href="#contato-briefing" onClick={onOpenBriefing} className="professional-secondary">Prefiro preparar um briefing <ArrowDown className="h-4 w-4" aria-hidden="true" /></a>
     </div>
     <p className="mt-4 max-w-lg font-body text-sm leading-6 text-[#a9bfd8]">O WhatsApp abre em outra aba. Você revisa a mensagem e decide quando enviar. Atendimento em Águas Lindas de Goiás, Planaltina e Entorno; outras regiões sob consulta.</p>
   </>;
