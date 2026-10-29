@@ -10,7 +10,7 @@ describe("PG Bot guia local do portfólio", () => {
       ["Como jogar no PG Arcade?", "https://pabloguilherme1121.github.io/PG-Arcade/"],
       ["Quais serviços você presta?", "#servicos"],
       ["Como acompanhar outros projetos?", "#rede-projetos"],
-      ["Como funcionam meus dados e privacidade?", "/PG-portfolio/privacidade/"],
+      ["Como funcionam meus dados e privacidade?", `${import.meta.env.BASE_URL}privacidade/`],
     ] as const;
     for (const [question, href] of cases) {
       const answer = resolvePgBotAnswer(question);
@@ -34,6 +34,6 @@ describe("PG Bot guia local do portfólio", () => {
 
   it("aceita caminhos públicos próprios do GitHub Pages", () => {
     const answer = resolvePgBotAnswer("privacidade");
-    expect(answer.action?.href).toMatch(/^\/PG-portfolio\/privacidade\/$/);
+    expect(answer.action?.href).toBe(`${import.meta.env.BASE_URL}privacidade/`);
   });
 });
