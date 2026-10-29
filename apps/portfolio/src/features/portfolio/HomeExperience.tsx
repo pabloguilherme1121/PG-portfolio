@@ -454,7 +454,8 @@ export default function Home() {
       trackPortfolioEvent("briefing_whatsapp_prepared", { channel: "whatsapp" });
       const url = buildBriefingWhatsAppUrl(whatsAppNumber, data);
       setBriefingWhatsAppUrl(url);
-      window.open(url, "_blank", "noopener,noreferrer");
+      // A native link in the confirmation step lets the visitor open WhatsApp
+      // directly. Automatic window.open can be blocked or redirected on mobile.
       setFormSent(true);
       return;
     }
