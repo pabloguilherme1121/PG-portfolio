@@ -28,6 +28,7 @@ type PortfolioMobileMenuProps = {
   onOpenAppearance: (trigger?: HTMLElement | null) => void;
   onSharePortfolio: () => void;
   onInstallPortfolio: () => void;
+  onOpenPGBot: (trigger: HTMLElement) => void;
 };
 
 const sectionLinks = [
@@ -50,6 +51,7 @@ export default function PortfolioMobileMenu({
   onOpenAppearance,
   onSharePortfolio,
   onInstallPortfolio,
+  onOpenPGBot,
 }: PortfolioMobileMenuProps) {
   const navigationRef = useRef<HTMLDivElement>(null);
   const SecondaryIcon =
@@ -211,6 +213,10 @@ export default function PortfolioMobileMenu({
             className="mt-2 grid grid-cols-2 gap-2 border-t border-white/[0.08] pt-2"
             aria-label="Ferramentas"
           >
+            <button type="button" data-mobile-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="col-span-2 flex min-h-12 items-center gap-3 rounded-[10px] border border-[#67e8f9]/35 bg-[#0d314e] px-3 py-2 text-left text-xs font-semibold text-[#e2fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+              <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="28" height="33" decoding="async" className="h-[33px] w-7 shrink-0 object-contain" />
+              <span className="min-w-0"><strong className="block">Perguntar ao PG Bot</strong><span className="mt-0.5 block font-normal text-[#bad9ea]">Ajuda com projetos, currículo e contato</span></span>
+            </button>
             <button
               type="button"
               data-mobile-appearance-action="true"

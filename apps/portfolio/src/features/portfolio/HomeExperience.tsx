@@ -55,6 +55,7 @@ const PortfolioAppearancePanel = lazy(() => import("@/features/portfolio/compone
 const PortfolioProjectDetailsDialog = lazy(() => import("@/features/portfolio/components/PortfolioProjectDetailsDialog"));
 const PortfolioMobileMenu = lazy(() => import("@/features/portfolio/components/PortfolioMobileMenu"));
 const PortfolioFooter = lazy(() => import("@/features/portfolio/components/PortfolioFooter"));
+const PortfolioPGBot = lazy(() => import("@/features/portfolio/components/PortfolioPGBot"));
 const PortfolioCaseStudies = lazy(() => import("@/features/portfolio/components/PortfolioCaseStudies"));
 const PortfolioContact = lazy(() =>
   import("@/features/portfolio/components/PortfolioContact").then((module) => ({
@@ -86,7 +87,7 @@ export default function Home() {
   const [diagnosticSectionRef, shouldLoadDiagnostic] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "180px");
   const [profileSectionsRef, shouldLoadProfileSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "280px");
   const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
-  const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
+  const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
   const [footerSectionRef, shouldLoadFooter] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "260px");
@@ -112,6 +113,23 @@ export default function Home() {
   } = useAppearancePanelController({ fallbackTriggerRef: menuButtonRef });
   const { canInstallPortfolio, installPortfolio } = usePortfolioInstallPrompt();
   const [formSent, setFormSent] = useState(false);
+  const [pgBotOpen, setPgBotOpen] = useState(false);
+  const pgBotTriggerRef = useRef<HTMLElement | null>(null);
+
+  function openPGBot(trigger: HTMLElement) {
+    pgBotTriggerRef.current = trigger;
+    closeMenu();
+    setPgBotOpen(true);
+  }
+
+  function closePGBot() {
+    setPgBotOpen(false);
+    window.requestAnimationFrame(() => {
+      const trigger = pgBotTriggerRef.current;
+      const focusTarget = trigger?.isConnected ? trigger : menuButtonRef.current;
+      focusTarget?.focus({ preventScroll: true });
+    });
+  }
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
@@ -460,6 +478,7 @@ export default function Home() {
             >
               <Settings2 className="h-4 w-4" aria-hidden="true" />
             </button>
+            <button type="button" data-pg-bot-header="true" onClick={event => openPGBot(event.currentTarget)} className="hidden min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/35 px-3 text-xs font-semibold text-[#dcfaff] transition-colors hover:bg-[#143956] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] lg:inline-flex"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="25" height="29" loading="lazy" decoding="async" className="h-[29px] w-[25px] object-contain" />PG Bot</button>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -520,6 +539,7 @@ export default function Home() {
               onOpenAppearance={openAppearancePanel}
               onSharePortfolio={() => void sharePortfolio()}
               onInstallPortfolio={() => void installPortfolioPwa()}
+              onOpenPGBot={openPGBot}
             />
           </Suspense>
         )}
@@ -546,6 +566,7 @@ export default function Home() {
           portraitUrl={portraitUrl}
           portraitResponsive={portraitResponsive}
           heroCtaRef={heroCtaRef}
+          onOpenPGBot={openPGBot}
         />
 
 
@@ -750,6 +771,7 @@ export default function Home() {
               onWhatsAppClick={() => trackPortfolioEvent("whatsapp_click", { source: "footer" })}
               emailCopyStatus={emailCopyStatus}
               copyContactEmail={copyContactEmail}
+              onOpenPGBot={openPGBot}
             />
           </Suspense>
         ) : (
@@ -773,6 +795,12 @@ export default function Home() {
         telegramUrl={telegramUrl}
       />
 
+
+      {pgBotOpen && (
+        <Suspense fallback={<div role="status" aria-live="polite" className="sr-only">Preparando ajuda do PG Bot…</div>}>
+          <PortfolioPGBot onClose={closePGBot} />
+        </Suspense>
+      )}
 
       {selectedProject && (
         <Suspense fallback={<div data-project-details-loading-shell="true" role="status" aria-live="polite" className="fixed inset-0 z-[70] grid place-items-center bg-[#02050a]/90 p-6 font-mono text-[10px] uppercase tracking-[0.14em] text-[#c8f7ff]">carregando detalhes do projeto…</div>}>
