@@ -58,4 +58,13 @@ describe("PG Bot guia local do portfólio", () => {
     const answer = resolvePgBotAnswer("privacidade");
     expect(answer.action?.href).toBe(`${import.meta.env.BASE_URL}privacidade/`);
   });
+  it("responde a saudações e dúvidas sobre GitHub e WhatsApp com destinos reais", () => {
+    const help = resolvePgBotAnswer("Oi");
+    expect(help.kind).toBe("answer");
+    expect(help.text).toMatch(/projetos|currículo/i);
+    const code = resolvePgBotAnswer("Onde vejo o código no GitHub?");
+    expect(code.action).toEqual({ label: "Ver repositório", href: "https://github.com/pabloguilherme1121/PG-portfolio", external: true });
+    expect(resolvePgBotAnswer("WhatsApp").action?.href).toBe("#contato-briefing");
+  });
+
 });
