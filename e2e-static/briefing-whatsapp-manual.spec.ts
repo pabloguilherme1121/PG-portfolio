@@ -24,6 +24,9 @@ for (const width of [320, 390]) {
     await form.getByRole("button", { name: /continuar.*requisitos/i }).click();
     await form.getByRole("button", { name: /continuar.*revisão/i }).click();
     await expect(form.locator('[data-briefing-step="review"]')).toBeVisible();
+    await form.locator('textarea[name="briefing"]').fill(
+      "Preciso de um site profissional para apresentar serviços e receber contatos."
+    );
 
     let popups = 0;
     page.on("popup", () => { popups += 1; });
