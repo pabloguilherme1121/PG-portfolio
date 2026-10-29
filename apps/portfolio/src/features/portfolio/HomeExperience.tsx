@@ -32,6 +32,7 @@ import { useMobileKeyboardState } from "@/features/portfolio/hooks/useMobileKeyb
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
+import { useStableDeferredHashNavigation } from "@/features/portfolio/hooks/useStableDeferredHashNavigation";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
 import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
@@ -157,6 +158,7 @@ export default function Home() {
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
+  useStableDeferredHashNavigation();
   const {
     footer: footerHashRequested,
     contact: contactHashRequested,
