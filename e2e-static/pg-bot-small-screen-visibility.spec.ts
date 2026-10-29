@@ -19,13 +19,23 @@ for (const { width, height } of [{ width: 320, height: 568 }, { width: 320, heig
     }));
     expect(metrics.height).toBeGreaterThan(40);
     expect(metrics.overflowY).toBe("auto");
+    // At 320×568 the paragraph can be taller than the transcript viewport.
+    // Verify that BOTH ends are accessible with real scrolling, not simultaneous fit.
+    await log.evaluate(element => { element.scrollTop = 0; });
+    await expect.poll(async () => log.evaluate((element) => {
+      const text = element.querySelector("p.whitespace-pre-wrap");
+      if (!text) return false;
+      const textRect = text.getBoundingClientRect();
+      const logRect = element.getBoundingClientRect();
+      return textRect.top >= logRect.top - 1 && textRect.top < logRect.bottom;
+    })).toBe(true);
     await log.evaluate(element => { element.scrollTop = element.scrollHeight; });
     await expect.poll(async () => log.evaluate((element) => {
       const text = element.querySelector("p.whitespace-pre-wrap");
       if (!text) return false;
       const textRect = text.getBoundingClientRect();
       const logRect = element.getBoundingClientRect();
-      return textRect.bottom <= logRect.bottom + 1 && textRect.top >= logRect.top - 1;
+      return textRect.bottom <= logRect.bottom + 1 && textRect.bottom > logRect.top;
     })).toBe(true);
     await expect(dialog.getByRole("button", { name: "Quais projetos posso conhecer?" })).toBeVisible();
     const suggestions = dialog.locator('[data-pg-bot-suggestions="true"]');
