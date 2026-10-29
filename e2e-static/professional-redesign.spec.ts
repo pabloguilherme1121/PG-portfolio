@@ -63,6 +63,31 @@ test("briefing native anchor survives five pointer visits at 390px", async ({ pa
   }
 });
 
+test("briefing ignores pointer release without a matching press at 390px", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.goto("./?consultation=1#contato");
+  await page.reload();
+
+  const contact = page.locator("#contato");
+  const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+  const form = contact.locator('[data-briefing-form="true"]');
+  await expect(briefingLink).toBeVisible();
+  await expect(form).toBeHidden();
+  await briefingLink.scrollIntoViewIfNeeded();
+  const bounds = await briefingLink.boundingBox();
+  expect(bounds).not.toBeNull();
+
+  // Pressionar fora e soltar dentro nao ativa a ancora nativa.
+  await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height + 12);
+  await page.mouse.down();
+  await page.mouse.move(bounds!.x + bounds!.width / 2, bounds!.y + bounds!.height / 2);
+  await page.mouse.up();
+
+  await expect(page).toHaveURL(/#contato$/);
+  await expect(form).toBeHidden();
+});
+
 test("main navigation names are distinct and keyboard-accessible", async ({ page, browserName }) => {
   for (const width of [320, 390]) {
     await page.setViewportSize({ width, height: 900 });
