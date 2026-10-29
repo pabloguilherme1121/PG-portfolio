@@ -27,6 +27,7 @@ export default function PortfolioHero({ portraitUrl, portraitResponsive, heroCta
           <nav className="hero-project-index" aria-label="Explore meu trabalho">
             <a href="#observatorio"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Dados que fazem sentido</strong><small>Observatório · conhecer o case</small></span><ArrowUpRight aria-hidden="true" /></a>
             <a href="#pg-lab"><span className="hero-project-number" aria-hidden="true">02</span><span><strong>Interação que convida a jogar</strong><small>PG Arcade · explorar as mecânicas</small></span><ArrowUpRight aria-hidden="true" /></a>
+            <a href="#trajeto"><span className="hero-project-number" aria-hidden="true">03</span><span><strong>Serviços e mobilidade</strong><small>Trajeto · produto em evolução</small></span><ArrowUpRight aria-hidden="true" /></a>
           </nav>
         </div>
         <figure className="professional-portrait">
