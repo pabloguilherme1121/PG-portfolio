@@ -4,12 +4,13 @@ import { PG_BOT_SUGGESTIONS, resolvePgBotAnswer, type PgBotAnswer } from "@/feat
 
 type Entry = { id: number; speaker: "visitor" | "bot"; text: string; action?: PgBotAnswer["action"] };
 
-export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: boolean) => void }) {
+export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: boolean, destinationId?: string | null) => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const transcriptRef = useRef<HTMLDivElement>(null);
   const idRef = useRef(0);
   const navigatingInternallyRef = useRef(false);
+  const destinationIdRef = useRef<string | null>(null);
   const [question, setQuestion] = useState("");
   const [entries, setEntries] = useState<Entry[]>([
     { id: 0, speaker: "bot", text: "Olá! Sou o PG Bot. Posso indicar projetos, currículo, jogos e o caminho para conversar sobre sua ideia." },
@@ -51,7 +52,7 @@ export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: bo
       ref={dialogRef}
       data-pg-bot-dialog="true"
       aria-labelledby="pg-bot-title"
-      onClose={() => onClose(!navigatingInternallyRef.current)}
+      onClose={() => onClose(!navigatingInternallyRef.current, destinationIdRef.current)}
       className="fixed inset-0 m-auto w-[calc(100%-24px)] max-w-[540px] max-h-[min(90dvh,720px)] overflow-hidden rounded-2xl border border-[#7de7f5]/45 bg-[#09182b] p-0 text-[#f2fbff] shadow-[0_28px_90px_rgba(0,0,0,0.65)] backdrop:bg-[#030812]/85"
     >
       <div className="flex max-h-[min(90dvh,720px)] min-h-0 flex-col">
@@ -75,6 +76,7 @@ export default function PortfolioPGBot({ onClose }: { onClose: (restoreFocus: bo
                   onClick={() => {
                     // Internal navigation keeps focus near the destination, not at the old hero button.
                     navigatingInternallyRef.current = !entry.action?.external;
+                    destinationIdRef.current = entry.action?.href.startsWith("#") ? entry.action.href.slice(1) : null;
                     dialogRef.current?.close();
                   }}
                   target={entry.action.external ? "_blank" : undefined}
