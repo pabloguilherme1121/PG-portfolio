@@ -159,7 +159,7 @@ export default function PortfolioMobileMenu({
                 href={href}
                 onClick={onClose}
                 aria-current={activeSection === id ? "location" : undefined}
-                className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-xs font-semibold uppercase tracking-[0.07em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${
+                className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-xs font-semibold uppercase tracking-[0.07em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${id === "contato" ? "col-span-2 justify-center" : ""} ${
                   activeSection === id
                     ? "border-[#67e8f9]/45 bg-[#0b2746] text-[#d9fbff]"
                     : "border-white/10 bg-[#07111f] text-[#9fb6d0] hover:border-[#67e8f9]/30 hover:text-white"
