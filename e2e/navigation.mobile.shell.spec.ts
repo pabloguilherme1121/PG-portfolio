@@ -234,7 +234,10 @@ test.describe("portfólio profissional", () => {
     await expect(mobileNavigation).toBeVisible();
     await expect(mobileNavigation.getByRole("link", { name: /início/i })).toBeVisible();
     await expect(mobileNavigation.getByRole("link", { name: /projetos/i })).toBeVisible();
-    await expect(mobileNavigation.getByRole("link", { name: "03 / serviços", exact: true })).toBeVisible();
+    // Navigation now includes a direct Profile stop before Services.
+    await expect(mobileNavigation.getByRole("link", { name: "03 / perfil", exact: true })).toHaveAttribute("href", "#sobre");
+    await expect(mobileNavigation.getByRole("link", { name: "04 / serviços", exact: true })).toHaveAttribute("href", "#servicos");
+    await expect(mobileNavigation.getByRole("link", { name: "05 / contato", exact: true })).toHaveAttribute("href", "#contato");
     await expect(mobileNavigation.getByRole("link", { name: /contato/i })).toBeVisible();
     expect(await mobileNavigation.getByRole("link").count()).toBeLessThanOrEqual(7);
 
