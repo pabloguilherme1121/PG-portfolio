@@ -31,6 +31,12 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: "Ler privacidade", href: `${import.meta.env.BASE_URL}privacidade/` },
     };
   }
+  if (/^(oi|ola|bom dia|boa tarde|boa noite|ajuda|menu|o que voce faz)[!?.\\s]*$/.test(term)) {
+    return {
+      kind: "answer",
+      text: "Posso indicar projetos em funcionamento, o currículo, o código no GitHub e as etapas para preparar um briefing. Escreva o que você procura ou escolha uma sugestão abaixo.",
+    };
+  }
   const projectMatch = [
     ["observatorio", "observatorio"],
     ["trajeto", "trajeto"],
@@ -66,7 +72,7 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: "Ver currículo", href: "#curriculo-web" },
     };
   }
-  if (/contrat|orcament|briefing|preco|quanto custa|falar|contat|propost/.test(term)) {
+  if (/contrat|orcament|briefing|preco|quanto custa|falar|contat|propost|whatsapp|e-?mail/.test(term)) {
     return {
       kind: "answer",
       text: "Para discutir uma ideia, abra o briefing opcional. São cinco etapas para organizar contexto e necessidades. A conversa segue por WhatsApp, e o envio depende da sua confirmação.",
@@ -78,6 +84,13 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       kind: "answer",
       text: "O trabalho apresentado envolve sites, interfaces responsivas, dashboards e produtos digitais. Cada serviço começa pela compreensão do problema e do público.",
       action: { label: "Explorar serviços", href: "#servicos" },
+    };
+  }
+  if (/codigo|github|repositori|playwright|testes|qualidade/.test(term)) {
+    return {
+      kind: "answer",
+      text: "O código deste portfólio está no GitHub. Lá você pode conferir o React e TypeScript, os testes automatizados e as mudanças propostas. O histórico de commits mostra a evolução do projeto.",
+      action: { label: "Ver repositório", href: "https://github.com/pabloguilherme1121/PG-portfolio", external: true },
     };
   }
   if (/outro|rede|acompanhar|ecossistema|todos os projetos/.test(term)) {
