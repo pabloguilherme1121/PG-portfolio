@@ -12,7 +12,11 @@ for (const { width, height, href, label } of cases) {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height });
     await page.goto("./");
-    await page.getByRole("link", { name: label, exact: true }).first().click();
+    if (width >= 768) {
+      await page.locator(`header a[href="${href}"]`).first().click();
+    } else {
+      await page.getByRole("link", { name: label, exact: true }).first().click();
+    }
     await expect(page).toHaveURL(new RegExp(`${href}$`));
     const destination = page.locator(href);
     await expect(destination).toBeVisible();
