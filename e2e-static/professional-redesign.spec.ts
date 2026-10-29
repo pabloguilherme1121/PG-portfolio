@@ -41,6 +41,26 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
   }
 }
 
+test("briefing native anchor survives five pointer visits at 390px", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 900 });
+
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    await page.goto("./?consultation=1#contato");
+    const contact = page.locator("#contato");
+    const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+    const form = contact.locator('[data-briefing-form="true"]');
+
+    await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
+    await expect(briefingLink).toBeVisible();
+    await expect(form).toBeHidden();
+    await briefingLink.scrollIntoViewIfNeeded();
+    await briefingLink.click();
+    await expect(page).toHaveURL(/#contato-briefing$/);
+    await expect(form).toBeVisible();
+  }
+});
+
 test("main navigation names are distinct and keyboard-accessible", async ({ page, browserName }) => {
   await page.goto("./");
   const links = page.locator('header nav a[href^="#"]');
