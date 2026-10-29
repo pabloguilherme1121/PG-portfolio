@@ -64,24 +64,33 @@ test("briefing native anchor survives five pointer visits at 390px", async ({ pa
 });
 
 test("main navigation names are distinct and keyboard-accessible", async ({ page, browserName }) => {
-  await page.goto("./");
-  const links = page.locator('header nav a[href^="#"]');
-  // The SPA shell renders after navigation; allTextContents() does not wait
-  // for matches, and an early Tab can run before the skip link exists.
-  await expect(links).not.toHaveCount(0);
-  const names = await links.allTextContents();
-  expect(new Set(names.map(name => name.trim())).size).toBe(names.length);
-  const skipLink = page.getByRole("link", { name: /pular para o conteúdo/i });
-  await expect(skipLink).toBeAttached();
-  if (browserName === "webkit") {
-    // Safari full keyboard access is an OS preference; test activation separately.
-    await skipLink.focus();
-  } else {
-    await page.keyboard.press("Tab");
+  for (const width of [320, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      await page.goto("./");
+      // A URL anterior pode diferir apenas pelo fragmento; recarregue o
+      // documento para testar a ordem real do foco inicial a cada visita.
+      await page.reload();
+      const links = page.locator('header nav a[href^="#"]');
+      // allTextContents() nao espera pela montagem da navegacao React.
+      await expect(links).not.toHaveCount(0);
+      const names = await links.allTextContents();
+      expect(new Set(names.map(name => name.trim())).size).toBe(names.length);
+      const skipLink = page.getByRole("link", { name: /pular para o conteúdo/i });
+      await expect(skipLink).toBeAttached();
+
+      if (browserName === "webkit") {
+        // Safari full keyboard access depende da preferencia do SO.
+        await skipLink.focus();
+      } else {
+        await page.keyboard.press("Tab");
+      }
+      await expect(skipLink).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#conteudo-principal")).toBeFocused();
+    }
   }
-  await expect(skipLink).toBeFocused();
-  await page.keyboard.press("Enter");
-  await expect(page.locator("#conteudo-principal")).toBeFocused();
 });
 
 test("calendar deep link opens contextual consultation without requiring briefing", async ({ page }) => {
