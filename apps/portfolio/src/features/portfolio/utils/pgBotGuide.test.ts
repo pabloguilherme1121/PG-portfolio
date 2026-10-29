@@ -42,6 +42,18 @@ describe("PG Bot guia local do portfólio", () => {
     expect(trajeto.text).toContain("Em evolução");
   });
 
+
+  it("distingue as missões estratégicas de jogos independentes sem criar URL não certificada", () => {
+    for (const query of ["Como jogar PG Estratégia?", "Quero conhecer as missões de estratégia"]) {
+      const answer = resolvePgBotAnswer(query);
+      expect(answer.kind).toBe("answer");
+      expect(answer.text).toMatch(/missões/);
+      expect(answer.text).toMatch(/mecânicas|sistemas/);
+      expect(answer.action?.href).toBe("https://pabloguilherme1121.github.io/PG-Arcade/");
+      expect(answer.action?.external).toBe(true);
+    }
+  });
+
   it("aceita caminhos públicos próprios do GitHub Pages", () => {
     const answer = resolvePgBotAnswer("privacidade");
     expect(answer.action?.href).toBe(`${import.meta.env.BASE_URL}privacidade/`);
