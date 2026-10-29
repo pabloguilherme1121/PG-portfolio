@@ -115,3 +115,32 @@ test("PG Bot mantém foco no botão original quando é fechado sem navegação",
   await expect(dialog).toHaveCount(0);
   await expect(opener).toBeFocused();
 });
+
+for (const width of [320, 390, 1280]) {
+  test(`Alt+B abre PG Bot sem duplicar painel e Escape devolve foco em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    const opener = page.locator('[data-hero-pg-bot="true"]');
+    await expect(opener).toHaveAttribute("aria-keyshortcuts", "Alt+B");
+    await opener.focus();
+    await page.keyboard.press("Alt+b");
+    const dialog = page.locator('[data-pg-bot-dialog="true"]');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveCount(1);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toHaveCount(0);
+    await expect(opener).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+test("PG Bot oferece caminho para o código-fonte sem inventar integração", async ({ page }) => {
+  await page.goto("./");
+  await page.locator('[data-hero-pg-bot="true"]').click();
+  const bot = page.locator('[data-pg-bot-dialog="true"]');
+  await bot.locator('[data-pg-bot-input="true"]').fill("Onde vejo o código no GitHub?");
+  await bot.getByRole("button", { name: "Enviar pergunta ao guia local" }).click();
+  const link = bot.getByRole("link", { name: "Ver repositório" });
+  await expect(link).toHaveAttribute("href", "https://github.com/pabloguilherme1121/PG-portfolio");
+  await expect(link).toHaveAttribute("target", "_blank");
+});
