@@ -17,12 +17,16 @@ export default function PortfolioHero({ portraitUrl, portraitResponsive, heroCta
         <div className="min-w-0">
           <p className="professional-eyebrow">Pablo Guilherme · projetos, interfaces e dados</p>
           <h1 id="hero-title" className="professional-hero-title mt-4 font-display font-semibold text-white">Interfaces claras.<br />Produtos que você pode usar.</h1>
-          <p className="mt-5 max-w-[58ch] font-body text-base leading-7 text-[#bed0ea] sm:text-lg sm:leading-8">Estudo Análise e Desenvolvimento de Sistemas e desenvolvo aplicações com React e TypeScript. Aqui você pode abrir meus projetos, conhecer as decisões de interface e conferir o que já está publicado e o que segue em evolução.</p>
-          <div ref={heroCtaRef} data-hero-cta="true" className="mt-6 flex flex-wrap gap-3">
-            <a href="#projetos" className="professional-primary">Ver projetos <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
-            <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="professional-secondary">Conversar sobre um projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
-            <a href="#curriculo-web" onClick={() => trackPortfolioEvent("professional_profile_opened")} className="professional-secondary">Ver currículo <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
-            <button type="button" data-hero-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="professional-secondary inline-flex min-h-11 items-center gap-2 border-[#67e8f9]/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="26" height="30" loading="lazy" decoding="async" className="h-[30px] w-[26px] object-contain" />Perguntar ao PG Bot</button>
+          <p className="mt-5 max-w-[58ch] font-body text-base leading-7 text-[#bed0ea] sm:text-lg sm:leading-8">Desenvolvo sites e aplicações com React e TypeScript enquanto estudo Análise e Desenvolvimento de Sistemas. Veja os projetos em funcionamento, como foram construídos e o que ainda está em evolução.</p>
+          <div ref={heroCtaRef} data-hero-cta="true" className="mt-6 flex flex-col gap-3">
+            <div data-hero-primary-actions="true" className="flex flex-wrap gap-3">
+              <a href="#projetos" className="professional-primary">Ver projetos <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+              <a href="#contato" onClick={() => trackPortfolioEvent("quote_cta", { source: "hero" })} className="professional-secondary">Conversar sobre um projeto <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+            </div>
+            <div data-hero-optional-actions="true" className="flex flex-wrap gap-2 border-t border-[#67e8f9]/20 pt-3">
+              <a href="#curriculo-web" onClick={() => trackPortfolioEvent("professional_profile_opened")} className="professional-secondary">Ver currículo <ArrowUpRight className="h-4 w-4" aria-hidden="true" /></a>
+              <button type="button" data-hero-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="professional-secondary inline-flex min-h-11 items-center gap-2 border-[#67e8f9]/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="26" height="30" loading="lazy" decoding="async" className="h-[30px] w-[26px] object-contain" />Perguntar ao PG Bot</button>
+            </div>
           </div>
           <nav className="hero-project-index" aria-label="Explore meu trabalho">
             <a href="#observatorio"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Dados que fazem sentido</strong><small>Observatório · conhecer o case</small></span><ArrowUpRight aria-hidden="true" /></a>
