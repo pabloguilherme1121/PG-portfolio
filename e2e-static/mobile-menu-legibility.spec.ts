@@ -33,7 +33,10 @@ for (const width of [320, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     const primary = menu.locator('[data-mobile-menu-primary="true"]');
     const text = primary.locator("span").last();
-    expect(await text.evaluate(element => {\n      const style = getComputedStyle(element);\n      return style.whiteSpace !== "nowrap" && element.scrollWidth <= element.clientWidth + 2;\n    })).toBe(true);
+    expect(await text.evaluate(element => {
+      const style = getComputedStyle(element);
+      return style.whiteSpace !== "nowrap" && element.scrollWidth <= element.clientWidth + 2;
+    })).toBe(true);
     await menu.locator('[aria-label="Seções do portfólio"] a[href="#projetos"]').click();
     await expect(menu).not.toBeVisible();
     await expect(page).toHaveURL(/#projetos$/);
