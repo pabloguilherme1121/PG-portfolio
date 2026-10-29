@@ -122,8 +122,9 @@ export default function Home() {
     setPgBotOpen(true);
   }
 
-  function closePGBot() {
+  function closePGBot(restoreFocus = true) {
     setPgBotOpen(false);
+    if (!restoreFocus) return;
     window.requestAnimationFrame(() => {
       const trigger = pgBotTriggerRef.current;
       const focusTarget = trigger?.isConnected ? trigger : menuButtonRef.current;
