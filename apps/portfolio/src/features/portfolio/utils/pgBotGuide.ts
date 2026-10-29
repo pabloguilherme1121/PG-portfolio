@@ -1,4 +1,4 @@
-import { portfolioArcadeUrl } from "@/features/portfolio/portfolioConfig";
+import { portfolioArcadeUrl, portfolioContactEmail } from "@/features/portfolio/portfolioConfig";
 import { projectNetwork } from "@/features/portfolio/projectNetwork";
 
 export type PgBotAnswer = {
@@ -41,7 +41,9 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
     ["observatorio", "observatorio"],
     ["trajeto", "trajeto"],
     ["eleicoes goias", "eleicoes-goias"],
+    ["eleicoes de goias", "eleicoes-goias"],
     ["mapa planaltina", "mapa-planaltina"],
+    ["mapa de planaltina", "mapa-planaltina"],
   ].find(([name]) => term.includes(name));
   const linkedProject = projectMatch && projectNetwork.find(project => project.id === projectMatch[1]);
   if (linkedProject) {
@@ -70,6 +72,13 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       kind: "answer",
       text: "O currículo web apresenta formação em Análise e Desenvolvimento de Sistemas, tecnologias e projetos. Abra a seção e confira as evidências disponíveis.",
       action: { label: "Ver currículo", href: "#curriculo-web" },
+    };
+  }
+  if (/e-?mail|correio eletronico/.test(term)) {
+    return {
+      kind: "answer",
+      text: "Você também pode entrar em contato por e-mail. O PG Bot não envia mensagens: ao selecionar a opção, seu aplicativo de e-mail abre um rascunho para você revisar.",
+      action: { label: "Escrever e-mail", href: `mailto:${portfolioContactEmail}`, external: true },
     };
   }
   if (/contrat|orcament|briefing|preco|quanto custa|falar|contat|propost|whatsapp|e-?mail/.test(term)) {

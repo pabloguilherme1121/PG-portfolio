@@ -67,4 +67,18 @@ describe("PG Bot guia local do portfólio", () => {
     expect(resolvePgBotAnswer("WhatsApp").action?.href).toBe("#contato-briefing");
   });
 
+  it("reconhece variações de nomes dos projetos e oferece contato por e-mail sem enviar mensagens", () => {
+    expect(resolvePgBotAnswer("Quero ver as eleições de Goiás 2026").action?.href).toBe(
+      "https://pabloguilherme1121.github.io/eleicoes-goias-2026/"
+    );
+    expect(resolvePgBotAnswer("Onde encontro o mapa de Planaltina?").action?.href).toBe(
+      "https://pabloguilherme01.github.io/mapa-planaltina-go/"
+    );
+    expect(resolvePgBotAnswer("Quero falar por e-mail").action).toEqual({
+      label: "Escrever e-mail",
+      href: "mailto:mpjcreator@gmail.com",
+      external: true,
+    });
+  });
+
 });

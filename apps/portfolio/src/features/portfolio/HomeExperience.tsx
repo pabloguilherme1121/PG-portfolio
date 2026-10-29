@@ -500,7 +500,7 @@ export default function Home() {
             <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
               <img src={markUrl} alt="Símbolo PG" width="28" height="28" decoding="async" className="h-7 w-7 object-contain" />
             </span>
-            <span className="truncate font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-[#b7cdf1] min-[360px]:text-[10px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
+            <span className="truncate font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[#b7cdf1] min-[360px]:text-[11px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
           </a>
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
@@ -550,10 +550,10 @@ export default function Home() {
                 </span>
               </span>
               <span className="min-w-0 flex-1 text-left">
-                <span data-mobile-current-section="true" className="block truncate font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
+                <span data-mobile-current-section="true" className="block truncate font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
                   {mobileSectionLabels[activeSection] ?? "portfólio"}
                 </span>
-                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#7fa5bf]">
+                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[10px] uppercase tracking-[0.07em] text-[#7fa5bf]">
                   {Math.round(scrollProgress)}% percorrido
                 </span>
               </span>
