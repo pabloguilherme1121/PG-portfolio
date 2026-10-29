@@ -87,7 +87,7 @@ export default function Home() {
   const [diagnosticSectionRef, shouldLoadDiagnostic] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "180px");
   const [profileSectionsRef, shouldLoadProfileSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "280px");
   const [staticSectionsRef, shouldLoadStaticSections] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "320px");
-  const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "240px");
+  const [projectsSectionRef, shouldLoadProjects] = useNearViewport<HTMLElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [caseStudiesSectionRef, shouldLoadCaseStudies] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "420px");
   const [contactSectionRef, shouldLoadContact] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "80px" : "360px");
   const [footerSectionRef, shouldLoadFooter] = useNearViewport<HTMLDivElement>(avoidSpeculativePreload ? "40px" : "260px");
