@@ -1,4 +1,5 @@
 import { portfolioArcadeUrl } from "@/features/portfolio/portfolioConfig";
+import { projectNetwork } from "@/features/portfolio/projectNetwork";
 
 export type PgBotAnswer = {
   kind: "answer" | "fallback";
@@ -28,6 +29,20 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       kind: "answer",
       text: "O guia PG Bot responde neste navegador, sem enviar esta conversa a um servidor. O briefing usa um rascunho local e você decide se envia a mensagem. Leia também a política de privacidade.",
       action: { label: "Ler privacidade", href: `${import.meta.env.BASE_URL}privacidade/` },
+    };
+  }
+  const projectMatch = [
+    ["observatorio", "observatorio"],
+    ["trajeto", "trajeto"],
+    ["eleicoes goias", "eleicoes-goias"],
+    ["mapa planaltina", "mapa-planaltina"],
+  ].find(([name]) => term.includes(name));
+  const linkedProject = projectMatch && projectNetwork.find(project => project.id === projectMatch[1]);
+  if (linkedProject) {
+    return {
+      kind: "answer",
+      text: `${linkedProject.name}: ${linkedProject.description} Estado informado na vitrine: ${linkedProject.status}.`,
+      action: { label: `Abrir ${linkedProject.name}`, href: linkedProject.href, external: true },
     };
   }
   if (/arcade|jog|game|estrateg|snake|tabuleiro/.test(term)) {
