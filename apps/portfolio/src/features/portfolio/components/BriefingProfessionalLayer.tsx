@@ -20,7 +20,7 @@ export default function BriefingProfessionalLayer({
         hidden={requirementsHidden}
         className="min-w-0 border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
-        <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
+        <legend className="px-2 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           04 · requisitos
         </legend>
         <p className="mb-6 max-w-2xl font-body text-sm leading-6 text-[#9bb9ca]">
@@ -29,7 +29,7 @@ export default function BriefingProfessionalLayer({
 
         <div className="grid gap-7 sm:grid-cols-2">
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">conteúdo disponível</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">conteúdo disponível</span>
             <select name="contentStatus" defaultValue={draft.contentStatus ?? ""} className={fieldClass}>
               <option value="">A definir</option>
               <option>Conteúdo pronto</option>
@@ -39,7 +39,7 @@ export default function BriefingProfessionalLayer({
             </select>
           </label>
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">identidade visual</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">identidade visual</span>
             <select name="visualIdentity" defaultValue={draft.visualIdentity ?? ""} className={fieldClass}>
               <option value="">A definir</option>
               <option>Identidade visual existente</option>
@@ -52,23 +52,23 @@ export default function BriefingProfessionalLayer({
 
         <div className="mt-7 grid gap-7 sm:grid-cols-2">
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">páginas / telas / peças</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">páginas / telas / peças</span>
             <textarea name="pagesScreens" rows={4} maxLength={1200} defaultValue={draft.pagesScreens ?? ""} placeholder="Ex.: home, serviços, contato; dashboard, detalhe e filtros; roteiro, captação e versões." className={textareaClass} />
           </label>
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">funcionalidades essenciais</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">funcionalidades essenciais</span>
             <textarea name="features" rows={4} maxLength={1200} defaultValue={draft.features ?? ""} placeholder="Ex.: formulário, busca, filtros, autenticação, mapa, CMS, exportação, animações." className={textareaClass} />
           </label>
         </div>
 
         <label className="mt-7 block">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">integrações / ferramentas existentes</span>
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">integrações / ferramentas existentes</span>
           <textarea name="integrations" rows={3} maxLength={1200} defaultValue={draft.integrations ?? ""} placeholder="Ex.: WhatsApp, Analytics, CRM, API, banco de dados, domínio, hospedagem, redes sociais." className={textareaClass} />
         </label>
 
         <div className="mt-7 grid gap-7 sm:grid-cols-2">
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">prioridade de qualidade</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">prioridade de qualidade</span>
             <select name="qualityPriority" defaultValue={draft.qualityPriority ?? ""} className={fieldClass}>
               <option value="">A definir</option>
               <option>Equilíbrio geral</option>
@@ -80,7 +80,7 @@ export default function BriefingProfessionalLayer({
             </select>
           </label>
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">depois do lançamento</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">depois do lançamento</span>
             <select name="postLaunch" defaultValue={draft.postLaunch ?? ""} className={fieldClass}>
               <option value="">A definir</option>
               <option>Entrega pontual</option>
@@ -94,7 +94,7 @@ export default function BriefingProfessionalLayer({
 
         <div className="mt-7 grid gap-2 sm:grid-cols-3" aria-label="Critérios considerados no planejamento">
           {["Responsividade", "Acessibilidade", "Performance", "SEO quando aplicável", "Mensuração", "Estados e erros"].map((item) => (
-            <span key={item} className="border border-[#67e8f9]/15 bg-[#06172f]/55 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.09em] text-[#9ec7d9]">
+            <span key={item} className="border border-[#67e8f9]/15 bg-[#06172f]/55 px-3 py-2 font-mono text-xs uppercase tracking-[0.09em] text-[#9ec7d9]">
               {item}
             </span>
           ))}
@@ -107,12 +107,12 @@ export default function BriefingProfessionalLayer({
         hidden={reviewHidden}
         className="min-w-0 border border-white/[0.1] bg-[#080f1a]/60 p-4 outline-none sm:p-6"
       >
-        <legend className="px-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
+        <legend className="px-2 font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#67e8f9]">
           05 · contexto e revisão
         </legend>
 
         <div data-briefing-professional-review="true" className="mb-7 border border-[#67e8f9]/20 bg-[#06172f]/70 p-4">
-          <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-[#67e8f9]">leitura profissional do escopo</p>
+          <p className="font-mono text-xs uppercase tracking-[0.14em] text-[#67e8f9]">leitura profissional do escopo</p>
           <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <p className="font-body text-xs leading-5 text-[#b9d6e5]"><strong className="text-white">Conteúdo:</strong> {draft.contentStatus || "A definir"}</p>
             <p className="font-body text-xs leading-5 text-[#b9d6e5]"><strong className="text-white">Identidade:</strong> {draft.visualIdentity || "A definir"}</p>
@@ -129,21 +129,21 @@ export default function BriefingProfessionalLayer({
         </div>
 
         <label className="block">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">como saberemos que deu certo?</span>
           <textarea maxLength={600} name="success" rows={3} defaultValue={draft.success ?? ""} placeholder="Ex.: mais pedidos de orçamento, informação mais fácil de consultar, lançamento pronto para uso." className={textareaClass} />
         </label>
         <div className="mt-7 grid gap-7 sm:grid-cols-2">
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">referências / links</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">referências / links</span>
             <textarea maxLength={1000} name="references" rows={3} defaultValue={draft.references ?? ""} placeholder="Sites, perfis, concorrentes ou produtos que ajudam a explicar a direção." className={textareaClass} />
           </label>
           <label className="block">
-            <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">restrições / riscos / dependências</span>
+            <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">restrições / riscos / dependências</span>
             <textarea maxLength={1000} name="constraints" rows={3} defaultValue={draft.constraints ?? ""} placeholder="Ex.: tecnologia obrigatória, aprovação de terceiros, prazo externo, API, domínio, conteúdo pendente." className={textareaClass} />
           </label>
         </div>
         <label className="mt-7 block">
-          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
+          <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
           <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={draft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className={textareaClass} />
         </label>
       </fieldset>
