@@ -41,11 +41,11 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
   }
 }
 
-test("briefing native anchor survives five pointer visits at 390px", async ({ browser }) => {
+test("briefing native anchor survives five pointer visits at 390px", async ({ browser, baseURL }) => {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     // Each visit gets a new browser context and document. This tests a genuinely
     // cold arrival without interrupting deferred preloads with another navigation.
-    const visit = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce" });
+    const visit = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce", baseURL });
     try {
       await visit.goto("./?consultation=1#contato");
       const contact = visit.locator("#contato");
