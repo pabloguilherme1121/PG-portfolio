@@ -28,6 +28,15 @@ for (const { width, height } of [{ width: 320, height: 568 }, { width: 320, heig
       return textRect.bottom <= logRect.bottom + 1 && textRect.top >= logRect.top - 1;
     })).toBe(true);
     await expect(dialog.getByRole("button", { name: "Quais projetos posso conhecer?" })).toBeVisible();
+    const suggestions = dialog.locator('[data-pg-bot-suggestions="true"]');
+    if (width === 320) {
+      const widths = await suggestions.evaluate(element => ({ scrollWidth: element.scrollWidth, clientWidth: element.clientWidth }));
+      expect(widths.scrollWidth).toBeGreaterThan(widths.clientWidth);
+      const lastTopic = suggestions.getByRole("button", { name: "Como pedir orçamento?" });
+      await lastTopic.scrollIntoViewIfNeeded();
+      await expect(lastTopic).toBeVisible();
+    }
+
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await dialog.getByRole("button", { name: "Fechar PG Bot" }).click();
     await expect(page.locator('[data-hero-pg-bot="true"]')).toBeFocused();
