@@ -67,6 +67,18 @@ describe("PG Bot guia local do portfólio", () => {
     expect(resolvePgBotAnswer("WhatsApp").action?.href).toBe("#contato-briefing");
   });
 
+  it("prioriza projeto e código quando a dúvida menciona dados ou site", () => {
+    expect(resolvePgBotAnswer("Onde encontro os dados do Observatório?").action?.href).toBe(
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    expect(resolvePgBotAnswer("Onde está o código do site?").action?.href).toBe(
+      "https://github.com/pabloguilherme1121/PG-portfolio",
+    );
+    expect(resolvePgBotAnswer("Como meus dados pessoais são tratados?").action?.href).toBe(
+      `${import.meta.env.BASE_URL}privacidade/`,
+    );
+  });
+
   it("reconhece variações de nomes dos projetos e oferece contato por e-mail sem enviar mensagens", () => {
     expect(resolvePgBotAnswer("Quero ver as eleições de Goiás 2026").action?.href).toBe(
       "https://pabloguilherme1121.github.io/eleicoes-goias-2026/"
