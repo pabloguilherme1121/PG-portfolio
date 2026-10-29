@@ -1,5 +1,6 @@
 import { ArrowUpRight, Braces, ClipboardCheck, Download, Eye, FileText, Layers2, Settings2, Share2 } from "lucide-react";
 import type { MobileExperienceRoute } from "@/features/portfolio/utils/mobileJourney";
+import { portfolioNavigationItems } from "@/features/portfolio/portfolioConfig";
 import { useEffect, useRef } from "react";
 
 type MobilePrimaryAction = {
@@ -31,11 +32,10 @@ type PortfolioMobileMenuProps = {
   onOpenPGBot: (trigger: HTMLElement) => void;
 };
 
+// One navigation source for desktop and mobile; the logo remains the desktop home shortcut.
 const sectionLinks = [
-  ["01 / início", "#inicio", "inicio"],
-  ["02 / projetos", "#projetos", "projetos"],
-  ["03 / serviços", "#servicos", "servicos"],
-  ["04 / contato", "#contato", "contato"],
+  ["início", "#inicio", "inicio"],
+  ...portfolioNavigationItems,
 ] as const;
 
 export default function PortfolioMobileMenu({
@@ -149,8 +149,11 @@ export default function PortfolioMobileMenu({
               </button>
             ))}
           </div>
-          <div className="grid grid-cols-2 gap-2" aria-label="Seções do portfólio">
-            {sectionLinks.map(([label, href, id]) => (
+          <p className="mb-2 font-body text-xs leading-5 text-[#b7cbe1]">
+            Navegue pelas etapas ou abra diretamente o assunto que procura.
+          </p>
+          <div role="group" className="grid grid-cols-2 gap-2" aria-label="Seções do portfólio">
+            {sectionLinks.map(([label, href, id], index) => (
               <a
                 key={label}
                 href={href}
@@ -162,7 +165,7 @@ export default function PortfolioMobileMenu({
                     : "border-white/10 bg-[#07111f] text-[#9fb6d0] hover:border-[#67e8f9]/30 hover:text-white"
                 }`}
               >
-                {label}
+                {String(index + 1).padStart(2, "0")} / {label}
               </a>
             ))}
           </div>
