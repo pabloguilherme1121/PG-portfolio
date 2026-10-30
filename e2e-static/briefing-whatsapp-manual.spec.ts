@@ -20,8 +20,10 @@ for (const width of [320, 390]) {
     await form.locator('textarea[name="objective"]').fill("Preciso de um site rápido e responsivo.");
     await form.locator('input[name="audience"]').fill("Clientes da região");
     await form.getByRole("button", { name: /continuar.*escopo/i }).click();
+    await expect(form.locator('[data-briefing-step="scope"]')).toBeVisible();
     await form.locator('input[name="location"]').fill("Remoto");
     await form.getByRole("button", { name: /continuar.*requisitos/i }).click();
+    await expect(form.locator('[data-briefing-step="requirements"]')).toBeVisible();
     await form.getByRole("button", { name: /continuar.*revisão/i }).click();
     await expect(form.locator('[data-briefing-step="review"]')).toBeVisible();
     await form.locator('textarea[name="briefing"]').fill(
@@ -29,13 +31,13 @@ for (const width of [320, 390]) {
     );
 
     // Native constraint validation runs before React's onSubmit callback.
-    // Make the first invalid required field visible in the failing trace.
+    // Optional controls with invalid values also block submission.
     const invalidFields = await form.evaluate(node =>
-      Array.from(node.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("[required]"))
-        .filter(field => !field.checkValidity())
-        .map(field => field.name)
+      Array.from(node.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>("input, textarea, select"))
+        .filter(field => field.willValidate && !field.checkValidity())
+        .map(field => ({ name: field.name, validationMessage: field.validationMessage }))
     );
-    expect(invalidFields, "todos os campos obrigatórios devem permanecer válidos após as cinco etapas").toEqual([]);
+    expect(invalidFields, "todos os controles sujeitos à validação nativa devem estar válidos após as cinco etapas").toEqual([]);
 
     let popups = 0;
     page.on("popup", () => { popups += 1; });
