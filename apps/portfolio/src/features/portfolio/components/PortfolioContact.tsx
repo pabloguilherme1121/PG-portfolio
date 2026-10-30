@@ -111,7 +111,9 @@ export function PortfolioContact({
     "constraints",
     "briefing",
   ].some((field) => briefingDraft[field]?.trim());
-  const shouldLoadProfessionalLayer = briefingStep >= 3 || hasProfessionalBriefingDraft;
+  // Prefetch the lazy requirements/review layer during Scope so mobile WebKit
+  // does not have to load it at the moment the visitor advances.
+  const shouldLoadProfessionalLayer = briefingStep >= 2 || hasProfessionalBriefingDraft;
 
   return (
     <section id={embedded ? undefined : "contato"} className="archive-chapter relative overflow-hidden bg-[#070a10]">
