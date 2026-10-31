@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 
 type BriefingProfessionalLayerProps = {
   draft: Record<string, string>;
@@ -8,6 +8,12 @@ type BriefingProfessionalLayerProps = {
 
 const fieldClass = "mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
 const textareaClass = "mt-3 min-w-0 max-w-full w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-sm leading-6 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]";
+
+// Keep this uncontrolled field mounted across live-summary updates. In WebKit,
+// re-rendering its defaultValue after onChangeCapture can erase freshly typed text.
+const BriefingContextField = memo(function BriefingContextField({ initialValue }: { initialValue: string }) {
+  return <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={initialValue} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className={textareaClass} />;
+});
 
 export default function BriefingProfessionalLayer({
   draft,
@@ -150,7 +156,7 @@ export default function BriefingProfessionalLayer({
         </div>
         <label className="mt-7 block">
           <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">contexto do projeto *</span>
-          <textarea required minLength={12} maxLength={3000} name="briefing" rows={6} defaultValue={initialDraft.briefing ?? ""} placeholder="Explique o cenário atual, o problema, o que já existe, o que não pode faltar e qualquer detalhe que ajude a entender a entrega." className={textareaClass} />
+          <BriefingContextField initialValue={initialDraft.briefing ?? ""} />
         </label>
       </fieldset>
     </>
