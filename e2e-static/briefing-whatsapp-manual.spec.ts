@@ -19,6 +19,7 @@ for (const width of [320, 390]) {
     await form.locator('select[name="projectType"]').selectOption("Marca ou negócio");
     await form.locator('textarea[name="objective"]').fill("Preciso de um site rápido e responsivo.");
     await form.locator('input[name="audience"]').fill("Clientes da região");
+    await expect(form.locator('input[name="audience"]')).toHaveValue("Clientes da região");
     await form.getByRole("button", { name: /continuar.*escopo/i }).click();
     await expect(form.locator('[data-briefing-step="scope"]')).toBeVisible();
     await form.locator('input[name="location"]').fill("Remoto");
