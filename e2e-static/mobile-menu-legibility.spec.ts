@@ -42,3 +42,35 @@ for (const width of [320, 390]) {
     await expect(page).toHaveURL(/#projetos$/);
   });
 }
+
+for (const width of [320, 390]) {
+  test(`indicador da seção, progresso e marca continuam legíveis no cabeçalho em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    for (const selector of [
+      '[data-mobile-current-section="true"]',
+      '[data-mobile-progress-value="true"]',
+      'header a[aria-label="Ir ao início"] > span:last-child',
+    ]) {
+      const item = page.locator(selector);
+      await expect(item).toBeVisible();
+      const fontSize = await item.evaluate(element => parseFloat(getComputedStyle(element).fontSize));
+      expect(fontSize, selector).toBeGreaterThanOrEqual(10);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+test("rodapé mantém rótulos de contato legíveis no celular", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("./");
+  await page.locator('[data-footer-anchor="true"]').scrollIntoViewIfNeeded();
+  const footer = page.locator("#contato-rodape");
+  await expect(footer).toBeVisible();
+  for (const label of ["contato direto", "links profissionais"]) {
+    const element = footer.getByText(label, { exact: true });
+    const fontSize = await element.evaluate(node => parseFloat(getComputedStyle(node).fontSize));
+    expect(fontSize, label).toBeGreaterThanOrEqual(11);
+  }
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

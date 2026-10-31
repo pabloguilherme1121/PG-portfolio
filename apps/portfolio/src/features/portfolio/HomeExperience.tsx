@@ -22,6 +22,7 @@ import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioAr
 import { PortfolioQuickActionsDock } from "@/features/portfolio/components/PortfolioQuickActionsDock";
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
+import { isPgBotKeyboardShortcut } from "@/features/portfolio/utils/pgBotShortcut";
 import { buildBriefingWhatsAppUrl } from "@/features/portfolio/utils/briefingWhatsApp";
 import type { BriefingSeed } from "@/features/portfolio/utils/briefingFlow";
 import { copyText, copyTextWithFeedback } from "@/features/portfolio/utils/clipboardFeedback";
@@ -32,6 +33,7 @@ import { useMobileKeyboardState } from "@/features/portfolio/hooks/useMobileKeyb
 import { usePortfolioShellState } from "@/features/portfolio/hooks/usePortfolioShellState";
 import { usePortfolioInstallPrompt } from "@/features/portfolio/hooks/usePortfolioInstallPrompt";
 import { usePortfolioDeferredHashRequests } from "@/features/portfolio/hooks/usePortfolioDeferredHashRequests";
+import { useStableDeferredHashNavigation } from "@/features/portfolio/hooks/useStableDeferredHashNavigation";
 import { useProjectDetailsController } from "@/features/portfolio/hooks/useProjectDetailsController";
 import { useAppearancePanelController } from "@/features/portfolio/hooks/useAppearancePanelController";
 import { useMobileMenuController } from "@/features/portfolio/hooks/useMobileMenuController";
@@ -157,6 +159,7 @@ export default function Home() {
   const [briefingWhatsAppUrl, setBriefingWhatsAppUrl] = useState<string | null>(null);
   const [backgroundContactReady, setBackgroundContactReady] = useState(false);
   const [pendingBriefingSeed, setPendingBriefingSeed] = useState<BriefingSeed | null>(null);
+  useStableDeferredHashNavigation();
   const {
     footer: footerHashRequested,
     contact: contactHashRequested,
@@ -201,9 +204,25 @@ export default function Home() {
     shareSelectedProject,
     copySelectedProjectLink,
   } = useProjectDetailsController({ repositories });
+  useEffect(() => {
+    function handlePgBotShortcut(event: KeyboardEvent) {
+      const target = event.target instanceof Element ? event.target : null;
+      const editing = Boolean(target?.closest('input, textarea, select, [contenteditable], [role="textbox"]'));
+      if (!isPgBotKeyboardShortcut(event, editing)) return;
+      if (pgBotOpen || menuOpen || appearanceOpen || selectedProject || document.querySelector('dialog[open], [role="dialog"][aria-modal="true"]')) return;
+      event.preventDefault();
+      // Preserve the current keyboard focus, even when the original hero launcher is offscreen.
+      pgBotTriggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : document.body;
+      setPgBotOpen(true);
+    }
+    window.addEventListener("keydown", handlePgBotShortcut);
+    return () => window.removeEventListener("keydown", handlePgBotShortcut);
+  }, [pgBotOpen, menuOpen, appearanceOpen, selectedProject]);
+
   const shouldHideContactFloat = Boolean(selectedProject || isBriefingFieldFocused || isMobileKeyboardOpen || menuOpen || appearanceOpen);
   const isDockHidden = shouldHideContactFloat || isHeroCtaVisible;
   const isBackToTopVisible = showBackToTop && !shouldHideContactFloat;
+  const isPgBotQuickAccessHidden = isHeroCtaVisible || shouldHideContactFloat || pgBotOpen;
   const mobileDock = getMobileDockModel(mobileExperienceRoute, hasMobileBriefingDraft);
   const mobilePrimaryAction = mobileDock.primary;
   const mobileJourneyHint = mobileDock.hint;
@@ -435,7 +454,8 @@ export default function Home() {
       trackPortfolioEvent("briefing_whatsapp_prepared", { channel: "whatsapp" });
       const url = buildBriefingWhatsAppUrl(whatsAppNumber, data);
       setBriefingWhatsAppUrl(url);
-      window.open(url, "_blank", "noopener,noreferrer");
+      // A native link in the confirmation step lets the visitor open WhatsApp
+      // directly. Automatic window.open can be blocked or redirected on mobile.
       setFormSent(true);
       return;
     }
@@ -482,7 +502,7 @@ export default function Home() {
             <span className="grid h-10 w-10 place-items-center border border-[#67e8f9]/60 bg-[#062044] transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:shadow-[0_0_20px_rgba(56,189,248,0.32)]">
               <img src={markUrl} alt="Símbolo PG" width="28" height="28" decoding="async" className="h-7 w-7 object-contain" />
             </span>
-            <span className="truncate font-mono text-[9px] font-medium uppercase tracking-[0.16em] text-[#b7cdf1] min-[360px]:text-[10px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
+            <span className="truncate font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-[#b7cdf1] min-[360px]:text-[11px] min-[360px]:tracking-[0.2em]">Pablo <span className="text-[#67e8f9]">/</span> <span className="max-[359px]:hidden">Guilherme</span></span>
           </a>
 
           <nav className="hidden items-center gap-7 md:flex" aria-label="Navegação principal">
@@ -502,7 +522,7 @@ export default function Home() {
             >
               <Settings2 className="h-4 w-4" aria-hidden="true" />
             </button>
-            <button type="button" data-pg-bot-header="true" onClick={event => openPGBot(event.currentTarget)} className="hidden min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/35 px-3 text-xs font-semibold text-[#dcfaff] transition-colors hover:bg-[#143956] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] lg:inline-flex"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="25" height="29" loading="lazy" decoding="async" className="h-[29px] w-[25px] object-contain" />PG Bot</button>
+            <button type="button" data-pg-bot-header="true" aria-keyshortcuts="Alt+B" title="Abrir PG Bot (Alt+B)" onClick={event => openPGBot(event.currentTarget)} className="hidden min-h-11 items-center gap-2 rounded-lg border border-[#67e8f9]/35 px-3 text-xs font-semibold text-[#dcfaff] transition-colors hover:bg-[#143956] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] lg:inline-flex"><img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="25" height="29" loading="lazy" decoding="async" className="h-[29px] w-[25px] object-contain" />PG Bot</button>
             <a href="#contato" className="inline-flex items-center gap-2 border border-[#67e8f9] bg-[#38bdf8] px-4 py-2 text-[11px] font-mono font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">
               contato <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
@@ -532,10 +552,10 @@ export default function Home() {
                 </span>
               </span>
               <span className="min-w-0 flex-1 text-left">
-                <span data-mobile-current-section="true" className="block truncate font-mono text-[8px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
+                <span data-mobile-current-section="true" className="block truncate font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-[#d9fbff]">
                   {mobileSectionLabels[activeSection] ?? "portfólio"}
                 </span>
-                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[7px] uppercase tracking-[0.07em] text-[#7fa5bf]">
+                <span data-mobile-progress-value="true" className="mt-0.5 block truncate font-mono text-[10px] uppercase tracking-[0.07em] text-[#7fa5bf]">
                   {Math.round(scrollProgress)}% percorrido
                 </span>
               </span>
@@ -805,6 +825,20 @@ export default function Home() {
         )}
       </div>
 
+      <button
+        type="button"
+        data-pg-bot-floating="true"
+        onClick={event => openPGBot(event.currentTarget)}
+        aria-label="Abrir ajuda do PG Bot"
+        aria-keyshortcuts="Alt+B"
+        title="Abrir PG Bot (Alt+B)"
+        aria-hidden={isPgBotQuickAccessHidden ? "true" : "false"}
+        inert={isPgBotQuickAccessHidden ? true : undefined}
+        tabIndex={isPgBotQuickAccessHidden ? -1 : 0}
+        className={`fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-3 z-[55] grid h-12 w-12 place-items-center rounded-xl border border-[#67e8f9]/55 bg-[#09243d]/95 shadow-[0_8px_25px_rgba(0,0,0,0.35)] backdrop-blur-sm transition-[opacity,transform] duration-200 hover:bg-[#164466] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none md:hidden ${isPgBotQuickAccessHidden ? "pointer-events-none translate-y-2 opacity-0" : "translate-y-0 opacity-100"}`}
+      >
+        <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="30" height="35" loading="lazy" decoding="async" className="h-[35px] w-[30px] object-contain" />
+      </button>
       <button type="button" onClick={scrollToTop} aria-label="Voltar ao topo da página" title="Voltar ao topo" aria-hidden={!isBackToTopVisible} tabIndex={isBackToTopVisible ? 0 : -1} className={`fixed bottom-20 right-4 z-[55] grid h-11 w-11 place-items-center border border-[#67e8f9]/45 bg-[#071b39]/95 text-[#bdf7ff] shadow-[0_10px_30px_rgba(0,0,0,0.28)] transition-[opacity,transform,background-color,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-[#67e8f9] hover:bg-[#0b2b57] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] motion-reduce:transition-none sm:bottom-5 sm:right-[360px] ${isBackToTopVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"}`}><ArrowUp className="h-4 w-4" aria-hidden="true" /></button>
       <PortfolioQuickActionsDock
         isDockHidden={isDockHidden}

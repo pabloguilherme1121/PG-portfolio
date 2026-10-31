@@ -18,7 +18,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import type { FormEvent, RefObject } from "react";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 const BriefingProfessionalLayer = lazy(
   () => import("@/features/portfolio/components/BriefingProfessionalLayer"),
@@ -85,6 +85,9 @@ export function PortfolioContact({
     moveBriefingStep,
     trackBriefingStarted,
   } = useBriefingFlow({ initialBriefingSeed, setFormSent });
+  // Uncontrolled inputs must not receive changing defaults on every draft update.
+  // Explicit seed/reset hydration remains handled by useBriefingFlow.
+  const initialBriefingDraft = useRef(briefingDraft).current;
 
   const [agendaOpen, setAgendaOpen] = useState(() => window.location.hash === "#agenda");
   const [briefingOpen, setBriefingOpen] = useState(() => Boolean(initialBriefingSeed) || window.location.hash === "#contato-briefing");
@@ -111,7 +114,9 @@ export function PortfolioContact({
     "constraints",
     "briefing",
   ].some((field) => briefingDraft[field]?.trim());
-  const shouldLoadProfessionalLayer = briefingStep >= 3 || hasProfessionalBriefingDraft;
+  // Prefetch the lazy requirements/review layer during Scope so mobile WebKit
+  // does not have to load it at the moment the visitor advances.
+  const shouldLoadProfessionalLayer = briefingStep >= 2 || hasProfessionalBriefingDraft;
 
   return (
     <section id={embedded ? undefined : "contato"} className="archive-chapter relative overflow-hidden bg-[#070a10]">
@@ -216,11 +221,11 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">nome *</span>
-                    <input required maxLength={160} name="name" autoComplete="name" defaultValue={briefingDraft.name ?? ""} placeholder="Como você se chama?" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={160} name="name" autoComplete="name" defaultValue={initialBriefingDraft.name ?? ""} placeholder="Como você se chama?" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">e-mail *</span>
-                    <input required maxLength={320} type="email" name="email" autoComplete="email" defaultValue={briefingDraft.email ?? ""} placeholder="voce@exemplo.com" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={320} type="email" name="email" autoComplete="email" defaultValue={initialBriefingDraft.email ?? ""} placeholder="voce@exemplo.com" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                 </div>
               </fieldset>
@@ -235,7 +240,7 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">serviço desejado *</span>
-                    <select required name="service" defaultValue={briefingDraft.service ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="service" defaultValue={initialBriefingDraft.service ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione um serviço</option>
                       <option>Site ou landing page</option>
                       <option>Dashboard ou produto digital</option>
@@ -245,7 +250,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">tipo de projeto *</span>
-                    <select required name="projectType" defaultValue={briefingDraft.projectType ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select required name="projectType" defaultValue={initialBriefingDraft.projectType ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="" disabled>Selecione uma opção</option>
                       <option>Produto ou serviço digital</option>
                       <option>Marca ou negócio</option>
@@ -256,16 +261,16 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">objetivo principal *</span>
-                  <textarea required maxLength={900} name="objective" rows={3} defaultValue={briefingDraft.objective ?? ""} placeholder="O que precisa mudar depois que este projeto estiver pronto?" className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                  <textarea required maxLength={900} name="objective" rows={3} defaultValue={initialBriefingDraft.objective ?? ""} placeholder="O que precisa mudar depois que este projeto estiver pronto?" className="mt-3 w-full resize-y border-b border-white/15 bg-transparent px-0 py-3 font-body text-base leading-7 text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                 </label>
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">público / quem vai usar *</span>
-                    <input required maxLength={240} name="audience" defaultValue={briefingDraft.audience ?? ""} placeholder="Ex.: clientes, equipe, moradores, gestores" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={240} name="audience" defaultValue={initialBriefingDraft.audience ?? ""} placeholder="Ex.: clientes, equipe, moradores, gestores" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">estágio atual</span>
-                    <select name="stage" defaultValue={briefingDraft.stage ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="stage" defaultValue={initialBriefingDraft.stage ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Ideia inicial</option>
                       <option>Já existe e precisa evoluir</option>
@@ -287,17 +292,17 @@ export function PortfolioContact({
                 <div className="grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">local ou alcance *</span>
-                    <input required maxLength={255} name="location" defaultValue={briefingDraft.location ?? ""} placeholder="Ex.: remoto, Águas Lindas, Brasil" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
+                    <input required maxLength={255} name="location" defaultValue={initialBriefingDraft.location ?? ""} placeholder="Ex.: remoto, Águas Lindas, Brasil" className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors placeholder:text-[#4e607d] focus:border-[#3b82f6]" />
                   </label>
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">data prevista</span>
-                    <input type="date" name="date" defaultValue={briefingDraft.date ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] [color-scheme:dark]" />
+                    <input type="date" name="date" defaultValue={initialBriefingDraft.date ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-transparent px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] [color-scheme:dark]" />
                   </label>
                 </div>
                 <div className="mt-7 grid gap-7 sm:grid-cols-2">
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">formato de entrega</span>
-                    <select name="delivery" defaultValue={briefingDraft.delivery ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="delivery" defaultValue={initialBriefingDraft.delivery ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Site responsivo</option>
                       <option>Landing page</option>
@@ -307,7 +312,7 @@ export function PortfolioContact({
                   </label>
                   <label className="block">
                     <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">prazo / urgência</span>
-                    <select name="deadline" defaultValue={briefingDraft.deadline ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                    <select name="deadline" defaultValue={initialBriefingDraft.deadline ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                       <option value="">A definir</option>
                       <option>Sem urgência</option>
                       <option>Até 2 semanas</option>
@@ -319,7 +324,7 @@ export function PortfolioContact({
                 </div>
                 <label className="mt-7 block">
                   <span className="font-mono text-xs uppercase tracking-[0.14em] text-[#7892b8]">faixa de investimento</span>
-                  <select name="budget" defaultValue={briefingDraft.budget ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
+                  <select name="budget" defaultValue={initialBriefingDraft.budget ?? ""} className="mt-3 min-h-12 min-w-0 max-w-full w-full border-b border-white/15 bg-[#070a10] px-0 py-3 font-body text-base text-white transition-colors focus:border-[#3b82f6]">
                     <option value="Preciso de orientação">Preciso de orientação</option>
                     <option>Até R$ 1.500</option>
                     <option>R$ 1.500 a R$ 3.000</option>
@@ -405,7 +410,7 @@ export function PortfolioContact({
 
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <Button data-briefing-submit="true" disabled={isQuoteRequestPending || briefingStep !== briefingSteps.length - 1} type="submit" className="min-h-12 w-full justify-center whitespace-normal rounded-none bg-[#38bdf8] px-4 py-3.5 text-center font-mono text-xs font-semibold uppercase leading-5 tracking-[0.1em] min-[360px]:px-5 min-[360px]:tracking-[0.13em] text-[#02111f] transition-all hover:-translate-y-0.5 hover:bg-[#a5f3fc] hover:shadow-[0_12px_30px_rgba(56,189,248,0.30)] active:scale-[0.97] disabled:cursor-wait disabled:opacity-70 sm:w-fit">
-                {isQuoteRequestPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>quero conversar sobre o projeto <Send className="h-4 w-4" /></>}
+                {isQuoteRequestPending ? <><Loader2 className="h-4 w-4 animate-spin" /> enviando pedido</> : <>{isStaticDeploy ? "preparar mensagem para WhatsApp" : "quero conversar sobre o projeto"} <Send className="h-4 w-4" /></>}
               </Button>
               <button type="button" onClick={clearBriefingDraft} className="inline-flex min-h-11 items-center justify-center gap-2 border border-white/10 px-4 font-mono text-xs uppercase tracking-[0.11em] text-[#8fa9c6] transition-colors hover:border-[#67e8f9]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
                 <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" /> limpar rascunho
@@ -421,8 +426,8 @@ export function PortfolioContact({
                   <div>
                     <p className="font-mono text-xs font-semibold uppercase tracking-[0.14em] text-[#a5f3fc]">{isStaticDeploy ? "mensagem preparada" : "briefing recebido"}</p>
                     <h3 className="mt-2 font-display text-2xl font-medium tracking-[-0.04em] text-white">{isStaticDeploy ? "Revise a mensagem antes de enviar." : "Tudo certo: seu pedido chegou."}</h3>
-                    <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">{isStaticDeploy ? "O briefing foi organizado em uma mensagem para o WhatsApp. Você mantém o controle e confirma o envio manualmente." : "As informações foram registradas para análise de escopo e próximos passos."}</p>
-                    {isStaticDeploy && briefingWhatsAppUrl && <a href={briefingWhatsAppUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-2 border-b border-[#3b82f6] font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[#a5f3fc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">abrir mensagem no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>}
+                    <p className="mt-2 max-w-lg font-body text-sm leading-6 text-[#d2edf8]">{isStaticDeploy ? "Nenhuma mensagem foi enviada. Clique em “Abrir mensagem no WhatsApp” para revisar o texto e confirmar o envio no aplicativo." : "As informações foram registradas para análise de escopo e próximos passos."}</p>
+                    {isStaticDeploy && briefingWhatsAppUrl && <a href={briefingWhatsAppUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-[#67e8f9]/50 bg-[#0e395b] px-4 py-3 font-mono text-xs font-semibold uppercase leading-5 tracking-[0.04em] text-[#d7fbff] hover:bg-[#185075] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">abrir mensagem no WhatsApp <ArrowUpRight className="h-4 w-4" /></a>}
                     <button type="button" onClick={() => setFormSent(false)} className="mt-4 inline-flex items-center gap-2 border-b border-[#3b82f6] pb-1 font-mono text-xs uppercase tracking-[0.12em] text-[#e4efff] transition-colors hover:text-[#77a9fc]">continuar editando <ArrowUpRight className="h-3 w-3" /></button>
                   </div>
                 </div>

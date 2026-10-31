@@ -58,4 +58,39 @@ describe("PG Bot guia local do portfólio", () => {
     const answer = resolvePgBotAnswer("privacidade");
     expect(answer.action?.href).toBe(`${import.meta.env.BASE_URL}privacidade/`);
   });
+  it("responde a saudações e dúvidas sobre GitHub e WhatsApp com destinos reais", () => {
+    const help = resolvePgBotAnswer("Oi");
+    expect(help.kind).toBe("answer");
+    expect(help.text).toMatch(/projetos|currículo/i);
+    const code = resolvePgBotAnswer("Onde vejo o código no GitHub?");
+    expect(code.action).toEqual({ label: "Ver repositório", href: "https://github.com/pabloguilherme1121/PG-portfolio", external: true });
+    expect(resolvePgBotAnswer("WhatsApp").action?.href).toBe("#contato-briefing");
+  });
+
+  it("prioriza projeto e código quando a dúvida menciona dados ou site", () => {
+    expect(resolvePgBotAnswer("Onde encontro os dados do Observatório?").action?.href).toBe(
+      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    );
+    expect(resolvePgBotAnswer("Onde está o código do site?").action?.href).toBe(
+      "https://github.com/pabloguilherme1121/PG-portfolio",
+    );
+    expect(resolvePgBotAnswer("Como meus dados pessoais são tratados?").action?.href).toBe(
+      `${import.meta.env.BASE_URL}privacidade/`,
+    );
+  });
+
+  it("reconhece variações de nomes dos projetos e oferece contato por e-mail sem enviar mensagens", () => {
+    expect(resolvePgBotAnswer("Quero ver as eleições de Goiás 2026").action?.href).toBe(
+      "https://pabloguilherme1121.github.io/eleicoes-goias-2026/"
+    );
+    expect(resolvePgBotAnswer("Onde encontro o mapa de Planaltina?").action?.href).toBe(
+      "https://pabloguilherme01.github.io/mapa-planaltina-go/"
+    );
+    expect(resolvePgBotAnswer("Quero falar por e-mail").action).toEqual({
+      label: "Escrever e-mail",
+      href: "mailto:mpjcreator@gmail.com",
+      external: true,
+    });
+  });
+
 });

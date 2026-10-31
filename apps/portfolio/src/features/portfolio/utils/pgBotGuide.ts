@@ -1,4 +1,4 @@
-import { portfolioArcadeUrl } from "@/features/portfolio/portfolioConfig";
+import { portfolioArcadeUrl, portfolioContactEmail } from "@/features/portfolio/portfolioConfig";
 import { projectNetwork } from "@/features/portfolio/projectNetwork";
 
 export type PgBotAnswer = {
@@ -24,18 +24,26 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
   if (!term) {
     return { kind: "fallback", text: "Escolha um assunto ou escreva sua dúvida sobre projetos, currículo, serviços ou contato." };
   }
-  if (/privacidad|dados|cookies|lgpd/.test(term)) {
+  if (/privacidad|cookies|lgpd|dados pessoais|meus dados|coleta de dados|armazenamento de dados/.test(term)) {
     return {
       kind: "answer",
       text: "O guia PG Bot responde neste navegador, sem enviar esta conversa a um servidor. O briefing usa um rascunho local e você decide se envia a mensagem. Leia também a política de privacidade.",
       action: { label: "Ler privacidade", href: `${import.meta.env.BASE_URL}privacidade/` },
     };
   }
+  if (/^(oi|ola|bom dia|boa tarde|boa noite|ajuda|menu|o que voce faz)[!?.\s]*$/.test(term)) {
+    return {
+      kind: "answer",
+      text: "Posso indicar projetos em funcionamento, o currículo, o código no GitHub e as etapas para preparar um briefing. Escreva o que você procura ou escolha uma sugestão abaixo.",
+    };
+  }
   const projectMatch = [
     ["observatorio", "observatorio"],
     ["trajeto", "trajeto"],
     ["eleicoes goias", "eleicoes-goias"],
+    ["eleicoes de goias", "eleicoes-goias"],
     ["mapa planaltina", "mapa-planaltina"],
+    ["mapa de planaltina", "mapa-planaltina"],
   ].find(([name]) => term.includes(name));
   const linkedProject = projectMatch && projectNetwork.find(project => project.id === projectMatch[1]);
   if (linkedProject) {
@@ -66,11 +74,25 @@ export function resolvePgBotAnswer(question: string): PgBotAnswer {
       action: { label: "Ver currículo", href: "#curriculo-web" },
     };
   }
-  if (/contrat|orcament|briefing|preco|quanto custa|falar|contat|propost/.test(term)) {
+  if (/e-?mail|correio eletronico/.test(term)) {
+    return {
+      kind: "answer",
+      text: "Você também pode entrar em contato por e-mail. O PG Bot não envia mensagens: ao selecionar a opção, seu aplicativo de e-mail abre um rascunho para você revisar.",
+      action: { label: "Escrever e-mail", href: `mailto:${portfolioContactEmail}`, external: true },
+    };
+  }
+  if (/contrat|orcament|briefing|preco|quanto custa|falar|contat|propost|whatsapp|e-?mail/.test(term)) {
     return {
       kind: "answer",
       text: "Para discutir uma ideia, abra o briefing opcional. São cinco etapas para organizar contexto e necessidades. A conversa segue por WhatsApp, e o envio depende da sua confirmação.",
       action: { label: "Preparar briefing", href: "#contato-briefing" },
+    };
+  }
+  if (/codigo|github|repositori|playwright|testes|qualidade/.test(term)) {
+    return {
+      kind: "answer",
+      text: "O código deste portfólio está no GitHub. Lá você pode conferir o React e TypeScript, os testes automatizados e as mudanças propostas. O histórico de commits mostra a evolução do projeto.",
+      action: { label: "Ver repositório", href: "https://github.com/pabloguilherme1121/PG-portfolio", external: true },
     };
   }
   if (/servic|soluc|desenvolv|site|dashboard|interface/.test(term)) {
