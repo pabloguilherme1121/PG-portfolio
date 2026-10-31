@@ -66,8 +66,11 @@ export function useBriefingFlow({
     const form = briefingFormRef.current;
     if (!form) return;
 
-    applyBriefingDraftToForm(form, briefingDraft);
-  }, [briefingDraft, briefingRevision]);
+    // Only hydrate at mount or when an explicit seed remounts the form.
+    // Rewriting every input on each onChangeCapture races with WebKit typing
+    // and can reset required values immediately before native validation.
+    applyBriefingDraftToForm(form, briefingDraftRef.current);
+  }, [briefingRevision]);
 
   function notifyBriefingProgress(nextDraft: BriefingDraft) {
     window.dispatchEvent(

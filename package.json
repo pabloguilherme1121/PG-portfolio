@@ -63,7 +63,7 @@
       "@babel/core": "7.29.6",
       "source-map-js": "1.2.2",
       "body-parser": "2.4.0",
-      "follow-redirects": "1.16.1"
+      "follow-redirects": "1.16.2"
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",

@@ -69,12 +69,14 @@ export function useStableDeferredHashNavigation() {
         resizeObserver?.disconnect();
         window.removeEventListener("wheel", stop);
         window.removeEventListener("touchstart", stop);
+        window.removeEventListener("pointerdown", stop);
         window.removeEventListener("keydown", stop);
         if (releaseNavigation === stop) releaseNavigation = undefined;
       };
       // The visitor's next intentional input always wins over automatic scroll.
       window.addEventListener("wheel", stop, { passive: true });
       window.addEventListener("touchstart", stop, { passive: true });
+      window.addEventListener("pointerdown", stop, { passive: true });
       window.addEventListener("keydown", stop);
       timer = window.setTimeout(stop, 8000);
       releaseNavigation = stop;
