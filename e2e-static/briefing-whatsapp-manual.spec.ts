@@ -26,9 +26,11 @@ for (const width of [320, 390]) {
     await expect(form.locator('[data-briefing-step="requirements"]')).toBeVisible();
     await form.getByRole("button", { name: /continuar.*revisão/i }).click();
     await expect(form.locator('[data-briefing-step="review"]')).toBeVisible();
-    await form.locator('textarea[name="briefing"]').fill(
-      "Preciso de um site profissional para apresentar serviços e receber contatos."
-    );
+    const briefingField = form.locator('textarea[name="briefing"]');
+    const briefingText = "Preciso de um site profissional para apresentar serviços e receber contatos.";
+    await briefingField.fill(briefingText);
+    // A alteração de estado no resumo não pode apagar o texto digitado no WebKit.
+    await expect(briefingField).toHaveValue(briefingText);
 
     // Native constraint validation runs before React's onSubmit callback.
     // Optional controls with invalid values also block submission.
