@@ -14,7 +14,16 @@ for (const width of [320, 390, 1280]) {
     await expect(page.getByRole("link", { name: "Ver projetos" })).toHaveAttribute("href", "#projetos");
     await expect(page.getByRole("link", { name: "Preparar briefing" })).toHaveAttribute("href", "../#contato-briefing");
     await expect(page.getByRole("link", { name: "Ver currículo" })).toHaveAttribute("href", "../#curriculo-web");
-    await expect(page.getByRole("link", { name: "Abrir PG Arcade" })).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
+    for (const [name, href] of [
+      ["Abrir Observatório (abre em nova aba)", "https://pabloguilherme01.github.io/observatorio/#dashboard"],
+      ["Abrir PG Arcade (abre em nova aba)", "https://pabloguilherme1121.github.io/PG-Arcade/"],
+      ["Conhecer Trajeto (abre em nova aba)", "https://pabloguilherme01.github.io/trajeto-web/"],
+    ] as const) {
+      const external = page.getByRole("link", { name, exact: true });
+      await expect(external).toHaveAttribute("href", href);
+      await expect(external).toHaveAttribute("target", "_blank");
+      await expect(external).toHaveAttribute("rel", "noopener noreferrer");
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     for (const link of [page.getByRole("link", { name: "Ver projetos" }), page.getByRole("link", { name: "Preparar briefing" }), navigation.getByRole("link", { name: "Projetos" })]) {
       const bounds = await link.boundingBox();
