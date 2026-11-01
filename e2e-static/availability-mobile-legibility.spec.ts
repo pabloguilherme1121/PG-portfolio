@@ -9,7 +9,13 @@ for (const width of [320, 390]) {
 
     const agenda = page.locator("#agenda");
     await expect(agenda).toBeVisible();
-    await expect(agenda.getByRole("button", { name: "Ir para projetos" })).toBeVisible();
+    const projectsButton = agenda.getByRole("button", { name: "Ir para projetos" });
+    await expect(projectsButton).toBeVisible();
+    const buttonRect = await projectsButton.boundingBox();
+    expect(buttonRect).not.toBeNull();
+    // At 320px, the "projetos" action must remain on one line.
+    expect(buttonRect!.height).toBeLessThanOrEqual(52);
+    expect(await projectsButton.evaluate(node => getComputedStyle(node).whiteSpace)).toBe("nowrap");
     await expect(agenda.locator('[data-availability-date="true"]').first()).toBeVisible();
     await expect(agenda.getByRole("button", { name: "08:00" })).toBeVisible();
 
