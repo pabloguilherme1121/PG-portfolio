@@ -17,9 +17,13 @@ for (const width of [320, 390]) {
     await form.getByRole("button", { name: /continuar.*direção/i }).click();
     await form.locator('select[name="service"]').selectOption("Site ou landing page");
     await form.locator('select[name="projectType"]').selectOption("Marca ou negócio");
-    await form.locator('textarea[name="objective"]').fill("Preciso de um site rápido e responsivo.");
+    const objective = form.locator('textarea[name="objective"]');
+    await objective.click();
+    // Real key input instead of WebKit's occasional silent fill() with no input event.
+    await objective.pressSequentially("Preciso de um site rápido e responsivo.");
     await form.locator('input[name="audience"]').fill("Clientes da região");
     await expect(form.locator('input[name="audience"]')).toHaveValue("Clientes da região");
+    await expect(objective).toHaveValue("Preciso de um site rápido e responsivo.");
     await form.getByRole("button", { name: /continuar.*escopo/i }).click();
     await expect(form.locator('[data-briefing-step="scope"]')).toBeVisible();
     await form.locator('input[name="location"]').fill("Remoto");
@@ -29,7 +33,8 @@ for (const width of [320, 390]) {
     await expect(form.locator('[data-briefing-step="review"]')).toBeVisible();
     const briefingField = form.locator('textarea[name="briefing"]');
     const briefingText = "Preciso de um site profissional para apresentar serviços e receber contatos.";
-    await briefingField.fill(briefingText);
+    await briefingField.click();
+    await briefingField.pressSequentially(briefingText);
     // A alteração de estado no resumo não pode apagar o texto digitado no WebKit.
     await expect(briefingField).toHaveValue(briefingText);
 
