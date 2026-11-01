@@ -151,7 +151,7 @@ export function PortfolioAvailabilityConsultation({
       });
     };
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (typeof window.matchMedia !== "function" || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       clear();
       return;
     }
