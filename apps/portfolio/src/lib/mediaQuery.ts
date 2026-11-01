@@ -1,5 +1,12 @@
 type MediaQueryChangeListener = (event: MediaQueryListEvent) => void;
 
+export function getSafeMediaQuery(query: string): MediaQueryList | null {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return null;
+  }
+  return window.matchMedia(query);
+}
+
 export function subscribeToMediaQuery(
   mediaQuery: MediaQueryList,
   listener: MediaQueryChangeListener,

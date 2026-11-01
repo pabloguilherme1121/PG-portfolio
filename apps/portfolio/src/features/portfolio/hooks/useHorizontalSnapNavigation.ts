@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { subscribeToMediaQuery } from "@/lib/mediaQuery";
+import { getSafeMediaQuery, subscribeToMediaQuery } from "@/lib/mediaQuery";
 
 type HorizontalSnapNavigationOptions = {
   itemSelector: string;
@@ -42,7 +42,11 @@ export function useHorizontalSnapNavigation({
     const container = containerRef.current;
     if (!container || typeof window === "undefined") return;
 
-    const viewport = window.matchMedia(mediaQuery);
+    const viewport = getSafeMediaQuery(mediaQuery);
+    if (!viewport) {
+      setActiveIndex(0);
+      return;
+    }
     let frameId: number | null = null;
 
     const scheduleSync = () => {
@@ -82,7 +86,7 @@ export function useHorizontalSnapNavigation({
     const targetLeft = item.offsetLeft - (container.clientWidth - item.offsetWidth) / 2;
     const maxScrollLeft = Math.max(0, container.scrollWidth - container.clientWidth);
     const left = Math.min(maxScrollLeft, Math.max(0, targetLeft));
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion = getSafeMediaQuery("(prefers-reduced-motion: reduce)")?.matches ?? true;
 
     setActiveIndex(index);
     container.scrollTo({ left, behavior: reduceMotion ? "auto" : "smooth" });

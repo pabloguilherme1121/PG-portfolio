@@ -23,5 +23,13 @@ test("limpar consulta de agenda funciona sem matchMedia no navegador", async ({ 
 
   await expect(summary).toHaveCount(0);
   await expect(agenda.locator('[data-clear-availability-selection="true"]')).toHaveCount(0);
+  // The absence of the summary alone could also mean the React error boundary replaced the app.
+  await expect(agenda).toBeVisible();
+  await expect(agenda.getByText("escolha uma data útil")).toBeVisible();
+  // Force the deferred projects strip to render after the optional API disappears.
+  // Its horizontal snap hook must not bring down the entire portfolio.
+  await page.locator("#projetos").scrollIntoViewIfNeeded();
+  await expect(page.getByRole("heading", { name: "Trabalho em uso, código aberto." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Algo saiu do percurso." })).toHaveCount(0);
   expect(pageErrors).toEqual([]);
 });
