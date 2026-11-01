@@ -163,11 +163,11 @@ export default function PortfolioMobileMenu({
             </div>
           </div>
 
-          <div role="group" aria-label="Objetivo da visita" className="mb-3 grid grid-cols-3 gap-2">
+          <div role="group" aria-label="Objetivo da visita" className="mb-3 grid grid-cols-2 gap-2 min-[360px]:grid-cols-3">
             {([['client', 'Contratar'], ['recruiter', 'Recrutador'], ['explorer', 'Explorar']] as const).map(([route, label]) => (
               <button key={route} type="button" aria-pressed={mobileExperienceRoute === route}
                 onClick={() => onSelectRoute(route)}
-                className="min-h-11 rounded-[10px] border border-cyan-200/20 px-1 text-xs text-[#d7e9f8] aria-pressed:bg-[#0b2746] aria-pressed:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                className="min-h-11 rounded-[10px] border border-cyan-200/20 px-1 text-xs last:col-span-2 min-[360px]:last:col-span-1 text-[#d7e9f8] aria-pressed:bg-[#0b2746] aria-pressed:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
                 {label}
               </button>
             ))}
@@ -208,7 +208,7 @@ export default function PortfolioMobileMenu({
 
           <div
             data-mobile-shortcuts="true"
-            className="mt-2 grid grid-cols-2 gap-2"
+            className="mt-2 grid grid-cols-1 gap-2 min-[390px]:grid-cols-2"
             aria-label="Atalhos rápidos"
           >
             <a
@@ -236,10 +236,10 @@ export default function PortfolioMobileMenu({
 
           <div
             data-mobile-tools="true"
-            className="mt-2 grid grid-cols-2 gap-2 border-t border-white/[0.08] pt-2"
+            className="mt-2 grid grid-cols-1 gap-2 border-t min-[390px]:grid-cols-2 border-white/[0.08] pt-2"
             aria-label="Ferramentas"
           >
-            <button type="button" data-mobile-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="col-span-2 flex min-h-12 items-center gap-3 rounded-[10px] border border-[#67e8f9]/35 bg-[#0d314e] px-3 py-2 text-left text-xs font-semibold text-[#e2fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            <button type="button" data-mobile-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="col-span-1 flex min-h-12 items-center gap-3 min-[390px]:col-span-2 rounded-[10px] border border-[#67e8f9]/35 bg-[#0d314e] px-3 py-2 text-left text-xs font-semibold text-[#e2fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="28" height="33" decoding="async" className="h-[33px] w-7 shrink-0 object-contain" />
               <span className="min-w-0"><strong className="block">Perguntar ao PG Bot</strong><span className="mt-0.5 block font-normal text-[#bad9ea]">Ajuda com projetos, currículo e contato</span></span>
             </button>
