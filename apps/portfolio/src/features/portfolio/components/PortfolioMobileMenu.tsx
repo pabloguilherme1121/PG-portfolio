@@ -57,6 +57,29 @@ export default function PortfolioMobileMenu({
   const SecondaryIcon =
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
+  const navigateToSection = (href: string) => {
+    onClose();
+    const sectionId = href.slice(1);
+
+    window.requestAnimationFrame(() => {
+      const focusSection = () => {
+        const section = document.getElementById(sectionId);
+        if (!section) return false;
+        if (!section.hasAttribute("tabindex")) section.setAttribute("tabindex", "-1");
+        section.focus({ preventScroll: true });
+        return true;
+      };
+
+      if (focusSection()) return;
+      // Lazy-loaded sections appear after the hash changes; focus them when mounted.
+      const observer = new MutationObserver(() => {
+        if (focusSection()) observer.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      window.setTimeout(() => observer.disconnect(), 5000);
+    });
+  };
+
   useEffect(() => {
     const navigation = navigationRef.current;
     if (!navigation) return;
@@ -157,7 +180,7 @@ export default function PortfolioMobileMenu({
               <a
                 key={label}
                 href={href}
-                onClick={onClose}
+                onClick={() => navigateToSection(href)}
                 aria-current={activeSection === id ? "location" : undefined}
                 className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-xs font-semibold uppercase tracking-[0.07em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${id === "contato" ? "col-span-2 justify-center" : ""} ${
                   activeSection === id
@@ -197,7 +220,7 @@ export default function PortfolioMobileMenu({
               className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-xs font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               <SecondaryIcon className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
-              <span className="truncate">{mobileSecondaryShortcut.label}</span>
+              <span className="min-w-0 break-words leading-snug">{mobileSecondaryShortcut.label}</span>
             </a>
             <a
               href="https://pabloguilherme01.github.io/observatorio/"
@@ -250,6 +273,15 @@ export default function PortfolioMobileMenu({
                     ? "tentar de novo"
                     : "compartilhar"}
             </button>
+            <span data-mobile-share-feedback="true" role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+              {portfolioShareStatus === "shared"
+                ? "Portfólio compartilhado."
+                : portfolioShareStatus === "copied"
+                  ? "Link do portfólio copiado."
+                  : portfolioShareStatus === "error"
+                    ? "Não foi possível compartilhar o portfólio."
+                    : ""}
+            </span>
 
             {showInstallAction && (
               <button
