@@ -173,9 +173,9 @@ export function PortfolioAvailabilityConsultation({
           : "translate-y-0 opacity-100"
       }`}
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#a5f3fc]">
+          <p className="font-mono text-xs uppercase tracking-[0.13em] text-[#a5f3fc]">
             consulta de agenda
           </p>
           <p className="mt-1 font-body text-xs leading-5 text-[#a6c7d8]">
@@ -184,13 +184,14 @@ export function PortfolioAvailabilityConsultation({
               : "Segunda a sexta, das 08:00 às 18:00."}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:shrink-0">
           <button
             type="button"
             data-availability-to-saved="true"
             onClick={() => navigateSavedAgendaContext("saved")}
             aria-label="Ir para projetos"
-            className="min-h-11 border border-cyan-100/[0.2] px-2.5 font-mono text-[8px] uppercase tracking-[0.08em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            style={{ whiteSpace: "nowrap" }}
+            className="min-h-11 whitespace-nowrap border border-cyan-100/[0.2] px-2.5 font-mono text-xs uppercase tracking-[0.08em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
             projetos
           </button>
@@ -221,7 +222,7 @@ export function PortfolioAvailabilityConsultation({
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#e2f7ff]">
+        <p className="font-mono text-xs uppercase tracking-[0.12em] text-[#e2f7ff]">
           {calendarMonth.toLocaleDateString("pt-BR", {
             month: "long",
             year: "numeric",
@@ -249,7 +250,7 @@ export function PortfolioAvailabilityConsultation({
         {calendarWeekdays.map((day, index) => (
           <span
             key={`${day}-${index}`}
-            className="py-1 font-mono text-[9px] text-[#63849a]"
+            className="py-1 font-mono text-xs text-[#63849a]"
           >
             {day}
           </span>
@@ -283,7 +284,7 @@ export function PortfolioAvailabilityConsultation({
                 isBlockedDate ? `${dayLabel}, indisponível` : dayLabel
               }
               title={isBlockedDate ? "Data indisponível" : undefined}
-              className={`mx-auto grid h-11 w-11 max-w-11 place-items-center rounded-full font-mono text-[10px] transition-all sm:h-8 sm:w-8 ${
+              className={`mx-auto grid h-11 w-11 max-w-11 place-items-center rounded-full font-mono text-xs transition-all sm:h-8 sm:w-8 ${
                 isSelected
                   ? "bg-[#38bdf8] font-semibold text-[#02111f] shadow-[0_0_16px_rgba(56,189,248,0.36)]"
                   : isBlockedDate
@@ -302,7 +303,7 @@ export function PortfolioAvailabilityConsultation({
       {isBlockedDatesError ? (
         <div
           role="alert"
-          className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-[11px] leading-5 text-amber-100"
+          className="mt-3 border-l border-amber-300 bg-amber-300/10 px-3 py-2 font-body text-xs leading-5 text-amber-100"
         >
           Não foi possível verificar as datas indisponíveis. A consulta está
           temporariamente desativada.{" "}
@@ -315,7 +316,7 @@ export function PortfolioAvailabilityConsultation({
           </button>
         </div>
       ) : blockedDates.length > 0 ? (
-        <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-[11px] leading-5 text-rose-200">
+        <p className="mt-3 border-l border-rose-400/70 pl-3 font-body text-xs leading-5 text-rose-200">
           Datas riscadas em rosa estão indisponíveis para consulta.
         </p>
       ) : null}
@@ -330,7 +331,7 @@ export function PortfolioAvailabilityConsultation({
         }`}
       >
         <div className="mt-5 border-t border-cyan-100/[0.12] pt-4">
-          <p className="font-mono text-[9px] uppercase tracking-[0.12em] text-[#7299ad] light-muted-ink">
+          <p className="font-mono text-xs uppercase tracking-[0.12em] text-[#7299ad] light-muted-ink">
             {selectedDateLabel
               ? `horário desejado · ${selectedDateLabel}`
               : "escolha uma data útil"}
@@ -342,7 +343,7 @@ export function PortfolioAvailabilityConsultation({
                 type="button"
                 disabled={!availabilityDate || isBlockedDatesError}
                 onClick={() => setAvailabilityTime(time)}
-                className={`min-h-11 border py-2 font-mono text-[10px] transition-colors sm:min-h-0 ${
+                className={`min-h-11 border py-2 font-mono text-xs transition-colors sm:min-h-0 ${
                   availabilityTime === time
                     ? "border-[#67e8f9] bg-[#38bdf8] text-[#02111f]"
                     : availabilityDate && !isBlockedDatesError
@@ -364,7 +365,7 @@ export function PortfolioAvailabilityConsultation({
             disabled={
               isAvailabilityRedirecting || isClearingAvailabilitySelection
             }
-            className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-[9px] uppercase tracking-[0.1em] text-[#9fc6d9] underline decoration-[#67e8f9]/45 underline-offset-4 transition-colors hover:text-[#e5fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-wait disabled:opacity-50"
+            className="mt-3 inline-flex min-h-11 items-center gap-2 font-mono text-xs uppercase tracking-[0.1em] text-[#9fc6d9] underline decoration-[#67e8f9]/45 underline-offset-4 transition-colors hover:text-[#e5fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] disabled:cursor-wait disabled:opacity-50"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
             limpar data e horário
@@ -378,7 +379,7 @@ export function PortfolioAvailabilityConsultation({
             aria-live="polite"
             className="mt-4 border border-[#67e8f9]/30 bg-[#0b2746]/70 px-3 py-3 text-left"
           >
-            <p className="font-mono text-[8px] uppercase tracking-[0.12em] text-[#8ddff3]">
+            <p className="font-mono text-xs uppercase tracking-[0.12em] text-[#8ddff3]">
               consulta selecionada
             </p>
             <p className="mt-1 font-body text-sm font-medium text-[#e5fbff]">
@@ -397,7 +398,7 @@ export function PortfolioAvailabilityConsultation({
         onClick={consultAvailabilityOnWhatsApp}
         aria-busy={isAvailabilityRedirecting}
         aria-describedby="availability-feedback"
-        className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-[10px] font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta"
+        className="light-dark-cta mt-5 inline-flex w-full items-center justify-center gap-2 bg-[#38bdf8] px-4 py-3 font-mono text-xs font-semibold uppercase tracking-[0.11em] text-[#02111f] transition-all hover:bg-[#a5f3fc] active:scale-[0.97] disabled:cursor-wait disabled:bg-[#16304c] disabled:text-[#6f91a8] light-dark-cta"
       >
         {isAvailabilityRedirecting ? (
           <>
@@ -432,7 +433,7 @@ export function PortfolioAvailabilityConsultation({
       >
         {contextNavigationStatus}
       </span>
-      <p className="mt-3 font-body text-[11px] leading-5 text-[#7fa2b6]">
+      <p className="mt-3 font-body text-xs leading-5 text-[#7fa2b6]">
         A gente confirma a data e o horário diretamente com você, sem compromisso.
       </p>
     </div>
