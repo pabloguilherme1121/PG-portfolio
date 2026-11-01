@@ -41,28 +41,41 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
   }
 }
 
-test("briefing native anchor survives five pointer visits at 390px", async ({ browser, baseURL }) => {
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    // Each visit gets a new browser context and document. This tests a genuinely
-    // cold arrival without interrupting deferred preloads with another navigation.
-    const visit = await browser.newPage({ viewport: { width: 390, height: 900 }, reducedMotion: "reduce", baseURL });
-    try {
-      await visit.goto("./?consultation=1#contato");
-      const contact = visit.locator("#contato");
-      const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
-      const form = contact.locator('[data-briefing-form="true"]');
+// Browser fixture creates a fresh context with full project device emulation
+// (isMobile, hasTouch, DPR and viewport), unlike browser.newPage overrides.
+for (let attempt = 1; attempt <= 5; attempt += 1) {
+  test(`briefing native anchor survives pointer cold visit ${attempt}/5 at 390px`, async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 900 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("./?consultation=1#contato");
+    const contact = page.locator("#contato");
+    const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+    const form = contact.locator('[data-briefing-form="true"]');
+    await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
+    await expect(briefingLink).toBeVisible();
+    await expect(form).toBeHidden();
+    await briefingLink.scrollIntoViewIfNeeded();
+    await briefingLink.click();
+    await expect(page).toHaveURL(/#contato-briefing$/);
+    await expect(form).toBeVisible();
+  });
+}
 
-      await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
-      await expect(briefingLink).toBeVisible();
-      await expect(form).toBeHidden();
-      await briefingLink.scrollIntoViewIfNeeded();
-      await briefingLink.click();
-      await expect(visit).toHaveURL(/#contato-briefing$/);
-      await expect(form).toBeVisible();
-    } finally {
-      await visit.close();
-    }
-  }
+test("briefing normal-motion pointer at 390px opens its native anchor", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("./?consultation=1#contato");
+  const contact = page.locator("#contato");
+  const briefingLink = contact.getByRole("link", { name: "Prefiro preparar um briefing" });
+  const form = contact.locator('[data-briefing-form="true"]');
+  await expect(briefingLink).toHaveAttribute("href", "#contato-briefing");
+  await expect(briefingLink).toBeVisible();
+  await expect(form).toBeHidden();
+  await briefingLink.scrollIntoViewIfNeeded();
+  await briefingLink.click();
+  await expect(page).toHaveURL(/#contato-briefing$/);
+  await expect(form).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test("briefing ignores pointer release without a matching press at 390px", async ({ page }) => {
@@ -92,34 +105,29 @@ test("briefing ignores pointer release without a matching press at 390px", async
 });
 
 for (const width of [320, 390]) {
-  test(`main navigation names and skip-link remain keyboard-accessible across five cold visits at ${width}px`, async ({ browser, browserName, baseURL }) => {
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      // Every attempt starts in a fresh document and context. Reloading a
-      // previous hash navigation can race with WebKit's preload recovery.
-      const visit = await browser.newPage({ viewport: { width, height: 900 }, baseURL });
-      try {
-        await visit.goto("./");
-        const links = visit.locator('header nav a[href^="#"]');
-        await expect(links).not.toHaveCount(0);
-        const names = await links.allTextContents();
-        expect(new Set(names.map(name => name.trim())).size).toBe(names.length);
-
-        const skipLink = visit.getByRole("link", { name: /pular para o conteúdo/i });
-        await expect(skipLink).toBeAttached();
-        if (browserName === "webkit") {
-          // Safari full keyboard access depends on the operating system.
-          await skipLink.focus();
-        } else {
-          await visit.keyboard.press("Tab");
-        }
-        await expect(skipLink).toBeFocused();
-        await visit.keyboard.press("Enter");
-        await expect(visit.locator("#conteudo-principal")).toBeFocused();
-      } finally {
-        await visit.close();
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    test(`main navigation names and skip-link remain keyboard-accessible at ${width}px (cold visit ${attempt}/5)`, async ({ page, browserName }) => {
+      // The page fixture preserves every device option from the Playwright project.
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("./");
+      const links = page.locator('header nav a[href^="#"]');
+      await expect(links).not.toHaveCount(0);
+      const names = await links.allTextContents();
+      expect(new Set(names.map(name => name.trim())).size).toBe(names.length);
+      const skipLink = page.getByRole("link", { name: /pular para o conteúdo/i });
+      await expect(skipLink).toBeAttached();
+      if (browserName === "webkit") {
+        // Safari full keyboard access depends on the operating system.
+        await skipLink.focus();
+      } else {
+        // In Chromium a genuine first Tab must focus the skip-link.
+        await page.keyboard.press("Tab");
       }
-    }
-  });
+      await expect(skipLink).toBeFocused();
+      await page.keyboard.press("Enter");
+      await expect(page.locator("#conteudo-principal")).toBeFocused();
+    });
+  }
 }
 
 test("calendar deep link opens contextual consultation without requiring briefing", async ({ page }) => {
