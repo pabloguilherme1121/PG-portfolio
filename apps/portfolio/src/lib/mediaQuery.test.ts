@@ -1,5 +1,22 @@
-import { describe, expect, it, vi } from "vitest";
-import { subscribeToMediaQuery } from "./mediaQuery";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getSafeMediaQuery, subscribeToMediaQuery } from "./mediaQuery";
+
+describe("getSafeMediaQuery", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("does not throw when the browser has no matchMedia", () => {
+    vi.stubGlobal("window", {});
+    expect(getSafeMediaQuery("(max-width: 639px)")).toBeNull();
+  });
+
+  it("returns the actual MediaQueryList when supported", () => {
+    const query = { matches: true } as MediaQueryList;
+    const matchMedia = vi.fn(() => query);
+    vi.stubGlobal("window", { matchMedia });
+    expect(getSafeMediaQuery("(prefers-reduced-motion: reduce)")).toBe(query);
+    expect(matchMedia).toHaveBeenCalledWith("(prefers-reduced-motion: reduce)");
+  });
+});
 
 describe("subscribeToMediaQuery", () => {
   it("uses the modern change event when available", () => {

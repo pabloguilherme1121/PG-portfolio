@@ -2,6 +2,7 @@ import { ArrowUpRight, Github } from "lucide-react";
 import type { Repository } from "@/features/portfolio/portfolioData";
 import PortfolioFeaturedProjectCard from "@/features/portfolio/components/PortfolioFeaturedProjectCard";
 import { useHorizontalSnapNavigation } from "@/features/portfolio/hooks/useHorizontalSnapNavigation";
+import { getSafeMediaQuery } from "@/lib/mediaQuery";
 import { useEffect, useRef, useState } from "react";
 import "./projectShowcase.css";
 
@@ -43,8 +44,7 @@ export default function PortfolioProjectsOverview({
     useState<(typeof observatorioInsights)[number]["label"]>("Problema");
   const [captureFormat, setCaptureFormat] = useState<"desktop" | "mobile">(
     () =>
-      typeof window !== "undefined" &&
-      window.matchMedia("(max-width: 639px)").matches
+      getSafeMediaQuery("(max-width: 639px)")?.matches
         ? "mobile"
         : "desktop"
   );
