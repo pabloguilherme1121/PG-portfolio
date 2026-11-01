@@ -62,3 +62,55 @@ for (const href of ["#inicio", "#projetos", "#sobre", "#servicos", "#contato"]) 
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   });
 }
+
+for (const width of [320, 360, 390, 430]) {
+  test(`controles do menu mantêm palavras inteiras em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const controls = [
+      page.locator('[aria-label="Objetivo da visita"] button').nth(1),
+      page.locator('[data-mobile-share-action="true"]'),
+    ];
+    for (const control of controls) {
+      await expect(control).toBeVisible();
+      const metrics = await control.evaluate(element => {
+        const textNodes = Array.from(element.childNodes).filter(
+          node => node.nodeType === Node.TEXT_NODE && Boolean(node.textContent?.trim()),
+        );
+        const textLineCount = textNodes.reduce((total, node) => {
+          const range = document.createRange();
+          range.selectNodeContents(node);
+          return total + range.getClientRects().length;
+        }, 0);
+        return {
+          text: (element.textContent ?? "").trim(),
+          textLineCount,
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+        };
+      });
+      expect(metrics.textLineCount, metrics.text).toBe(1);
+      expect(metrics.scrollWidth, metrics.text).toBeLessThanOrEqual(metrics.clientWidth);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
+
+for (const width of [320, 360, 390, 430]) {
+  test(`atalho Observatório permanece inteiro em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto("./");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const title = page.locator('#mobile-navigation a[href="https://pabloguilherme01.github.io/observatorio/"] span');
+    await expect(title).toHaveText("observatório");
+    const dimensions = await title.evaluate(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return { lines: range.getClientRects().length, width: element.clientWidth, scrollWidth: element.scrollWidth };
+    });
+    expect(dimensions.lines).toBe(1);
+    expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
