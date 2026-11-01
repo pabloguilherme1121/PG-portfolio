@@ -43,17 +43,22 @@ test("menu informa cópia do link quando compartilhamento nativo está indispon�
   await expect(page.locator('[data-mobile-share-feedback="true"]')).toHaveText("Link do portfólio copiado.");
 });
 
-test("navegação móvel por teclado mantém destino acessível após fechar menu", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("./");
-  await page.locator('[data-mobile-menu-toggle="true"]').click();
-  const link = page.locator('#mobile-navigation a[href="#sobre"]');
-  await link.focus();
-  await page.keyboard.press("Enter");
-  await expect(page.locator("#mobile-navigation")).toBeHidden();
-  await expect(page).toHaveURL(/#sobre$/);
-  await expect.poll(() => page.evaluate(() => {
-    const active = document.activeElement;
-    return Boolean(active && (active.id === "sobre" || active.closest("#sobre")));
-  })).toBe(true);
-});
+for (const href of ["#inicio", "#projetos", "#sobre", "#servicos", "#contato"]) {
+  test(`navegação móvel por teclado mantém destino ${href} acessível após fechar menu`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("./");
+    await page.locator('[data-mobile-menu-toggle="true"]').click();
+    const link = page.locator('#mobile-navigation [aria-label="Seções do portfólio"] a[href="' + href + '"]');
+    await expect(link).toBeVisible();
+    await link.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.locator("#mobile-navigation")).toBeHidden();
+    await expect(page).toHaveURL(new RegExp(href + "$"));
+    await expect.poll(() => page.evaluate((hash) => {
+      const target = document.getElementById(hash.slice(1));
+      return Boolean(target && (document.activeElement === target || target.contains(document.activeElement)));
+    }, href)).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  });
+}
