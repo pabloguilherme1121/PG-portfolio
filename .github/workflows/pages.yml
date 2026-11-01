@@ -104,7 +104,7 @@ jobs:
       - name: Repeat mobile WebKit briefing pointer regression at 430px
         run: pnpm exec playwright test --config=playwright.static.config.ts --project=static-mobile-webkit --grep="professional journey at 430px via pointer" --repeat-each=5 --workers=1
       - name: Repeat WebKit briefing preservation at 320/390px
-        run: pnpm exec playwright test --config=playwright.static.config.ts --project=static-mobile-webkit e2e-static/briefing-whatsapp-manual.spec.ts --repeat-each=5 --workers=1
+        run: pnpm exec playwright test --config=playwright.static.config.ts --project=static-mobile-webkit e2e-static/briefing-whatsapp-manual.spec.ts e2e-static/briefing-batch-input.spec.ts --repeat-each=5 --workers=1
       - name: Verify five sequential WebKit 390px pointer cold visits
         run: pnpm exec playwright test --config=playwright.static.config.ts --project=static-mobile-webkit e2e-static/professional-redesign.spec.ts --grep="briefing native anchor survives pointer cold visit" --workers=1
       - name: Repeat WebKit mobile briefing pointer with normal motion at 390px
