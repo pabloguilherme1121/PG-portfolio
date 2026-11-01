@@ -173,7 +173,7 @@ export function PortfolioAvailabilityConsultation({
           : "translate-y-0 opacity-100"
       }`}
     >
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.13em] text-[#a5f3fc]">
             consulta de agenda
@@ -184,13 +184,14 @@ export function PortfolioAvailabilityConsultation({
               : "Segunda a sexta, das 08:00 às 18:00."}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:shrink-0">
           <button
             type="button"
             data-availability-to-saved="true"
             onClick={() => navigateSavedAgendaContext("saved")}
             aria-label="Ir para projetos"
-            className="min-h-11 border border-cyan-100/[0.2] px-2.5 font-mono text-xs uppercase tracking-[0.08em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
+            style={{ whiteSpace: "nowrap" }}
+            className="min-h-11 whitespace-nowrap border border-cyan-100/[0.2] px-2.5 font-mono text-xs uppercase tracking-[0.08em] text-[#c8f7ff] transition-colors hover:border-[#67e8f9] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
           >
             projetos
           </button>
