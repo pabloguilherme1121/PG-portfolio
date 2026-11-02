@@ -52,6 +52,8 @@ for (const href of ["#inicio", "#projetos", "#sobre", "#servicos", "#contato"]) 
     const link = page.locator('#mobile-navigation [aria-label="Seções do portfólio"] a[href="' + href + '"]');
     await expect(link).toBeVisible();
     await link.focus();
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
+    await expect(link).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.locator("#mobile-navigation")).toBeHidden();
     await expect(page).toHaveURL(new RegExp(href + "$"));

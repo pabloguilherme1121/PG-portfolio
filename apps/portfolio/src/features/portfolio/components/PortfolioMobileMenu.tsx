@@ -90,6 +90,8 @@ export default function PortfolioMobileMenu({
       ).filter((element) => element.offsetParent !== null);
 
     const frameId = window.requestAnimationFrame(() => {
+      // Preserve a link already focused by keyboard navigation before this frame.
+      if (navigation.contains(document.activeElement)) return;
       const focusTarget =
         navigation.querySelector<HTMLElement>('[aria-current="location"]') ??
         getFocusableElements()[0];
