@@ -52,7 +52,7 @@ jobs:
       - name: Enable Corepack in unprivileged directory
         run: |
           mkdir -p "$HOME/.local/bin"
-          corepack enable --install-directory "$HOME/.local/bin" pnpm
+          npx --yes corepack@0.34.5 enable --install-directory "$HOME/.local/bin" pnpm
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - uses: actions/setup-node@v7
         with:
