@@ -41,9 +41,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     # Official Playwright image already has the browsers and their system dependencies.
-    # Must match the @playwright/test version pinned in pnpm-lock.yaml (1.62.1).
+    # Must match the @playwright/test version pinned in pnpm-lock.yaml (1.64.1).
     container:
-      image: mcr.microsoft.com/playwright:v1.62.1-noble
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
       options: --user 1001 --ipc=host
     steps:
       - uses: actions/checkout@v7
@@ -88,7 +88,7 @@ jobs:
             import { createRequire } from "node:module";
             const require = createRequire(import.meta.url);
             const version = require("@playwright/test/package.json").version;
-            if (version !== "1.62.1") throw new Error("Playwright version drift: " + version);
+            if (version !== "1.64.1") throw new Error("Playwright version drift: " + version);
             for (const [name, browser] of Object.entries({ chromium, firefox, webkit })) {
               const binary = browser.executablePath();
               accessSync(binary);
