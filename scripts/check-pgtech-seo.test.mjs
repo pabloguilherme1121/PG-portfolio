@@ -35,3 +35,12 @@ test("Vercel upload includes crawlable sitemap and robots with canonical host", 
   assert.match(xml, /xmlns="http:\/\/www\.sitemaps\.org\/schemas\/sitemap\/0\.9"/);
   assert.match(robots, /^User-agent: \*\nAllow: \/\nSitemap: https:\/\/pgtech-pi\.vercel\.app\/sitemap\.xml\s*$/);
 });
+
+
+test("PG Tech highlights a real interactive commercial demo without pretending to book appointments", () => {
+  assert.match(html, /<section id="demonstracoes" aria-labelledby="titulo-demonstracoes"/);
+  assert.match(html, /href="#demonstracoes">Ver demo para negócios<\/a>/);
+  assert.match(html, /href="https:\/\/pgtech-demo-barbearia-next\.vercel\.app\/demo-barbearia"/);
+  assert.match(html, /Não há agenda automática nem reserva confirmada/);
+  assert.match(html, /Pedir proposta por WhatsApp/);
+});
