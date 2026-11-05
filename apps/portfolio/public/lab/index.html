@@ -63,6 +63,21 @@ footer{padding:20px 0 40px;display:flex;justify-content:space-between;flex-wrap:
 @media(max-width:700px){header{padding:18px 0;flex-direction:column;align-items:stretch;gap:14px}header .brand{align-self:flex-start;min-width:0}header nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px}header nav a{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px 6px;border:1px solid var(--border);border-radius:9px;text-align:center;white-space:normal;overflow-wrap:anywhere}nav a{font-size:14px}.hero{padding:42px 0 42px}.ctas{grid-template-columns:1fr}.projects{grid-template-columns:1fr}section{padding:30px 0}.project p{min-height:0}}
 @media(max-width:360px){.shell{width:min(100% - 24px,960px)}nav{gap:9px}nav a{font-size:14px}.brand{gap:6px;font-size:14px}.logo{width:34px;height:34px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.cta{transition:none}.cta:hover{transform:none}}
+
+.commercial-section{padding:26px 0 34px;scroll-margin-top:24px}
+.commercial-card{border:1px solid #537263;border-radius:22px;padding:clamp(20px,4vw,38px);background:linear-gradient(125deg,#1c3030,#121c28 70%,#13251f);box-shadow:0 18px 56px rgba(0,0,0,.2)}
+.commercial-label{display:block;font-size:12px;letter-spacing:.13em;font-weight:800;color:#8bedcc}
+.commercial-layout{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:28px;margin-top:8px;align-items:center}
+.commercial-card h2{font-size:clamp(24px,4vw,39px);line-height:1.14;letter-spacing:-.035em;margin:12px 0;color:#f5faf9}
+.commercial-card p{font-size:15px;line-height:1.6;max-width:62ch;color:#d4e1e3}
+.commercial-card .commercial-note{font-size:13px;color:#b7c9ca}
+.commercial-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.commercial-actions .cta{min-height:48px;align-items:center;display:inline-flex;justify-content:center;text-align:center;max-width:100%}
+.commercial-aside{display:grid;gap:10px;align-content:center}
+.commercial-aside span{display:block;padding:12px 15px;border:1px solid #415d53;border-radius:12px;color:#9ecbbb;font-size:13px}
+.commercial-aside strong{display:block;margin-top:3px;color:#eff9f5;font-size:14px}
+.commercial-aside small{color:#b7c9ca;font-size:13px;line-height:1.5}
+@media(max-width:720px){.commercial-layout{grid-template-columns:1fr;gap:19px}.commercial-actions{flex-direction:column}.commercial-actions .cta{width:100%}}
 </style>
 </head>
 <body>
@@ -71,8 +86,21 @@ footer{padding:20px 0 40px;display:flex;justify-content:space-between;flex-wrap:
 <header><a class="brand" href="#principal" aria-label="pablo.builds.ia, voltar ao início"><span class="logo" aria-hidden="true">PG</span><span>pablo.builds.ia</span></a><nav aria-label="Menu principal"><a href="#apps">Projetos</a><a href="#ferramentas">Ferramentas</a><a href="#stack">Tecnologias</a><a href="#contato">Contato</a></nav></header>
 <main id="principal">
 <div class="hero"><span class="eyebrow"><span class="dot"></span> De Goiás para o Brasil</span><h1>Ferramentas feitas <span>para usar.</span></h1><p class="lead">Sou Pablo Guilherme. Desenvolvo ferramentas práticas para planejar gravações, testar interfaces, organizar tarefas e consultar dados públicos.</p>
-<div class="ctas" aria-label="Acessos principais"><a class="cta primary" href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer">Ver Trajeto</a><a class="cta" href="https://pabloguilherme01.github.io/observatorio/#dashboard" target="_blank" rel="noopener noreferrer">Ver Observatório</a><a class="cta" href="https://wa.me/5561995025148" target="_blank" rel="noopener noreferrer">Chamar WhatsApp</a></div>
+<div class="ctas" aria-label="Acessos principais"><a class="cta primary" href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer">Ver Trajeto</a><a class="cta" href="#demonstracoes">Ver demo para negócios</a><a class="cta" href="https://wa.me/5561995025148" target="_blank" rel="noopener noreferrer">Chamar WhatsApp</a></div>
 <p class="micro">Projetos publicados e em evolução • Interface mobile • Testes e entregas verificáveis</p></div>
+<section id="demonstracoes" aria-labelledby="titulo-demonstracoes" class="commercial-section">
+<div class="commercial-card"><span class="commercial-label">PARA NEGÓCIOS LOCAIS · DEMONSTRAÇÃO INTERATIVA</span>
+<div class="commercial-layout"><div>
+<h2 id="titulo-demonstracoes">Seu negócio pode ter uma experiência assim.</h2>
+<p>Teste a <strong>Barbearia Root</strong>: o cliente escolhe serviço, profissional e período antes de preparar uma consulta para o WhatsApp. Funciona direto no celular, sem criar conta.</p>
+<p class="commercial-note">Demonstração fictícia com equipe, imagens e preços ilustrativos. Não há agenda automática nem reserva confirmada; a disponibilidade depende da resposta do estabelecimento.</p>
+<div class="commercial-actions">
+<a class="cta primary" href="https://pgtech-demo-barbearia-next.vercel.app/demo-barbearia" target="_blank" rel="noopener noreferrer">Testar a demo da barbearia ↗</a>
+<a class="cta" href="https://wa.me/5561995025148?text=Ol%C3%A1%21%20Vi%20a%20demonstra%C3%A7%C3%A3o%20Barbearia%20Root%20da%20PG%20Tech.%20Gostaria%20de%20uma%20proposta%20para%20meu%20neg%C3%B3cio." target="_blank" rel="noopener noreferrer">Pedir proposta por WhatsApp ↗</a>
+</div></div><div class="commercial-aside" aria-label="Recursos demonstrados">
+<span>01 <strong>Serviços e valores</strong></span><span>02 <strong>Preferência de profissional</strong></span><span>03 <strong>Consulta pelo WhatsApp</strong></span>
+<small>A página prepara a conversa. A equipe confirma a disponibilidade.</small></div></div>
+</div></section>
 <section id="apps" aria-labelledby="titulo-apps"><div class="section-top"><div><span class="mini">PROJETOS / PROVAS REAIS</span><h2 id="titulo-apps">Apps que você pode abrir</h2><p>Pré-visualizações estilizadas; não são capturas de tela literais dos produtos.</p></div></div>
 <div class="projects">
 <article class="project"><div class="preview"><small>Portfólio / Web</small><strong>PG Portfolio</strong></div><div class="project-body"><h3>Uma vitrine de trabalho verificável</h3><p>Cases, processos, estudos de interface e contato profissional.</p><a href="https://pabloguilherme1121.github.io/PG-portfolio/" target="_blank" rel="noopener noreferrer">Abrir portfólio ↗</a></div></article>
