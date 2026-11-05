@@ -12,6 +12,13 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
     "https://pgtech-pi.vercel.app/",
   );
 
+
+  const demo = page.locator("#demonstracoes");
+  await expect(demo.getByRole("heading", { name: "Seu negócio pode ter uma experiência assim." })).toBeVisible();
+  await expect(demo.getByRole("link", { name: /Testar a demo da barbearia/ }))
+    .toHaveAttribute("href", "https://pgtech-demo-barbearia-next.vercel.app/demo-barbearia");
+  await expect(demo).toContainText("Não há agenda automática nem reserva confirmada");
+
   await expect(page.locator("#ferramentas .section-top p")).toContainText(
     "a restauração ainda está em validação",
   );
@@ -50,6 +57,16 @@ test("PG Tech oferece cinco ferramentas reais com navegação e tipografia móve
       expect(projectLabelSizes.length).toBeGreaterThan(0);
       expect(Math.min(...projectLabelSizes), `Project preview labels at ${width}px`)
         .toBeGreaterThanOrEqual(13);
+    }
+
+
+    const demoActions = page.locator("#demonstracoes .commercial-actions a");
+    await expect(demoActions).toHaveCount(2);
+    for (const action of await demoActions.all()) {
+      const box = await action.boundingBox();
+      expect(box, "Commercial action must have a visible hit target").not.toBeNull();
+      expect(box!.height, "Commercial action hit target must be at least 44px")
+        .toBeGreaterThanOrEqual(44);
     }
 
     // Links de projetos precisam ser tocáveis sem zoom e sem arrastar a tela.
