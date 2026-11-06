@@ -308,8 +308,8 @@ export default function PortfolioProjectsOverview({
             ["72", "rotas prontas"],
           ] as const).map(([value, label]) => (
             <div key={label} className="min-w-0 border border-[#67e8f9]/20 bg-[#071326] p-3">
-              <dd className="font-display text-xl font-semibold tracking-tight text-white sm:text-2xl">{value}</dd>
-              <dt className="mt-1 font-body text-xs leading-5 text-[#b6d7eb]">{label}</dt>
+              <dt className="font-body text-xs leading-5 text-[#b6d7eb]">{label}</dt>
+              <dd className="mt-2 font-display text-xl font-semibold tracking-tight text-white sm:text-2xl">{value}</dd>
             </div>
           ))}
         </dl>
