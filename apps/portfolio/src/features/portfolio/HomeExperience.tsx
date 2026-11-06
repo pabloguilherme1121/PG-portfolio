@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
 
 import { PortfolioQuickActionsDock } from "@/features/portfolio/components/PortfolioQuickActionsDock";
+import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioArcadeShowcase";
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { isPgBotKeyboardShortcut } from "@/features/portfolio/utils/pgBotShortcut";
@@ -648,6 +649,11 @@ export default function Home() {
             </div>
 
 
+            <section aria-label="Outras experiências e laboratórios" className="mt-10 border-t border-white/10 pt-6">
+              <h3 className="font-display text-lg text-white">Laboratório de projetos</h3>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bed0ea]">Outras experiências técnicas ficam disponíveis separadamente dos dois cases principais.</p>
+              <PortfolioArcadeShowcase />
+            </section>
             <div
               id="estudos-de-caso"
               ref={caseStudiesSectionRef}
