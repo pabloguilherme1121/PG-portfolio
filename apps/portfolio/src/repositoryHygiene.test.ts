@@ -233,8 +233,8 @@ describe("repository hygiene", () => {
 
     expect(config).toContain('export const portfolioContactEmail = "mpjcreator@gmail.com"');
     expect(config).toContain('export const portfolioInstagramPersonalUrl = "https://www.instagram.com/pablogui000/"');
-    expect(config).toContain('export const portfolioInstagramWorkUrl = "https://www.instagram.com/mpjstoryworks/"');
-    expect(config).toContain('export const portfolioInstagramDmUrl = "https://ig.me/m/pablogui000"');
+    expect(config).toContain('export const portfolioInstagramWorkUrl = "https://www.instagram.com/pablo.builds.ia/"');
+    expect(config).toContain('export const portfolioInstagramDmUrl = "https://ig.me/m/pablo.builds.ia"');
 
     expect(consumers).not.toContain("mpjcreator@gmail.com");
     expect(consumers).not.toContain("https://www.instagram.com/pablogui000/");

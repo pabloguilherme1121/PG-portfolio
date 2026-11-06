@@ -37,6 +37,7 @@ export default function PortfolioCaseStudies() {
             <p className="mt-4 pb-5 font-body text-sm leading-7 text-[#bcd9e7]">Limites: {study.limits}</p>
             </details>
             <div className="mt-6 flex flex-wrap gap-2 sm:mt-7">{study.tags.map((tag) => <span key={tag} className="border border-cyan-100/[0.16] px-2 py-1 font-mono text-[9px] uppercase tracking-[0.1em] text-[#a5dff4]">{tag}</span>)}</div>
+            {study.proofs.length > 0 ? (
             <div className="mt-6 border-t sm:mt-7 border-cyan-100/[0.12] pt-5">
               <p className="font-mono text-[9px] uppercase tracking-[0.13em] text-[#67e8f9]">evidência verificável</p>
               <div className="mt-3 grid gap-2">
@@ -62,6 +63,9 @@ export default function PortfolioCaseStudies() {
                 })}
               </div>
             </div>
+            ) : (
+              <p className="mt-6 border-t border-cyan-100/[0.12] pt-5 font-body text-sm leading-6 text-[#bcd9e7]">Publicações, autorização de uso e resultados comerciais ainda não são apresentados como provas deste case.</p>
+            )}
           </article>
         ))}
       </div>
