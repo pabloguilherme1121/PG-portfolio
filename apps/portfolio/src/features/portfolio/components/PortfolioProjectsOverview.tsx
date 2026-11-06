@@ -142,10 +142,10 @@ export default function PortfolioProjectsOverview({
             Observatório
           </h3>
           <p className="mt-3 max-w-2xl font-body text-sm leading-7 text-[#bdd5e8]">
-            Indicadores de Águas Lindas de Goiás em uma leitura clara: números
-            com data, contexto e acesso à fonte. Da arquitetura da informação à
-            publicação, a interface ajuda a comparar dados sem perder sua
-            origem.
+            Indicadores de Águas Lindas de Goiás, com fontes, datas e cálculos
+            reproduzíveis. O projeto registra 20+ versões documentadas de
+            evolução. Os números são organizados para consulta no celular,
+            sem apresentar dados estáticos como atualização ao vivo.
           </p>
           <div
             className="mt-5"
@@ -184,7 +184,7 @@ export default function PortfolioProjectsOverview({
             <span className="border border-white/10 px-2 py-1">React</span>
             <span className="border border-white/10 px-2 py-1">TypeScript</span>
             <span className="border border-white/10 px-2 py-1">PWA</span>
-            <span className="border border-white/10 px-2 py-1">Playwright</span>
+            <span className="border border-white/10 px-2 py-1">Dados estruturados</span>
             <span className="border border-white/10 px-2 py-1">
               GitHub Pages
             </span>
@@ -300,6 +300,22 @@ export default function PortfolioProjectsOverview({
             <a href="https://pabloguilherme01.github.io/trajeto-web/" target="_blank" rel="noopener noreferrer" className="mt-3 flex min-h-11 items-center font-semibold text-[#67e8f9] underline underline-offset-4">Abrir site do Trajeto ↗</a>
           </p>
         </div>
+        <dl className="mt-5 grid grid-cols-2 gap-2 px-4 sm:grid-cols-4 sm:px-6" aria-label="Números apresentados na demonstração do Trajeto">
+          {([
+            ["157", "serviços"],
+            ["33", "categorias"],
+            ["41 / 33", "fichas de postos / registros ANP"],
+            ["72", "rotas prontas"],
+          ] as const).map(([value, label]) => (
+            <div key={label} className="min-w-0 border border-[#67e8f9]/20 bg-[#071326] p-3">
+              <dd className="font-display text-xl font-semibold tracking-tight text-white sm:text-2xl">{value}</dd>
+              <dt className="mt-1 font-body text-xs leading-5 text-[#b6d7eb]">{label}</dt>
+            </div>
+          ))}
+        </dl>
+        <p className="mt-3 px-4 font-body text-xs leading-6 text-[#accddd] sm:px-6">
+          Catálogo offline parcial e estimativas de rota sinalizadas. Preços de combustíveis devem ser confirmados no posto; dados não conciliados são identificados.
+        </p>
         <div className="mt-5 flex items-center justify-between gap-3 px-4 sm:hidden">
           <p
             data-featured-swipe-hint="true"
