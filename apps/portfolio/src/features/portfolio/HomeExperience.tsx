@@ -649,11 +649,6 @@ export default function Home() {
             </div>
 
 
-            <section aria-label="Outras experiências e laboratórios" className="mt-10 border-t border-white/10 pt-6">
-              <h3 className="font-display text-lg text-white">Laboratório de projetos</h3>
-              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bed0ea]">Outras experiências técnicas ficam disponíveis separadamente dos dois cases principais.</p>
-              <PortfolioArcadeShowcase />
-            </section>
             <div
               id="estudos-de-caso"
               ref={caseStudiesSectionRef}
@@ -677,6 +672,11 @@ export default function Home() {
                 </div>
               )}
             </div>
+            <section aria-label="Outras experiências e laboratórios" className="mt-10 border-t border-white/10 pt-6">
+              <h3 className="font-display text-lg text-white">Laboratório de projetos</h3>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bed0ea]">Outras experiências técnicas ficam disponíveis separadamente dos dois cases principais.</p>
+              <PortfolioArcadeShowcase />
+            </section>
           </div>
         </section>
 
