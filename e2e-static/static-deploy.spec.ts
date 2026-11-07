@@ -30,7 +30,7 @@ test("bundle estático inicia pelo caminho do GitHub Pages sem boundary de erro"
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /Interfaces claras.*Produtos que você pode usar/i,
+      name: /Sites e aplicações.*que funcionam no celular/i,
     }),
   ).toBeVisible();
 
