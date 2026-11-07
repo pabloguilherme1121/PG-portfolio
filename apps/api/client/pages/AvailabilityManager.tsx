@@ -17,7 +17,7 @@ function formatBlockedDate(dateKey: string) {
 function AvailabilityManagerContent() {
   const { loading: authLoading, user } = useAuth();
   const utils = trpc.useUtils();
-  const { data: blockedDates = [], isLoading, isError, refetch } = trpc.availability.listBlocked.useQuery(undefined, {
+  const { data: blockedDates = [], isLoading, isError, refetch } = trpc.availability.listBlockedAdmin.useQuery(undefined, {
     enabled: user?.role === "admin",
   });
   const [dateKey, setDateKey] = useState("");
@@ -26,7 +26,7 @@ function AvailabilityManagerContent() {
 
   const blockDateMutation = trpc.availability.block.useMutation({
     onSuccess: async () => {
-      await utils.availability.listBlocked.invalidate();
+      await Promise.all([utils.availability.listBlocked.invalidate(), utils.availability.listBlockedAdmin.invalidate()]);
       setDateKey("");
       setNote("");
       setFeedback("A data foi marcada como indisponível no calendário público.");
@@ -35,7 +35,7 @@ function AvailabilityManagerContent() {
   });
   const unblockDateMutation = trpc.availability.unblock.useMutation({
     onSuccess: async () => {
-      await utils.availability.listBlocked.invalidate();
+      await Promise.all([utils.availability.listBlocked.invalidate(), utils.availability.listBlockedAdmin.invalidate()]);
       setFeedback("A data voltou a ficar disponível para consulta.");
     },
     onError: () => setFeedback("Não foi possível liberar esta data. Tente novamente."),
