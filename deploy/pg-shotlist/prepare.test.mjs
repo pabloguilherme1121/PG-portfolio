@@ -46,6 +46,14 @@ test('prepara somente HTML, CSS, WebP e cabeçalhos, preservando os bytes', asyn
   assert.equal(new URL('../../brand/pg-bot/mascot.webp', 'https://shotlist.example/').pathname, '/brand/pg-bot/mascot.webp');
 });
 
+test('aceita cabeçalhos CRLF preservando os bytes publicados', async t => {
+  const {root, pagesHeaders, outputDir} = await fixture(t);
+  const original = pagesHeaders.replace(/\n/g, '\r\n');
+  await writeFile(join(root, 'deploy/pg-shotlist/_headers'), original);
+  await prepareShotlistBundle({root, outputDir});
+  assert.equal(await readFile(join(outputDir, '_headers'), 'utf8'), original);
+});
+
 test('não substitui um diretório de saída já existente', async t => {
   const { root, outputDir } = await fixture(t);
   await mkdir(outputDir, { recursive: true });

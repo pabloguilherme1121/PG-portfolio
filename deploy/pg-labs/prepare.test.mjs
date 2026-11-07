@@ -52,6 +52,16 @@ test('four Vercel lab bundles preserve HTML, CSS and WebP byte-for-byte', async 
   }
 });
 
+test('accepts CRLF Cloudflare headers without changing their bytes', async t => {
+  const {root} = await fixture(t);
+  const source = join(root, 'deploy/pg-labs/_headers');
+  const original = (await readFile(source, 'utf8')).replace(/\n/g, '\r\n');
+  await writeFile(source, original);
+  const outputDir = join(root, 'out', 'qa');
+  await prepareLabBundle({root, lab: 'qa', outputDir});
+  assert.equal(await readFile(join(outputDir, '_headers'), 'utf8'), original);
+});
+
 test('rejects unknown labs without path traversal',async t=>{
   const {root}=await fixture(t);
   for(const lab of ['../secret','shotlist','', 'QA']) await assert.rejects(()=>prepareLabBundle({root,lab}),/laborat[oó]rio/i);
