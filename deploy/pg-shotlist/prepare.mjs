@@ -32,7 +32,7 @@ export async function prepareShotlistBundle({ root = defaultRoot, outputDir = jo
     throw new Error('Cabeçalhos Vercel insuficientes');
   }
   // Cloudflare Pages reads _headers from its published root, not vercel.json.
-  const pagesHeaders = bytes[files.findIndex(([, to]) => to === '_headers')].toString('utf8');
+  const pagesHeaders = bytes[files.findIndex(([, to]) => to === '_headers')].toString('utf8').replace(/\r\n/g, '\n');
   if (!pagesHeaders.startsWith('/*\n') ||
       !requiredHeaders.every(([key, value]) => pagesHeaders.includes('\n  ' + key + ': ' + value + '\n'))) {
     throw new Error('Cabeçalhos Cloudflare Pages insuficientes');

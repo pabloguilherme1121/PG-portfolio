@@ -41,7 +41,7 @@ export async function prepareLabBundle({ root = defaultRoot, lab, outputDir } = 
     requiredHeaders.every(([key, value]) => rule.headers?.some(h => h.key === key && h.value === value)));
   if (!headerReady) throw new Error('Cabeçalhos Vercel ausentes ou alterados');
   // Cloudflare Pages ignores vercel.json: its static response rules live in _headers.
-  const pagesHeaders = bytes[sources.findIndex(([, to]) => to === '_headers')].toString('utf8');
+  const pagesHeaders = bytes[sources.findIndex(([, to]) => to === '_headers')].toString('utf8').replace(/\r\n/g, '\n');
   if (!pagesHeaders.startsWith('/*\n') ||
       !requiredHeaders.every(([key, value]) => pagesHeaders.includes('\n  ' + key + ': ' + value + '\n'))) {
     throw new Error('Cabeçalhos Cloudflare Pages ausentes ou alterados');
