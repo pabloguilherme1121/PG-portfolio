@@ -64,14 +64,16 @@ test("PG Bot oferece acesso externo real sem prometer envio de mensagem", async 
   await expect(dialog.getByText(/sem envio da conversa/i)).toBeVisible();
 });
 
-test("hero organiza três provas de trabalho com navegação interna", async ({ page }) => {
+test("hero organiza dois estudos de caso com destinos específicos", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 844 });
   await page.goto("./");
   const choices = page.getByRole("navigation", { name: "Explore meu trabalho" });
-  await expect(choices.getByRole("link")).toHaveCount(3);
-  await expect(choices.getByRole("link", { name: /Trajeto/ })).toHaveAttribute("href", "#trajeto");
-  await expect(choices.getByRole("link", { name: /Observatório/ })).toHaveAttribute("href", "#observatorio");
-  await expect(choices.getByRole("link", { name: /PG Arcade/ })).toHaveAttribute("href", "#pg-lab");
+  await expect(choices.getByRole("link")).toHaveCount(2);
+  await expect(choices.getByRole("link", { name: /Trajeto/ })).toHaveAttribute("href", "#case-civico");
+  await expect(choices.getByRole("link", { name: /MPJ Storyworks/ })).toHaveAttribute("href", "#case-audiovisual");
+  await choices.getByRole("link", { name: /MPJ Storyworks/ }).click();
+  await expect(page.locator("#case-audiovisual")).toBeVisible();
+  await expect(page.locator("#case-audiovisual").getByRole("heading", { name: /MPJ Storyworks/ })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 

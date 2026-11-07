@@ -53,3 +53,13 @@ describe("getPortfolioDeferredHashRequests", () => {
     });
   });
 });
+
+  it("carrega a seção correta quando o link aponta para um case específico", () => {
+    for (const hash of ["#case-civico", "#case-audiovisual"]) {
+      expect(getPortfolioDeferredHashRequests(hash)).toMatchObject({
+        caseStudies: true,
+        contact: false,
+        staticSections: false,
+      });
+    }
+  });

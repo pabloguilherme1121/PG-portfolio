@@ -7,14 +7,15 @@ for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("./");
       const hero = page.locator("#inicio");
-      const projects = hero.getByRole("link", { name: "Ver projetos" });
+      const projects = hero.getByRole("link", { name: "Ver dois cases" });
       await expect(projects).toBeVisible();
       await expect(hero.getByRole("link", { name: "Conversar sobre um projeto" })).toHaveAttribute("href", "#contato");
       const position = await projects.boundingBox();
       expect(position!.y + position!.height).toBeLessThan(900);
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
       await projects.click();
-      await expect(page.locator('[data-observatorio-capture="true"]')).toBeVisible();
+      await expect(page.locator("#case-civico")).toBeVisible();
+      await expect(page.locator("#case-civico").getByRole("link", { name: "Abrir Trajeto" })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
       const arcade = page.locator('[data-arcade-full-site="true"]');
       await expect(arcade).toHaveAttribute("target", "_blank");
       await expect(arcade).toHaveAttribute("href", "https://pabloguilherme1121.github.io/PG-Arcade/");
