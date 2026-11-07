@@ -4,8 +4,8 @@ for(const width of [320,390,1280]) test(`portfolio has direct playable evidence 
   await page.setViewportSize({width,height:900});
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto('./');
-  const hero=page.locator('#inicio');
-  await hero.getByRole('link',{name:/Interação que convida a jogar/}).click();
+  await page.goto('./#pg-lab');
+  await expect(page).toHaveURL(/#pg-lab$/);
   const showcase=page.locator('#pg-lab');
   await expect(showcase).toBeVisible();
   for(const id of ['peg','snake','liga4']) {

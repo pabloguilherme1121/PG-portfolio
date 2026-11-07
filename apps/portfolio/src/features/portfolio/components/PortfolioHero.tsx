@@ -29,8 +29,8 @@ export default function PortfolioHero({ portraitUrl, portraitResponsive, heroCta
             </div>
           </div>
           <nav className="hero-project-index" aria-label="Explore meu trabalho">
-            <a href="#estudos-de-caso"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Trajeto + Observatório</strong><small>Utilidade pública · dados e rotas com fontes</small></span><ArrowUpRight aria-hidden="true" /></a>
-            <a href="#estudos-de-caso"><span className="hero-project-number" aria-hidden="true">02</span><span><strong>MPJ Storyworks</strong><small>Audiovisual · RHAM e loja de moda, separados</small></span><ArrowUpRight aria-hidden="true" /></a>
+            <a href="#case-civico"><span className="hero-project-number" aria-hidden="true">01</span><span><strong>Trajeto + Observatório</strong><small>Utilidade pública · dados e rotas com fontes</small></span><ArrowUpRight aria-hidden="true" /></a>
+            <a href="#case-audiovisual"><span className="hero-project-number" aria-hidden="true">02</span><span><strong>MPJ Storyworks</strong><small>Audiovisual · RHAM e loja de moda, separados</small></span><ArrowUpRight aria-hidden="true" /></a>
           </nav>
         </div>
         <figure className="professional-portrait">

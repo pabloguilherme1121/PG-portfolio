@@ -10,7 +10,7 @@ for (const width of [320, 390, 1024]) {
     const optional = hero.locator('[data-hero-optional-actions="true"]');
 
     await expect(primary.getByRole("link")).toHaveCount(2);
-    await expect(primary.getByRole("link", { name: "Ver projetos" })).toHaveAttribute("href", "#projetos");
+    await expect(primary.getByRole("link", { name: "Ver dois cases" })).toHaveAttribute("href", "#estudos-de-caso");
     await expect(primary.getByRole("link", { name: "Conversar sobre um projeto" })).toHaveAttribute("href", "#contato");
     await expect(optional.getByRole("link", { name: "Ver currículo" })).toHaveAttribute("href", "#curriculo-web");
 
@@ -36,4 +36,20 @@ for (const width of [320, 390, 1024]) {
     await dialog.getByRole("button", { name: "Fechar PG Bot" }).click();
     await expect(bot).toBeFocused();
   });
+}
+
+for (const hash of ["case-civico", "case-audiovisual"]) {
+  for (const width of [320, 390]) {
+    test(`link direto para ${hash} carrega o estudo correspondente a ${width}px`, async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.setViewportSize({ width, height: 844 });
+      await page.goto(`./#${hash}`, { waitUntil: "domcontentloaded" });
+      const caseElement = page.locator(`#${hash}`);
+      await expect(caseElement).toBeVisible();
+      await expect(caseElement).toHaveAttribute("data-case-id", hash === "case-civico" ? "CIV.01" : "AV.02");
+      await expect(caseElement.getByRole("heading")).toBeVisible();
+      await expect(page).toHaveURL(new RegExp(`#${hash}$`));
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    });
+  }
 }
