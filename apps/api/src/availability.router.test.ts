@@ -34,10 +34,21 @@ describe("availability router", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("exibe bloqueios para visitantes sem exigir login", async () => {
-    const dates = [{ id: 1, dateKey: "2026-08-17", note: "Feriado", createdAt: new Date() }];
+    const dates = [{ id: 1, dateKey: "2026-08-17", note: "Compromisso pessoal", createdAt: new Date() }];
     dbMocks.listBlockedDates.mockResolvedValue(dates);
 
-    await expect(appRouter.createCaller(createContext()).availability.listBlocked()).resolves.toEqual(dates);
+    await expect(appRouter.createCaller(createContext()).availability.listBlocked()).resolves.toEqual([{ dateKey: "2026-08-17" }]);
+    await expect(appRouter.createCaller(createContext("admin")).availability.listBlocked()).resolves.toEqual([{ dateKey: "2026-08-17" }]);
+  });
+
+  it("restringe detalhes e notas da agenda a administradores", async () => {
+    const dates = [{ id: 1, dateKey: "2026-08-17", note: "Compromisso pessoal", createdAt: new Date() }];
+    dbMocks.listBlockedDates.mockResolvedValue(dates);
+    for (const role of [undefined, "user"] as const) {
+      await expect(appRouter.createCaller(createContext(role)).availability.listBlockedAdmin()).rejects.toMatchObject({ code: "FORBIDDEN" });
+    }
+    expect(dbMocks.listBlockedDates).not.toHaveBeenCalled();
+    await expect(appRouter.createCaller(createContext("admin")).availability.listBlockedAdmin()).resolves.toEqual(dates);
   });
 
   it("recusa bloqueio de data para quem não é administrador", async () => {
