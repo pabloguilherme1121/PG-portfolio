@@ -18,8 +18,9 @@ import { trpc } from "@/lib/portfolioApi";
 import { getSafeStorage, readStorage, removeStorage, writeStorage } from "@/lib/safeStorage";
 import { toast } from "sonner";
 import PortfolioHero from "@/features/portfolio/components/PortfolioHero";
-import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioArcadeShowcase";
+
 import { PortfolioQuickActionsDock } from "@/features/portfolio/components/PortfolioQuickActionsDock";
+import PortfolioArcadeShowcase from "@/features/portfolio/components/PortfolioArcadeShowcase";
 import { PortfolioDeferredContentSections } from "@/features/portfolio/components/PortfolioDeferredContentSections";
 import { trackPortfolioEvent } from "@/features/portfolio/utils/portfolioAnalytics";
 import { isPgBotKeyboardShortcut } from "@/features/portfolio/utils/pgBotShortcut";
@@ -647,7 +648,7 @@ export default function Home() {
               <a href="#contato" className="inline-flex min-h-12 shrink-0 items-center justify-center gap-2 bg-[#38bdf8] px-5 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#02111f] transition-colors hover:bg-[#a5f3fc]">falar sobre um projeto <ArrowUpRight className="h-4 w-4" /></a>
             </div>
 
-            <PortfolioArcadeShowcase />
+
             <div
               id="estudos-de-caso"
               ref={caseStudiesSectionRef}
@@ -671,6 +672,11 @@ export default function Home() {
                 </div>
               )}
             </div>
+            <section aria-label="Outras experiências e laboratórios" className="mt-10 border-t border-white/10 pt-6">
+              <h3 className="font-display text-lg text-white">Laboratório de projetos</h3>
+              <p className="mt-2 max-w-2xl font-body text-sm leading-6 text-[#bed0ea]">Outras experiências técnicas ficam disponíveis separadamente dos dois cases principais.</p>
+              <PortfolioArcadeShowcase />
+            </section>
           </div>
         </section>
 

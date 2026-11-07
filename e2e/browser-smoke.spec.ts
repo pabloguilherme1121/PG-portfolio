@@ -6,14 +6,14 @@ test("carrega a jornada principal sem overflow horizontal", async ({ page }) => 
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /Interfaces claras.*Produtos que você pode usar/i,
+      name: /Sites e aplicações.*que funcionam no celular/i,
     }),
   ).toBeVisible();
 
   await expect(page.locator("html")).toHaveJSProperty("scrollWidth", await page.locator("html").evaluate((el) => el.clientWidth));
 
-  const projects = page.getByRole("link", { name: /ver projetos/i });
-  await expect(projects).toHaveAttribute("href", "#projetos");
+  const projects = page.getByRole("link", { name: /ver dois cases/i });
+  await expect(projects).toHaveAttribute("href", "#estudos-de-caso");
 });
 
 test("rota pública de privacidade permanece navegável", async ({ page }) => {
@@ -41,7 +41,7 @@ test("continua navegável quando o navegador bloqueia storage", async ({ page })
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: /Interfaces claras.*Produtos que você pode usar/i,
+      name: /Sites e aplicações.*que funcionam no celular/i,
     }),
   ).toBeVisible();
 

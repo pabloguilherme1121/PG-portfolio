@@ -12,7 +12,7 @@ export function getPortfolioDeferredHashRequests(hash: string): PortfolioDeferre
   return {
     footer: ["#rede-projetos", "#contato-rodape"].includes(hash),
     contact: ["#contato", "#contato-briefing", "#agenda"].includes(hash),
-    caseStudies: hash === "#estudos-de-caso",
+    caseStudies: ["#estudos-de-caso", "#case-civico", "#case-audiovisual"].includes(hash),
     staticSections: ["#trilha", "#qualidade", "#servicos", "#processo"].includes(hash),
     profileSections: ["#sobre", "#perfil-profissional"].includes(hash),
   };

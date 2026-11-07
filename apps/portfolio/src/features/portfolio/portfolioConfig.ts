@@ -14,9 +14,9 @@ export const portfolioTelegramUrl = "https://t.me/mpjmarketing";
 export const portfolioContactEmail = "mpjcreator@gmail.com";
 export const portfolioInstagramPersonalHandle = "@pablogui000";
 export const portfolioInstagramPersonalUrl = "https://www.instagram.com/pablogui000/";
-export const portfolioInstagramWorkHandle = "@mpjstoryworks";
-export const portfolioInstagramWorkUrl = "https://www.instagram.com/mpjstoryworks/";
-export const portfolioInstagramDmUrl = "https://ig.me/m/pablogui000";
+export const portfolioInstagramWorkHandle = "@pablo.builds.ia";
+export const portfolioInstagramWorkUrl = "https://www.instagram.com/pablo.builds.ia/";
+export const portfolioInstagramDmUrl = "https://ig.me/m/pablo.builds.ia";
 export const portfolioArcadeUrl = "https://pabloguilherme1121.github.io/PG-Arcade/";
 
 export const portfolioNavigationItems = [

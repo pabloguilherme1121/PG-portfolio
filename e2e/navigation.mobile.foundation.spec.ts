@@ -39,7 +39,8 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator(".archive-chapter").first()).toHaveCSS("content-visibility", "visible");
     expect((await page.locator(".arquivo-page").evaluate((element) => getComputedStyle(element).textRendering)).toLowerCase()).toBe("optimizespeed");
 
-    const primaryCta = page.locator("#inicio").getByRole("link", { name: /Ver projetos/i });
+    const primaryCta = page.locator("#inicio").getByRole("link", { name: /Ver dois cases/i });
+    await expect(primaryCta).toHaveAttribute("href", "#estudos-de-caso");
     expect(await primaryCta.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
 
     const skipLink = page.locator(".skip-link");

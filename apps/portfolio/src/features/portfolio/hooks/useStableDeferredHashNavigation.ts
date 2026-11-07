@@ -11,6 +11,9 @@ const deferredDestinationIds = new Set([
   "processo",
   "contato",
   "contato-briefing",
+  "estudos-de-caso",
+  "case-civico",
+  "case-audiovisual",
 ]);
 
 /**

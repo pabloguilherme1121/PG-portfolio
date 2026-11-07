@@ -9,7 +9,7 @@ test.describe("portfólio profissional", () => {
   test("apresenta posicionamento, prova pública e contato em uma jornada direta", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page.getByRole("heading", { level: 1, name: /Interfaces claras.*Produtos que você pode usar/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: /Sites e aplicações.*que funcionam no celular/i })).toBeVisible();
     await page.locator("#projetos").scrollIntoViewIfNeeded();
     await expect(page.locator('[data-featured-project-strip="true"]')).toBeVisible();
     await expect(page.locator("#observatorio").getByRole("heading", { name: "Observatório" })).toBeVisible();

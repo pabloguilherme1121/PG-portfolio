@@ -72,7 +72,7 @@ for (const [width, theme] of [
     await expect(decisions).toHaveAttribute("aria-pressed", "true");
     await expect(
       project.locator('[id="featured-reading-TEC.09"]')
-    ).toContainText("Cadastro opcional");
+    ).toContainText("Consulta sem cadastro obrigatório");
     // Safari pointer activation does not focus buttons; enter the keyboard phase explicitly.
     await decisions.focus();
     await expect(decisions).toBeFocused();

@@ -98,43 +98,32 @@ test.describe("portfólio profissional", () => {
     await expect(page.locator("#estudos-de-caso")).toHaveCount(1);
 
     await page.goto("/#estudos-de-caso");
-    await expect(page.locator('[data-case-study="true"]')).toHaveCount(3);
+    await expect(page.locator('[data-case-study="true"]')).toHaveCount(2);
     await expect.poll(() => caseStudyRequests.length).toBeGreaterThan(0);
   });
 
-  test("estudos de caso levam a evidências verificáveis", async ({ page }) => {
+  test("estudos de caso apresentam somente evidências autorizadas", async ({ page }) => {
     await page.goto("/");
     await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
-
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(3);
-
-    const observatorioStudy = studies.filter({ hasText: "Observatório" });
-    await expect(observatorioStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
-      "href",
-      "https://pabloguilherme01.github.io/observatorio/#dashboard",
+    await expect(studies).toHaveCount(2);
+    const civic = studies.filter({ hasText: "Trajeto + Observatório" });
+    await expect(civic).toHaveAttribute("data-case-id", "CIV.01");
+    await expect(civic.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute(
+      "href", "https://pabloguilherme01.github.io/trajeto-web/"
     );
-    await expect(observatorioStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Pabloguilherme01/observatorio",
+    await expect(civic.getByRole("link", { name: /abrir observatório/i })).toHaveAttribute(
+      "href", "https://pabloguilherme01.github.io/observatorio/#dashboard"
     );
-
-    const trajetoStudy = studies.filter({ hasText: "Trajeto" });
-    await expect(trajetoStudy.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
-    await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+    await expect(civic.getByRole("link", { name: /código do trajeto/i })).toHaveAttribute(
+      "href", "https://github.com/Pabloguilherme01/trajeto-web"
     );
-
-    const arcadeStudy = studies.filter({ hasText: "PG Arcade" });
-    await expect(arcadeStudy.getByRole("link", { name: /abrir produto/i })).toHaveAttribute(
-      "href", "https://pabloguilherme1121.github.io/PG-Arcade/#/",
-    );
-    await expect(arcadeStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
-      "href", "https://github.com/pabloguilherme1121/PG-Arcade",
-    );
-
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(6);
+    await expect(civic.locator('[data-case-evidence="true"]')).toHaveCount(3);
+    const audiovisual = studies.filter({ hasText: "MPJ Storyworks" });
+    await expect(audiovisual).toHaveAttribute("data-case-id", "AV.02");
+    await expect(audiovisual.locator('[data-case-evidence="true"]')).toHaveCount(0);
+    await expect(audiovisual).toContainText("Publicações, autorização de uso e resultados comerciais");
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
   });
 
   test("apresenta Trajeto como produto em evolução com código verificável", async ({ page }) => {
@@ -142,17 +131,16 @@ test.describe("portfólio profissional", () => {
     await page.locator("#estudos-de-caso").scrollIntoViewIfNeeded();
 
     const studies = page.locator('[data-case-study="true"]');
-    await expect(studies).toHaveCount(3);
-
-    const trajetoStudy = studies.filter({ hasText: "Trajeto" });
-    await expect(trajetoStudy.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute("href", "https://pabloguilherme01.github.io/trajeto-web/");
-    await expect(trajetoStudy).toContainText(/produto.*evolução|em evolução/i);
-    await expect(trajetoStudy.getByRole("link", { name: /ver código/i })).toHaveAttribute(
-      "href",
-      "https://github.com/Pabloguilherme01/trajeto-web",
+    await expect(studies).toHaveCount(2);
+    const civic = studies.filter({ hasText: "Trajeto + Observatório" });
+    await expect(civic.getByRole("link", { name: /abrir trajeto/i })).toHaveAttribute(
+      "href", "https://pabloguilherme01.github.io/trajeto-web/"
     );
-
-    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(6);
+    await expect(civic).toContainText("Trajeto: 157 serviços");
+    await expect(civic.getByRole("link", { name: /código do trajeto/i })).toHaveAttribute(
+      "href", "https://github.com/Pabloguilherme01/trajeto-web"
+    );
+    await expect(page.locator('[data-case-evidence="true"]')).toHaveCount(3);
 
     const featured = page.locator('[data-featured-project="TEC.09"]');
     await expect(featured).toBeVisible();
@@ -410,7 +398,7 @@ test.describe("portfólio profissional", () => {
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: /Interfaces claras.*Produtos que você pode usar/i,
+        name: /Sites e aplicações.*que funcionam no celular/i,
       }),
     ).toBeVisible();
     await expect(page.locator('[data-mobile-menu-toggle="true"]')).toBeVisible();
