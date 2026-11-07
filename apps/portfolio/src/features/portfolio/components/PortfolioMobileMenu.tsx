@@ -57,6 +57,29 @@ export default function PortfolioMobileMenu({
   const SecondaryIcon =
     mobileExperienceRoute === "recruiter" ? FileText : mobileExperienceRoute === "explorer" ? Braces : Layers2;
 
+  const navigateToSection = (href: string) => {
+    onClose();
+    const sectionId = href.slice(1);
+
+    window.requestAnimationFrame(() => {
+      const focusSection = () => {
+        const section = document.getElementById(sectionId);
+        if (!section) return false;
+        if (!section.hasAttribute("tabindex")) section.setAttribute("tabindex", "-1");
+        section.focus({ preventScroll: true });
+        return true;
+      };
+
+      if (focusSection()) return;
+      // Lazy-loaded sections appear after the hash changes; focus them when mounted.
+      const observer = new MutationObserver(() => {
+        if (focusSection()) observer.disconnect();
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+      window.setTimeout(() => observer.disconnect(), 5000);
+    });
+  };
+
   useEffect(() => {
     const navigation = navigationRef.current;
     if (!navigation) return;
@@ -67,6 +90,8 @@ export default function PortfolioMobileMenu({
       ).filter((element) => element.offsetParent !== null);
 
     const frameId = window.requestAnimationFrame(() => {
+      // Preserve a link already focused by keyboard navigation before this frame.
+      if (navigation.contains(document.activeElement)) return;
       const focusTarget =
         navigation.querySelector<HTMLElement>('[aria-current="location"]') ??
         getFocusableElements()[0];
@@ -140,11 +165,11 @@ export default function PortfolioMobileMenu({
             </div>
           </div>
 
-          <div role="group" aria-label="Objetivo da visita" className="mb-3 grid grid-cols-3 gap-2">
+          <div role="group" aria-label="Objetivo da visita" className="mb-3 grid grid-cols-2 gap-2 min-[360px]:grid-cols-3">
             {([['client', 'Contratar'], ['recruiter', 'Recrutador'], ['explorer', 'Explorar']] as const).map(([route, label]) => (
               <button key={route} type="button" aria-pressed={mobileExperienceRoute === route}
                 onClick={() => onSelectRoute(route)}
-                className="min-h-11 rounded-[10px] border border-cyan-200/20 px-1 text-xs text-[#d7e9f8] aria-pressed:bg-[#0b2746] aria-pressed:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+                className="min-h-11 rounded-[10px] border border-cyan-200/20 px-1 text-xs last:col-span-2 min-[360px]:last:col-span-1 text-[#d7e9f8] aria-pressed:bg-[#0b2746] aria-pressed:border-[#67e8f9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
                 {label}
               </button>
             ))}
@@ -157,7 +182,7 @@ export default function PortfolioMobileMenu({
               <a
                 key={label}
                 href={href}
-                onClick={onClose}
+                onClick={() => navigateToSection(href)}
                 aria-current={activeSection === id ? "location" : undefined}
                 className={`flex min-h-11 items-center rounded-[10px] border px-3 py-2 font-mono text-xs font-semibold uppercase tracking-[0.07em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc] ${id === "contato" ? "col-span-2 justify-center" : ""} ${
                   activeSection === id
@@ -185,7 +210,7 @@ export default function PortfolioMobileMenu({
 
           <div
             data-mobile-shortcuts="true"
-            className="mt-2 grid grid-cols-2 gap-2"
+            className="mt-2 grid grid-cols-1 gap-2 min-[390px]:grid-cols-2"
             aria-label="Atalhos rápidos"
           >
             <a
@@ -197,7 +222,7 @@ export default function PortfolioMobileMenu({
               className="mobile-shortcut-card flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-[10px] border border-white/10 bg-[#071326] px-2 py-2 text-center font-mono text-xs font-semibold uppercase tracking-[0.06em] text-[#d7e9f8] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]"
             >
               <SecondaryIcon className="h-4 w-4 shrink-0 text-[#67e8f9]" aria-hidden="true" />
-              <span className="truncate">{mobileSecondaryShortcut.label}</span>
+              <span className="min-w-0 break-words leading-snug">{mobileSecondaryShortcut.label}</span>
             </a>
             <a
               href="https://pabloguilherme01.github.io/observatorio/"
@@ -213,10 +238,10 @@ export default function PortfolioMobileMenu({
 
           <div
             data-mobile-tools="true"
-            className="mt-2 grid grid-cols-2 gap-2 border-t border-white/[0.08] pt-2"
+            className="mt-2 grid grid-cols-1 gap-2 border-t min-[390px]:grid-cols-2 border-white/[0.08] pt-2"
             aria-label="Ferramentas"
           >
-            <button type="button" data-mobile-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="col-span-2 flex min-h-12 items-center gap-3 rounded-[10px] border border-[#67e8f9]/35 bg-[#0d314e] px-3 py-2 text-left text-xs font-semibold text-[#e2fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
+            <button type="button" data-mobile-pg-bot="true" onClick={event => onOpenPGBot(event.currentTarget)} className="col-span-1 flex min-h-12 items-center gap-3 min-[390px]:col-span-2 rounded-[10px] border border-[#67e8f9]/35 bg-[#0d314e] px-3 py-2 text-left text-xs font-semibold text-[#e2fbff] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a5f3fc]">
               <img src={`${import.meta.env.BASE_URL}brand/pg-bot/mascot.webp`} alt="" width="28" height="33" decoding="async" className="h-[33px] w-7 shrink-0 object-contain" />
               <span className="min-w-0"><strong className="block">Perguntar ao PG Bot</strong><span className="mt-0.5 block font-normal text-[#bad9ea]">Ajuda com projetos, currículo e contato</span></span>
             </button>
@@ -250,6 +275,15 @@ export default function PortfolioMobileMenu({
                     ? "tentar de novo"
                     : "compartilhar"}
             </button>
+            <span data-mobile-share-feedback="true" role="status" aria-live="polite" aria-atomic="true" className="sr-only">
+              {portfolioShareStatus === "shared"
+                ? "Portfólio compartilhado."
+                : portfolioShareStatus === "copied"
+                  ? "Link do portfólio copiado."
+                  : portfolioShareStatus === "error"
+                    ? "Não foi possível compartilhar o portfólio."
+                    : ""}
+            </span>
 
             {showInstallAction && (
               <button
