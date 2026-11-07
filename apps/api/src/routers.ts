@@ -130,7 +130,8 @@ export const appRouter = router({
     restore: adminProcedure.input(z.object({ projectId: z.string().trim().min(1).max(64) })).mutation(({ ctx, input }) => deleteFavoriteProjectMetadata(ctx.user.id, input.projectId)),
   }),
   availability: router({
-    listBlocked: publicProcedure.query(() => listBlockedDates()),
+    listBlocked: publicProcedure.query(async () => (await listBlockedDates()).map(({ dateKey }) => ({ dateKey }))),
+    listBlockedAdmin: adminProcedure.query(() => listBlockedDates()),
     block: adminProcedure.input(blockedDateInputSchema).mutation(async ({ input }) => {
       await blockAvailabilityDate(input.dateKey, input.note);
       return { success: true };
