@@ -10,6 +10,10 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "deps"
+    ignore:
+      # A patch is pinned to wouter 3.7.1; Dependabot updates make it unused.
+      # Revisit after porting and testing patches/wouter@3.7.1.patch.
+      - dependency-name: "wouter"
 
   - package-ecosystem: "github-actions"
     directory: "/"
